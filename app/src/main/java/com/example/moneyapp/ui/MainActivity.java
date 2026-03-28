@@ -2,13 +2,11 @@ package com.example.moneyapp.ui;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 
 import com.example.moneyapp.R;
-import com.example.moneyapp.ui.home.HomeFragment;
-import com.example.moneyapp.ui.profile.ProfileFragment;
-import com.example.moneyapp.ui.statistics.StatisticsFragment;
-import com.example.moneyapp.ui.transaction.TransactionFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,38 +18,12 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
-        // Mặc định khi mở app sẽ hiện HomeFragment
-        if (savedInstanceState == null) {
-            loadFragment(new HomeFragment());
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
+        
+        if (navHostFragment != null) {
+            NavController navController = navHostFragment.getNavController();
+            NavigationUI.setupWithNavController(bottomNav, navController);
         }
-
-        bottomNav.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
-            int itemId = item.getItemId();
-
-            if (itemId == R.id.nav_home) {
-                selectedFragment = new HomeFragment();
-            } else if (itemId == R.id.nav_transaction) {
-                selectedFragment = new TransactionFragment();
-            } else if (itemId == R.id.nav_statistics) {
-                selectedFragment = new StatisticsFragment();
-            } else if (itemId == R.id.nav_profile) {
-                selectedFragment = new ProfileFragment();
-            }
-
-            return loadFragment(selectedFragment);
-        });
-    }
-
-    // Hàm hỗ trợ tháo lắp Fragment
-    private boolean loadFragment(Fragment fragment) {
-        if (fragment != null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .commit();
-            return true;
-        }
-        return false;
     }
 }
