@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="50dp"
-        android:text="Màn hình Thống kê"
+        android:text="Màn hình Hạng mục"
         android:textSize="20sp" />
 
 </LinearLayout>
