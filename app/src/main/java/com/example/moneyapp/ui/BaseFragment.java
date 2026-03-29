@@ -24,8 +24,11 @@ public abstract class BaseFragment extends Fragment {
         // Configure UI components when the fragment is shown
         if (getActivity() instanceof MainActivity) {
             MainActivity mainActivity = (MainActivity) getActivity();
-            mainActivity.updateFAB(getFabIcon(), v -> onFabClick());
-            mainActivity.setBottomNavigationVisibility(shouldShowBottomNavigation());
+            MainUIHandler uiHandler = mainActivity.getUiHandler();
+            if (uiHandler != null) {
+                uiHandler.updateFAB(getFabIcon(), v -> onFabClick());
+                uiHandler.setBottomNavigationVisibility(shouldShowBottomNavigation());
+            }
         }
     }
 

@@ -60,21 +60,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Fragments can call this to show or hide the bottom navigation bar.
-     */
-    public void setBottomNavigationVisibility(boolean visible) {
-        if (uiHandler != null) {
-            uiHandler.setBottomNavigationVisibility(visible);
-        }
-    }
-
-    /**
-     * Updates the FAB icon and click listener.
-     */
-    public void updateFAB(int iconRes, View.OnClickListener listener) {
-        if (uiHandler != null) {
-            uiHandler.updateFAB(iconRes, listener);
-        }
+    public MainUIHandler getUiHandler() {
+        return uiHandler;
     }
 }
