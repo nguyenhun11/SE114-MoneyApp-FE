@@ -13,7 +13,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,10 +48,9 @@ public class MainActivity extends AppCompatActivity {
                     return false;
                 }
                 
-                // For main tabs, we force navigation to the root fragment and don't restore sub-page states
                 NavOptions options = new NavOptions.Builder()
                         .setLaunchSingleTop(true)
-                        .setRestoreState(false) // Crucial: don't show the last sub-page (e.g. Profile)
+                        .setRestoreState(false)
                         .setPopUpTo(navController.getGraph().getStartDestinationId(), false, false)
                         .build();
                 
@@ -62,13 +62,27 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            // Default visibility based on destination
+            Set<Integer> mainFragments = new HashSet<>(Arrays.asList(
+                R.id.homeFragment,
+                R.id.transactionFragment,
+                R.id.accountFragment
+            ));
+
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 int destId = destination.getId();
                 
-                // Update FAB based on destination
+                // Set default visibility
+                setBottomNavigationVisibility(mainFragments.contains(destId));
+
+                // Update FAB based on destination (Defaults)
                 if (destId == R.id.accountFragment) {
                     uiHandler.updateFAB(R.drawable.ic_transfer, v -> {
                         // Handle transfer action
+                    });
+                } else if (destId == R.id.transactionDetailFragment) {
+                    uiHandler.updateFAB(R.drawable.ic_plus, v -> { 
+                         // Handle edit action
                     });
                 } else {
                     uiHandler.updateFAB(R.drawable.ic_add_white, v -> {
@@ -76,18 +90,21 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
 
-                List<Integer> mainTabs = Arrays.asList(
-                    R.id.homeFragment, 
-                    R.id.transactionFragment, 
-                    R.id.accountFragment
-                );
-
-                if (!mainTabs.contains(destId)) {
+                if (!mainFragments.contains(destId)) {
                     uiHandler.unselectAllMenuItems();
                 } else {
                     bottomNav.getMenu().setGroupCheckable(0, true, true);
                 }
             });
+        }
+    }
+
+    /**
+     * Fragments can call this to show or hide the bottom navigation bar.
+     */
+    public void setBottomNavigationVisibility(boolean visible) {
+        if (bottomNav != null) {
+            bottomNav.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
     }
 

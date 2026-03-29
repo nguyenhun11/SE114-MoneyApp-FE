@@ -21,16 +21,17 @@ public abstract class BaseFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        // Cấu hình FAB khi fragment được hiển thị
+        // Configure UI components when the fragment is shown
         if (getActivity() instanceof MainActivity) {
             MainActivity mainActivity = (MainActivity) getActivity();
             mainActivity.updateFAB(getFabIcon(), v -> onFabClick());
+            mainActivity.setBottomNavigationVisibility(shouldShowBottomNavigation());
         }
     }
 
     /**
-     * Trả về icon cho FAB của fragment này. 
-     * Mặc định là dấu cộng trắng.
+     * Returns the FAB icon for this fragment.
+     * Default is a white plus icon.
      */
     @DrawableRes
     protected int getFabIcon() {
@@ -38,11 +39,19 @@ public abstract class BaseFragment extends Fragment {
     }
 
     /**
-     * Xử lý khi click vào FAB.
-     * Fragment con cần override để thực hiện hành động riêng.
+     * Determines whether to show the bottom navigation bar.
+     * Default is true.
+     */
+    protected boolean shouldShowBottomNavigation() {
+        return true;
+    }
+
+    /**
+     * Handles FAB clicks.
+     * Subclasses should override this to perform specific actions.
      */
     protected void onFabClick() {
-        // Mặc định không làm gì hoặc thực hiện hành động chung
+        // Default: do nothing
     }
 
     protected void setupHeader(View view, String titleText, boolean showBackBtn) {

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.BaseFragment;
@@ -31,6 +32,11 @@ public class TransactionFragment extends BaseFragment {
             } else {
                 // Hiển thị danh sách thu nhập
             }
+        });
+
+        // Use the specific TextView to navigate to detail
+        view.findViewById(R.id.tv_goto_detail).setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.transactionDetailFragment);
         });
     }
 }
