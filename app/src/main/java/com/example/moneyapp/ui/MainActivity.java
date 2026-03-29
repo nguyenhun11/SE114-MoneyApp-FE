@@ -12,10 +12,6 @@ import com.example.moneyapp.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 public class MainActivity extends AppCompatActivity {
 
     private NavController navController;
@@ -61,41 +57,6 @@ public class MainActivity extends AppCompatActivity {
                     return NavigationUI.onNavDestinationSelected(item, navController);
                 }
             });
-
-            // Default visibility based on destination
-            Set<Integer> mainFragments = new HashSet<>(Arrays.asList(
-                R.id.homeFragment,
-                R.id.transactionFragment,
-                R.id.accountFragment
-            ));
-
-            navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-                int destId = destination.getId();
-                
-                // Set default visibility
-                setBottomNavigationVisibility(mainFragments.contains(destId));
-
-                // Update FAB based on destination (Defaults)
-                if (destId == R.id.accountFragment) {
-                    uiHandler.updateFAB(R.drawable.ic_transfer, v -> {
-                        // Handle transfer action
-                    });
-                } else if (destId == R.id.transactionDetailFragment) {
-                    uiHandler.updateFAB(R.drawable.ic_plus, v -> { 
-                         // Handle edit action
-                    });
-                } else {
-                    uiHandler.updateFAB(R.drawable.ic_add_white, v -> {
-                        // Handle default add action
-                    });
-                }
-
-                if (!mainFragments.contains(destId)) {
-                    uiHandler.unselectAllMenuItems();
-                } else {
-                    bottomNav.getMenu().setGroupCheckable(0, true, true);
-                }
-            });
         }
     }
 
@@ -103,11 +64,14 @@ public class MainActivity extends AppCompatActivity {
      * Fragments can call this to show or hide the bottom navigation bar.
      */
     public void setBottomNavigationVisibility(boolean visible) {
-        if (bottomNav != null) {
-            bottomNav.setVisibility(visible ? View.VISIBLE : View.GONE);
+        if (uiHandler != null) {
+            uiHandler.setBottomNavigationVisibility(visible);
         }
     }
 
+    /**
+     * Updates the FAB icon and click listener.
+     */
     public void updateFAB(int iconRes, View.OnClickListener listener) {
         if (uiHandler != null) {
             uiHandler.updateFAB(iconRes, listener);
