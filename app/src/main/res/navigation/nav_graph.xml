@@ -8,25 +8,25 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.moneyapp.ui.home.HomeFragment"
-        android:label="Trang chủ"
+        android:label="@string/home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/transactionFragment"
         android:name="com.example.moneyapp.ui.transaction.TransactionFragment"
-        android:label="Giao dịch"
+        android:label="@string/transaction"
         tools:layout="@layout/fragment_transaction" />
 
     <fragment
         android:id="@+id/accountFragment"
         android:name="com.example.moneyapp.ui.account.AccountFragment"
-        android:label="Tài khoản"
+        android:label="@string/account"
         tools:layout="@layout/fragment_account" />
 
     <fragment
         android:id="@+id/moreFragment"
         android:name="com.example.moneyapp.ui.profile.ProfileFragment"
-        android:label="Thêm"
+        android:label="@string/more"
         tools:layout="@layout/fragment_profile" />
 
 </navigation>

@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
 
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -33,15 +34,15 @@
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:background="@android:color/transparent"
-            app:elevation="0dp"
-            app:labelVisibilityMode="labeled"
-            app:menu="@menu/bottom_nav_menu"
-            app:itemIconTint="@color/nav_item_color"
-            app:itemTextColor="@color/nav_item_color"
-            app:itemActiveIndicatorStyle="@null"
             android:minHeight="10dp"
+            app:elevation="0dp"
+            app:itemActiveIndicatorStyle="@null"
+            app:itemIconTint="@color/nav_item_color"
+            app:itemPaddingBottom="8dp"
             app:itemPaddingTop="12dp"
-            app:itemPaddingBottom="8dp" />
+            app:itemTextColor="@color/nav_item_color"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/bottom_nav_menu" />
 
     </com.google.android.material.bottomappbar.BottomAppBar>
 
@@ -49,15 +50,15 @@
         android:id="@+id/fab_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="40dp"
         android:contentDescription="Thêm mới"
         app:backgroundTint="@color/colorPrimary"
-        app:elevation="12dp"
-        app:pressedTranslationZ="16dp"
         app:borderWidth="0dp"
-        android:layout_gravity="bottom|center_horizontal"
+        app:elevation="12dp"
         app:fabCustomSize="72dp"
         app:maxImageSize="36dp"
-        android:layout_marginBottom="40dp"
+        app:pressedTranslationZ="16dp"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialComponents.FloatingActionButton"
         app:srcCompat="@drawable/ic_add_white"
         app:tint="@android:color/white" />

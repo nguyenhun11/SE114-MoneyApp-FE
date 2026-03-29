@@ -3,11 +3,11 @@
     <item
         android:id="@+id/homeFragment"
         android:icon="@drawable/ic_home"
-        android:title="Trang chủ" />
+        android:title="@string/home" />
     <item
         android:id="@+id/transactionFragment"
         android:icon="@drawable/ic_transaction"
-        android:title="Giao dịch" />
+        android:title="@string/transaction" />
     <item
         android:id="@+id/placeholder"
         android:title=""
@@ -15,9 +15,9 @@
     <item
         android:id="@+id/accountFragment"
         android:icon="@drawable/ic_account"
-        android:title="Tài khoản" />
+        android:title="@string/account" />
     <item
         android:id="@+id/moreFragment"
         android:icon="@drawable/ic_more"
-        android:title="Thêm" />
+        android:title="@string/more" />
 </menu>

@@ -10,4 +10,9 @@
 
     <color name="colorPrimary">#7F3DFF</color>
     <color name="colorOnPrimary">#FFFFFFFF</color>
+
+    <color name="bg_gradient_start">#4DA9FF</color>
+    <color name="bg_gradient_end">#A0E5D5</color>
+
+    <color name="tabSelectedColor">#0088FF</color>
 </resources>
