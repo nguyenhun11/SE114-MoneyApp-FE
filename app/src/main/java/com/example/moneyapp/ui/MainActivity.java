@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
@@ -39,16 +40,42 @@ public class MainActivity extends AppCompatActivity {
             uiHandler = new MainUIHandler(this, navController, bottomNav, fabAdd);
 
             bottomNav.setOnItemSelectedListener(item -> {
-                if (item.getItemId() == R.id.moreFragment) {
+                int itemId = item.getItemId();
+                
+                if (itemId == R.id.moreFragment) {
                     uiHandler.showCustomMorePopup();
                     return false;
                 }
-                return NavigationUI.onNavDestinationSelected(item, navController);
+                
+                // For main tabs, we force navigation to the root fragment and don't restore sub-page states
+                NavOptions options = new NavOptions.Builder()
+                        .setLaunchSingleTop(true)
+                        .setRestoreState(false) // Crucial: don't show the last sub-page (e.g. Profile)
+                        .setPopUpTo(navController.getGraph().getStartDestinationId(), false, false)
+                        .build();
+                
+                try {
+                    navController.navigate(itemId, null, options);
+                    return true;
+                } catch (Exception e) {
+                    return NavigationUI.onNavDestinationSelected(item, navController);
+                }
             });
 
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 int destId = destination.getId();
                 
+                // Update FAB based on destination
+                if (destId == R.id.accountFragment) {
+                    uiHandler.updateFAB(R.drawable.ic_transfer, v -> {
+                        // Handle transfer action
+                    });
+                } else {
+                    uiHandler.updateFAB(R.drawable.ic_add_white, v -> {
+                        // Handle default add action
+                    });
+                }
+
                 List<Integer> mainTabs = Arrays.asList(
                     R.id.homeFragment, 
                     R.id.transactionFragment, 
@@ -64,9 +91,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Phương thức công khai để các Fragment có thể cập nhật FAB thông qua MainActivity.
-     */
     public void updateFAB(int iconRes, View.OnClickListener listener) {
         if (uiHandler != null) {
             uiHandler.updateFAB(iconRes, listener);
