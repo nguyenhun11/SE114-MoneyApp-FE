@@ -25,6 +25,7 @@ public class ProfileFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         setupHeader(view, "Hồ sơ", true);
 
         TextView tvLogout = view.findViewById(R.id.tv_logout);
@@ -34,11 +35,9 @@ public class ProfileFragment extends BaseFragment {
     }
 
     private void logout() {
-        // Clear login state
         SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         prefs.edit().putBoolean("isLoggedIn", false).apply();
 
-        // Redirect to Splash
         Intent intent = new Intent(requireActivity(), SplashActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

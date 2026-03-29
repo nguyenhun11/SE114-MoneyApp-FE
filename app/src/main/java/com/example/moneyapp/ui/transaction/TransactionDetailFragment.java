@@ -22,21 +22,12 @@ public class TransactionDetailFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupHeader(view, "Chi tiết giao dịch", true);
-    }
 
-    @Override
-    protected int getFabIcon() {
-        return R.drawable.ic_more;
+        setupHeader(view, "Chi tiết giao dịch", true);
     }
 
     @Override
     protected boolean shouldShowBottomNavigation() {
         return false;
-    }
-
-    @Override
-    protected void onFabClick() {
-        // Handle specific detail action
     }
 }

@@ -25,7 +25,7 @@ public class AccountFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupHeader(view, R.string.account, false);
+        setupBalanceSelector(view, "Ví cá nhân", "1.200.000", false);
     }
 
     @Override
@@ -35,7 +35,6 @@ public class AccountFragment extends BaseFragment {
 
     @Override
     protected void onFabClick() {
-        // Thực hiện hành động chuyển khoản
         Toast.makeText(getContext(), "Mở màn hình chuyển khoản", Toast.LENGTH_SHORT).show();
     }
 }

@@ -6,7 +6,6 @@
     android:layout_height="@dimen/spacing_header_title_height"
     android:background="?attr/selectableItemBackground">
 
-    <!-- Hộp cứng: Chặn phần margin top 40dp -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_top"
         android:layout_width="wrap_content"
@@ -14,9 +13,8 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="@dimen/spacing_header_topmargin" />
 
-    <!-- Cụm text căn giữa tuyệt đối -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
@@ -25,13 +23,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/guideline_top">
 
-        <!-- Dòng phụ cố định chiều cao 20dp -->
+        <!-- Dòng phụ: Cố định 20dp -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="@dimen/header_sub_line_height"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:orientation="horizontal">
-
             <TextView
                 android:id="@+id/tv_account_name"
                 android:layout_width="wrap_content"
@@ -39,7 +36,6 @@
                 android:text="Tổng cộng"
                 android:textColor="@color/colorOnBackground"
                 android:textSize="14sp" />
-
             <ImageView
                 android:id="@+id/iv_arrow_down"
                 android:layout_width="16dp"
@@ -49,16 +45,20 @@
                 app:tint="#333333" />
         </LinearLayout>
 
-        <!-- Tiêu đề chính (Số tiền): CỐ ĐỊNH CHIỀU CAO 40DP -->
-        <TextView
-            android:id="@+id/tv_total_amount"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:gravity="center"
-            android:text="200.000"
-            android:textColor="@color/colorOnBackground"
-            android:textSize="28sp"
-            android:textStyle="bold" />
+        <!-- Dòng chính: Cố định 40dp và dùng RelativeLayout để khớp 100% cấu trúc file Title -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+            <TextView
+                android:id="@+id/tv_total_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="200.000"
+                android:textColor="@color/colorOnBackground"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

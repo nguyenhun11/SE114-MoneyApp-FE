@@ -10,6 +10,14 @@
     <dimen name="spacing_large">24dp</dimen>
     <dimen name="spacing_extra_large">40dp</dimen>
 
+    <dimen name="spacing_header_topmargin">40dp</dimen>
+    <dimen name="spacing_header_title_height">100dp</dimen>
+    <dimen name="spacing_header_height_small">120dp</dimen>
+    <dimen name="spacing_header_height_large">200dp</dimen>
+
+    <!-- Chiều cao cố định cho dòng phụ (Tổng cộng/Placeholder) -->
+    <dimen name="header_sub_line_height">20dp</dimen>
+
     <dimen name="radius_card">45dp</dimen>
     <dimen name="radius_header">45dp</dimen>
     <dimen name="radius_button">12dp</dimen>
