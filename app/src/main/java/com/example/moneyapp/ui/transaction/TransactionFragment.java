@@ -4,9 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.BaseFragment;
 
@@ -22,7 +23,17 @@ public class TransactionFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupHeader(view, R.string.transaction, false);
+        // Header for Transaction Fragment
+        setupHeader(view, "Giao dịch", false);
 
+        // Sử dụng hàm dùng chung từ BaseFragment cho Tabs
+        setupIncomeExpenseTabs(view, isExpense -> {
+            // Xử lý logic khi chuyển tab trong TransactionFragment
+            if (isExpense) {
+                // Hiển thị danh sách chi tiêu
+            } else {
+                // Hiển thị danh sách thu nhập
+            }
+        });
     }
 }
