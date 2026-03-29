@@ -11,56 +11,63 @@ app/src/main/java/com/example/moneyapp/
 ├── api/            # Kết nối API và Retrofit
 ├── model/          # Các lớp dữ liệu
 ├── ui/             # Giao diện người dùng
-│   ├── home/       # Fragment Trang chủ
-│   ├── profile/    # Fragment Hồ sơ cá nhân
-│   ├── statistics/ # Fragment Thống kê
-│   ├── transaction/# Fragment Giao dịch
-│   └── MainActivity.java
-└── utils/          # Các lớp tiện ích (Helper classes)
-app/src/main/res/
-├── layout/         # Các tệp giao diện XML
-├── menu/           # Định nghĩa menu (bottom_nav_menu.xml)
-├── drawable/       # Các icon và hình ảnh
-└── values/         # Colors, Strings, Styles
+│   ├── MainActivity.java    # [1] Activity chính điều phối Navigation
+│   ├── MainUIHandler.java   # [2] Xử lý UI tập trung (FAB, BottomNav, Popup)
+│   ├── BaseFragment.java    # [3] Fragment cơ sở cho mọi màn hình
+│   ├── SplashActivity.java  # [4] Màn hình chào và kiểm tra đăng nhập
+│   ├── home/                # Trang chủ
+│   ├── account/             # Tài khoản
+│   ├── transaction/         # Giao dịch
+│   └── ...                  # Các phân hệ UI khác (auth, profile, statistics...)
+└── utils/          # Các lớp tiện ích (CurrencyFormatter, DateTimeUtils...)
 ```
 
-## Chức năng
+## Kiến trúc UI chính (4 File quan trọng trong package `ui`)
 
-- **Trang chủ (Home):** Tổng quan về số dư, thống kê thu nhập và chi tiêu trong 1 khoảng thời gian theo hạng mục, tài khoản.
-- **Giao dịch (Transaction):** Ghi chép các khoản thu chi, lọc theo thời gian, tài khoản, hạng mục.
-- **Tài khoản (Accounts)**: Các tài khoản ngân hàng, tiền mặt, tiền điện tử,... Có thể bao gồm hoặc không vào tổng số dư. Chuyển tiền qua lại giữa các tài khoản.
-- **Hạng mục (Categories)**: Sửa đổi danh sách hạng mục thu, thi, icon, màu sắc.
-- **Thống kê (Statistics):** Thống kê thu nhập, chi tiêu, số dư thành biểu đồ cột trong nhiều khoảng thời gian gần đây.
-- **Hồ sơ (Profile):** Quản lý thông tin cá nhân và cài đặt ứng dụng.
-  - Ngôn ngữ
-  - Tài khoản mặc định khi thêm giao dịch.
-  - Đơn vị thời gian mặc định, ngày bắt đầu tuần (thứ 2, chủ nhật)
-  - Đơn vị tiền mặc định (VND, USD) và đơn vị số (000 VND)
-  - Tài khoản hiển thị số dư mặc định (tổng cộng, tiền mặt,...)
-- **Dữ liệu:** 
-  - Đăng nhập, đăng ký
-  - Xuất, nhập excel để backup dữ liệu
-  - Xóa tài khoản
+Dự án tuân thủ mô hình **Single Activity**, trong đó 4 file sau đây đóng vai trò nền tảng:
 
-## Công nghệ sử dụng
+1. **`MainActivity.java`**: 
+   - Đóng vai trò là "Host" (vật chủ) duy nhất chứa `NavHostFragment`.
+   - Cung cấp các phương thức public như `setBottomNavigationVisibility()` và `updateFAB()` để các Fragment con có thể điều khiển giao diện chung.
 
-- **Android SDK:** Java/Kotlin
-- **UI Components:** Material Design, ConstraintLayout, BottomNavigationView
-- **Navigation:** Jetpack Navigation Component
-- **Networking:** Retrofit (dự kiến)
+2. **`MainUIHandler.java`**:
+   - Tách biệt logic xử lý giao diện khỏi Activity. 
+   - Tự động lắng nghe sự thay đổi màn hình (`DestinationChangedListener`) để ẩn/hiện BottomNav hoặc đổi trạng thái Menu.
+   - Quản lý các Popup dùng chung (như menu "Thêm" hoặc "Thêm nữa").
 
-## Cấu trúc giao diện
+3. **`BaseFragment.java`**:
+   - Mọi Fragment trong dự án (Home, Transaction, Detail...) **bắt buộc** kế thừa từ đây.
+   - Giúp đồng bộ hóa UI: Fragment con chỉ cần ghi đè (override) `getFabIcon()` hoặc `shouldShowBottomNavigation()` để thay đổi trạng thái giao diện mà không cần viết code xử lý phức tạp.
 
-- `activity_main.xml`: Giao diện chính chứa `FragmentContainerView` và `BottomNavigationView`.
-- `fragment_home.xml`: Giao diện hiển thị thông tin tổng quan.
-- `bottom_nav_menu.xml`: Menu điều hướng phía dưới.
+4. **`SplashActivity.java`**:
+   - Điểm đầu vào của ứng dụng. Xử lý logic khởi tạo, kiểm tra token đăng nhập và chuyển hướng người dùng vào màn hình chính hoặc màn hình đăng nhập.
 
-## Cơ sở dữ liệu
+## Cách sử dụng BaseFragment cho thành viên mới
 
-(Đang cập nhật - Dự kiến sử dụng Room Database hoặc Firebase)
+Để tạo một màn hình mới, hãy kế thừa `BaseFragment`:
+
+```java
+public class MyNewFragment extends BaseFragment {
+    
+    @Override
+    protected int getFabIcon() {
+        return R.drawable.ic_plus; // Đổi icon FAB
+    }
+
+    @Override
+    protected boolean shouldShowBottomNavigation() {
+        return false; // Ẩn thanh điều hướng dưới nếu cần
+    }
+
+    @Override
+    protected void onFabClick() {
+        // Xử lý sự kiện khi nhấn nút FAB
+    }
+}
+```
 
 ## Quy định làm việc
-- Mỗi thành viên khi làm chức năng mới phải tạo nhánh riêng tên feat/ten-chuc-nang
-- Trước khi push code, hãy pull về trước
-- Nhánh làm việc chính là nhánh main
-- Liên hệ Hung khi gặp lỗi
+- Mỗi thành viên khi làm chức năng mới phải tạo nhánh riêng tên `feat/ten-chuc-nang`.
+- Luôn kế thừa `BaseFragment` để đảm bảo logic FAB và BottomNav hoạt động đúng.
+- Sử dụng `layout_header_common` cho phần đầu trang của các Fragment để đồng nhất UI.
+- Các hàm tiện ích dùng chung (định dạng tiền, ngày tháng) hãy đặt trong package `utils`.

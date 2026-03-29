@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.auth.AuthActivity;
@@ -15,6 +16,9 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Force light mode
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
