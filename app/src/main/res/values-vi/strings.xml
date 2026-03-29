@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Money App</string>
+    <string name="action_settings">Cài đặt</string>
+    <string name="next">Tiếp</string>
+    <string name="previous">Trước</string>
+    <string name="home">Trang chủ</string>
+    <string name="transaction">Giao dịch</string>
+    <string name="account">Tài khoản</string>
+    <string name="more">Thêm</string>
+    <string name="expense">Chi tiêu</string>
+    <string name="income">Thu nhập</string>
+</resources>
