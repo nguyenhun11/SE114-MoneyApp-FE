@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_app_light">
+    android:background="@color/colorBackground">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:backgroundTint="@color/colorSurface"
-        app:elevation="16dp"
+        app:elevation="0dp"
         app:fabAlignmentMode="center"
         app:fabCradleMargin="8dp"
         app:fabCradleRoundedCornerRadius="24dp"
@@ -39,7 +39,7 @@
             app:itemIconTint="@color/nav_item_color"
             app:itemTextColor="@color/nav_item_color"
             app:itemActiveIndicatorStyle="@null"
-            android:minHeight="0dp"
+            android:minHeight="10dp"
             app:itemPaddingTop="12dp"
             app:itemPaddingBottom="8dp" />
 
@@ -50,14 +50,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="Thêm mới"
-        app:backgroundTint="@color/primary_purple"
+        app:backgroundTint="@color/colorPrimary"
         app:elevation="12dp"
         app:pressedTranslationZ="16dp"
         app:borderWidth="0dp"
         android:layout_gravity="bottom|center_horizontal"
         app:fabCustomSize="72dp"
         app:maxImageSize="36dp"
-        android:layout_marginBottom="44dp"
+        android:layout_marginBottom="40dp"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialComponents.FloatingActionButton"
         app:srcCompat="@drawable/ic_add_white"
         app:tint="@android:color/white" />
