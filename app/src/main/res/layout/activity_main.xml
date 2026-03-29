@@ -36,7 +36,7 @@
         android:contentDescription="Thêm mới"
         app:backgroundTint="@color/colorPrimary"
         app:borderWidth="0dp"
-        app:elevation="16dp"
+        app:elevation="1dp"
         app:pressedTranslationZ="24dp"
         app:fabCustomSize="72dp"
         app:maxImageSize="36dp"
