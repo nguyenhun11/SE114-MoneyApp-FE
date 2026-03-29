@@ -1,10 +1,14 @@
 package com.example.moneyapp.ui;
 
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -12,6 +16,34 @@ import androidx.navigation.Navigation;
 import com.example.moneyapp.R;
 
 public abstract class BaseFragment extends Fragment {
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        
+        // Cấu hình FAB khi fragment được hiển thị
+        if (getActivity() instanceof MainActivity) {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            mainActivity.updateFAB(getFabIcon(), v -> onFabClick());
+        }
+    }
+
+    /**
+     * Trả về icon cho FAB của fragment này. 
+     * Mặc định là dấu cộng trắng.
+     */
+    @DrawableRes
+    protected int getFabIcon() {
+        return R.drawable.ic_add_white;
+    }
+
+    /**
+     * Xử lý khi click vào FAB.
+     * Fragment con cần override để thực hiện hành động riêng.
+     */
+    protected void onFabClick() {
+        // Mặc định không làm gì hoặc thực hiện hành động chung
+    }
 
     protected void setupHeader(View view, String titleText, boolean showBackBtn) {
         TextView tvTitle = view.findViewById(R.id.tv_header_title);

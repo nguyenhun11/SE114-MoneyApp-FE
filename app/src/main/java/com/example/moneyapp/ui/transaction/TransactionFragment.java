@@ -23,9 +23,6 @@ public class TransactionFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Header for Transaction Fragment
-        setupHeader(view, "Giao dịch", false);
-
         // Sử dụng hàm dùng chung từ BaseFragment cho Tabs
         setupIncomeExpenseTabs(view, isExpense -> {
             // Xử lý logic khi chuyển tab trong TransactionFragment

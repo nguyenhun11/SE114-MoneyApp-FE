@@ -20,6 +20,6 @@ public class StatisticsFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupHeader(view, "Thống kê", true);
+        setupHeader(view, "Thống kê", false);
     }
 }

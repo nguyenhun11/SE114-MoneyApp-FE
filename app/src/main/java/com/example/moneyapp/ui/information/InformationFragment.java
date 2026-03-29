@@ -20,6 +20,6 @@ public class InformationFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupHeader(view, "Thông tin", true);
+        setupHeader(view, "Thông tin", false);
     }
 }

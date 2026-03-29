@@ -4,10 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.BaseFragment;
@@ -26,5 +26,16 @@ public class AccountFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         setupHeader(view, R.string.account, false);
+    }
+
+    @Override
+    protected int getFabIcon() {
+        return R.drawable.ic_transfer;
+    }
+
+    @Override
+    protected void onFabClick() {
+        // Thực hiện hành động chuyển khoản
+        Toast.makeText(getContext(), "Mở màn hình chuyển khoản", Toast.LENGTH_SHORT).show();
     }
 }

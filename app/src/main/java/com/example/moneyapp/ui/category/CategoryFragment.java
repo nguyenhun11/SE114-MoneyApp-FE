@@ -20,6 +20,6 @@ public class CategoryFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupHeader(view, "Hạng mục", true);
+        setupHeader(view, "Hạng mục", false);
     }
 }
