@@ -40,7 +40,20 @@
         android:id="@+id/profileFragment"
         android:name="com.example.moneyapp.ui.profile.ProfileFragment"
         android:label="Hồ sơ"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_profileFragment_to_changePasswordFragment"
+            app:destination="@id/changePasswordFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_informationFragment"
+            app:destination="@id/informationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.example.moneyapp.ui.profile.ChangePasswordFragment"
+        android:label="Thay đổi mật khẩu"
+        tools:layout="@layout/fragment_change_password" />
 
     <fragment
         android:id="@+id/statisticsFragment"
