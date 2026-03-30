@@ -28,7 +28,7 @@ public class ProfileFragment extends BaseFragment implements ProfileAdapter.OnOp
 
     @Override
     protected int getFabIcon() {
-        return 0; // Hide FAB on profile
+        return 0; // Hide FAB
     }
 
     @Override
@@ -46,17 +46,16 @@ public class ProfileFragment extends BaseFragment implements ProfileAdapter.OnOp
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Sử dụng hàm setupHeader từ BaseFragment để đồng bộ UI
-        setupHeader(view, "Hồ sơ", true);
+        // Header Title
+        TextView tvHeaderTitle = view.findViewById(R.id.tv_header_title);
+        if (tvHeaderTitle != null) tvHeaderTitle.setText("Hồ sơ");
 
-        // Setup RecyclerView cho các tùy chọn
+        // Setup RecyclerView
         RecyclerView rvOptions = view.findViewById(R.id.rv_profile_options);
-        if (rvOptions != null) {
-            ProfileAdapter adapter = new ProfileAdapter(getProfileOptions(), this);
-            rvOptions.setAdapter(adapter);
-        }
+        ProfileAdapter adapter = new ProfileAdapter(getProfileOptions(), this);
+        rvOptions.setAdapter(adapter);
 
-        // Hiển thị thông tin người dùng mẫu
+        // Mock User Data
         TextView tvName = view.findViewById(R.id.tv_profile_name);
         TextView tvEmail = view.findViewById(R.id.tv_profile_email);
         if (tvName != null) tvName.setText("Nguyễn Văn A");
@@ -67,7 +66,7 @@ public class ProfileFragment extends BaseFragment implements ProfileAdapter.OnOp
         List<ProfileOption> options = new ArrayList<>();
         options.add(new ProfileOption(OPTION_INFORMATION, R.drawable.ic_profile, "Thông tin ứng dụng"));
         options.add(new ProfileOption(OPTION_CHANGE_PASSWORD, R.drawable.ic_transfer, "Thay đổi mật khẩu"));
-        options.add(new ProfileOption(OPTION_LOGOUT, R.drawable.ic_back, "Đăng xuất"));
+        options.add(new ProfileOption(OPTION_LOGOUT, R.drawable.ic_back, "Đăng xuất")); // Dùng tạm ic_back quay ngược làm logout
         return options;
     }
 
