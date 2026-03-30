@@ -28,16 +28,14 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Sử dụng Button thay vì MaterialButton để tránh ClassCastException
         Button btnLogin = view.findViewById(R.id.btn_login);
         TextView tvGoToRegister = view.findViewById(R.id.tv_go_to_register);
+        TextView tvForgotPassword = view.findViewById(R.id.tv_forgot_password);
 
         if (btnLogin != null) {
             btnLogin.setOnClickListener(v -> {
-                // Save login state
                 SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
                 prefs.edit().putBoolean("isLoggedIn", true).apply();
-
                 startActivity(new Intent(requireActivity(), MainActivity.class));
                 requireActivity().finish();
             });
@@ -46,6 +44,12 @@ public class LoginFragment extends Fragment {
         if (tvGoToRegister != null) {
             tvGoToRegister.setOnClickListener(v -> {
                 Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_registerFragment);
+            });
+        }
+
+        if (tvForgotPassword != null) {
+            tvForgotPassword.setOnClickListener(v -> {
+                Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_forgotPasswordFragment);
             });
         }
     }
