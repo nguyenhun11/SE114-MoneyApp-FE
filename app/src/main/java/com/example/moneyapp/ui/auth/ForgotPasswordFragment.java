@@ -13,32 +13,30 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import com.example.moneyapp.R;
 
-public class RegisterFragment extends Fragment {
+public class ForgotPasswordFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_register, container, false);
+        return inflater.inflate(R.layout.fragment_forgot_password, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Đổi từ MaterialButton sang Button để tránh ClassCastException khi dùng AppCompatButton trong XML
-        Button btnRegister = view.findViewById(R.id.btn_register);
-        TextView tvGoToLogin = view.findViewById(R.id.tv_go_to_login);
+        Button btnSend = view.findViewById(R.id.btn_send_instructions);
+        TextView tvBack = view.findViewById(R.id.tv_back_to_login);
 
-        if (btnRegister != null) {
-            btnRegister.setOnClickListener(v -> {
-                // Giả lập đăng ký thành công
-                Toast.makeText(getContext(), "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
+        if (btnSend != null) {
+            btnSend.setOnClickListener(v -> {
+                Toast.makeText(getContext(), "Hướng dẫn đã được gửi đến email của bạn!", Toast.LENGTH_SHORT).show();
                 Navigation.findNavController(v).navigateUp();
             });
         }
 
-        if (tvGoToLogin != null) {
-            tvGoToLogin.setOnClickListener(v -> {
+        if (tvBack != null) {
+            tvBack.setOnClickListener(v -> {
                 Navigation.findNavController(v).navigateUp();
             });
         }

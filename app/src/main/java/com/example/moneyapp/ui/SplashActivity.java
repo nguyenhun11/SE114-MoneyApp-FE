@@ -3,8 +3,6 @@ package com.example.moneyapp.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -22,16 +20,22 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-            boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
+        // Đọc trạng thái đăng nhập từ SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
 
+        // Click nút "Tiếp tục"
+        findViewById(R.id.btn_continue).setOnClickListener(v -> {
+            Intent intent;
             if (isLoggedIn) {
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                // Nếu đã đăng nhập, chuyển vào MainActivity
+                intent = new Intent(SplashActivity.this, MainActivity.class);
             } else {
-                startActivity(new Intent(SplashActivity.this, AuthActivity.class));
+                // Nếu chưa đăng nhập, chuyển vào AuthActivity (Login/Register)
+                intent = new Intent(SplashActivity.this, AuthActivity.class);
             }
+            startActivity(intent);
             finish();
-        }, 2000);
+        });
     }
 }

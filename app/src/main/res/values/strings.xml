@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name">Money App</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
@@ -11,6 +11,6 @@
     <string name="more">More</string>
     <string name="expense">Expense</string>
     <string name="income">Income</string>
-
+    <string name="general">Chung</string>
 
 </resources>

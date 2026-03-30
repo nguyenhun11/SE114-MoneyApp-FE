@@ -24,19 +24,17 @@ public class TransactionFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Sử dụng hàm dùng chung từ BaseFragment cho Tabs
+        setupBalanceSelector(view, "Tổng cộng", "2.500.000", true);
         setupIncomeExpenseTabs(view, isExpense -> {
-            // Xử lý logic khi chuyển tab trong TransactionFragment
-            if (isExpense) {
-                // Hiển thị danh sách chi tiêu
-            } else {
-                // Hiển thị danh sách thu nhập
-            }
         });
 
-        // Use the specific TextView to navigate to detail
         view.findViewById(R.id.tv_goto_detail).setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.transactionDetailFragment);
         });
+    }
+
+    @Override
+    protected void onFabClick() {
+        Navigation.findNavController(requireView()).navigate(R.id.addTransactionFragment);
     }
 }
