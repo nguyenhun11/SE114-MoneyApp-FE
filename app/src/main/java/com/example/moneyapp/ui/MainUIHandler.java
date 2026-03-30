@@ -70,7 +70,9 @@ public class MainUIHandler {
 
     public void setBottomNavigationVisibility(boolean visible) {
         if (bottomNav != null) {
-            bottomNav.setVisibility(visible ? View.VISIBLE : View.GONE);
+            // Thay vì GONE (loại bỏ khỏi layout), sử dụng INVISIBLE để giữ nguyên vị trí các View khác
+            // nhưng làm cho thanh điều hướng trở nên trong suốt/không nhìn thấy.
+            bottomNav.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
