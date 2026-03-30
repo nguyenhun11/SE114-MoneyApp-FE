@@ -106,44 +106,96 @@ public abstract class BaseFragment extends Fragment {
 
     //region Tabs Setup
     protected void setupIncomeExpenseTabs(View view, TabSwitchListener listener) {
-        TextView tvTabLeft = view.findViewById(R.id.tv_tab_left);
-        TextView tvTabRight = view.findViewById(R.id.tv_tab_right);
+        TextView tvTabExpense = view.findViewById(R.id.tv_tab_expense);
+        TextView tvTabIncome = view.findViewById(R.id.tv_tab_income);
         View animatedIndicator = view.findViewById(R.id.view_tab_indicator);
 
-        if (tvTabLeft == null || tvTabRight == null || animatedIndicator == null) return;
+        if (tvTabExpense == null || tvTabIncome == null || animatedIndicator == null) return;
 
-        tvTabLeft.setOnClickListener(v -> handleTabSwitch(true, tvTabLeft, tvTabRight, animatedIndicator, listener));
-        tvTabRight.setOnClickListener(v -> handleTabSwitch(false, tvTabLeft, tvTabRight, animatedIndicator, listener));
+        tvTabExpense.setOnClickListener(v -> handleTabSwitch(true, tvTabExpense, tvTabIncome, animatedIndicator, listener));
+        tvTabIncome.setOnClickListener(v -> handleTabSwitch(false, tvTabExpense, tvTabIncome, animatedIndicator, listener));
     }
 
-    private void handleTabSwitch(boolean isLeftTab, TextView tvLeft, TextView tvRight, View animatedIndicator, TabSwitchListener listener) {
+    private void handleTabSwitch(boolean isExpense, TextView tvExpense, TextView tvIncome, View animatedIndicator, TabSwitchListener listener) {
         int colorSelected = ContextCompat.getColor(requireContext(), R.color.tabSelectedColor);
         int colorUnselected = ContextCompat.getColor(requireContext(), R.color.colorOnSurfaceVariant);
 
-        if (isLeftTab) {
-            tvLeft.setTextColor(colorSelected);
-            tvLeft.setTypeface(null, Typeface.BOLD);
-            tvRight.setTextColor(colorUnselected);
-            tvRight.setTypeface(null, Typeface.NORMAL);
+        if (isExpense) {
+            tvExpense.setTextColor(colorSelected);
+            tvExpense.setTypeface(null, Typeface.BOLD);
+            tvIncome.setTextColor(colorUnselected);
+            tvIncome.setTypeface(null, Typeface.NORMAL);
 
             animatedIndicator.animate().translationX(0).setDuration(250).start();
         } else {
-            tvRight.setTextColor(colorSelected);
-            tvRight.setTypeface(null, Typeface.BOLD);
-            tvLeft.setTextColor(colorUnselected);
-            tvLeft.setTypeface(null, Typeface.NORMAL);
+            tvIncome.setTextColor(colorSelected);
+            tvIncome.setTypeface(null, Typeface.BOLD);
+            tvExpense.setTextColor(colorUnselected);
+            tvExpense.setTypeface(null, Typeface.NORMAL);
 
-            float distance = tvRight.getX() - tvLeft.getX();
+            float distance = tvIncome.getX() - tvExpense.getX();
             animatedIndicator.animate().translationX(distance).setDuration(250).start();
         }
 
         if (listener != null) {
-            listener.onTabSwitched(isLeftTab);
+            listener.onTabSwitched(isExpense);
+        }
+    }
+
+    /**
+     * Cấu hình 3 tabs: Chung, Chi, Thu
+     */
+    protected void setupThreeTabs(View view, ThreeTabSwitchListener listener) {
+        TextView tvGeneral = view.findViewById(R.id.tv_tab_general);
+        TextView tvExpense = view.findViewById(R.id.tv_tab_expense);
+        TextView tvIncome = view.findViewById(R.id.tv_tab_income);
+        View animatedIndicator = view.findViewById(R.id.view_tab_indicator);
+
+        if (tvGeneral == null || tvExpense == null || tvIncome == null || animatedIndicator == null) return;
+
+        tvGeneral.setOnClickListener(v -> handleThreeTabSwitch(0, tvGeneral, tvExpense, tvIncome, animatedIndicator, listener));
+        tvExpense.setOnClickListener(v -> handleThreeTabSwitch(1, tvGeneral, tvExpense, tvIncome, animatedIndicator, listener));
+        tvIncome.setOnClickListener(v -> handleThreeTabSwitch(2, tvGeneral, tvExpense, tvIncome, animatedIndicator, listener));
+    }
+
+    private void handleThreeTabSwitch(int index, TextView tv0, TextView tv1, TextView tv2, View animatedIndicator, ThreeTabSwitchListener listener) {
+        int colorSelected = ContextCompat.getColor(requireContext(), R.color.tabSelectedColor);
+        int colorUnselected = ContextCompat.getColor(requireContext(), R.color.colorOnSurfaceVariant);
+
+        TextView[] tabs = {tv0, tv1, tv2};
+        for (int i = 0; i < tabs.length; i++) {
+            if (i == index) {
+                tabs[i].setTextColor(colorSelected);
+                tabs[i].setTypeface(null, Typeface.BOLD);
+            } else {
+                tabs[i].setTextColor(colorUnselected);
+                tabs[i].setTypeface(null, Typeface.NORMAL);
+            }
+        }
+
+        float translationX = 0;
+        if (index == 1) {
+            translationX = tv1.getX() - tv0.getX();
+        } else if (index == 2) {
+            translationX = tv2.getX() - tv0.getX();
+        }
+        
+        animatedIndicator.animate().translationX(translationX).setDuration(250).start();
+
+        if (listener != null) {
+            listener.onTabSwitched(index);
         }
     }
 
     public interface TabSwitchListener {
-        void onTabSwitched(boolean isLeftTab);
+        void onTabSwitched(boolean isExpense);
+    }
+
+    public interface ThreeTabSwitchListener {
+        /**
+         * @param index 0: General, 1: Expense, 2: Income
+         */
+        void onTabSwitched(int index);
     }
     //endregion
 }

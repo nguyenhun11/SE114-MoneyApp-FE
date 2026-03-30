@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.BaseFragment;
 
@@ -22,5 +24,14 @@ public class StatisticsFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         setupHeader(view, "Thống kê", false);
+        
+        setupThreeTabs(view, index -> {
+            // index 0: Chung, 1: Chi, 2: Thu
+        });
+    }
+
+    @Override
+    protected boolean shouldShowBottomNavigation() {
+        return true;
     }
 }

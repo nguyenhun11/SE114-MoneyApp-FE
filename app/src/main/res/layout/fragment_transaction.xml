@@ -14,7 +14,7 @@
 
     <include
         android:id="@+id/layout_balance"
-        layout="@layout/layout_account_balance_selector"
+        layout="@layout/layout_header_account_selector"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent" />
