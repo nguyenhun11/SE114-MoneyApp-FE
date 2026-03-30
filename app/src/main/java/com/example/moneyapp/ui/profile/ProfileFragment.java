@@ -28,7 +28,7 @@ public class ProfileFragment extends BaseFragment implements ProfileAdapter.OnOp
 
     @Override
     protected int getFabIcon() {
-        return 0; // Hide FAB
+        return 0; // Hide FAB on profile
     }
 
     @Override
@@ -46,16 +46,17 @@ public class ProfileFragment extends BaseFragment implements ProfileAdapter.OnOp
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Header Title
-        TextView tvHeaderTitle = view.findViewById(R.id.tv_header_title);
-        if (tvHeaderTitle != null) tvHeaderTitle.setText("Hồ sơ");
+        // Sử dụng hàm setupHeader từ BaseFragment để đồng bộ UI
+        setupHeader(view, "Hồ sơ", true);
 
-        // Setup RecyclerView
+        // Setup RecyclerView cho các tùy chọn
         RecyclerView rvOptions = view.findViewById(R.id.rv_profile_options);
-        ProfileAdapter adapter = new ProfileAdapter(getProfileOptions(), this);
-        rvOptions.setAdapter(adapter);
+        if (rvOptions != null) {
+            ProfileAdapter adapter = new ProfileAdapter(getProfileOptions(), this);
+            rvOptions.setAdapter(adapter);
+        }
 
-        // Mock User Data
+        // Hiển thị thông tin người dùng mẫu
         TextView tvName = view.findViewById(R.id.tv_profile_name);
         TextView tvEmail = view.findViewById(R.id.tv_profile_email);
         if (tvName != null) tvName.setText("Nguyễn Văn A");
@@ -66,7 +67,7 @@ public class ProfileFragment extends BaseFragment implements ProfileAdapter.OnOp
         List<ProfileOption> options = new ArrayList<>();
         options.add(new ProfileOption(OPTION_INFORMATION, R.drawable.ic_profile, "Thông tin ứng dụng"));
         options.add(new ProfileOption(OPTION_CHANGE_PASSWORD, R.drawable.ic_transfer, "Thay đổi mật khẩu"));
-        options.add(new ProfileOption(OPTION_LOGOUT, R.drawable.ic_back, "Đăng xuất")); // Dùng tạm ic_back quay ngược làm logout
+        options.add(new ProfileOption(OPTION_LOGOUT, R.drawable.ic_back, "Đăng xuất"));
         return options;
     }
 

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.BaseFragment;
@@ -23,14 +24,14 @@ public class HomeFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Sử dụng hàm dùng chung từ BaseFragment
+        setupBalanceSelector(view, "Tổng cộng", "2.500.000", true);
         setupIncomeExpenseTabs(view, isExpense -> {
-            // Xử lý logic riêng của HomeFragment khi chuyển tab nếu cần
-            if (isExpense) {
-                // Show expense data
-            } else {
-                // Show income data
-            }
+            // Logic chuyển tab
         });
+    }
+
+    @Override
+    protected void onFabClick() {
+        Navigation.findNavController(requireView()).navigate(R.id.addTransactionFragment);
     }
 }
