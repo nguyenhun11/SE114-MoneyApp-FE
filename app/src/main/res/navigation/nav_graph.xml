@@ -29,6 +29,12 @@
         android:label="Chi tiết giao dịch"
         tools:layout="@layout/fragment_transaction_detail" />
 
+    <fragment
+        android:id="@+id/addTransactionFragment"
+        android:name="com.example.moneyapp.ui.transaction.AddTransactionFragment"
+        android:label="Giao dịch mới"
+        tools:layout="@layout/fragment_transaction_add" />
+
     <!-- Secondary fragments from More menu -->
     <fragment
         android:id="@+id/profileFragment"
