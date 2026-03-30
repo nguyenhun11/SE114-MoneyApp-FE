@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.MainActivity;
-import com.google.android.material.button.MaterialButton;
 
 public class LoginFragment extends Fragment {
 
@@ -28,20 +28,25 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        MaterialButton btnLogin = view.findViewById(R.id.btn_login);
+        // Sử dụng Button thay vì MaterialButton để tránh ClassCastException
+        Button btnLogin = view.findViewById(R.id.btn_login);
         TextView tvGoToRegister = view.findViewById(R.id.tv_go_to_register);
 
-        btnLogin.setOnClickListener(v -> {
-            // Save login state
-            SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-            prefs.edit().putBoolean("isLoggedIn", true).apply();
+        if (btnLogin != null) {
+            btnLogin.setOnClickListener(v -> {
+                // Save login state
+                SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+                prefs.edit().putBoolean("isLoggedIn", true).apply();
 
-            startActivity(new Intent(requireActivity(), MainActivity.class));
-            requireActivity().finish();
-        });
+                startActivity(new Intent(requireActivity(), MainActivity.class));
+                requireActivity().finish();
+            });
+        }
 
-        tvGoToRegister.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_registerFragment);
-        });
+        if (tvGoToRegister != null) {
+            tvGoToRegister.setOnClickListener(v -> {
+                Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_registerFragment);
+            });
+        }
     }
 }
