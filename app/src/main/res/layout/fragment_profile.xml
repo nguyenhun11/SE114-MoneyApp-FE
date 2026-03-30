@@ -24,6 +24,20 @@
             android:layout_marginBottom="32dp"/>
 
         <TextView
+            android:id="@+id/tv_change_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="Thay đổi mật khẩu"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
             android:id="@+id/tv_logout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
