@@ -1,4 +1,4 @@
-package com.example.moneyapp.model;
+package com.example.moneyapp.data.local.entities;
 
 public class ProfileOption {
     private int id;

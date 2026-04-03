@@ -1,4 +1,4 @@
-package com.example.moneyapp.model;
+package com.example.moneyapp.data.local.entities;
 
 import java.io.Serializable;
 
