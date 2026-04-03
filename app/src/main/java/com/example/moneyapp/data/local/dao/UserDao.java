@@ -16,6 +16,9 @@ public interface UserDao {
     @Query("SELECT * FROM users WHERE id = :userId LIMIT 1")
     User getUserById(String userId);
 
+    @Query("select * from users where name = :username limit 1")
+    User getUserByUsername(String username);
+
     @Update
     void updateUser(User user);
 
