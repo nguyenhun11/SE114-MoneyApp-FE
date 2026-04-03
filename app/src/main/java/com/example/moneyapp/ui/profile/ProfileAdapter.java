@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
-import com.example.moneyapp.data.local.entities.ProfileOption;
+import com.example.moneyapp.data.local.model.ProfileOption;
 import java.util.List;
 
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder> {
