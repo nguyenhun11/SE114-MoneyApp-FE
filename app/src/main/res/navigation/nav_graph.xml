@@ -3,26 +3,80 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/homeFragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.example.moneyapp.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
+        android:id="@+id/homeFragment"
+        android:name="com.example.moneyapp.ui.home.HomeFragment"
+        android:label="@string/home"
+        tools:layout="@layout/fragment_home" />
 
-        <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
-    </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.example.moneyapp.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
+        android:id="@+id/transactionFragment"
+        android:name="com.example.moneyapp.ui.transaction.TransactionFragment"
+        android:label="@string/transaction"
+        tools:layout="@layout/fragment_transaction" />
 
+    <fragment
+        android:id="@+id/accountFragment"
+        android:name="com.example.moneyapp.ui.account.AccountFragment"
+        android:label="@string/account"
+        tools:layout="@layout/fragment_account" />
+
+    <fragment
+        android:id="@+id/transactionDetailFragment"
+        android:name="com.example.moneyapp.ui.transaction.TransactionDetailFragment"
+        android:label="Chi tiết giao dịch"
+        tools:layout="@layout/fragment_transaction_detail" />
+
+    <fragment
+        android:id="@+id/addTransactionFragment"
+        android:name="com.example.moneyapp.ui.transaction.AddTransactionFragment"
+        android:label="Giao dịch mới"
+        tools:layout="@layout/fragment_transaction_add" />
+
+    <!-- Secondary fragments from More menu -->
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.moneyapp.ui.profile.ProfileFragment"
+        android:label="Hồ sơ"
+        tools:layout="@layout/fragment_profile">
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/action_profileFragment_to_changePasswordFragment"
+            app:destination="@id/changePasswordFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_informationFragment"
+            app:destination="@id/informationFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.example.moneyapp.ui.profile.ChangePasswordFragment"
+        android:label="Thay đổi mật khẩu"
+        tools:layout="@layout/fragment_change_password" />
+
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="com.example.moneyapp.ui.statistics.StatisticsFragment"
+        android:label="Thống kê"
+        tools:layout="@layout/fragment_statistics" />
+
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="com.example.moneyapp.ui.category.CategoryFragment"
+        android:label="Hạng mục"
+        tools:layout="@layout/fragment_category" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.moneyapp.ui.settings.SettingsFragment"
+        android:label="Cài đặt"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/informationFragment"
+        android:name="com.example.moneyapp.ui.information.InformationFragment"
+        android:label="Thông tin"
+        tools:layout="@layout/fragment_information" />
+
 </navigation>
