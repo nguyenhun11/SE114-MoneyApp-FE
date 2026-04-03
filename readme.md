@@ -1,73 +1,91 @@
-# Quản lý chi tiêu
+# 💰 MoneyApp - Quản lý tài chính cá nhân
 
-MoneyApp là ứng dụng quản lý tài chính cá nhân giúp người dùng theo dõi thu nhập và chi tiêu một
-cách hiệu quả.
+MoneyApp là ứng dụng giúp người dùng theo dõi thu nhập, chi tiêu và quản lý tài chính một cách hiệu quả. Dự án được xây dựng theo kiến trúc **MVVM (Model-View-ViewModel)** chuẩn mực trên Android Native (Java).
 
-## Cấu trúc dự án
+---
+
+## 🏗 Kiến trúc dự án (Architecture)
+
+Dự án chia làm 3 tầng chính để đảm bảo tính dễ bảo trì và mở rộng:
+
+### 1. Tầng Dữ liệu (Data Layer - `data/`)
+Là "Single Source of Truth" của ứng dụng, quản lý mọi nguồn dữ liệu.
+- **`local/`**: Quản lý Database SQLite (Room).
+    - `entity/`: Các **Entity** (đại diện cho bảng trong DB).
+    - `dao/`: Các interface định nghĩa câu lệnh truy vấn.
+- **`remote/`**: Quản lý kết nối mạng (Retrofit).
+    - `api/`: Định nghĩa các API Endpoints.
+    - `request/` & `response/`: Các đối tượng trao đổi dữ liệu với Server.
+- **`repository/`**: Tầng điều phối dữ liệu. Quyết định lấy dữ liệu từ API hay Local DB và xử lý logic gộp dữ liệu.
+### 2. Tầng ViewModel (`viewmodel/` hoặc theo `ui/feature/`)
+- Xử lý logic nghiệp vụ (Business Logic).
+- Giữ trạng thái của UI (UI State)
+- **Quy tắc**: Cung cấp phương thức cho View, nhận dữ liệu từ Data, không để View gọi trực tiếp Data
+
+### 3. Tầng Giao diện (View Layer - `ui/`)
+- Chỉ làm nhiệm vụ hiển thị, điều hướng dữ liệu và gửi sự kiện từ người dùng đến ViewModel.
+- **`BaseFragment.java`**: Fragment cha cung cấp các tiện ích dùng chung (Header, Tabs, FAB).
+- **`MainActivity.java`**: Single Activity điều phối Navigation.
+- **`MainUIHandler.java`**: Xử lý logic hiển thị các thành phần UI hệ thống (BottomBar, FAB).
+
+---
+
+## 📂 Cấu trúc thư mục chi tiết
 
 ```text
 app/src/main/java/com/example/moneyapp/
-├── adapter/        # Các Adapter cho RecyclerView
-├── api/            # Kết nối API và Retrofit
-├── model/          # Các lớp dữ liệu
-├── ui/             # Giao diện người dùng
-│   ├── MainActivity.java    # [1] Activity chính điều phối Navigation
-│   ├── MainUIHandler.java   # [2] Xử lý UI tập trung (FAB, BottomNav, Popup)
-│   ├── BaseFragment.java    # [3] Fragment cơ sở cho mọi màn hình
-│   ├── SplashActivity.java  # [4] Màn hình chào và kiểm tra đăng nhập
-│   ├── home/                # Trang chủ
-│   ├── account/             # Tài khoản
-│   ├── transaction/         # Giao dịch
-│   └── ...                  # Các phân hệ UI khác (auth, profile, statistics...)
-└── utils/          # Các lớp tiện ích (CurrencyFormatter, DateTimeUtils...)
+├── data/
+│   ├── local/          # Database (Room)
+│   │   ├── dao/        # Data Access Objects
+│   │   └── entity/      # Entities (Bảng database)
+│   ├── remote/         # Network (Retrofit)
+│   │   ├── api/        # API Interfaces
+│   │   ├── request/    # Đối tượng gửi lên API
+│   │   └── response/    # Đối tượng nhận về từ API
+│   └── repository/     # Repositories (Điều phối dữ liệu)
+│   
+├── ui/                 # View Layer (Phân chia theo tính năng)
+│   ├── home/           # HomeFragment & HomeViewModel
+│   ├── auth/           # Login, Register, Forgot Password
+│   ├── transaction/    # Quản lý giao dịch
+│   ├── .../            # Các thành phần khác
+│   ├── BaseFragment.java
+│   └── MainActivity.java
+├── util/               # Tiện ích (Format tiền, ngày tháng, v.v.)
+└── viewmodel/          # Chứa ViewModel
 ```
 
-## Kiến trúc UI chính (4 File quan trọng trong package `ui`)
+---
 
-Dự án tuân thủ mô hình **Single Activity**, trong đó 4 file sau đây đóng vai trò nền tảng:
+## 🔄 Quy trình truy cập dữ liệu (Data Flow)
 
-1. **`MainActivity.java`**: 
-   - Đóng vai trò là "Host" (vật chủ) duy nhất chứa `NavHostFragment`.
-   - Cung cấp các phương thức public như `setBottomNavigationVisibility()` và `updateFAB()` để các Fragment con có thể điều khiển giao diện chung.
+Tuân thủ luồng dữ liệu **một chiều**:
+1. **User Interaction**: Người dùng thao tác trên Fragment.
+2. **View -> ViewModel**: Fragment gọi hàm xử lý trong ViewModel.
+3. **ViewModel -> Repository**: ViewModel yêu cầu dữ liệu từ Repository.
+4. **Repository -> Remote/Local**: Repository lấy dữ liệu từ API hoặc Database.
+5. **Data -> ViewModel**: Repository trả dữ liệu về (thường qua Callback hoặc trực tiếp).
+6. **ViewModel -> View**: ViewModel cập nhật kết quả vào `LiveData`.
+7. **UI Update**: Fragment `observe` LiveData và tự động cập nhật giao diện.
 
-2. **`MainUIHandler.java`**:
-   - Tách biệt logic xử lý giao diện khỏi Activity. 
-   - Tự động lắng nghe sự thay đổi màn hình (`DestinationChangedListener`) để ẩn/hiện BottomNav hoặc đổi trạng thái Menu.
-   - Quản lý các Popup dùng chung (như menu "Thêm" hoặc "Thêm nữa").
+---
 
-3. **`BaseFragment.java`**:
-   - Mọi Fragment trong dự án (Home, Transaction, Detail...) **bắt buộc** kế thừa từ đây.
-   - Giúp đồng bộ hóa UI: Fragment con chỉ cần ghi đè (override) `getFabIcon()` hoặc `shouldShowBottomNavigation()` để thay đổi trạng thái giao diện mà không cần viết code xử lý phức tạp.
+## 🛠 Hướng dẫn
 
-4. **`SplashActivity.java`**:
-   - Điểm đầu vào của ứng dụng. Xử lý logic khởi tạo, kiểm tra token đăng nhập và chuyển hướng người dùng vào màn hình chính hoặc màn hình đăng nhập.
+### 1. Cách tạo màn hình mới (ví dụ: Quản lý Ví)
+- **Data**: Tạo `WalletEntity` trong `local/model` và `WalletDao`.
+- **Repository**: Tạo `WalletRepository` để xử lý logic lấy/lưu ví.
+- **ViewModel**: Tạo `WalletViewModel`, gọi Repository và cung cấp `LiveData<List<Wallet>>`.
+- **View**: Tạo `WalletFragment` kế thừa `BaseFragment`, sử dụng `setupHeader` và `observe` dữ liệu.
 
-## Cách sử dụng BaseFragment cho thành viên mới
+### 2. Sử dụng BaseFragment
+Kế thừa `BaseFragment` để tận dụng các hàm có sẵn:
+- `setupHeader(view, title, showBackBtn)`: Cài đặt tiêu đề trang.
+- `setupIncomeExpenseTabs(view, listener)`: Cài đặt tab Thu/Chi.
+- Override `getFabIcon()` và `onFabClick()` để điều khiển nút Floating Action Button.
 
-Để tạo một màn hình mới, hãy kế thừa `BaseFragment`:
-
-```java
-public class MyNewFragment extends BaseFragment {
-    
-    @Override
-    protected int getFabIcon() {
-        return R.drawable.ic_plus; // Đổi icon FAB
-    }
-
-    @Override
-    protected boolean shouldShowBottomNavigation() {
-        return false; // Ẩn thanh điều hướng dưới nếu cần
-    }
-
-    @Override
-    protected void onFabClick() {
-        // Xử lý sự kiện khi nhấn nút FAB
-    }
-}
-```
-
-## Quy định làm việc
-- Mỗi thành viên khi làm chức năng mới phải tạo nhánh riêng tên `feat/ten-chuc-nang`.
-- Luôn kế thừa `BaseFragment` để đảm bảo logic FAB và BottomNav hoạt động đúng.
-- Sử dụng `layout_header_common` cho phần đầu trang của các Fragment để đồng nhất UI.
-- Các hàm tiện ích dùng chung (định dạng tiền, ngày tháng) hãy đặt trong package `utils`.
+### 3. Quy định làm việc
+- **KHÔNG** gọi trực tiếp Database/API trong Fragment.
+- **KHÔNG** truyền Context vào ViewModel.
+- Nhánh Git: `feat/ten-chuc-nang`.
+- Sử dụng các hàm trong `util/` để định dạng tiền tệ và thời gian.
