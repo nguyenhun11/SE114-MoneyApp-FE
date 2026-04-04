@@ -63,6 +63,4 @@ public class MainActivity extends AppCompatActivity {
     public MainUIHandler getUiHandler() {
         return uiHandler;
     }
-
-    //new code
 }

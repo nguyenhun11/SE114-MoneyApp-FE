@@ -1,4 +1,4 @@
-package com.example.moneyapp.adapter;
+package com.example.moneyapp.ui.profile;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
-import com.example.moneyapp.model.ProfileOption;
+
 import java.util.List;
 
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder> {
