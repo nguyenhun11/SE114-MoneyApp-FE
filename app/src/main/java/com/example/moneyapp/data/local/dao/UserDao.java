@@ -1,6 +1,7 @@
 package com.example.moneyapp.data.local.dao;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -23,6 +24,9 @@ public interface UserDao {
 
     @Update
     void updateUser(User user);
+
+    @Delete
+    void deleteUser(User user);
 
     @Query("DELETE FROM users")
     void clearUser();
