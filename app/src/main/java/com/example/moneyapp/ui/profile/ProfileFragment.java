@@ -13,8 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
-import com.example.moneyapp.adapter.ProfileAdapter;
-import com.example.moneyapp.model.ProfileOption;
 import com.example.moneyapp.ui.BaseFragment;
 import com.example.moneyapp.ui.SplashActivity;
 import java.util.ArrayList;

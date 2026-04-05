@@ -57,7 +57,7 @@
 
     <fragment
         android:id="@+id/statisticsFragment"
-        android:name="com.example.moneyapp.ui.statistics.StatisticsFragment"
+        android:name="com.example.moneyapp.ui.statistic.StatisticFragment"
         android:label="Thống kê"
         tools:layout="@layout/fragment_statistics" />
 
@@ -69,7 +69,7 @@
 
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.example.moneyapp.ui.settings.SettingsFragment"
+        android:name="com.example.moneyapp.ui.setting.SettingFragment"
         android:label="Cài đặt"
         tools:layout="@layout/fragment_settings" />
 
