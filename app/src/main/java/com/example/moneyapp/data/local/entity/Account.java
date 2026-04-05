@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Entity(
-        tableName = "categories",
+        tableName = "accounts",
         foreignKeys = @ForeignKey(
                 entity = User.class,
                 parentColumns = "id",
@@ -20,74 +20,61 @@ import java.util.UUID;
         ),
         indices = {@Index("userId")}
 )
-public class Category {
+public class Account {
     @PrimaryKey
     @NonNull
     private String id;
     private String userId;
     private String name;
-    private Double monthlyTarget;
+    private Double balance;
     private String icon;
     private String color;
-    private int type; //0: transfer, 1: income, 2: expense
-    private Boolean canDelete;
     private Boolean isSynced;
     private Boolean isDeleted;
     private Date createdAt;
     private Date updatedAt;
 
-    public Category(
-            @NonNull String id,
-            String userId,
-            String name,
-            Double monthlyTarget,
-            String icon,
-            String color,
-            int type,
-            Boolean canDelete,
-            Boolean isSynced,
-            Boolean isDeleted,
-            Date createdAt,
-            Date updatedAt
-    ) {
+    public Account(@NonNull String id,
+                   String userId,
+                   String name,
+                   Double balance,
+                   String icon,
+                   String color,
+                   boolean isSynced,
+                   boolean isDeleted,
+                   Date createdAt,
+                   Date updatedAt) {
         this.id = id;
         this.userId = userId;
         this.name = name;
-        this.monthlyTarget = monthlyTarget;
+        this.balance = balance;
         this.icon = icon;
         this.color = color;
-        this.type = type;
-        this.canDelete = canDelete;
         this.isSynced = isSynced;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
     @Ignore
-    public Category(
+    public Account(
             String userId,
             String name,
-            Double monthlyTarget,
+            Double balance,
             String icon,
-            String color,
-            int type,
-            Boolean canDelete
-    ) {
+            String color) {
         this.id = UUID.randomUUID().toString();
         this.userId = userId;
         this.name = name;
-        this.monthlyTarget = monthlyTarget;
+        this.balance = balance;
         this.icon = icon;
         this.color = color;
-        this.type = type;
-        this.canDelete = canDelete;
         this.isSynced = false;
         this.isDeleted = false;
         Date currentTime = new Date();
         this.createdAt = currentTime;
         this.updatedAt = currentTime;
     }
+
 
     @NonNull
     public String getId() {
@@ -114,12 +101,12 @@ public class Category {
         this.name = name;
     }
 
-    public Double getMonthlyTarget() {
-        return monthlyTarget;
+    public Double getBalance() {
+        return balance;
     }
 
-    public void setMonthlyTarget(Double monthlyTarget) {
-        this.monthlyTarget = monthlyTarget;
+    public void setBalance(Double balance) {
+        this.balance = balance;
     }
 
     public String getIcon() {
@@ -136,22 +123,6 @@ public class Category {
 
     public void setColor(String color) {
         this.color = color;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public Boolean getCanDelete() {
-        return canDelete;
-    }
-
-    public void setCanDelete(Boolean canDelete) {
-        this.canDelete = canDelete;
     }
 
     public Boolean getSynced() {
