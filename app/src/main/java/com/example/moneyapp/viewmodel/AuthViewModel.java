@@ -53,4 +53,48 @@ public class AuthViewModel extends AndroidViewModel {
             authRepository.loginByPhoneNumber(loginInput, password, callback);
         }
     }
+
+    public void register(
+            String email,
+            String password,
+            String confirmPassword
+    ){
+        if (email == null || email.trim().isEmpty()){
+            errorMessage.setValue("Invalid email");
+            return;
+        }
+        if (password == null || password.trim().isEmpty()){
+            errorMessage.setValue("Invalid password");
+            return;
+        }
+        if (confirmPassword == null || confirmPassword.trim().isEmpty()){
+            errorMessage.setValue("Invalid confirm password");
+            return;
+        }
+        if (!password.equals(confirmPassword)){
+            errorMessage.setValue("Passwords do not match");
+            return;
+        }
+        isLoading.setValue(true);
+        User newUser = new User(
+                "new name",
+                email,
+                "phoneNumber",
+                password,
+                "profileImageUrl"
+        );
+        AuthRepository.AuthCallback callback = new AuthRepository.AuthCallback() {
+            @Override
+            public void onSuccess(User user) {
+                registerSuccess.postValue(user);
+                isLoading.postValue(false);
+            }
+            @Override
+            public void onError(String message) {
+                errorMessage.postValue(message);
+                isLoading.postValue(false);
+            }
+        };
+        authRepository.register(newUser, callback);
+    }
 }

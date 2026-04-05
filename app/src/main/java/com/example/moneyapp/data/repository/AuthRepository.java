@@ -54,4 +54,25 @@ public class AuthRepository {
             }
         });
     }
+
+    public void register(User user, AuthCallback callback) {
+        executorService.execute(() -> {
+            try {
+                User existingUserByEmail = userDao.getUserByEmail(user.getEmail());
+                User existingUserByPhoneNumber = userDao.getUserByPhoneNumber(user.getPhoneNumber());
+                if (existingUserByEmail != null) {
+                    callback.onError("Email already exists");
+                }
+                else if (existingUserByPhoneNumber != null) {
+                    callback.onError("Phone number already exists");
+                }
+                else {
+                    userDao.insertUser(user);
+                    callback.onSuccess(user);
+                }
+            } catch (Exception e) {
+                callback.onError("System error: " + e.getMessage());
+            }
+        });
+    }
 }
