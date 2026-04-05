@@ -63,9 +63,9 @@ public class AuthRepository {
                 if (existingUserByEmail != null) {
                     callback.onError("Email already exists");
                 }
-                else if (existingUserByPhoneNumber != null) {
-                    callback.onError("Phone number already exists");
-                }
+//                else if (existingUserByPhoneNumber != null) {
+//                    callback.onError("Phone number already exists");
+//                }
                 else {
                     userDao.insertUser(user);
                     callback.onSuccess(user);
