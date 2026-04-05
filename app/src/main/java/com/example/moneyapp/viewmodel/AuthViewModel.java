@@ -1,6 +1,7 @@
 package com.example.moneyapp.viewmodel;
 
 import android.app.Application;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -8,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.moneyapp.data.local.entity.User;
 import com.example.moneyapp.data.repository.AuthRepository;
+import com.example.moneyapp.utils.PreferenceManager;
 
 public class AuthViewModel extends AndroidViewModel {
     private final AuthRepository authRepository;

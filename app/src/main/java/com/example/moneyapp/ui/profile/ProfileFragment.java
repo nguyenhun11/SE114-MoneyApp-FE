@@ -8,18 +8,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.BaseFragment;
 import com.example.moneyapp.ui.SplashActivity;
+import com.example.moneyapp.utils.PreferenceManager;
+import com.example.moneyapp.viewmodel.ProfileViewModel;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileFragment extends BaseFragment implements ProfileAdapter.OnOptionClickListener {
-
+    private ProfileViewModel profileViewModel;
     private static final int OPTION_CHANGE_PASSWORD = 1;
     private static final int OPTION_LOGOUT = 2;
     private static final int OPTION_INFORMATION = 3;
@@ -43,6 +49,7 @@ public class ProfileFragment extends BaseFragment implements ProfileAdapter.OnOp
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 
         // Header Title
         TextView tvHeaderTitle = view.findViewById(R.id.tv_header_title);
@@ -54,10 +61,15 @@ public class ProfileFragment extends BaseFragment implements ProfileAdapter.OnOp
         rvOptions.setAdapter(adapter);
 
         // Mock User Data
+        profileViewModel.fetchUserData();
         TextView tvName = view.findViewById(R.id.tv_profile_name);
         TextView tvEmail = view.findViewById(R.id.tv_profile_email);
-        if (tvName != null) tvName.setText("Nguyễn Văn A");
-        if (tvEmail != null) tvEmail.setText("vana@example.com");
+        profileViewModel.currentUser.observe(getViewLifecycleOwner(), user -> {
+            if (user != null) {
+                if (tvName != null) tvName.setText(user.getName());
+                if (tvEmail != null) tvEmail.setText(user.getEmail());
+            }
+        });
     }
 
     private List<ProfileOption> getProfileOptions() {
@@ -84,8 +96,7 @@ public class ProfileFragment extends BaseFragment implements ProfileAdapter.OnOp
     }
 
     private void performLogout() {
-        SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        prefs.edit().putBoolean("isLoggedIn", false).apply();
+        PreferenceManager.getInstance(requireActivity().getApplicationContext()).setLoggedIn(false);
 
         Intent intent = new Intent(requireActivity(), SplashActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

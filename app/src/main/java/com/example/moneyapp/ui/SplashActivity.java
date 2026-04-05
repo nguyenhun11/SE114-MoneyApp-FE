@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.auth.AuthActivity;
+import com.example.moneyapp.utils.PreferenceManager;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -21,8 +22,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         // Đọc trạng thái đăng nhập từ SharedPreferences
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        boolean isLoggedIn = prefs.getBoolean("isLoggedIn", false);
+        boolean isLoggedIn = PreferenceManager.getInstance(this).isLoggedIn();
 
         // Click nút "Tiếp tục"
         findViewById(R.id.btn_continue).setOnClickListener(v -> {
