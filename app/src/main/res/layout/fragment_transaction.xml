@@ -65,12 +65,12 @@
                     android:clickable="true"
                     android:focusable="true" />
 
-                <TextView
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewTransactions"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="442dp"
                     android:layout_marginTop="16dp"
-                    android:text="Danh sách các giao dịch sẽ hiển thị ở đây..."
-                    android:textColor="#9E9E9E" />
+                    android:nestedScrollingEnabled="false" />
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
