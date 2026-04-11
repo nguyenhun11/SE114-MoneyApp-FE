@@ -1,19 +1,19 @@
 package com.example.moneyapp.ui.profile;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.BaseFragment;
@@ -21,14 +21,11 @@ import com.example.moneyapp.ui.SplashActivity;
 import com.example.moneyapp.utils.PreferenceManager;
 import com.example.moneyapp.viewmodel.ProfileViewModel;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
-public class ProfileFragment extends BaseFragment implements ProfileAdapter.OnOptionClickListener {
+public class ProfileFragment extends BaseFragment {
     private ProfileViewModel profileViewModel;
-    private static final int OPTION_CHANGE_PASSWORD = 1;
-    private static final int OPTION_LOGOUT = 2;
-    private static final int OPTION_INFORMATION = 3;
 
     @Override
     protected int getFabIcon() {
@@ -51,53 +48,59 @@ public class ProfileFragment extends BaseFragment implements ProfileAdapter.OnOp
         super.onViewCreated(view, savedInstanceState);
         profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 
-        // Header Title
-        TextView tvHeaderTitle = view.findViewById(R.id.tv_header_title);
-        if (tvHeaderTitle != null) tvHeaderTitle.setText("Hồ sơ");
-
-        // Setup RecyclerView
-        RecyclerView rvOptions = view.findViewById(R.id.rv_profile_options);
-        ProfileAdapter adapter = new ProfileAdapter(getProfileOptions(), this);
-        rvOptions.setAdapter(adapter);
-
-        // Mock User Data
-        profileViewModel.fetchUserData();
+        // UI Components
         TextView tvName = view.findViewById(R.id.tv_profile_name);
         TextView tvEmail = view.findViewById(R.id.tv_profile_email);
+        TextView tvCreatedAt = view.findViewById(R.id.tv_created_at);
+        TextView tvUserId = view.findViewById(R.id.tv_user_id);
+        TextView tvChangePassword = view.findViewById(R.id.tv_change_password_link);
+        SwitchCompat swSync = view.findViewById(R.id.sw_sync);
+        ImageButton btnLogout = view.findViewById(R.id.btn_logout);
+        ImageButton btnDelete = view.findViewById(R.id.btn_delete_account);
+
+        // Fetch & Observe Data
+        profileViewModel.fetchUserData();
         profileViewModel.currentUser.observe(getViewLifecycleOwner(), user -> {
             if (user != null) {
-                if (tvName != null) tvName.setText(user.getName());
-                if (tvEmail != null) tvEmail.setText(user.getEmail());
+                tvName.setText(user.getName());
+                tvEmail.setText(user.getEmail());
+                tvUserId.setText("UserID: " + user.getId().substring(0, 8).toUpperCase()); // Show short ID
+
+                // Format Date: "Thứ 7 ngày 28/3/2026"
+                if (user.getCreatedAt() != null) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("'Thứ' u 'ngày' d/M/yyyy", new Locale("vi", "VN"));
+                    String dateStr = sdf.format(user.getCreatedAt());
+                    // SimpleDateFormat 'u' (day of week) returns 1-7, need manual mapping for Vietnamese "Thứ ..."
+                    tvCreatedAt.setText(getVietnameseDate(user.getCreatedAt()));
+                }
             }
+        });
+
+        // Click Listeners
+        tvChangePassword.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_changePasswordFragment);
+        });
+
+        btnLogout.setOnClickListener(v -> performLogout());
+
+        btnDelete.setOnClickListener(v -> {
+            Toast.makeText(requireContext(), "Tính năng xóa tài khoản đang được phát triển", Toast.LENGTH_SHORT).show();
+        });
+
+        swSync.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            String status = isChecked ? "Đã bật đồng bộ" : "Đã tắt đồng bộ";
+            Toast.makeText(requireContext(), status, Toast.LENGTH_SHORT).show();
         });
     }
 
-    private List<ProfileOption> getProfileOptions() {
-        List<ProfileOption> options = new ArrayList<>();
-        options.add(new ProfileOption(OPTION_INFORMATION, R.drawable.ic_profile, "Thông tin ứng dụng"));
-        options.add(new ProfileOption(OPTION_CHANGE_PASSWORD, R.drawable.ic_transfer, "Thay đổi mật khẩu"));
-        options.add(new ProfileOption(OPTION_LOGOUT, R.drawable.ic_back, "Đăng xuất")); // Dùng tạm ic_back quay ngược làm logout
-        return options;
-    }
-
-    @Override
-    public void onOptionClick(ProfileOption option) {
-        switch (option.getId()) {
-            case OPTION_CHANGE_PASSWORD:
-                Navigation.findNavController(requireView()).navigate(R.id.action_profileFragment_to_changePasswordFragment);
-                break;
-            case OPTION_INFORMATION:
-                Navigation.findNavController(requireView()).navigate(R.id.action_profileFragment_to_informationFragment);
-                break;
-            case OPTION_LOGOUT:
-                performLogout();
-                break;
-        }
+    private String getVietnameseDate(java.util.Date date) {
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", new Locale("vi", "VN"));
+        SimpleDateFormat dateFormat = new SimpleDateFormat(" 'ngày' dd/MM/yyyy", new Locale("vi", "VN"));
+        return dayFormat.format(date) + dateFormat.format(date);
     }
 
     private void performLogout() {
-        PreferenceManager.getInstance(requireActivity().getApplicationContext()).setLoggedIn(false);
-
+        PreferenceManager.getInstance(requireActivity().getApplicationContext()).clear();
         Intent intent = new Intent(requireActivity(), SplashActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
