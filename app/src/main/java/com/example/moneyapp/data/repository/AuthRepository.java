@@ -94,4 +94,21 @@ public class AuthRepository {
             }
         });
     }
+
+    public void updatePassword(String userID, String oldPassword, String newPassword, AuthCallback callback) {
+        executorService.execute(() -> {
+            try {
+                User user = userDao.getUserById(userID);
+                if (user != null && user.getPassword().equals(oldPassword)) {
+                    user.setPassword(newPassword);
+                    userDao.insertUser(user); // Room dùng @Insert(onConflict = OnConflictStrategy.REPLACE)
+                    callback.onSuccess(user);
+                } else {
+                    callback.onError("Mật khẩu hiện tại không chính xác");
+                }
+            } catch (Exception e) {
+                callback.onError("Lỗi hệ thống: " + e.getMessage());
+            }
+        });
+    }
 }

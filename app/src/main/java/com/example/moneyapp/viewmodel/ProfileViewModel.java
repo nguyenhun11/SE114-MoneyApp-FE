@@ -38,4 +38,32 @@ public class ProfileViewModel extends AndroidViewModel {
             }
         });
     }
+
+    public void updatePassword(String oldPass, String newPass, String confirmPass) {
+        if (oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
+            errorMessage.setValue("Vui lòng nhập đầy đủ thông tin");
+            return;
+        }
+        if (newPass.length() < 6) {
+            errorMessage.setValue("Mật khẩu mới phải từ 6 ký tự");
+            return;
+        }
+        if (!newPass.equals(confirmPass)) {
+            errorMessage.setValue("Mật khẩu xác nhận không khớp");
+            return;
+        }
+
+        String userID = PreferenceManager.getInstance(context).getUserID();
+        authRepository.updatePassword(userID, oldPass, newPass, new AuthRepository.AuthCallback() {
+            @Override
+            public void onSuccess(User user) {
+                errorMessage.postValue("SUCCESS");
+            }
+
+            @Override
+            public void onError(String message) {
+                errorMessage.postValue(message);
+            }
+        });
+    }
 }
