@@ -111,4 +111,15 @@ public class AuthRepository {
             }
         });
     }
+
+    public void updateUser(User user, AuthCallback callback) {
+        executorService.execute(() -> {
+            try {
+                userDao.updateUser(user);
+                callback.onSuccess(user);
+            } catch (Exception e) {
+                callback.onError("Lỗi cập nhật: " + e.getMessage());
+            }
+        });
+    }
 }

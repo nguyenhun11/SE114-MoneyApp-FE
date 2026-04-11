@@ -77,6 +77,30 @@ public class ProfileFragment extends BaseFragment {
         });
 
         // Click Listeners
+        tvName.setOnClickListener(v -> {
+            android.widget.EditText input = new android.widget.EditText(requireContext());
+            input.setText(tvName.getText().toString());
+            input.setPadding(50, 40, 50, 40);
+
+            // Giới hạn 20 ký tự
+            input.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(20)});
+
+            new android.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Đổi tên người dùng")
+                    .setMessage("Nhập tên mới của bạn (tối đa 20 ký tự):")
+                    .setView(input)
+                    .setPositiveButton("Lưu", (dialog, which) -> {
+                        String newName = input.getText().toString().trim();
+                        if (!newName.isEmpty()) {
+                            profileViewModel.updateUserName(newName);
+                        } else {
+                            Toast.makeText(requireContext(), "Tên không được để trống", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .show();
+        });
+
         tvChangePassword.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_changePasswordFragment);
         });

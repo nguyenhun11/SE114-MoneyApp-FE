@@ -66,4 +66,22 @@ public class ProfileViewModel extends AndroidViewModel {
             }
         });
     }
+
+    public void updateUserName(String newName) {
+        User user = currentUser.getValue();
+        if (user != null && !newName.isEmpty()) {
+            user.setName(newName);
+            authRepository.updateUser(user, new AuthRepository.AuthCallback() {
+                @Override
+                public void onSuccess(User updatedUser) {
+                    currentUser.postValue(updatedUser);
+                }
+
+                @Override
+                public void onError(String message) {
+                    errorMessage.postValue(message);
+                }
+            });
+        }
+    }
 }
