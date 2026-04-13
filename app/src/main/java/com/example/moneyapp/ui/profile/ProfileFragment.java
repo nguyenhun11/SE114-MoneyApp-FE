@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.bumptech.glide.Glide;
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.BaseFragment;
 import com.example.moneyapp.ui.SplashActivity;
@@ -24,8 +26,20 @@ import com.example.moneyapp.viewmodel.ProfileViewModel;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+
 public class ProfileFragment extends BaseFragment {
     private ProfileViewModel profileViewModel;
+
+    private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    profileViewModel.updateProfileImage(uri.toString());
+                }
+            }
+    );
 
     @Override
     protected int getFabIcon() {
@@ -57,6 +71,8 @@ public class ProfileFragment extends BaseFragment {
         SwitchCompat swSync = view.findViewById(R.id.sw_sync);
         ImageButton btnLogout = view.findViewById(R.id.btn_logout);
         ImageButton btnDelete = view.findViewById(R.id.btn_delete_account);
+        ImageView ivAvatar = view.findViewById(R.id.iv_profile_avatar);
+        View cvAvatarContainer = view.findViewById(R.id.cv_avatar_container);
 
         // Fetch & Observe Data
         profileViewModel.fetchUserData();
@@ -65,6 +81,14 @@ public class ProfileFragment extends BaseFragment {
                 tvName.setText(user.getName());
                 tvEmail.setText(user.getEmail());
                 tvUserId.setText("UserID: " + user.getId().substring(0, 8).toUpperCase()); // Show short ID
+
+                // Load Avatar
+                if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isEmpty()) {
+                    Glide.with(this)
+                            .load(user.getProfileImageUrl())
+                            .placeholder(R.drawable.ic_profile)
+                            .into(ivAvatar);
+                }
 
                 // Format Date: "Thứ 7 ngày 28/3/2026"
                 if (user.getCreatedAt() != null) {
@@ -133,6 +157,10 @@ public class ProfileFragment extends BaseFragment {
         swSync.setOnCheckedChangeListener((buttonView, isChecked) -> {
             String status = isChecked ? "Đã bật đồng bộ" : "Đã tắt đồng bộ";
             Toast.makeText(requireContext(), status, Toast.LENGTH_SHORT).show();
+        });
+
+        cvAvatarContainer.setOnClickListener(v -> {
+            mGetContent.launch("image/*");
         });
     }
 

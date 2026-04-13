@@ -75,6 +75,26 @@ public class ProfileViewModel extends AndroidViewModel {
                 @Override
                 public void onSuccess(User updatedUser) {
                     currentUser.postValue(updatedUser);
+                    errorMessage.postValue("SUCCESS");
+                }
+
+                @Override
+                public void onError(String message) {
+                    errorMessage.postValue(message);
+                }
+            });
+        }
+    }
+
+    public void updateProfileImage(String imageUri) {
+        User user = currentUser.getValue();
+        if (user != null) {
+            user.setProfileImageUrl(imageUri);
+            authRepository.updateUser(user, new AuthRepository.AuthCallback() {
+                @Override
+                public void onSuccess(User updatedUser) {
+                    currentUser.postValue(updatedUser);
+                    errorMessage.postValue("SUCCESS_IMAGE");
                 }
 
                 @Override
