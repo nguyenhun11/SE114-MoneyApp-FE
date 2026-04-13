@@ -84,4 +84,19 @@ public class ProfileViewModel extends AndroidViewModel {
             });
         }
     }
+
+    public void deleteAccount() {
+        String userID = PreferenceManager.getInstance(context).getUserID();
+        authRepository.deleteUser(userID, new AuthRepository.AuthCallback() {
+            @Override
+            public void onSuccess(User user) {
+                errorMessage.postValue("SUCCESS_DELETE");
+            }
+
+            @Override
+            public void onError(String message) {
+                errorMessage.postValue(message);
+            }
+        });
+    }
 }

@@ -122,4 +122,22 @@ public class AuthRepository {
             }
         });
     }
+
+    public void deleteUser(String userID, AuthCallback callback) {
+        executorService.execute(() -> {
+            try {
+                User user = userDao.getUserById(userID);
+                if (user != null) {
+                    userDao.deleteUser(user);
+                    // Xóa thông tin đăng nhập trong Preference
+                    PreferenceManager.getInstance(context).clear();
+                    callback.onSuccess(null);
+                } else {
+                    callback.onError("Không tìm thấy người dùng");
+                }
+            } catch (Exception e) {
+                callback.onError("Lỗi hệ thống: " + e.getMessage());
+            }
+        });
+    }
 }

@@ -76,6 +76,17 @@ public class ProfileFragment extends BaseFragment {
             }
         });
 
+        profileViewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
+            if (message == null) return;
+
+            if (message.equals("SUCCESS_DELETE")) {
+                Toast.makeText(requireContext(), "Tài khoản đã được xóa thành công", Toast.LENGTH_SHORT).show();
+                performLogout();
+            } else if (!message.equals("SUCCESS")) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         // Click Listeners
         tvName.setOnClickListener(v -> {
             android.widget.EditText input = new android.widget.EditText(requireContext());
@@ -108,7 +119,15 @@ public class ProfileFragment extends BaseFragment {
         btnLogout.setOnClickListener(v -> performLogout());
 
         btnDelete.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Tính năng xóa tài khoản đang được phát triển", Toast.LENGTH_SHORT).show();
+            new android.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Xác nhận xóa tài khoản")
+                    .setMessage("Tất cả dữ liệu của bạn sẽ bị xóa vĩnh viễn. Bạn có chắc chắn muốn tiếp tục?")
+                    .setPositiveButton("Xóa", (dialog, which) -> {
+                        profileViewModel.deleteAccount();
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         });
 
         swSync.setOnCheckedChangeListener((buttonView, isChecked) -> {
