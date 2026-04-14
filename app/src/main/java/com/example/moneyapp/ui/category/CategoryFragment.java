@@ -21,7 +21,7 @@ public class CategoryFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        setupHeader(view, "Hạng mục", false);
+        setupHeader(view, R.string.category_list_title, false);
         setupIncomeExpenseTabs(view, isExpense -> {
         });
     }

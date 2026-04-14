@@ -23,7 +23,7 @@ public class TransactionDetailFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupHeader(view, "Chi tiết giao dịch", true);
+        setupHeader(view, R.string.transaction_detail_title, true);
     }
 
     @Override

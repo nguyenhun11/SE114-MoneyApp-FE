@@ -23,7 +23,7 @@ public class StatisticFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupHeader(view, "Thống kê", false);
+        setupHeader(view, R.string.stats_screen_title, false);
         
         setupThreeTabs(view, index -> {
             // index 0: Chung, 1: Chi, 2: Thu

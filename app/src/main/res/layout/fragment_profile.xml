@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="56dp"
-        android:text="Hồ sơ"
+        android:text="@string/profile_title"
         android:textColor="@color/black"
         android:textSize="28sp"
         android:textStyle="bold"
@@ -96,7 +96,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="12dp"
-                        android:text="Username"
+                        android:text="@string/profile_username"
                         android:textColor="#BCBCBC"
                         android:textSize="14sp"
                         app:layout_constraintStart_toEndOf="@id/cv_avatar_container"
@@ -144,7 +144,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Email"
+                            android:text="@string/profile_email"
                             android:textColor="@color/black"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -162,7 +162,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Mật khẩu"
+                            android:text="@string/login_password_hint"
                             android:textColor="@color/black"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -173,14 +173,14 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:layout_marginBottom="16dp"
-                            android:text="Đổi mật khẩu →"
+                            android:text="@string/profile_change_password_link"
                             android:textColor="@color/black"
                             android:textSize="16sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Ngày tạo tài khoản"
+                            android:text="@string/profile_created_date"
                             android:textColor="@color/black"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -207,7 +207,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Đồng bộ hóa"
+                                    android:text="@string/profile_sync"
                                     android:textColor="@color/black"
                                     android:textSize="15sp"
                                     android:textStyle="bold" />
@@ -216,7 +216,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
-                                    android:text="Cần internet khi sử dụng"
+                                    android:text="@string/profile_internet_required"
                                     android:textColor="@color/black"
                                     android:textSize="14sp" />
                             </LinearLayout>
@@ -268,7 +268,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
-                        android:text="Delete account"
+                        android:text="@string/profile_delete_account"
                         android:textColor="#FF0000"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -298,7 +298,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
-                        android:text="Logout"
+                        android:text="@string/profile_logout"
                         android:textColor="@color/black"
                         android:textSize="18sp"
                         android:textStyle="bold" />

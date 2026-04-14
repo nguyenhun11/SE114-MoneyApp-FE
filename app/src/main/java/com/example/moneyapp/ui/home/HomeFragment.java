@@ -24,7 +24,7 @@ public class HomeFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupBalanceSelector(view, "Tổng cộng", "2.500.000", true);
+        setupBalanceSelector(view, getString(R.string.total_balance), "2.500.000", true);
         setupIncomeExpenseTabs(view, isExpense -> {
             // Logic chuyển tab
         });
