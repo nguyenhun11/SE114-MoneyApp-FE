@@ -106,6 +106,10 @@ public abstract class BaseFragment extends Fragment {
 
     //region Tabs Setup
     protected void setupIncomeExpenseTabs(View view, TabSwitchListener listener) {
+        setupIncomeExpenseTabs(view, true, listener);
+    }
+
+    protected void setupIncomeExpenseTabs(View view, boolean initialIsExpense, TabSwitchListener listener) {
         TextView tvTabExpense = view.findViewById(R.id.tv_tab_expense);
         TextView tvTabIncome = view.findViewById(R.id.tv_tab_income);
         View animatedIndicator = view.findViewById(R.id.view_tab_indicator);
@@ -114,6 +118,11 @@ public abstract class BaseFragment extends Fragment {
 
         tvTabExpense.setOnClickListener(v -> handleTabSwitch(true, tvTabExpense, tvTabIncome, animatedIndicator, listener));
         tvTabIncome.setOnClickListener(v -> handleTabSwitch(false, tvTabExpense, tvTabIncome, animatedIndicator, listener));
+
+        // Set initial state without animation if possible, or just call handleTabSwitch
+        view.post(() -> {
+            handleTabSwitch(initialIsExpense, tvTabExpense, tvTabIncome, animatedIndicator, null);
+        });
     }
 
     private void handleTabSwitch(boolean isExpense, TextView tvExpense, TextView tvIncome, View animatedIndicator, TabSwitchListener listener) {

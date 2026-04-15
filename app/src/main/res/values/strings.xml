@@ -79,4 +79,17 @@
     <string name="stats_screen_title">Màn hình Thống kê</string>
     <string name="header_title_default">Tiêu đề</string>
     <string name="menu_item_default">Menu Item</string>
+
+    <!-- Category -->
+    <string name="category_expense_title">Hạng mục chi tiêu</string>
+    <string name="category_income_title">Hạng mục thu nhập</string>
+    <string name="category_expense_budget_label">Kế hoạch chi tiêu trong tháng</string>
+    <string name="category_income_budget_label">Thu nhập dự kiến trong tháng</string>
+    <string name="category_name_hint">Tên hạng mục</string>
+    <string name="category_budget_hint">0</string>
+    <string name="category_save_success">Đã lưu hạng mục</string>
+    <string name="category_error_empty_name">Vui lòng nhập tên</string>
+    <string name="category_group_other">Khác</string>
+    <string name="category_group_income">Thu nhập</string>
+    <string name="category_adjust_frequent">Điều chỉnh hạng mục thường dùng</string>
 </resources>

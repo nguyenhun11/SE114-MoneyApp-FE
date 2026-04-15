@@ -34,7 +34,8 @@ public class MainUIHandler {
     private final Set<Integer> mainFragments = new HashSet<>(Arrays.asList(
             R.id.homeFragment,
             R.id.transactionFragment,
-            R.id.accountFragment
+            R.id.accountFragment,
+            R.id.categoryFragment
     ));
 
     public MainUIHandler(Context context, NavController navController, BottomNavigationView bottomNav, FloatingActionButton fabAdd) {
