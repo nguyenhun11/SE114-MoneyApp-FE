@@ -33,20 +33,35 @@ public class AuthRepository {
     }
 
     public void loginByEmail(String email, String password, AuthCallback callback) {
-        executorService.execute(() -> {
-            try {
-                User user = userDao.getUserByEmail(email);
-                if (user != null && user.getPassword().equals(password)) {
-                    PreferenceManager.getInstance(context).setLoggedIn(true);
-                    PreferenceManager.getInstance(context).setUserID(user.getId());
-                    callback.onSuccess(user);
-                } else {
-                    callback.onError("Invalid email or password");
-                }
-            } catch (Exception e) {
-                callback.onError("System error: " + e.getMessage());
-            }
-        });
+        // 1. Đăng nhập qua Firebase trước
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // 2. Nếu Firebase thành công, lấy thông tin User từ Room và đồng bộ mật khẩu
+                        executorService.execute(() -> {
+                            try {
+                                User user = userDao.getUserByEmail(email);
+                                if (user != null) {
+                                    // Đồng bộ mật khẩu mới từ Firebase vào Room (nếu người dùng vừa đổi mật khẩu)
+                                    user.setPassword(password);
+                                    userDao.insertUser(user);
+
+                                    PreferenceManager.getInstance(context).setLoggedIn(true);
+                                    PreferenceManager.getInstance(context).setUserID(user.getId());
+                                    callback.onSuccess(user);
+                                } else {
+                                    // Trường hợp user có trên Firebase nhưng local bị xóa hoặc mới đổi máy
+                                    callback.onError("Tài khoản hợp lệ nhưng không tìm thấy dữ liệu cục bộ.");
+                                }
+                            } catch (Exception e) {
+                                callback.onError("Lỗi hệ thống: " + e.getMessage());
+                            }
+                        });
+                    } else {
+                        String error = task.getException() != null ? task.getException().getMessage() : "Sai email hoặc mật khẩu";
+                        callback.onError(error);
+                    }
+                });
     }
 
     public void loginByPhoneNumber(String phoneNumber, String password, AuthCallback callback) {
