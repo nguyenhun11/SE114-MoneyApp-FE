@@ -7,7 +7,10 @@ import com.example.moneyapp.data.local.AppDatabase;
 import com.example.moneyapp.data.local.dao.UserDao;
 import com.example.moneyapp.data.local.entity.User;
 import com.example.moneyapp.utils.PreferenceManager;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -122,18 +125,43 @@ public class AuthRepository {
     }
 
     public void updatePassword(String userID, String oldPassword, String newPassword, AuthCallback callback) {
-        executorService.execute(() -> {
-            try {
-                User user = userDao.getUserById(userID);
-                if (user != null && user.getPassword().equals(oldPassword)) {
-                    user.setPassword(newPassword);
-                    userDao.insertUser(user); // Room dùng @Insert(onConflict = OnConflictStrategy.REPLACE)
-                    callback.onSuccess(user);
-                } else {
-                    callback.onError("Mật khẩu hiện tại không chính xác");
-                }
-            } catch (Exception e) {
-                callback.onError("Lỗi hệ thống: " + e.getMessage());
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        
+        if (firebaseUser == null || firebaseUser.getEmail() == null) {
+            callback.onError("Người dùng chưa đăng nhập hoặc phiên làm việc hết hạn.");
+            return;
+        }
+
+        // 1. Xác thực lại (Re-authenticate) để đảm bảo an toàn
+        AuthCredential credential = EmailAuthProvider.getCredential(firebaseUser.getEmail(), oldPassword);
+
+        firebaseUser.reauthenticate(credential).addOnCompleteListener(reAuthTask -> {
+            if (reAuthTask.isSuccessful()) {
+                // 2. Nếu xác thực mật khẩu cũ đúng, tiến hành cập nhật mật khẩu mới trên Firebase
+                firebaseUser.updatePassword(newPassword).addOnCompleteListener(updateTask -> {
+                    if (updateTask.isSuccessful()) {
+                        // 3. Cập nhật mật khẩu mới vào Room Database Local
+                        executorService.execute(() -> {
+                            try {
+                                User user = userDao.getUserById(userID);
+                                if (user != null) {
+                                    user.setPassword(newPassword);
+                                    userDao.insertUser(user);
+                                    callback.onSuccess(user);
+                                } else {
+                                    callback.onError("Cập nhật Cloud thành công nhưng không tìm thấy dữ liệu Local.");
+                                }
+                            } catch (Exception e) {
+                                callback.onError("Lỗi cập nhật local: " + e.getMessage());
+                            }
+                        });
+                    } else {
+                        String error = updateTask.getException() != null ? updateTask.getException().getMessage() : "Lỗi cập nhật mật khẩu trên Firebase";
+                        callback.onError(error);
+                    }
+                });
+            } else {
+                callback.onError("Mật khẩu hiện tại không chính xác.");
             }
         });
     }
