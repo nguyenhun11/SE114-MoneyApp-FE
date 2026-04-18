@@ -67,24 +67,32 @@ public class AuthRepository {
     }
 
     public void register(User user, AuthCallback callback) {
-        executorService.execute(() -> {
-            try {
-                User existingUserByEmail = userDao.getUserByEmail(user.getEmail());
-                User existingUserByPhoneNumber = userDao.getUserByPhoneNumber(user.getPhoneNumber());
-                if (existingUserByEmail != null) {
-                    callback.onError("Email already exists");
-                }
-//                else if (existingUserByPhoneNumber != null) {
-//                    callback.onError("Phone number already exists");
-//                }
-                else {
-                    userDao.insertUser(user);
-                    callback.onSuccess(user);
-                }
-            } catch (Exception e) {
-                callback.onError("System error: " + e.getMessage());
-            }
-        });
+        // 1. Đăng ký tài khoản trên Firebase trước
+        mAuth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword())
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && mAuth.getCurrentUser() != null) {
+                        // Lấy UID từ Firebase để đồng bộ
+                        String firebaseUid = mAuth.getCurrentUser().getUid();
+                        
+                        // Cập nhật ID của user bằng firebaseUid từ Firebase
+                        user.setId(firebaseUid);
+                        
+                        // 2. Nếu Firebase thành công, lưu vào Room Local
+                        executorService.execute(() -> {
+                            try {
+                                // Bạn có thể cập nhật ID của user bằng firebaseUid nếu muốn
+                                userDao.insertUser(user);
+                                callback.onSuccess(user);
+                            } catch (Exception e) {
+                                callback.onError("Lỗi lưu local: " + e.getMessage());
+                            }
+                        });
+                    } else {
+                        // Nếu Firebase báo lỗi (ví dụ: email đã tồn tại, mật khẩu yếu...)
+                        String error = task.getException() != null ? task.getException().getMessage() : "Đăng ký thất bại";
+                        callback.onError(error);
+                    }
+                });
     }
     public void getUserByID(String userID, AuthCallback callback){
         executorService.execute(()->{
