@@ -7,6 +7,7 @@ import com.example.moneyapp.data.local.AppDatabase;
 import com.example.moneyapp.data.local.dao.UserDao;
 import com.example.moneyapp.data.local.entity.User;
 import com.example.moneyapp.utils.PreferenceManager;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,6 +16,7 @@ public class AuthRepository {
     private final UserDao userDao;
     private final ExecutorService executorService;
     private final Context context;
+    private final FirebaseAuth mAuth;
 
     public interface AuthCallback {
         void onSuccess(User user);
@@ -27,6 +29,7 @@ public class AuthRepository {
         this.userDao = appDatabase.userDao();
         this.executorService = Executors.newSingleThreadExecutor();
         this.context = application.getApplicationContext();
+        this.mAuth = FirebaseAuth.getInstance();
     }
 
     public void loginByEmail(String email, String password, AuthCallback callback) {
@@ -139,5 +142,17 @@ public class AuthRepository {
                 callback.onError("Lỗi hệ thống: " + e.getMessage());
             }
         });
+    }
+
+    public void sendPasswordResetEmail(String email, AuthCallback callback) {
+        mAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        callback.onSuccess(null);
+                    } else {
+                        String error = task.getException() != null ? task.getException().getMessage() : "Gửi email thất bại";
+                        callback.onError(error);
+                    }
+                });
     }
 }

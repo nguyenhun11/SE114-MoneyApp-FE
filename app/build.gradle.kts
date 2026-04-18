@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
+    // Add the Google services Gradle plugin
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -50,4 +52,7 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
     implementation(libs.glide)
     annotationProcessor(libs.glide.compiler)
+    implementation(platform("com.google.firebase:firebase-bom:34.12.0"))
+    implementation("com.google.firebase:firebase-auth")
+
 }
