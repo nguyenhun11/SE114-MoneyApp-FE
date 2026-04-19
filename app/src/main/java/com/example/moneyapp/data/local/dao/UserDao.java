@@ -1,6 +1,7 @@
 package com.example.moneyapp.data.local.dao;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -15,12 +16,17 @@ public interface UserDao {
 
     @Query("SELECT * FROM users WHERE id = :userId LIMIT 1")
     User getUserById(String userId);
+    @Query("select * from users where email = :email limit 1")
+    User getUserByEmail(String email);
+    @Query("select * from users where phoneNumber = :phoneNumber limit 1")
+    User getUserByPhoneNumber(String phoneNumber);
 
-    @Query("select * from users where name = :username limit 1")
-    User getUserByUsername(String username);
 
     @Update
     void updateUser(User user);
+
+    @Delete
+    void deleteUser(User user);
 
     @Query("DELETE FROM users")
     void clearUser();
