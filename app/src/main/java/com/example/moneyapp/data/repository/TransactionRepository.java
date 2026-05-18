@@ -6,6 +6,7 @@ import android.content.Context;
 import com.example.moneyapp.data.local.AppDatabase;
 import com.example.moneyapp.data.local.dao.TransactionDao;
 import com.example.moneyapp.data.local.entity.Transaction;
+import com.example.moneyapp.data.local.pojo.TransactionWithDetails;
 import com.example.moneyapp.utils.PreferenceManager;
 
 import java.util.Date;
@@ -77,6 +78,24 @@ public class TransactionRepository {
            } catch (Exception e) {
                callback.onError("System error" + e.getMessage());
            }
+        });
+    }
+    // Thêm interface + method vào TransactionRepository
+    public interface TransactionWithDetailsCallback {
+        void onSuccess(List<TransactionWithDetails> list);
+        void onError(String message);
+    }
+
+    public void getTransactionsWithDetails(Date startDate, Date endDate,
+                                           TransactionWithDetailsCallback callback) {
+        executorService.execute(() -> {
+            try {
+                List<TransactionWithDetails> list =
+                        transactionDao.getTransactionsWithDetails(startDate, endDate, currentUserID);
+                callback.onSuccess(list);
+            } catch (Exception e) {
+                callback.onError("System error: " + e.getMessage());
+            }
         });
     }
 }

@@ -8,6 +8,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.example.moneyapp.data.local.entity.Transaction;
+import com.example.moneyapp.data.local.pojo.TransactionWithDetails;
 
 import java.util.Date;
 import java.util.List;
@@ -39,8 +40,19 @@ public interface TransactionDao {
             String categoryID,
             String userID
     );
-
-
+    // Thêm vào TransactionDao
+    @Query("SELECT t.id, t.transactionType, t.amount, t.note, t.date, " +
+            "sa.name AS sourceAccountName, " +
+            "c.name AS categoryName, c.color AS categoryColor, c.icon AS categoryIcon " +
+            "FROM transactions t " +
+            "INNER JOIN accounts sa ON t.sourceAccountId = sa.id " +
+            "LEFT JOIN categories c ON t.categoryId = c.id " +
+            "WHERE sa.userId = :userID " +
+            "AND (t.isDeleted IS NULL OR t.isDeleted = 0) " +
+            "AND t.date BETWEEN :startDate AND :endDate " +
+            "ORDER BY t.date DESC")
+    List<TransactionWithDetails> getTransactionsWithDetails(
+            Date startDate, Date endDate, String userID);
     @Update
     void updateTransaction(Transaction transaction);
 

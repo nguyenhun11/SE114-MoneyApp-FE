@@ -1,7 +1,6 @@
 package com.example.moneyapp.ui;
 
 import android.os.Bundle;
-import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
@@ -9,14 +8,12 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.data.local.DatabaseSeeder;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
 
-    private NavController navController;
-    private BottomNavigationView bottomNav;
-    private FloatingActionButton fabAdd;
     private MainUIHandler uiHandler;
 
     @Override
@@ -24,14 +21,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        bottomNav = findViewById(R.id.bottom_navigation);
-        fabAdd = findViewById(R.id.fab_add);
+        // Seed database if empty
+        DatabaseSeeder.seedIfEmpty(getApplication());
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        FloatingActionButton fabAdd = findViewById(R.id.fab_add);
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
         
         if (navHostFragment != null) {
-            navController = navHostFragment.getNavController();
+            NavController navController = navHostFragment.getNavController();
             NavigationUI.setupWithNavController(bottomNav, navController);
             
             uiHandler = new MainUIHandler(this, navController, bottomNav, fabAdd);
