@@ -4,22 +4,6 @@ MoneyApp là ứng dụng giúp người dùng theo dõi thu nhập, chi tiêu v
 
 ---
 
-## 🚀 Hướng dẫn thiết lập Firebase (Bắt buộc để Build)
-
-
-1.  **Tạo dự án Firebase:** Truy cập [Firebase Console](https://console.firebase.google.com/) và tạo một dự án mới.
-2.  **Thêm ứng dụng Android:**
-    *   Sử dụng Package Name: `com.example.moneyapp`.
-    *   Tải file `google-services.json` về máy.
-3.  **Cấu hình trong Project:**
-    *   Chép file `google-services.json` vào thư mục `app/` của dự án.
-4.  **Kích hoạt dịch vụ:**
-    *   Trong Firebase Console, vào phần **Authentication** -> **Sign-in method**.
-    *   Bật (Enable) phương thức **Email/Password**.
-5.  **Build dự án:** Thực hiện `Sync Project with Gradle Files` trong Android Studio và chạy ứng dụng.
-
----
-
 ## 🏗 Kiến trúc dự án (Architecture)
 
 Dự án chia làm 3 tầng chính để đảm bảo tính dễ bảo trì và mở rộng:
