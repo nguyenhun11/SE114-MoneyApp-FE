@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Màn hình Thống kê"
+            android:text="@string/stats_screen_title"
             android:textColor="@color/colorOnSurface" />
 
     </androidx.cardview.widget.CardView>

@@ -1,34 +1,45 @@
 package com.example.moneyapp.ui.profile;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.BaseFragment;
 import com.example.moneyapp.ui.SplashActivity;
 import com.example.moneyapp.utils.PreferenceManager;
 import com.example.moneyapp.viewmodel.ProfileViewModel;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
-public class ProfileFragment extends BaseFragment implements ProfileAdapter.OnOptionClickListener {
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+
+public class ProfileFragment extends BaseFragment {
     private ProfileViewModel profileViewModel;
-    private static final int OPTION_CHANGE_PASSWORD = 1;
-    private static final int OPTION_LOGOUT = 2;
-    private static final int OPTION_INFORMATION = 3;
+
+    private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    profileViewModel.updateProfileImage(uri.toString());
+                }
+            }
+    );
 
     @Override
     protected int getFabIcon() {
@@ -51,53 +62,116 @@ public class ProfileFragment extends BaseFragment implements ProfileAdapter.OnOp
         super.onViewCreated(view, savedInstanceState);
         profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 
-        // Header Title
-        TextView tvHeaderTitle = view.findViewById(R.id.tv_header_title);
-        if (tvHeaderTitle != null) tvHeaderTitle.setText("Hồ sơ");
-
-        // Setup RecyclerView
-        RecyclerView rvOptions = view.findViewById(R.id.rv_profile_options);
-        ProfileAdapter adapter = new ProfileAdapter(getProfileOptions(), this);
-        rvOptions.setAdapter(adapter);
-
-        // Mock User Data
-        profileViewModel.fetchUserData();
+        // UI Components
         TextView tvName = view.findViewById(R.id.tv_profile_name);
         TextView tvEmail = view.findViewById(R.id.tv_profile_email);
+        TextView tvCreatedAt = view.findViewById(R.id.tv_created_at);
+        TextView tvUserId = view.findViewById(R.id.tv_user_id);
+        TextView tvChangePassword = view.findViewById(R.id.tv_change_password_link);
+        SwitchCompat swSync = view.findViewById(R.id.sw_sync);
+        ImageButton btnLogout = view.findViewById(R.id.btn_logout);
+        ImageButton btnDelete = view.findViewById(R.id.btn_delete_account);
+        ImageView ivAvatar = view.findViewById(R.id.iv_profile_avatar);
+        View cvAvatarContainer = view.findViewById(R.id.cv_avatar_container);
+
+        // Fetch & Observe Data
+        profileViewModel.fetchUserData();
         profileViewModel.currentUser.observe(getViewLifecycleOwner(), user -> {
             if (user != null) {
-                if (tvName != null) tvName.setText(user.getName());
-                if (tvEmail != null) tvEmail.setText(user.getEmail());
+                tvName.setText(user.getName());
+                tvEmail.setText(user.getEmail());
+                tvUserId.setText("UserID: " + user.getId().substring(0, 8).toUpperCase()); // Show short ID
+
+                // Load Avatar
+                if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isEmpty()) {
+                    Glide.with(this)
+                            .load(user.getProfileImageUrl())
+                            .placeholder(R.drawable.ic_profile)
+                            .into(ivAvatar);
+                }
+
+                // Format Date: "Thứ 7 ngày 28/3/2026"
+                if (user.getCreatedAt() != null) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("'Thứ' u 'ngày' d/M/yyyy", new Locale("vi", "VN"));
+                    String dateStr = sdf.format(user.getCreatedAt());
+                    // SimpleDateFormat 'u' (day of week) returns 1-7, need manual mapping for Vietnamese "Thứ ..."
+                    tvCreatedAt.setText(getVietnameseDate(user.getCreatedAt()));
+                }
             }
+        });
+
+        profileViewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
+            if (message == null) return;
+
+            if (message.equals("SUCCESS_DELETE")) {
+                Toast.makeText(requireContext(), "Tài khoản đã được xóa thành công", Toast.LENGTH_SHORT).show();
+                performLogout();
+            } else if (!message.equals("SUCCESS")) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Click Listeners
+        tvName.setOnClickListener(v -> {
+            android.widget.EditText input = new android.widget.EditText(requireContext());
+            input.setText(tvName.getText().toString());
+            input.setPadding(50, 40, 50, 40);
+
+            // Giới hạn 20 ký tự
+            input.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(20)});
+
+            new android.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Đổi tên người dùng")
+                    .setMessage("Nhập tên mới của bạn (tối đa 20 ký tự):")
+                    .setView(input)
+                    .setPositiveButton("Lưu", (dialog, which) -> {
+                        String newName = input.getText().toString().trim();
+                        if (!newName.isEmpty()) {
+                            profileViewModel.updateUserName(newName);
+                        } else {
+                            Toast.makeText(requireContext(), "Tên không được để trống", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .show();
+        });
+
+        tvChangePassword.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_changePasswordFragment);
+        });
+
+        btnLogout.setOnClickListener(v -> performLogout());
+
+        btnDelete.setOnClickListener(v -> {
+            new android.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Xác nhận xóa tài khoản")
+                    .setMessage("Tất cả dữ liệu của bạn sẽ bị xóa vĩnh viễn. Bạn có chắc chắn muốn tiếp tục?")
+                    .setPositiveButton("Xóa", (dialog, which) -> {
+                        profileViewModel.deleteAccount();
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        });
+
+        swSync.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            String status = isChecked ? "Đã bật đồng bộ" : "Đã tắt đồng bộ";
+            Toast.makeText(requireContext(), status, Toast.LENGTH_SHORT).show();
+        });
+
+        cvAvatarContainer.setOnClickListener(v -> {
+            mGetContent.launch("image/*");
         });
     }
 
-    private List<ProfileOption> getProfileOptions() {
-        List<ProfileOption> options = new ArrayList<>();
-        options.add(new ProfileOption(OPTION_INFORMATION, R.drawable.ic_profile, "Thông tin ứng dụng"));
-        options.add(new ProfileOption(OPTION_CHANGE_PASSWORD, R.drawable.ic_transfer, "Thay đổi mật khẩu"));
-        options.add(new ProfileOption(OPTION_LOGOUT, R.drawable.ic_back, "Đăng xuất")); // Dùng tạm ic_back quay ngược làm logout
-        return options;
-    }
-
-    @Override
-    public void onOptionClick(ProfileOption option) {
-        switch (option.getId()) {
-            case OPTION_CHANGE_PASSWORD:
-                Navigation.findNavController(requireView()).navigate(R.id.action_profileFragment_to_changePasswordFragment);
-                break;
-            case OPTION_INFORMATION:
-                Navigation.findNavController(requireView()).navigate(R.id.action_profileFragment_to_informationFragment);
-                break;
-            case OPTION_LOGOUT:
-                performLogout();
-                break;
-        }
+    private String getVietnameseDate(java.util.Date date) {
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", new Locale("vi", "VN"));
+        SimpleDateFormat dateFormat = new SimpleDateFormat(" 'ngày' dd/MM/yyyy", new Locale("vi", "VN"));
+        return dayFormat.format(date) + dateFormat.format(date);
     }
 
     private void performLogout() {
-        PreferenceManager.getInstance(requireActivity().getApplicationContext()).setLoggedIn(false);
-
+        PreferenceManager.getInstance(requireActivity().getApplicationContext()).clear();
         Intent intent = new Intent(requireActivity(), SplashActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

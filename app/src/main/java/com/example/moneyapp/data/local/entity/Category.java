@@ -29,7 +29,9 @@ public class Category {
     private Double monthlyTarget;
     private String icon;
     private String color;
+    private String groupName;
     private int type; //0: transfer, 1: income, 2: expense
+    private Boolean isFrequent;
     private Boolean canDelete;
     private Boolean isSynced;
     private Boolean isDeleted;
@@ -43,7 +45,9 @@ public class Category {
             Double monthlyTarget,
             String icon,
             String color,
+            String groupName,
             int type,
+            Boolean isFrequent,
             Boolean canDelete,
             Boolean isSynced,
             Boolean isDeleted,
@@ -56,7 +60,9 @@ public class Category {
         this.monthlyTarget = monthlyTarget;
         this.icon = icon;
         this.color = color;
+        this.groupName = groupName;
         this.type = type;
+        this.isFrequent = isFrequent;
         this.canDelete = canDelete;
         this.isSynced = isSynced;
         this.isDeleted = isDeleted;
@@ -71,7 +77,9 @@ public class Category {
             Double monthlyTarget,
             String icon,
             String color,
+            String groupName,
             int type,
+            Boolean isFrequent,
             Boolean canDelete
     ) {
         this.id = UUID.randomUUID().toString();
@@ -80,7 +88,9 @@ public class Category {
         this.monthlyTarget = monthlyTarget;
         this.icon = icon;
         this.color = color;
+        this.groupName = groupName;
         this.type = type;
+        this.isFrequent = isFrequent;
         this.canDelete = canDelete;
         this.isSynced = false;
         this.isDeleted = false;
@@ -138,12 +148,28 @@ public class Category {
         this.color = color;
     }
 
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
     public int getType() {
         return type;
     }
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public Boolean getFrequent() {
+        return isFrequent;
+    }
+
+    public void setFrequent(Boolean frequent) {
+        isFrequent = frequent;
     }
 
     public Boolean getCanDelete() {

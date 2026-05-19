@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Lịch sử"
+                android:text="@string/account_history"
                 android:textColor="@color/colorOnSurface"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -87,7 +87,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Thêm mới"
+                android:text="@string/account_add_new"
                 android:textColor="@color/colorOnSurface"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -120,7 +120,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Chi tiết tài khoản"
+                    android:text="@string/account_detail"
                     android:textColor="@color/colorOnSurface"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -129,7 +129,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Danh sách các tài khoản sẽ hiển thị ở đây..."
+                    android:text="@string/account_list_empty"
                     android:textColor="#9E9E9E" />
 
             </LinearLayout>

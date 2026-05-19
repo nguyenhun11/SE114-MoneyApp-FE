@@ -17,6 +17,7 @@ public class AuthViewModel extends AndroidViewModel {
     // Dữ liệu gửi lên UI
     public final MutableLiveData<User> loginSuccess = new MutableLiveData<>();
     public final MutableLiveData<User> registerSuccess = new MutableLiveData<>();
+    public final MutableLiveData<Boolean> resetPasswordSuccess = new MutableLiveData<>();
     public final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     public final MutableLiveData<String> errorMessage = new MutableLiveData<>();
 
@@ -98,5 +99,26 @@ public class AuthViewModel extends AndroidViewModel {
             }
         };
         authRepository.register(newUser, callback);
+    }
+
+    public void resetPassword(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            errorMessage.setValue("Vui lòng nhập email");
+            return;
+        }
+        isLoading.setValue(true);
+        authRepository.sendPasswordResetEmail(email, new AuthRepository.AuthCallback() {
+            @Override
+            public void onSuccess(User user) {
+                resetPasswordSuccess.postValue(true);
+                isLoading.postValue(false);
+            }
+
+            @Override
+            public void onError(String message) {
+                errorMessage.postValue(message);
+                isLoading.postValue(false);
+            }
+        });
     }
 }

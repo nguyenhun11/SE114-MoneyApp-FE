@@ -25,7 +25,7 @@ public class AccountFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupBalanceSelector(view, "Ví cá nhân", "1.200.000", false);
+        setupBalanceSelector(view, getString(R.string.default_wallet_name), "1.200.000", false);
     }
 
     @Override

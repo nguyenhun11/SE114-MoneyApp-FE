@@ -34,7 +34,8 @@ public class MainUIHandler {
     private final Set<Integer> mainFragments = new HashSet<>(Arrays.asList(
             R.id.homeFragment,
             R.id.transactionFragment,
-            R.id.accountFragment
+            R.id.accountFragment,
+            R.id.categoryFragment
     ));
 
     public MainUIHandler(Context context, NavController navController, BottomNavigationView bottomNav, FloatingActionButton fabAdd) {
@@ -70,9 +71,10 @@ public class MainUIHandler {
 
     public void setBottomNavigationVisibility(boolean visible) {
         if (bottomNav != null) {
-            // Thay vì GONE (loại bỏ khỏi layout), sử dụng INVISIBLE để giữ nguyên vị trí các View khác
-            // nhưng làm cho thanh điều hướng trở nên trong suốt/không nhìn thấy.
-            bottomNav.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+            bottomNav.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+        if (fabAdd != null) {
+            fabAdd.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
     }
 

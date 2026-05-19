@@ -23,7 +23,7 @@ public class AddTransactionFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupHeader(view, "Giao dịch mới", true);
+        setupHeader(view, R.string.transaction, true);
         
         setupIncomeExpenseTabs(view, isExpense -> {
         });
