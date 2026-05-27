@@ -1,4 +1,4 @@
-package com.example.moneyapp.data.model;
+package com.example.moneyapp.model;
 
 public class CategorySummary {
     public String name;

@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
-import com.example.moneyapp.adapter.CategoryExpenseAdapter;
+import com.example.moneyapp.ui.category.CategoryExpenseAdapter;
 import com.example.moneyapp.model.CategoryExpense;
 import com.example.moneyapp.ui.BaseFragment;
 import com.google.android.material.appbar.AppBarLayout;

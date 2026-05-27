@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
-import com.example.moneyapp.adapter.TransactionAdapter;
 import com.example.moneyapp.data.local.pojo.TransactionWithDetails;
 import com.example.moneyapp.data.repository.TransactionRepository;
 import com.example.moneyapp.model.ListItem;

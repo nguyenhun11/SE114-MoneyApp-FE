@@ -1,4 +1,4 @@
-package com.example.moneyapp.adapter;
+package com.example.moneyapp.ui.category;
 
 import android.graphics.PorterDuff;
 import android.view.LayoutInflater;

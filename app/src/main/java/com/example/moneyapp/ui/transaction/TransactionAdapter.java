@@ -1,4 +1,4 @@
-package com.example.moneyapp.adapter;
+package com.example.moneyapp.ui.transaction;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
