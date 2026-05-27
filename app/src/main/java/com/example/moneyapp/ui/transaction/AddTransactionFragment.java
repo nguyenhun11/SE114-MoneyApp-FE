@@ -62,6 +62,8 @@ public class AddTransactionFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        setupHeader(view, R.string.transaction, true);
+        
         accountRepository    = new AccountRepository(requireActivity().getApplication());
         categoryRepository   = new CategoryRepository(requireActivity().getApplication());
         transactionRepository = new TransactionRepository(requireActivity().getApplication());

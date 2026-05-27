@@ -16,8 +16,23 @@ public interface CategoryDao {
     void insertCategory(Category category);
 
     // FIX: int → String
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertCategories(List<Category> categories);
+
     @Query("SELECT * FROM categories WHERE id = :categoryId")
     Category getCategoryById(String categoryId);
+
+    @Query("SELECT * FROM categories WHERE type = :type AND isDeleted = 0")
+    List<Category> getCategoriesByType(int type);
+
+    @Query("SELECT * FROM categories WHERE isFrequent = 1 AND isDeleted = 0")
+    List<Category> getFrequentCategories();
+
+    @Query("SELECT DISTINCT groupName FROM categories WHERE type = :type AND isDeleted = 0")
+    List<String> getGroupNamesByType(int type);
+
+    @Query("SELECT * FROM categories WHERE type = :type AND groupName = :groupName AND isDeleted = 0")
+    List<Category> getCategoriesByGroup(int type, String groupName);
 
     // THÊM: lấy categories theo userId + type
     @Query("SELECT * FROM categories WHERE userId = :userId AND type = :type AND (isDeleted IS NULL OR isDeleted = 0)")

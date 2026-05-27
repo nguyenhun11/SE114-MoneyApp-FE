@@ -1,0 +1,58 @@
+package com.example.moneyapp.adapter;
+
+import android.graphics.PorterDuff;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import com.example.moneyapp.R;
+import com.example.moneyapp.model.CategoryExpense;
+import java.text.DecimalFormat;
+import java.util.List;
+
+public class CategoryExpenseAdapter extends RecyclerView.Adapter<CategoryExpenseAdapter.ViewHolder> {
+    private List<CategoryExpense> categoryExpenses;
+
+    public CategoryExpenseAdapter(List<CategoryExpense> categoryExpenses) {
+        this.categoryExpenses = categoryExpenses;
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_category_expense, parent, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        CategoryExpense item = categoryExpenses.get(position);
+        holder.tvName.setText(item.getName());
+        
+        DecimalFormat formatter = new DecimalFormat("#,###");
+        holder.tvAmount.setText(formatter.format(item.getAmount()));
+        
+        holder.tvPercentage.setText(String.format("%.0f%%", item.getPercentage()));
+        holder.viewColor.getBackground().setColorFilter(item.getColor(), PorterDuff.Mode.SRC_IN);
+    }
+
+    @Override
+    public int getItemCount() {
+        return categoryExpenses.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView tvName, tvAmount, tvPercentage;
+        View viewColor;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvName = itemView.findViewById(R.id.tv_category_name);
+            tvAmount = itemView.findViewById(R.id.tv_amount);
+            tvPercentage = itemView.findViewById(R.id.tv_percentage);
+            viewColor = itemView.findViewById(R.id.view_color);
+        }
+    }
+}

@@ -65,7 +65,22 @@
         android:id="@+id/categoryFragment"
         android:name="com.example.moneyapp.ui.category.CategoryFragment"
         android:label="Hạng mục"
-        tools:layout="@layout/fragment_category" />
+        tools:layout="@layout/fragment_category">
+        <action
+            android:id="@+id/action_categoryFragment_to_addCategoryFragment"
+            app:destination="@id/addCategoryFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addCategoryFragment"
+        android:name="com.example.moneyapp.ui.category.AddCategoryFragment"
+        android:label="Thêm hạng mục"
+        tools:layout="@layout/fragment_category_add">
+        <argument
+            android:name="type"
+            android:defaultValue="2"
+            app:argType="integer" />
+    </fragment>
 
     <fragment
         android:id="@+id/settingsFragment"

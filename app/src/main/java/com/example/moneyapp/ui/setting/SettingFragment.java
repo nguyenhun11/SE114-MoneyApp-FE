@@ -21,6 +21,6 @@ public class SettingFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupHeader(view, "Cài đặt", false);
+        setupHeader(view, R.string.action_settings, false);
     }
 }

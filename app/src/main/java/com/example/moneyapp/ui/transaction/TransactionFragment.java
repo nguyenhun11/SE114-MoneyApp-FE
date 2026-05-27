@@ -63,6 +63,8 @@ public class TransactionFragment extends BaseFragment {
 
         transactionRepository = new TransactionRepository(requireActivity().getApplication());
         tvTotalBalance = view.findViewById(R.id.tvTotalBalance);
+        setupBalanceSelector(view, getString(R.string.total_balance), "2.500.000", true);
+        setupIncomeExpenseTabs(view, isExpense -> {});
 
         // Setup RecyclerView
         RecyclerView recyclerView = view.findViewById(R.id.rvTransactions);

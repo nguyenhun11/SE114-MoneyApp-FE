@@ -1,6 +1,7 @@
 package com.example.moneyapp.data.repository;
 
 import android.app.Application;
+
 import com.example.moneyapp.data.local.AppDatabase;
 import com.example.moneyapp.data.local.dao.AccountDao;
 import com.example.moneyapp.data.local.entity.Account;
@@ -20,19 +21,38 @@ public class AccountRepository {
     }
 
     public AccountRepository(Application application) {
-        accountDao = AppDatabase.getInstance(application).accountDao();
-        executor = Executors.newSingleThreadExecutor();
+        AppDatabase database = AppDatabase.getInstance(application);
+        this.accountDao = database.accountDao();
+        this.executor = Executors.newSingleThreadExecutor();
         currentUserId = PreferenceManager.getInstance(application).getUserID();
+    }
+
+    public void getAllAccounts(OnLoadedListener<List<Account>> listener) {
+        executor.execute(() -> {
+            List<Account> accounts = accountDao.getAllAccounts();
+            if (listener != null) listener.onLoaded(accounts);
+        });
     }
 
     public void getAccounts(AccountCallback callback) {
         executor.execute(() -> {
             try {
-                List<Account> accounts = accountDao.getAccountsByUserId(currentUserId);
-                callback.onSuccess(accounts);
+                List<Account> accounts = accountDao.getAllAccounts();
+                if (callback != null) callback.onSuccess(accounts);
             } catch (Exception e) {
-                callback.onError(e.getMessage());
+                if (callback != null) callback.onError(e.getMessage());
             }
         });
+    }
+
+    public void insertAccount(Account account, Runnable onComplete) {
+        executor.execute(() -> {
+            accountDao.insertAccount(account);
+            if (onComplete != null) onComplete.run();
+        });
+    }
+
+    public interface OnLoadedListener<T> {
+        void onLoaded(T data);
     }
 }

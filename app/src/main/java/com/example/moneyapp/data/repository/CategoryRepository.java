@@ -1,6 +1,7 @@
 package com.example.moneyapp.data.repository;
 
 import android.app.Application;
+import android.content.Context;
 import com.example.moneyapp.data.local.AppDatabase;
 import com.example.moneyapp.data.local.dao.CategoryDao;
 import com.example.moneyapp.data.local.entity.Category;
@@ -19,13 +20,24 @@ public class CategoryRepository {
         void onError(String message);
     }
 
-    public CategoryRepository(Application application) {
-        categoryDao = AppDatabase.getInstance(application).categoryDao();
+    public interface Callback<T> {
+        void onResult(T result);
+    }
+
+    public CategoryRepository(Context context) {
+        categoryDao = AppDatabase.getInstance(context).categoryDao();
         executor = Executors.newSingleThreadExecutor();
-        currentUserId = PreferenceManager.getInstance(application).getUserID();
+        currentUserId = PreferenceManager.getInstance(context).getUserID();
     }
 
     // type: 1=income(thu), 2=expense(chi) — theo Category entity
+    public void getAllCategoriesByType(int type, Callback<List<Category>> callback) {
+        executor.execute(() -> {
+            List<Category> categories = categoryDao.getCategoriesByTypeAndUserId(currentUserId, type);
+            callback.onResult(categories);
+        });
+    }
+
     public void getCategoriesByType(int type, CategoryCallback callback) {
         executor.execute(() -> {
             try {
@@ -34,6 +46,27 @@ public class CategoryRepository {
             } catch (Exception e) {
                 callback.onError(e.getMessage());
             }
+        });
+    }
+
+    public void insertCategory(Category category, Runnable onComplete) {
+        executor.execute(() -> {
+            categoryDao.insertCategory(category);
+            if (onComplete != null) onComplete.run();
+        });
+    }
+
+    public void updateCategory(Category category, Runnable onComplete) {
+        executor.execute(() -> {
+            categoryDao.updateCategory(category);
+            if (onComplete != null) onComplete.run();
+        });
+    }
+    
+    public void deleteCategory(Category category, Runnable onComplete) {
+        executor.execute(() -> {
+            categoryDao.deleteCategory(category);
+            if (onComplete != null) onComplete.run();
         });
     }
 }

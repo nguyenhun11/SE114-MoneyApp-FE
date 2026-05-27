@@ -23,7 +23,7 @@ public class TransactionDetailFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupHeader(view, "Chi tiết giao dịch", true);
+        setupHeader(view, R.string.transaction_detail_title, true);
 
         // Đọc dữ liệu được truyền từ TransactionFragment
         Bundle args = getArguments();
@@ -62,6 +62,7 @@ public class TransactionDetailFragment extends BaseFragment {
             tvAmount.setTextColor(0xFF4CAF50); // xanh
             tvBadge.setText("Thu nhập");
         }
+
     }
 
     @Override

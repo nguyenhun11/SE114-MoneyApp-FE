@@ -16,11 +16,12 @@ public interface AccountDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAccount(Account account);
 
+    @Query("SELECT * FROM accounts WHERE isDeleted = 0")
+    List<Account> getAllAccounts();
+
     @Query("SELECT * FROM accounts WHERE id = :id LIMIT 1")
     Account getAccountById(String id);
 
-    @Query("SELECT * FROM accounts WHERE userId = :userId AND (isDeleted IS NULL OR isDeleted = 0)")
-    List<Account> getAccountsByUserId(String userId);
     @Query("SELECT COUNT(*) FROM accounts WHERE userId = :userId")
     int countByUserId(String userId);
     @Update
