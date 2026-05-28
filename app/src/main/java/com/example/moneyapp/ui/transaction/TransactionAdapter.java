@@ -1,5 +1,6 @@
 package com.example.moneyapp.ui.transaction;
 
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Transaction;
+import com.example.moneyapp.utils.AppResourceManager;
 
 import java.util.List;
 
@@ -33,7 +35,6 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         notifyDataSetChanged();
     }
 
-    // ViewHolder cho header ngày
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
         TextView tvDateLabel, tvDateSummary;
         HeaderViewHolder(View v) {
@@ -43,7 +44,6 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    // ViewHolder cho item giao dịch
     static class TransactionViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvAmount, tvTime, tvSource;
         View viewCategoryIcon;
@@ -88,32 +88,26 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             TransactionViewHolder h = (TransactionViewHolder) holder;
             Transaction t = item.getTransaction();
 
-            h.tvTitle.setText(t.getCategory());
+            h.tvTitle.setText(t.getCategoryName() != null ? t.getCategoryName() : "Giao dịch");
             h.tvSource.setText(t.getSource());
             h.tvTime.setText(t.getTime());
 
-            // Số tiền + màu
-            if (t.getType().equals("chi")) {
-                h.tvAmount.setText("- " + t.getAmount() + "đ");
-                h.tvAmount.setTextColor(Color.parseColor("#E8435A"));
-            } else {
-                h.tvAmount.setText("+ " + t.getAmount() + "đ");
-                h.tvAmount.setTextColor(Color.parseColor("#4CAF50"));
+            if (t.getAmount() != null) {
+                // Tạm thời hardcode logic màu text theo amount/type
+                if (t.getAmount() < 0) {
+                    h.tvAmount.setText(t.getFormattedAmount() + "đ");
+                    h.tvAmount.setTextColor(Color.parseColor("#E8435A"));
+                } else {
+                    h.tvAmount.setText("+ " + t.getFormattedAmount() + "đ");
+                    h.tvAmount.setTextColor(Color.parseColor("#4CAF50"));
+                }
             }
 
-            // Màu icon
-            String color;
-            switch (t.getCategory()) {
-                case "Sinh hoạt": color = "#7B61FF"; break;
-                case "Ăn uống":   color = "#FFA726"; break;
-                case "Di chuyển": color = "#29B6F6"; break;
-                case "Mua sắm":   color = "#EC407A"; break;
-                case "Lương":     color = "#4CAF50"; break;
-                default:           color = "#9E9E9E"; break;
-            }
-            h.viewCategoryIcon.getBackground().mutate()
-                    .setTint(Color.parseColor(color));
-
+            // Sử dụng AppResourceManager để lấy màu dựa trên ID (nếu model Transaction có field này)
+            // Ở đây tôi giả định bạn sẽ cập nhật model để chứa colorId từ Category
+            // int color = AppResourceManager.getColor(t.getColorId());
+            // h.viewCategoryIcon.setBackgroundTintList(ColorStateList.valueOf(color));
+            
             h.itemView.setOnClickListener(v -> listener.onItemClick(t));
         }
     }

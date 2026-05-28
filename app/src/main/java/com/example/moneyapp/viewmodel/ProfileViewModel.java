@@ -7,28 +7,40 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.moneyapp.data.local.entity.User;
+import com.example.moneyapp.model.User;
+import com.example.moneyapp.data.remote.request.UserProfileRequest;
+import com.example.moneyapp.data.remote.response.UserProfileResponse;
 import com.example.moneyapp.data.repository.AuthRepository;
-import com.example.moneyapp.utils.PreferenceManager;
+import com.example.moneyapp.data.repository.UserRepository;
 
 public class ProfileViewModel extends AndroidViewModel {
-    private final Context context;
     private final AuthRepository authRepository;
+    private final UserRepository userRepository;
     public final MutableLiveData<User> currentUser = new MutableLiveData<>();
     public MutableLiveData<String> errorMessage = new MutableLiveData<>();
 
 
     public ProfileViewModel(@NonNull Application application) {
         super(application);
-        context = application.getApplicationContext();
+        Context context = application.getApplicationContext();
         authRepository = new AuthRepository(application);
+        userRepository = new UserRepository(context);
     }
 
-    public void fetchUserData(){
-        String userID = PreferenceManager.getInstance(context).getUserID();
-        authRepository.getUserByID(userID, new AuthRepository.AuthCallback() {
+    public void fetchUserData() {
+        userRepository.getUserProfile(new UserRepository.UserCallback<UserProfileResponse>() {
             @Override
-            public void onSuccess(User user) {
+            public void onSuccess(UserProfileResponse response) {
+                // Map API response to local User entity for UI compatibility
+                User user = new User(
+                        String.valueOf(response.getId()),
+                        response.getName(),
+                        response.getEmail(),
+                        response.getPhoneNumber(),
+                        response.getImageUrl(),
+                        response.getDailyStreak(),
+                        response.isTodayCheckedIn()
+                );
                 currentUser.postValue(user);
             }
 
@@ -53,10 +65,9 @@ public class ProfileViewModel extends AndroidViewModel {
             return;
         }
 
-        String userID = PreferenceManager.getInstance(context).getUserID();
-        authRepository.updatePassword(userID, oldPass, newPass, new AuthRepository.AuthCallback() {
+        authRepository.changePassword(oldPass, newPass, new AuthRepository.AuthCallback<Void>() {
             @Override
-            public void onSuccess(User user) {
+            public void onSuccess(Void result) {
                 errorMessage.postValue("SUCCESS");
             }
 
@@ -70,11 +81,18 @@ public class ProfileViewModel extends AndroidViewModel {
     public void updateUserName(String newName) {
         User user = currentUser.getValue();
         if (user != null && !newName.isEmpty()) {
-            user.setName(newName);
-            authRepository.updateUser(user, new AuthRepository.AuthCallback() {
+            UserProfileRequest request = new UserProfileRequest(
+                    newName,
+                    user.getEmail(),
+                    user.getProfileImageUrl(),
+                    user.getPhoneNumber()
+            );
+
+            userRepository.updateUserProfile(request, new UserRepository.UserCallback<Void>() {
                 @Override
-                public void onSuccess(User updatedUser) {
-                    currentUser.postValue(updatedUser);
+                public void onSuccess(Void result) {
+                    user.setName(newName);
+                    currentUser.postValue(user);
                     errorMessage.postValue("SUCCESS");
                 }
 
@@ -89,11 +107,18 @@ public class ProfileViewModel extends AndroidViewModel {
     public void updateProfileImage(String imageUri) {
         User user = currentUser.getValue();
         if (user != null) {
-            user.setProfileImageUrl(imageUri);
-            authRepository.updateUser(user, new AuthRepository.AuthCallback() {
+            UserProfileRequest request = new UserProfileRequest(
+                    user.getName(),
+                    user.getEmail(),
+                    imageUri,
+                    user.getPhoneNumber()
+            );
+
+            userRepository.updateUserProfile(request, new UserRepository.UserCallback<Void>() {
                 @Override
-                public void onSuccess(User updatedUser) {
-                    currentUser.postValue(updatedUser);
+                public void onSuccess(Void result) {
+                    user.setProfileImageUrl(imageUri);
+                    currentUser.postValue(user);
                     errorMessage.postValue("SUCCESS_IMAGE");
                 }
 
@@ -106,10 +131,10 @@ public class ProfileViewModel extends AndroidViewModel {
     }
 
     public void deleteAccount() {
-        String userID = PreferenceManager.getInstance(context).getUserID();
-        authRepository.deleteUser(userID, new AuthRepository.AuthCallback() {
+        // Mode can be "permanent" or "soft" based on your API logic
+        userRepository.deleteUser("permanent", new UserRepository.UserCallback<Void>() {
             @Override
-            public void onSuccess(User user) {
+            public void onSuccess(Void result) {
                 errorMessage.postValue("SUCCESS_DELETE");
             }
 

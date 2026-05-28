@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
-import com.example.moneyapp.data.local.entity.Category;
+import com.example.moneyapp.model.Category;
 import com.example.moneyapp.ui.BaseFragment;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
 

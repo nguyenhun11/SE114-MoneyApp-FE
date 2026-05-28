@@ -6,4 +6,12 @@ public class TransferRequest {
     private Double amount;
     private String transferDate;
     private String description;
+
+    public TransferRequest(String sourceAccountId, String destinationAccountId, Double amount, String transferDate, String description) {
+        this.sourceAccountId = sourceAccountId;
+        this.destinationAccountId = destinationAccountId;
+        this.amount = amount;
+        this.transferDate = transferDate;
+        this.description = description;
+    }
 }

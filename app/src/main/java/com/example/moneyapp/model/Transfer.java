@@ -1,28 +1,30 @@
-package com.example.moneyapp.data.remote.response;
+package com.example.moneyapp.model;
 
-public class TransferResponse {
+import java.util.Date;
+
+public class Transfer {
     private String id;
     private String sourceAccountId;
     private String sourceAccountName;
     private String destinationAccountId;
     private String destinationAccountName;
     private Double amount;
-    private String transferDate;
+    private Date date;
     private String description;
-    private String createdAt;
-    private String lastUpdatedAt;
+    private Date createdAt;
+    private Date updatedAt;
 
-    public TransferResponse(String id, String sourceAccountId, String sourceAccountName, String destinationAccountId, String destinationAccountName, Double amount, String transferDate, String description, String createdAt, String lastUpdatedAt) {
+    public Transfer(String id, String sourceAccountId, String sourceAccountName, String destinationAccountId, String destinationAccountName, Double amount, Date date, String description, Date createdAt, Date updatedAt) {
         this.id = id;
         this.sourceAccountId = sourceAccountId;
         this.sourceAccountName = sourceAccountName;
         this.destinationAccountId = destinationAccountId;
         this.destinationAccountName = destinationAccountName;
         this.amount = amount;
-        this.transferDate = transferDate;
+        this.date = date;
         this.description = description;
         this.createdAt = createdAt;
-        this.lastUpdatedAt = lastUpdatedAt;
+        this.updatedAt = updatedAt;
     }
 
     public String getId() {
@@ -73,12 +75,12 @@ public class TransferResponse {
         this.amount = amount;
     }
 
-    public String getTransferDate() {
-        return transferDate;
+    public Date getDate() {
+        return date;
     }
 
-    public void setTransferDate(String transferDate) {
-        this.transferDate = transferDate;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public String getDescription() {
@@ -89,19 +91,19 @@ public class TransferResponse {
         this.description = description;
     }
 
-    public String getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
-    public String getLastUpdatedAt() {
-        return lastUpdatedAt;
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setLastUpdatedAt(String lastUpdatedAt) {
-        this.lastUpdatedAt = lastUpdatedAt;
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

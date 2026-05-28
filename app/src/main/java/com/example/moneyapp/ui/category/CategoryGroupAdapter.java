@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
-import com.example.moneyapp.data.local.entity.Category;
+import com.example.moneyapp.model.Category;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

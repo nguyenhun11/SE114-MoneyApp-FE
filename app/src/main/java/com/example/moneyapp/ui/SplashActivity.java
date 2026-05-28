@@ -1,7 +1,6 @@
 package com.example.moneyapp.ui;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,7 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.auth.AuthActivity;
-import com.example.moneyapp.utils.PreferenceManager;
+import com.example.moneyapp.data.local.PreferenceManager;
 
 public class SplashActivity extends AppCompatActivity {
 

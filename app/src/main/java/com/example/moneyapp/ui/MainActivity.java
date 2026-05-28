@@ -8,7 +8,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.moneyapp.R;
-import com.example.moneyapp.data.local.DatabaseSeeder;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -20,9 +19,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Seed database if empty
-        DatabaseSeeder.seedIfEmpty(getApplication());
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         FloatingActionButton fabAdd = findViewById(R.id.fab_add);

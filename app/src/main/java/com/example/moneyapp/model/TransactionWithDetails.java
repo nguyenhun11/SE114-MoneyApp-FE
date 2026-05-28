@@ -1,5 +1,5 @@
 // com/example/moneyapp/data/local/pojo/TransactionWithDetails.java
-package com.example.moneyapp.data.local.pojo;
+package com.example.moneyapp.model;
 
 import java.util.Date;
 

@@ -20,7 +20,7 @@ import com.bumptech.glide.Glide;
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.BaseFragment;
 import com.example.moneyapp.ui.SplashActivity;
-import com.example.moneyapp.utils.PreferenceManager;
+import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.viewmodel.ProfileViewModel;
 
 import java.text.SimpleDateFormat;

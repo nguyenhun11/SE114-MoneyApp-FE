@@ -1,20 +1,21 @@
 package com.example.moneyapp.viewmodel;
 
 import android.app.Application;
-import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.moneyapp.data.local.entity.User;
+import com.example.moneyapp.data.local.PreferenceManager;
+import com.example.moneyapp.data.remote.response.UserProfileResponse;
+import com.example.moneyapp.data.repository.UserRepository;
+import com.example.moneyapp.model.User;
 import com.example.moneyapp.data.repository.AuthRepository;
-import com.example.moneyapp.utils.PreferenceManager;
 
 public class AuthViewModel extends AndroidViewModel {
     private final AuthRepository authRepository;
+    private final UserRepository userRepository;
 
-    // Dữ liệu gửi lên UI
     public final MutableLiveData<User> loginSuccess = new MutableLiveData<>();
     public final MutableLiveData<User> registerSuccess = new MutableLiveData<>();
     public final MutableLiveData<Boolean> resetPasswordSuccess = new MutableLiveData<>();
@@ -24,24 +25,37 @@ public class AuthViewModel extends AndroidViewModel {
     public AuthViewModel(@NonNull Application application) {
         super(application);
         authRepository = new AuthRepository(application);
+        userRepository = new UserRepository(application);
     }
 
     public void login(String loginInput, String password){
-        if (loginInput == null || loginInput.trim().isEmpty()){
-            errorMessage.setValue("Invalid email or phone number");
+        if (loginInput == null || loginInput.trim().isEmpty() || !loginInput.contains("@")){
+            errorMessage.setValue("Email không hợp lệ!");
             return;
         }
         if (password == null || password.trim().isEmpty()){
-            errorMessage.setValue("Invalid password");
+            errorMessage.setValue("Mật khẩu không được để trống");
             return;
         }
-        // setValue dùng cho luồng chính, postValue dùng cho luồng phụ (exec)
+
         isLoading.setValue(true);
-        AuthRepository.AuthCallback callback = new AuthRepository.AuthCallback() {
+        AuthRepository.AuthCallback<Integer> callback = new AuthRepository.AuthCallback<Integer>() {
             @Override
-            public void onSuccess(User user) {
-                loginSuccess.postValue(user);
-                isLoading.postValue(false);
+            public void onSuccess(Integer userId) {
+                userRepository.getUserProfile(new UserRepository.UserCallback<UserProfileResponse>() {
+                    @Override
+                    public void onSuccess(UserProfileResponse response) {
+                        User completeUser = PreferenceManager.getInstance(getApplication()).getCurrentUser();
+                        loginSuccess.postValue(completeUser);
+                        isLoading.postValue(false);
+                    }
+                    @Override
+                    public void onError(String message) { // Đăng nhập thành công nhưng lấy thông tin không thành cong
+                        User basicUser = PreferenceManager.getInstance(getApplication()).getCurrentUser();
+                        loginSuccess.postValue(basicUser);
+                        isLoading.postValue(false);
+                    }
+                });
             }
             @Override
             public void onError(String message) {
@@ -50,14 +64,11 @@ public class AuthViewModel extends AndroidViewModel {
             }
         };
 
-        if (loginInput.contains("@")){
-            authRepository.loginByEmail(loginInput, password, callback);
-        } else {
-            authRepository.loginByPhoneNumber(loginInput, password, callback);
-        }
+        authRepository.loginByEmail(loginInput, password, callback);
     }
 
     public void register(
+            String name,
             String email,
             String password,
             String confirmPassword
@@ -78,19 +89,25 @@ public class AuthViewModel extends AndroidViewModel {
             errorMessage.setValue("Passwords do not match");
             return;
         }
+
         isLoading.setValue(true);
-        User newUser = new User(
-                "new name",
-                email,
-                "phoneNumber",
-                password,
-                "profileImageUrl"
-        );
-        AuthRepository.AuthCallback callback = new AuthRepository.AuthCallback() {
+        AuthRepository.AuthCallback<Integer> callback = new AuthRepository.AuthCallback<Integer>() {
             @Override
-            public void onSuccess(User user) {
-                registerSuccess.postValue(user);
-                isLoading.postValue(false);
+            public void onSuccess(Integer userId) {
+                userRepository.getUserProfile(new UserRepository.UserCallback<>() {
+                    @Override
+                    public void onSuccess(UserProfileResponse response) {
+                        User user = PreferenceManager.getInstance(getApplication()).getCurrentUser();
+                        registerSuccess.postValue(user);
+                        isLoading.postValue(false);
+                    }
+                    @Override
+                    public void onError(String message) { // Đăng ký thành công nhưng lấy thông tin không thành cong
+                        User user = PreferenceManager.getInstance(getApplication()).getCurrentUser();
+                        registerSuccess.postValue(user);
+                        isLoading.postValue(false);
+                    }
+                });
             }
             @Override
             public void onError(String message) {
@@ -98,7 +115,8 @@ public class AuthViewModel extends AndroidViewModel {
                 isLoading.postValue(false);
             }
         };
-        authRepository.register(newUser, callback);
+
+        authRepository.register(name, email, password, callback);
     }
 
     public void resetPassword(String email) {
@@ -107,9 +125,9 @@ public class AuthViewModel extends AndroidViewModel {
             return;
         }
         isLoading.setValue(true);
-        authRepository.sendPasswordResetEmail(email, new AuthRepository.AuthCallback() {
+        authRepository.sendPasswordResetEmail(email, new AuthRepository.AuthCallback<>() {
             @Override
-            public void onSuccess(User user) {
+            public void onSuccess(String message) {
                 resetPasswordSuccess.postValue(true);
                 isLoading.postValue(false);
             }
