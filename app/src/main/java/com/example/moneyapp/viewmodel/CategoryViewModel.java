@@ -66,7 +66,7 @@ public class CategoryViewModel extends AndroidViewModel {
     }
 
     public void addCategory(Category category) {
-        repository.insertCategory(category, new CategoryRepository.CategoryCallback<Void>() {
+        repository.createCategory(category, new CategoryRepository.CategoryCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 saveSuccess.postValue(true);

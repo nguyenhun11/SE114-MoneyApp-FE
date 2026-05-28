@@ -1,6 +1,9 @@
 package com.example.moneyapp.data.remote.api;
 
 import com.example.moneyapp.data.remote.request.AccountRequest;
+import com.example.moneyapp.data.remote.request.AdjustBalanceRequest;
+import com.example.moneyapp.data.remote.request.CategoryGroupRequest;
+import com.example.moneyapp.data.remote.request.CategoryGroupResponse;
 import com.example.moneyapp.data.remote.request.CategoryRequest;
 import com.example.moneyapp.data.remote.request.ChangePasswordRequest;
 import com.example.moneyapp.data.remote.request.CheckInRequest;
@@ -82,6 +85,23 @@ public interface ApiService {
     );
     //endregion
 
+    //region Category Group
+    @GET("api/CategoryGroup/expense")
+    Call<List<CategoryGroupResponse>> getAllExpenseCategoryGroups();
+    @GET("api/CategoryGroup/income")
+    Call<List<CategoryGroupResponse>> getAllIncomeCategoryGroups();
+    @POST("api/CategoryGroup/expense")
+    Call<CategoryGroupResponse> createExpenseCategoryGroup(@Body CategoryGroupRequest request);
+    @POST("api/CategoryGroup/income")
+    Call<CategoryGroupResponse> createIncomeCategoryGroup(@Body CategoryGroupRequest request);
+    @PUT("api/CategoryGroup/{id}")
+    Call<Void> updateCategoryGroup(@Path("id") String id, @Body CategoryGroupRequest request);
+    @PUT("api/CategoryGroup/reorder/{id}")
+    Call<Void> reorderCategoryGroup(@Path("id") String id, @Body ReorderCategoryRequest request);
+    @DELETE("api/CategoryGroup/{id}")
+    Call<Void> deleteCategoryGroup(@Path("id") String id);
+    //endregion
+
     //region Category
     @GET("api/Category/expense")
     Call<List<CategoryResponse>> getAllExpenseCategories();
@@ -89,6 +109,8 @@ public interface ApiService {
     Call<List<CategoryResponse>> getAllIncomeCategories();
     @GET("api/Category/{id}")
     Call<CategoryResponse> getCategoryById(@Path("id") String id);
+    @GET("api/Category/group/{groupId}")
+    Call<List<CategoryResponse>> getCategoriesByGroupId(@Path("groupId") String groupId);
     @POST("api/Category/expense")
     Call<Void> createExpenseCategory(@Body CategoryRequest request);
     @POST("api/Category/income")
@@ -154,7 +176,7 @@ public interface ApiService {
             @Query("accountId") String accountId
     );
     @POST("api/AdjustBalance")
-    Call<Void> adjustBalance(@Body TransactionRequest request);
+    Call<Void> adjustBalance(@Body AdjustBalanceRequest request);
     //endregion
 
     //region Statistic

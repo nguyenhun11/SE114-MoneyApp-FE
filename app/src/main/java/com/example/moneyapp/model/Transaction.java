@@ -11,19 +11,15 @@ public class Transaction {
     private String accountName;
     private String categoryId; // ID danh mục
     private String categoryName;
-    private CategoryType type;
     private Double amount;
     private Date date;
     private String description;
     private List<String> imageUrls;
 
-    public Transaction() {}
-
-    public Transaction(String transactionId, String accountId, String categoryId, CategoryType type, Double amount, Date date, String description, List<String> imageUrls) {
+    public Transaction(String transactionId, String accountId, String categoryId, Double amount, Date date, String description, List<String> imageUrls) {
         this.transactionId = transactionId;
         this.accountId = accountId;
         this.categoryId = categoryId;
-        this.type = type;
         this.amount = amount;
         this.date = date;
         this.description = description;
@@ -44,9 +40,6 @@ public class Transaction {
 
     public String getCategoryName() { return categoryName; }
     public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
-
-    public CategoryType getType() { return type; }
-    public void setType(CategoryType type) { this.type = type; }
 
     public Double getAmount() { return amount; }
     public void setAmount(Double amount) { this.amount = amount; }

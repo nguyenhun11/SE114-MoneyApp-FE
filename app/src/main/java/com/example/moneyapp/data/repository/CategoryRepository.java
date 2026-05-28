@@ -31,10 +31,11 @@ public class CategoryRepository extends BaseRepository {
     private Category mapToCategory(CategoryResponse response) {
         return new Category(
                 response.getId(),
-                response.getName(),
-                response.getIconId(),
+                response.getCategoryName(),
+                response.getType() == 1 ? CategoryType.INCOME : CategoryType.EXPENSE,
+                response.getMonthlyTarget(),
                 response.getColorId(),
-                response.getCategoryType() == 1 ? CategoryType.INCOME : CategoryType.EXPENSE,
+                response.getIconId(),
                 response.getSortingOrder(),
                 DateConverter.convertStringToDate(response.getCreatedAt()),
                 DateConverter.convertStringToDate(response.getLastUpdatedAt())
@@ -85,12 +86,14 @@ public class CategoryRepository extends BaseRepository {
         });
     }
 
-    public void insertCategory(Category category, CategoryCallback<Void> callback) {
+    public void createCategory(Category category, CategoryCallback<Void> callback) {
         CategoryRequest request = new CategoryRequest(
                 category.getCategoryName(),
-                category.getIcon(),
-                category.getColor()
+                category.getMonthlyTarget(),
+                category.getColor(),
+                category.getIcon()
         );
+
 
         Call<Void> call;
         if (category.getType() == CategoryType.INCOME) {
@@ -119,8 +122,9 @@ public class CategoryRepository extends BaseRepository {
     public void updateCategory(Category category, CategoryCallback<Void> callback) {
         CategoryRequest request = new CategoryRequest(
                 category.getCategoryName(),
-                category.getIcon(),
-                category.getColor()
+                category.getMonthlyTarget(),
+                category.getColor(),
+                category.getIcon()
         );
 
         Call<Void> call;

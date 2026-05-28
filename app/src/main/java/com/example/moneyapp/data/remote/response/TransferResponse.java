@@ -12,7 +12,15 @@ public class TransferResponse {
     private String createdAt;
     private String lastUpdatedAt;
 
-    public TransferResponse(String id, String sourceAccountId, String sourceAccountName, String destinationAccountId, String destinationAccountName, Double amount, String transferDate, String description, String createdAt, String lastUpdatedAt) {
+    public TransferResponse(String id,
+                            String sourceAccountId,
+                            String sourceAccountName,
+                            String destinationAccountId,
+                            String destinationAccountName,
+                            Double amount, String transferDate,
+                            String description,
+                            String createdAt, 
+                            String lastUpdatedAt) {
         this.id = id;
         this.sourceAccountId = sourceAccountId;
         this.sourceAccountName = sourceAccountName;

@@ -28,16 +28,18 @@ public class TransferRepository extends BaseRepository {
     }
 
     private Transfer mapToTransfer(TransferResponse response) {
-        Transfer transfer = new Transfer();
-        transfer.setId(response.getId());
-        transfer.setSourceAccountId(response.getSourceAccount());
-        transfer.setSourceAccountName(response.getSourceAccountName());
-        transfer.setDestinationAccountId(response.getDestinationAccount());
-        transfer.setDestinationAccountName(response.getDestinationAccountName());
-        transfer.setAmount(response.getAmount());
-        transfer.setDate(DateConverter.convertStringToDate(response.getTransferDate()));
-        transfer.setDescription(response.getDescription());
-        return transfer;
+        return new Transfer(
+                response.getId(),
+                response.getSourceAccountId(),
+                response.getSourceAccountName(),
+                response.getDestinationAccountId(),
+                response.getDestinationAccountName(),
+                response.getAmount(),
+                DateConverter.convertStringToDate(response.getTransferDate()),
+                response.getDescription(),
+                DateConverter.convertStringToDate(response.getCreatedAt()),
+                DateConverter.convertStringToDate(response.getLastUpdatedAt())
+        );
     }
 
     public void getTransfers(Date startDate, Date endDate, String source, String destination, TransferCallback<List<Transfer>> callback) {

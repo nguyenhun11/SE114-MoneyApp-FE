@@ -9,7 +9,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
 import com.example.moneyapp.data.repository.AccountRepository;
 import com.example.moneyapp.data.repository.StatisticRepository;
-import com.example.moneyapp.model.CategoryExpense;
+import com.example.moneyapp.ui.models.PieChartItem; // Dùng model UI chuẩn
+import com.example.moneyapp.utils.ColorHelper; // Giả sử ông có class này
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,7 +22,7 @@ public class HomeViewModel extends AndroidViewModel {
     private final StatisticRepository statisticRepository;
 
     private final MutableLiveData<Double> totalBalance = new MutableLiveData<>();
-    private final MutableLiveData<List<CategoryExpense>> categoryExpenses = new MutableLiveData<>();
+    private final MutableLiveData<List<PieChartItem>> categoryExpenses = new MutableLiveData<>();
     private final MutableLiveData<String> error = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
@@ -32,13 +33,13 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     public LiveData<Double> getTotalBalance() { return totalBalance; }
-    public LiveData<List<CategoryExpense>> getCategoryExpenses() { return categoryExpenses; }
+    public LiveData<List<PieChartItem>> getCategoryExpenses() { return categoryExpenses; }
     public LiveData<String> getError() { return error; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
 
     public void loadHomeData() {
         isLoading.setValue(true);
-        
+
         // 1. Load Total Balance
         accountRepository.getTotalBalance(new AccountRepository.AccountCallback<Double>() {
             @Override
@@ -52,7 +53,7 @@ public class HomeViewModel extends AndroidViewModel {
             }
         });
 
-        // 2. Load Expense Pie Chart for current month
+        // 2. Load Expense Pie Chart cho tháng hiện tại
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH, 1);
         Date startDate = cal.getTime();
@@ -61,13 +62,17 @@ public class HomeViewModel extends AndroidViewModel {
         statisticRepository.getExpensePieChart(startDate, endDate, new StatisticRepository.StatisticCallback<List<CategoryPieChartDto>>() {
             @Override
             public void onSuccess(List<CategoryPieChartDto> result) {
-                List<CategoryExpense> list = new ArrayList<>();
+                List<PieChartItem> list = new ArrayList<>();
                 for (CategoryPieChartDto dto : result) {
-                    list.add(new CategoryExpense(
+
+                    // 🌟 SỬA LỖI MÀU SẮC: Chuyển đổi ID màu từ DB sang mã màu Android
+                    int androidColor = ColorHelper.getColorFromId(dto.getColorId());
+
+                    list.add(new PieChartItem(
                             dto.getCategoryName(),
-                            dto.getAmount().longValue(),
-                            (float) dto.getPercentage(),
-                            android.graphics.Color.parseColor(dto.getColorId() != null ? dto.getColorId() : "#9E9E9E")
+                            dto.getTotalAmount(), // 🌟 SỬA LỖI TÊN BIẾN (Giữ nguyên double để format tiền tệ dưới UI)
+                            (float) dto.getPercentage(), // Ép kiểu float cho thư viện biểu đồ
+                            androidColor
                     ));
                 }
                 categoryExpenses.postValue(list);

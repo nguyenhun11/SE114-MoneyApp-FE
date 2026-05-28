@@ -3,6 +3,7 @@ package com.example.moneyapp.data.repository;
 import android.content.Context;
 import androidx.annotation.NonNull;
 
+import com.example.moneyapp.data.remote.request.AdjustBalanceRequest;
 import com.example.moneyapp.data.remote.request.TransactionRequest;
 import com.example.moneyapp.data.remote.response.AdjustBalanceResponse;
 import com.example.moneyapp.utils.DateConverter;
@@ -46,12 +47,8 @@ public class AdjustBalanceRepository extends BaseRepository {
         });
     }
 
-    public void adjustBalance(String accountId, double newBalance, String note, AdjustBalanceCallback<Void> callback) {
-        TransactionRequest request = new TransactionRequest();
-        request.setAccountId(accountId);
-        request.setAmount(newBalance);
-        request.setNote(note);
-        request.setDate(DateConverter.convertDateToString(new Date()));
+    public void adjustBalance(String accountId, double newBalance, AdjustBalanceCallback<Void> callback) {
+        AdjustBalanceRequest request = new AdjustBalanceRequest(accountId, newBalance);
 
         apiService.adjustBalance(request).enqueue(new Callback<Void>() {
             @Override

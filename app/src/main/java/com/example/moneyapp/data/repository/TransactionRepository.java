@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 
 import com.example.moneyapp.data.remote.request.TransactionRequest;
 import com.example.moneyapp.data.remote.response.TransactionResponse;
+import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.utils.DateConverter;
 
@@ -28,19 +29,15 @@ public class TransactionRepository extends BaseRepository {
     }
 
     private Transaction mapToTransaction(TransactionResponse response) {
-        // Lưu ý: Response trả về accountId, categoryId.
-        // Tạm thời map vào các field String account, category của model Transaction.
-        Transaction transaction = new Transaction();
-        transaction.setTransactionId(response.getId());
-        transaction.setAccountId(response.getAccountId());
-        transaction.setCategoryId(response.getCategoryId());
-        transaction.setAmount(response.getAmount());
-        transaction.setDate(DateConverter.convertStringToDate(response.getDate()));
-        transaction.setDescription(response.getNote());
-        transaction.setImageUrls(response.getImageUrls());
-        // Type có thể cần được xác định từ Category hoặc API cần trả thêm type.
-        // Tạm thời để mặc định hoặc xử lý ở tầng ViewModel nếu cần.
-        return transaction;
+        return new Transaction(
+                response.getId(),
+                response.getAccountId(),
+                response.getCategoryId(),
+                response.getAmount(),
+                DateConverter.convertStringToDate(response.getDate()),
+                response.getNote(),
+                response.getImageUrls()
+        );
     }
 
     public void getFilteredTransactions(
