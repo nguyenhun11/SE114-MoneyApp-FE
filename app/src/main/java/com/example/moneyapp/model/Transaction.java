@@ -7,14 +7,17 @@ import java.util.Locale;
 
 public class Transaction {
     private String transactionId;
-    private String accountId; // ID ví
+    private String accountId;
     private String accountName;
-    private String categoryId; // ID danh mục
+    private String categoryId;
     private String categoryName;
+    private CategoryType type;
     private Double amount;
     private Date date;
     private String description;
     private List<String> imageUrls;
+
+    public Transaction() {}
 
     public Transaction(String transactionId, String accountId, String categoryId, Double amount, Date date, String description, List<String> imageUrls) {
         this.transactionId = transactionId;
@@ -41,6 +44,9 @@ public class Transaction {
     public String getCategoryName() { return categoryName; }
     public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
 
+    public CategoryType getType() { return type; }
+    public void setType(CategoryType type) { this.type = type; }
+
     public Double getAmount() { return amount; }
     public void setAmount(Double amount) { this.amount = amount; }
 
@@ -56,7 +62,7 @@ public class Transaction {
     // Helpers cho View
     public String getFormattedAmount() {
         if (amount == null) return "0";
-        return String.format(Locale.getDefault(), "%,.0f", amount).replace(",", ".");
+        return String.format(Locale.getDefault(), "%,.0f", Math.abs(amount)).replace(",", ".");
     }
 
     public String getFormattedDate() {
@@ -75,5 +81,9 @@ public class Transaction {
 
     public String getTime() {
         return getFormattedTime();
+    }
+    
+    public String getCategory() {
+        return categoryName != null ? categoryName : categoryId;
     }
 }

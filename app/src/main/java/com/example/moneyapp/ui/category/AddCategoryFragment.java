@@ -78,29 +78,29 @@ public class AddCategoryFragment extends BaseFragment {
     }
 
     private void saveCategory() {
-        String name = etName.getText().toString().trim();
-        String targetStr = etMonthlyTarget.getText().toString().trim();
-
-        if (name.isEmpty()) {
-            etName.setError(getString(R.string.category_error_empty_name));
-            return;
-        }
-
-        double target = targetStr.isEmpty() ? 0.0 : Double.parseDouble(targetStr);
-
-        Category newCategory = new Category(
-                null, // userId
-                name,
-                target,
-                "ic_transaction",
-                "#7F3DFF", // Mặc định màu tím
-                (categoryType == 2) ? getString(R.string.category_group_other) : getString(R.string.category_group_income),
-                categoryType,
-                true, // isFrequent
-                true  // canDelete
-        );
-
-        viewModel.addCategory(newCategory);
+//        String name = etName.getText().toString().trim();
+//        String targetStr = etMonthlyTarget.getText().toString().trim();
+//
+//        if (name.isEmpty()) {
+//            etName.setError(getString(R.string.category_error_empty_name));
+//            return;
+//        }
+//
+//        double target = targetStr.isEmpty() ? 0.0 : Double.parseDouble(targetStr);
+//
+//        Category newCategory = new Category(
+//                null, // userId
+//                name,
+//                target,
+//                "ic_transaction",
+//                "#7F3DFF", // Mặc định màu tím
+//                (categoryType == 2) ? getString(R.string.category_group_other) : getString(R.string.category_group_income),
+//                categoryType,
+//                true, // isFrequent
+//                true  // canDelete
+//        );
+//
+//        viewModel.addCategory(newCategory);
     }
 
     @Override

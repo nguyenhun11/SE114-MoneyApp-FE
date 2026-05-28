@@ -28,13 +28,6 @@ public class UserRepository extends BaseRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     UserProfileResponse fullUser = response.body();
 
-                    PreferenceManager prefs = PreferenceManager.getInstance(context);
-                    prefs.setUserAvatar(fullUser.getImageUrl());
-                    prefs.setUserPhone(fullUser.getPhoneNumber());
-                    prefs.setUserDailyStreak(fullUser.getDailyStreak());
-                    prefs.setUserTodayCheckedIn(fullUser.isTodayCheckedIn());
-                    prefs.setUserSynced(true);
-
                     callback.onSuccess(fullUser);
                 } else {
                     callback.onError("Không tải được hồ sơ: " + response.code());

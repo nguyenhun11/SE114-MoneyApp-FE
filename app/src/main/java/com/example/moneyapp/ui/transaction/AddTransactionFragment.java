@@ -155,19 +155,29 @@ public class AddTransactionFragment extends BaseFragment {
             return;
         }
 
-        double amount = Double.parseDouble(amountStr);
-        String sourceAccountId = accountList.get(spinnerSource.getSelectedItemPosition()).getAccountId();
-        String categoryId      = categoryList.get(spinnerCategory.getSelectedItemPosition()).getCategoryId();
+        try {
+            double amountValue = Double.parseDouble(amountStr);
+            String sourceAccountId = accountList.get(spinnerSource.getSelectedItemPosition()).getAccountId();
+            String categoryId      = categoryList.get(spinnerCategory.getSelectedItemPosition()).getCategoryId();
 
-        Transaction transaction = new Transaction();
-        transaction.setType(transactionType);
-        transaction.setAmount(amount);
-        transaction.setAccountId(sourceAccountId);
-        transaction.setCategoryId(categoryId);
-        transaction.setDescription(note);
-        transaction.setDate(selectedDate);
+            // Đảm bảo số tiền âm nếu là Chi (Expense)
+            double finalAmount = (transactionType == CategoryType.EXPENSE) ? -Math.abs(amountValue) : Math.abs(amountValue);
 
-        transactionViewModel.addTransaction(transaction);
+            Transaction transaction = new Transaction(
+                    null, // transactionId
+                    sourceAccountId,
+                    categoryId,
+                    finalAmount,
+                    selectedDate,
+                    note,
+                    new ArrayList<>() // imageUrls
+            );
+            transaction.setType(transactionType);
+
+            transactionViewModel.addTransaction(transaction);
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Số tiền không hợp lệ", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

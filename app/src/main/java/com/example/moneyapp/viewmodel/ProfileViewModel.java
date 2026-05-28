@@ -12,6 +12,7 @@ import com.example.moneyapp.data.remote.request.UserProfileRequest;
 import com.example.moneyapp.data.remote.response.UserProfileResponse;
 import com.example.moneyapp.data.repository.AuthRepository;
 import com.example.moneyapp.data.repository.UserRepository;
+import com.example.moneyapp.utils.DateConverter;
 
 public class ProfileViewModel extends AndroidViewModel {
     private final AuthRepository authRepository;
@@ -33,13 +34,15 @@ public class ProfileViewModel extends AndroidViewModel {
             public void onSuccess(UserProfileResponse response) {
                 // Map API response to local User entity for UI compatibility
                 User user = new User(
-                        String.valueOf(response.getId()),
+                        response.getId(),
                         response.getName(),
                         response.getEmail(),
                         response.getPhoneNumber(),
                         response.getImageUrl(),
                         response.getDailyStreak(),
-                        response.isTodayCheckedIn()
+                        response.isTodayCheckedIn(),
+                        DateConverter.convertStringToDate(response.getCreatedAt()),
+                        DateConverter.convertStringToDate(response.getLastUpdatedAt())
                 );
                 currentUser.postValue(user);
             }

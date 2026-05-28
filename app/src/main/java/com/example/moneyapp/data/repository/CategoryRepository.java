@@ -33,6 +33,8 @@ public class CategoryRepository extends BaseRepository {
                 response.getId(),
                 response.getCategoryName(),
                 response.getType() == 1 ? CategoryType.INCOME : CategoryType.EXPENSE,
+                response.getGroupId(),
+                response.getGroupName(),
                 response.getMonthlyTarget(),
                 response.getColorId(),
                 response.getIconId(),

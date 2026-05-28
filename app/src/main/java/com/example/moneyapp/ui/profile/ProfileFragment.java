@@ -80,7 +80,7 @@ public class ProfileFragment extends BaseFragment {
             if (user != null) {
                 tvName.setText(user.getName());
                 tvEmail.setText(user.getEmail());
-                tvUserId.setText("UserID: " + user.getId().substring(0, 8).toUpperCase()); // Show short ID
+                tvUserId.setText("UserID: " + user.getUserId()); // Show short ID
 
                 // Load Avatar
                 if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isEmpty()) {

@@ -6,11 +6,11 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.data.remote.response.UserProfileResponse;
 import com.example.moneyapp.data.repository.UserRepository;
 import com.example.moneyapp.model.User;
 import com.example.moneyapp.data.repository.AuthRepository;
+import com.example.moneyapp.utils.DateConverter;
 
 public class AuthViewModel extends AndroidViewModel {
     private final AuthRepository authRepository;
@@ -45,14 +45,15 @@ public class AuthViewModel extends AndroidViewModel {
                 userRepository.getUserProfile(new UserRepository.UserCallback<UserProfileResponse>() {
                     @Override
                     public void onSuccess(UserProfileResponse response) {
-                        User completeUser = PreferenceManager.getInstance(getApplication()).getCurrentUser();
-                        loginSuccess.postValue(completeUser);
+                        // 🌟 Dùng trực tiếp dữ liệu từ API trả về
+                        User user = mapToUser(response);
+                        loginSuccess.postValue(user);
                         isLoading.postValue(false);
                     }
                     @Override
-                    public void onError(String message) { // Đăng nhập thành công nhưng lấy thông tin không thành cong
-                        User basicUser = PreferenceManager.getInstance(getApplication()).getCurrentUser();
-                        loginSuccess.postValue(basicUser);
+                    public void onError(String message) {
+                        // 🌟 Xử lý lỗi triệt để: Không còn SharePref để fallback, nên báo lỗi luôn
+                        errorMessage.postValue("Đăng nhập thành công nhưng lỗi tải thông tin: " + message);
                         isLoading.postValue(false);
                     }
                 });
@@ -74,19 +75,19 @@ public class AuthViewModel extends AndroidViewModel {
             String confirmPassword
     ){
         if (email == null || email.trim().isEmpty()){
-            errorMessage.setValue("Invalid email");
+            errorMessage.setValue("Email không hợp lệ");
             return;
         }
         if (password == null || password.trim().isEmpty()){
-            errorMessage.setValue("Invalid password");
+            errorMessage.setValue("Mật khẩu không hợp lệ");
             return;
         }
         if (confirmPassword == null || confirmPassword.trim().isEmpty()){
-            errorMessage.setValue("Invalid confirm password");
+            errorMessage.setValue("Xác nhận mật khẩu không hợp lệ");
             return;
         }
         if (!password.equals(confirmPassword)){
-            errorMessage.setValue("Passwords do not match");
+            errorMessage.setValue("Mật khẩu không khớp");
             return;
         }
 
@@ -94,17 +95,18 @@ public class AuthViewModel extends AndroidViewModel {
         AuthRepository.AuthCallback<Integer> callback = new AuthRepository.AuthCallback<Integer>() {
             @Override
             public void onSuccess(Integer userId) {
-                userRepository.getUserProfile(new UserRepository.UserCallback<>() {
+                userRepository.getUserProfile(new UserRepository.UserCallback<UserProfileResponse>() {
                     @Override
                     public void onSuccess(UserProfileResponse response) {
-                        User user = PreferenceManager.getInstance(getApplication()).getCurrentUser();
+                        // 🌟 Dùng trực tiếp dữ liệu từ API trả về
+                        User user = mapToUser(response);
                         registerSuccess.postValue(user);
                         isLoading.postValue(false);
                     }
                     @Override
-                    public void onError(String message) { // Đăng ký thành công nhưng lấy thông tin không thành cong
-                        User user = PreferenceManager.getInstance(getApplication()).getCurrentUser();
-                        registerSuccess.postValue(user);
+                    public void onError(String message) {
+                        // 🌟 Báo lỗi ra UI
+                        errorMessage.postValue("Đăng ký thành công nhưng lỗi tải thông tin: " + message);
                         isLoading.postValue(false);
                     }
                 });
@@ -125,7 +127,7 @@ public class AuthViewModel extends AndroidViewModel {
             return;
         }
         isLoading.setValue(true);
-        authRepository.sendPasswordResetEmail(email, new AuthRepository.AuthCallback<>() {
+        authRepository.sendPasswordResetEmail(email, new AuthRepository.AuthCallback<String>() {
             @Override
             public void onSuccess(String message) {
                 resetPasswordSuccess.postValue(true);
@@ -138,5 +140,19 @@ public class AuthViewModel extends AndroidViewModel {
                 isLoading.postValue(false);
             }
         });
+    }
+
+    private User mapToUser(UserProfileResponse response) {
+        return new User(
+                response.getId(),
+                response.getName(),
+                response.getEmail(),
+                response.getPhoneNumber(),
+                response.getImageUrl(),
+                response.getDailyStreak(),
+                response.isTodayCheckedIn(),
+                DateConverter.convertStringToDate(response.getCreatedAt()),
+                DateConverter.convertStringToDate(response.getLastUpdatedAt())
+        );
     }
 }

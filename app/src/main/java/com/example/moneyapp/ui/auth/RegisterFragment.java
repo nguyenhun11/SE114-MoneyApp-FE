@@ -40,6 +40,7 @@ public class RegisterFragment extends Fragment {
         if (btnRegister != null) {
             btnRegister.setOnClickListener(v -> {
                 authViewModel.register(
+                        etEmail.getText().toString(),//TODO tạm thời lấy email là tên đăng nhập
                         etEmail.getText().toString(),
                         etPassword.getText().toString(),
                         etConfirmPassword.getText().toString()

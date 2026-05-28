@@ -42,7 +42,6 @@ public class AuthRepository {
                     PreferenceManager prefs = PreferenceManager.getInstance(context);
                     prefs.setLoggedIn(true);
                     prefs.setUserID(String.valueOf(auth.getId()));
-                    prefs.setUserName(auth.getName());
                     prefs.setUserEmail(auth.getEmail());
                     prefs.setToken(auth.getToken());
                     prefs.setRefreshToken(auth.getRefreshToken());
@@ -72,7 +71,6 @@ public class AuthRepository {
                     PreferenceManager prefs = PreferenceManager.getInstance(context);
                     prefs.setLoggedIn(true);
                     prefs.setUserID(String.valueOf(auth.getId()));
-                    prefs.setUserName(auth.getName());
                     prefs.setUserEmail(auth.getEmail());
                     prefs.setToken(auth.getToken());
                     prefs.setRefreshToken(auth.getRefreshToken());

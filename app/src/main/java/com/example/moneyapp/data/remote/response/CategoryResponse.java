@@ -4,6 +4,8 @@ public class CategoryResponse {
     private String id;
     private String categoryName;
     private int type;
+    private String groupId;
+    private String groupName;
     private double monthlyTarget;
     private int colorId;
     private int iconId;
@@ -11,10 +13,12 @@ public class CategoryResponse {
     private String createdAt;
     private String lastUpdatedAt;
 
-    public CategoryResponse(String id, String categoryName, int type, double monthlyTarget, int colorId, int iconId, boolean isDefault, int sortingOrder, String createdAt, String lastUpdatedAt) {
+    public CategoryResponse(String id, String categoryName, int type, String groupId, String groupName, double monthlyTarget, int colorId, int iconId, boolean isDefault, int sortingOrder, String createdAt, String lastUpdatedAt) {
         this.id = id;
         this.categoryName = categoryName;
         this.type = type;
+        this.groupId = groupId;
+        this.groupName = groupName;
         this.monthlyTarget = monthlyTarget;
         this.colorId = colorId;
         this.iconId = iconId;
@@ -93,5 +97,21 @@ public class CategoryResponse {
 
     public void setLastUpdatedAt(String lastUpdatedAt) {
         this.lastUpdatedAt = lastUpdatedAt;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 }

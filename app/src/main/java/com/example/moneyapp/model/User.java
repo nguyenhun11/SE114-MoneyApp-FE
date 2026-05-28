@@ -1,15 +1,19 @@
 package com.example.moneyapp.model;
 
+import java.util.Date;
+
 public class User {
-    private String userId;
+    private int userId;
     private String name;
     private String email;
     private String phoneNumber;
     private String profileImageUrl;
     private int dailyStreak;
     private boolean todayCheckedIn;
+    private Date createdAt;
+    private Date updatedAt;
 
-    public User(String userId, String name, String email, String phoneNumber, String profileImageUrl, int dailyStreak, boolean todayCheckedIn) {
+    public User(int userId, String name, String email, String phoneNumber, String profileImageUrl, int dailyStreak, boolean todayCheckedIn, Date createdAt, Date updatedAt) {
         this.userId = userId;
         this.name = name;
         this.email = email;
@@ -17,13 +21,15 @@ public class User {
         this.profileImageUrl = profileImageUrl;
         this.dailyStreak = dailyStreak;
         this.todayCheckedIn = todayCheckedIn;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public String getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
@@ -73,5 +79,21 @@ public class User {
 
     public void setTodayCheckedIn(boolean todayCheckedIn) {
         this.todayCheckedIn = todayCheckedIn;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

@@ -6,6 +6,8 @@ public class Category {
     private String categoryId;
     private String categoryName;
     private CategoryType type;
+    private String groupId;
+    private String groupName;
     private Double monthlyTarget;
     private int color;
     private int icon;
@@ -13,10 +15,12 @@ public class Category {
     private Date createdAt;
     private Date updatedAt;
 
-    public Category(String categoryId, String categoryName, CategoryType type, Double monthlyTarget, int color, int icon, int order, Date createdAt, Date updatedAt) {
+    public Category(String categoryId, String categoryName, CategoryType type, String groupId, String groupName, Double monthlyTarget, int color, int icon, int order, Date createdAt, Date updatedAt) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.type = type;
+        this.groupId = groupId;
+        this.groupName = groupName;
         this.monthlyTarget = monthlyTarget;
         this.color = color;
         this.icon = icon;
@@ -96,5 +100,21 @@ public class Category {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 }
