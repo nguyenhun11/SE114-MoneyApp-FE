@@ -20,7 +20,7 @@ import com.bumptech.glide.Glide;
 import com.example.moneyapp.R;
 import com.example.moneyapp.ui.BaseFragment;
 import com.example.moneyapp.ui.SplashActivity;
-import com.example.moneyapp.utils.PreferenceManager;
+import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.viewmodel.ProfileViewModel;
 
 import java.text.SimpleDateFormat;
@@ -80,7 +80,7 @@ public class ProfileFragment extends BaseFragment {
             if (user != null) {
                 tvName.setText(user.getName());
                 tvEmail.setText(user.getEmail());
-                tvUserId.setText("UserID: " + user.getId().substring(0, 8).toUpperCase()); // Show short ID
+                tvUserId.setText("UserID: " + user.getUserId()); // Show short ID
 
                 // Load Avatar
                 if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isEmpty()) {

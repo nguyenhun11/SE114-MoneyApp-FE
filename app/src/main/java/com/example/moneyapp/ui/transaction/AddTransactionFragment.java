@@ -2,8 +2,6 @@ package com.example.moneyapp.ui.transaction;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +13,18 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
-import com.example.moneyapp.data.local.entity.Account;
-import com.example.moneyapp.data.local.entity.Category;
-import com.example.moneyapp.data.local.entity.Transaction;
-import com.example.moneyapp.data.repository.AccountRepository;
-import com.example.moneyapp.data.repository.CategoryRepository;
-import com.example.moneyapp.data.repository.TransactionRepository;
+import com.example.moneyapp.model.Account;
+import com.example.moneyapp.model.Category;
+import com.example.moneyapp.model.CategoryType;
+import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.ui.BaseFragment;
+import com.example.moneyapp.viewmodel.AccountViewModel;
+import com.example.moneyapp.viewmodel.CategoryViewModel;
+import com.example.moneyapp.viewmodel.TransactionViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,8 +35,7 @@ import java.util.Locale;
 
 public class AddTransactionFragment extends BaseFragment {
 
-    // 0=Transfer, 1=Expense(chi), 2=Income(thu) — theo Transaction entity
-    private int transactionType = 1;
+    private CategoryType transactionType = CategoryType.EXPENSE;
     private Date selectedDate;
 
     private final List<Account> accountList = new ArrayList<>();
@@ -45,11 +44,9 @@ public class AddTransactionFragment extends BaseFragment {
     private Spinner spinnerCategory;
     private Spinner spinnerSource;
 
-    private AccountRepository accountRepository;
-    private CategoryRepository categoryRepository;
-    private TransactionRepository transactionRepository;
-
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private AccountViewModel accountViewModel;
+    private CategoryViewModel categoryViewModel;
+    private TransactionViewModel transactionViewModel;
 
     @Nullable
     @Override
@@ -62,11 +59,9 @@ public class AddTransactionFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupHeader(view, R.string.transaction, true);
-        
-        accountRepository    = new AccountRepository(requireActivity().getApplication());
-        categoryRepository   = new CategoryRepository(requireActivity().getApplication());
-        transactionRepository = new TransactionRepository(requireActivity().getApplication());
+        accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        categoryViewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
+        transactionViewModel = new ViewModelProvider(this).get(TransactionViewModel.class);
 
         setupHeader(view, "Giao dịch mới", true);
 
@@ -75,15 +70,15 @@ public class AddTransactionFragment extends BaseFragment {
 
         // Tab Chi / Thu
         setupIncomeExpenseTabs(view, isExpense -> {
-            // Category.type: 1=income, 2=expense
-            transactionType = isExpense ? 1 : 2;
-            int categoryType = isExpense ? 2 : 1;
-            loadCategories(categoryType);
+            transactionType = isExpense ? CategoryType.EXPENSE : CategoryType.INCOME;
+            categoryViewModel.loadCategories(transactionType);
         });
 
-        // Load dữ liệu ban đầu (mặc định Chi → categoryType=2)
-        loadAccounts();
-        loadCategories(2);
+        observeViewModels();
+
+        // Load dữ liệu ban đầu
+        accountViewModel.loadAccounts();
+        categoryViewModel.loadCategories(CategoryType.EXPENSE);
 
         // Chọn ngày
         selectedDate = new Date();
@@ -104,51 +99,38 @@ public class AddTransactionFragment extends BaseFragment {
         );
 
         // Nút lưu
-        view.findViewById(R.id.btnSave).setOnClickListener(v -> saveTransaction(v));
+        view.findViewById(R.id.btnSave).setOnClickListener(this::saveTransaction);
     }
 
-    private void loadAccounts() {
-        accountRepository.getAccounts(new AccountRepository.AccountCallback() {
-            @Override
-            public void onSuccess(List<Account> accounts) {
-                mainHandler.post(() -> {
-                    accountList.clear();
-                    accountList.addAll(accounts);
-                    List<String> names = new ArrayList<>();
-                    for (Account a : accounts) names.add(a.getName());
-                    spinnerSource.setAdapter(new ArrayAdapter<>(requireContext(),
-                            android.R.layout.simple_spinner_dropdown_item, names));
-                });
-            }
+    private void observeViewModels() {
+        accountViewModel.getAccountsLiveData().observe(getViewLifecycleOwner(), accounts -> {
+            accountList.clear();
+            accountList.addAll(accounts);
+            List<String> names = new ArrayList<>();
+            for (Account a : accounts) names.add(a.getAccountName());
+            spinnerSource.setAdapter(new ArrayAdapter<>(requireContext(),
+                    android.R.layout.simple_spinner_dropdown_item, names));
+        });
 
-            @Override
-            public void onError(String message) {
-                mainHandler.post(() ->
-                        Toast.makeText(getContext(), "Lỗi tải tài khoản: " + message,
-                                Toast.LENGTH_SHORT).show());
+        categoryViewModel.getCategoriesLiveData().observe(getViewLifecycleOwner(), categories -> {
+            categoryList.clear();
+            categoryList.addAll(categories);
+            List<String> names = new ArrayList<>();
+            for (Category c : categories) names.add(c.getCategoryName());
+            spinnerCategory.setAdapter(new ArrayAdapter<>(requireContext(),
+                    android.R.layout.simple_spinner_dropdown_item, names));
+        });
+
+        transactionViewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (success) {
+                Toast.makeText(getContext(), "Đã lưu giao dịch!", Toast.LENGTH_SHORT).show();
+                Navigation.findNavController(requireView()).navigateUp();
             }
         });
-    }
 
-    private void loadCategories(int categoryType) {
-        categoryRepository.getCategoriesByType(categoryType, new CategoryRepository.CategoryCallback() {
-            @Override
-            public void onSuccess(List<Category> categories) {
-                mainHandler.post(() -> {
-                    categoryList.clear();
-                    categoryList.addAll(categories);
-                    List<String> names = new ArrayList<>();
-                    for (Category c : categories) names.add(c.getName());
-                    spinnerCategory.setAdapter(new ArrayAdapter<>(requireContext(),
-                            android.R.layout.simple_spinner_dropdown_item, names));
-                });
-            }
-
-            @Override
-            public void onError(String message) {
-                mainHandler.post(() ->
-                        Toast.makeText(getContext(), "Lỗi tải hạng mục: " + message,
-                                Toast.LENGTH_SHORT).show());
+        transactionViewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
+            if (error != null) {
+                Toast.makeText(getContext(), "Lỗi: " + error, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -173,38 +155,29 @@ public class AddTransactionFragment extends BaseFragment {
             return;
         }
 
-        double amount = Double.parseDouble(amountStr);
-        String sourceAccountId = accountList.get(spinnerSource.getSelectedItemPosition()).getId();
-        String categoryId      = categoryList.get(spinnerCategory.getSelectedItemPosition()).getId();
+        try {
+            double amountValue = Double.parseDouble(amountStr);
+            String sourceAccountId = accountList.get(spinnerSource.getSelectedItemPosition()).getAccountId();
+            String categoryId      = categoryList.get(spinnerCategory.getSelectedItemPosition()).getCategoryId();
 
-        Transaction transaction = new Transaction(
-                transactionType,
-                amount,
-                sourceAccountId,
-                null,           // destAccountId — null nếu không chuyển khoản
-                categoryId,
-                note,
-                selectedDate
-        );
+            // Đảm bảo số tiền âm nếu là Chi (Expense)
+            double finalAmount = (transactionType == CategoryType.EXPENSE) ? -Math.abs(amountValue) : Math.abs(amountValue);
 
-        transactionRepository.addTransaction(transaction, new TransactionRepository.TransactionCallback() {
-            @Override
-            public void onSuccess(Transaction t) {
-                mainHandler.post(() -> {
-                    Toast.makeText(getContext(), "Đã lưu giao dịch!", Toast.LENGTH_SHORT).show();
-                    Navigation.findNavController(v).navigateUp();
-                });
-            }
+            Transaction transaction = new Transaction(
+                    null, // transactionId
+                    sourceAccountId,
+                    categoryId,
+                    finalAmount,
+                    selectedDate,
+                    note,
+                    new ArrayList<>() // imageUrls
+            );
+            transaction.setType(transactionType);
 
-            @Override
-            public void onSuccess(List<Transaction> transactionList) {}
-
-            @Override
-            public void onError(String message) {
-                mainHandler.post(() ->
-                        Toast.makeText(getContext(), "Lỗi: " + message, Toast.LENGTH_SHORT).show());
-            }
-        });
+            transactionViewModel.addTransaction(transaction);
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Số tiền không hợp lệ", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

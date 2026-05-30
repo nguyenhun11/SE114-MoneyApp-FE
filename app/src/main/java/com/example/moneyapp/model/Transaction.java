@@ -1,64 +1,89 @@
 package com.example.moneyapp.model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 public class Transaction {
-    private String category;
+    private String transactionId;
+    private String accountId;
+    private String accountName;
+    private String categoryId;
+    private String categoryName;
+    private CategoryType type;
+    private Double amount;
+    private Date date;
     private String description;
-    private String amount;
-    private String time;
-    private String date;
-    private String type;
-    private String source;
+    private List<String> imageUrls;
 
-    public Transaction(String category, String description, String amount,
-                       String time, String date, String type, String source) {
-        this.category = category;
-        this.description = description;
+    public Transaction() {}
+
+    public Transaction(String transactionId, String accountId, String categoryId, Double amount, Date date, String description, List<String> imageUrls) {
+        this.transactionId = transactionId;
+        this.accountId = accountId;
+        this.categoryId = categoryId;
         this.amount = amount;
-        this.time = time;
         this.date = date;
-        this.type = type;
-        this.source = source;
+        this.description = description;
+        this.imageUrls = imageUrls;
     }
 
-    public String getCategory() { return category; }
+    public String getTransactionId() { return transactionId; }
+    public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
+
+    public String getAccountId() { return accountId; }
+    public void setAccountId(String accountId) { this.accountId = accountId; }
+
+    public String getAccountName() { return accountName; }
+    public void setAccountName(String accountName) { this.accountName = accountName; }
+
+    public String getCategoryId() { return categoryId; }
+    public void setCategoryId(String categoryId) { this.categoryId = categoryId; }
+
+    public String getCategoryName() { return categoryName; }
+    public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
+
+    public CategoryType getType() { return type; }
+    public void setType(CategoryType type) { this.type = type; }
+
+    public Double getAmount() { return amount; }
+    public void setAmount(Double amount) { this.amount = amount; }
+
+    public Date getDate() { return date; }
+    public void setDate(Date date) { this.date = date; }
+
     public String getDescription() { return description; }
-    public String getAmount() { return amount; }
-    public String getTime() { return time; }
-    public String getDate() { return date; }
-    public String getType() { return type; }
-    public String getSource() { return source; }
+    public void setDescription(String description) { this.description = description; }
 
+    public List<String> getImageUrls() { return imageUrls; }
+    public void setImageUrls(List<String> imageUrls) { this.imageUrls = imageUrls; }
 
-    public class ListItem {
-        public static final int TYPE_HEADER      = 0;
-        public static final int TYPE_TRANSACTION = 1;
-
-        private int type;
-
-        // Dùng cho header
-        private String dateLabel;
-        private String dateSummary; // tổng tiền trong ngày
-
-        // Dùng cho transaction
-        private Transaction transaction;
-
-        // Constructor header
-        public ListItem(String dateLabel, String dateSummary) {
-            this.type        = TYPE_HEADER;
-            this.dateLabel   = dateLabel;
-            this.dateSummary = dateSummary;
-        }
-
-        // Constructor transaction
-        public ListItem(Transaction transaction) {
-            this.type        = TYPE_TRANSACTION;
-            this.transaction = transaction;
-        }
-
-        public int getType()           { return type; }
-        public String getDateLabel()   { return dateLabel; }
-        public String getDateSummary() { return dateSummary; }
-        public Transaction getTransaction() { return transaction; }
+    // Helpers cho View
+    public String getFormattedAmount() {
+        if (amount == null) return "0";
+        return String.format(Locale.getDefault(), "%,.0f", Math.abs(amount)).replace(",", ".");
     }
 
+    public String getFormattedDate() {
+        if (date == null) return "";
+        return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date);
+    }
+
+    public String getFormattedTime() {
+        if (date == null) return "";
+        return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(date);
+    }
+
+    public String getSource() {
+        return accountName != null ? accountName : accountId;
+    }
+
+    public String getTime() {
+        return getFormattedTime();
+    }
+    
+    public String getCategory() {
+        return categoryName != null ? categoryName : categoryId;
+    }
 }

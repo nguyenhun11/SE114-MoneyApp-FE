@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.ui.BaseFragment;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
 
@@ -41,7 +42,7 @@ public class CategoryFragment extends BaseFragment {
         rvCategoryGroups.setLayoutManager(new LinearLayoutManager(getContext()));
         
         groupAdapter = new CategoryGroupAdapter(category -> {
-            String message = getString(R.string.menu_item_default) + ": " + category.getName();
+            String message = getString(R.string.menu_item_default) + ": " + category.getCategoryName();
             Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         });
         rvCategoryGroups.setAdapter(groupAdapter);
@@ -49,8 +50,8 @@ public class CategoryFragment extends BaseFragment {
         setupHeader(view, R.string.category_list_title, false);
         
         // Khởi tạo Tab dựa trên giá trị lưu trong ViewModel
-        setupIncomeExpenseTabs(view, viewModel.getCurrentType() == 2, isExpense -> {
-            int newType = isExpense ? 2 : 1;
+        setupIncomeExpenseTabs(view, viewModel.getCurrentType() == CategoryType.EXPENSE, isExpense -> {
+            CategoryType newType = isExpense ? CategoryType.EXPENSE : CategoryType.INCOME;
             viewModel.setCurrentType(newType);
             viewModel.loadCategories(newType);
         });
@@ -67,7 +68,7 @@ public class CategoryFragment extends BaseFragment {
     @Override
     protected void onFabClick() {
         Bundle bundle = new Bundle();
-        bundle.putInt("type", viewModel.getCurrentType());
+        bundle.putInt("type", viewModel.getCurrentType().ordinal());
         Navigation.findNavController(requireView()).navigate(R.id.action_categoryFragment_to_addCategoryFragment, bundle);
     }
 }

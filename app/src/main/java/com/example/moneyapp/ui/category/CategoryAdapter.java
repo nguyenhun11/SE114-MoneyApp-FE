@@ -1,7 +1,6 @@
 package com.example.moneyapp.ui.category;
 
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
-import com.example.moneyapp.data.local.entity.Category;
-import com.google.android.material.card.MaterialCardView;
+import com.example.moneyapp.model.Category;
+import com.example.moneyapp.utils.AppResourceManager;
 
 import java.util.List;
 
@@ -67,22 +66,16 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         }
 
         public void bind(Category category, OnCategoryClickListener listener) {
-            tvName.setText(category.getName());
+            tvName.setText(category.getCategoryName());
             
-            try {
-                int color = Color.parseColor(category.getColor());
-                // Set color cho hình tròn bên trong
-                viewColorCircle.setBackgroundTintList(ColorStateList.valueOf(color));
-                viewColorCircle.setBackgroundResource(R.drawable.bg_circle);
-                
-                int iconResId = itemView.getContext().getResources().getIdentifier(
-                        category.getIcon(), "drawable", itemView.getContext().getPackageName());
-                if (iconResId != 0) {
-                    ivIcon.setImageResource(iconResId);
-                }
-            } catch (Exception e) {
-                viewColorCircle.setBackgroundTintList(ColorStateList.valueOf(Color.LTGRAY));
-            }
+            // Lấy màu thực tế từ ID thông qua AppResourceManager
+            int colorValue = AppResourceManager.getColor(category.getColor());
+            viewColorCircle.setBackgroundTintList(ColorStateList.valueOf(colorValue));
+            viewColorCircle.setBackgroundResource(R.drawable.bg_circle);
+            
+            // Lấy Resource ID của icon từ ID thông qua AppResourceManager
+            int iconResId = AppResourceManager.getIconRes(category.getIcon());
+            ivIcon.setImageResource(iconResId);
 
             itemView.setOnClickListener(v -> {
                 if (listener != null) listener.onCategoryClick(category);

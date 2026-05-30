@@ -2,11 +2,11 @@ package com.example.moneyapp.model;
 
 public class CategoryExpense {
     private String name;
-    private long amount;
+    private Double amount;
     private float percentage;
     private int color;
 
-    public CategoryExpense(String name, long amount, float percentage, int color) {
+    public CategoryExpense(String name, Double amount, float percentage, int color) {
         this.name = name;
         this.amount = amount;
         this.percentage = percentage;
@@ -21,11 +21,11 @@ public class CategoryExpense {
         this.name = name;
     }
 
-    public long getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(long amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 

@@ -1,72 +1,199 @@
 package com.example.moneyapp.data.repository;
 
-import android.app.Application;
 import android.content.Context;
-import com.example.moneyapp.data.local.AppDatabase;
-import com.example.moneyapp.data.local.dao.CategoryDao;
-import com.example.moneyapp.data.local.entity.Category;
-import com.example.moneyapp.utils.PreferenceManager;
+import androidx.annotation.NonNull;
+
+import com.example.moneyapp.data.remote.request.CategoryRequest;
+import com.example.moneyapp.data.remote.request.ReorderCategoryRequest;
+import com.example.moneyapp.data.remote.response.CategoryResponse;
+import com.example.moneyapp.model.Category;
+import com.example.moneyapp.model.CategoryType;
+import com.example.moneyapp.utils.DateConverter;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-public class CategoryRepository {
-    private final CategoryDao categoryDao;
-    private final ExecutorService executor;
-    private final String currentUserId;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-    public interface CategoryCallback {
-        void onSuccess(List<Category> categories);
+public class CategoryRepository extends BaseRepository {
+
+    public interface CategoryCallback<T> {
+        void onSuccess(T result);
         void onError(String message);
     }
 
-    public interface Callback<T> {
-        void onResult(T result);
-    }
-
     public CategoryRepository(Context context) {
-        categoryDao = AppDatabase.getInstance(context).categoryDao();
-        executor = Executors.newSingleThreadExecutor();
-        currentUserId = PreferenceManager.getInstance(context).getUserID();
+        super(context);
     }
 
-    // type: 1=income(thu), 2=expense(chi) — theo Category entity
-    public void getAllCategoriesByType(int type, Callback<List<Category>> callback) {
-        executor.execute(() -> {
-            List<Category> categories = categoryDao.getCategoriesByTypeAndUserId(currentUserId, type);
-            callback.onResult(categories);
-        });
+    private Category mapToCategory(CategoryResponse response) {
+        return new Category(
+                response.getId(),
+                response.getCategoryName(),
+                response.getType() == 1 ? CategoryType.INCOME : CategoryType.EXPENSE,
+                response.getGroupId(),
+                response.getGroupName(),
+                response.getMonthlyTarget(),
+                response.getColorId(),
+                response.getIconId(),
+                response.getSortingOrder(),
+                DateConverter.convertStringToDate(response.getCreatedAt()),
+                DateConverter.convertStringToDate(response.getLastUpdatedAt())
+        );
     }
 
-    public void getCategoriesByType(int type, CategoryCallback callback) {
-        executor.execute(() -> {
-            try {
-                List<Category> list = categoryDao.getCategoriesByTypeAndUserId(currentUserId, type);
-                callback.onSuccess(list);
-            } catch (Exception e) {
-                callback.onError(e.getMessage());
+    public void getExpenseCategories(CategoryCallback<List<Category>> callback) {
+        apiService.getAllExpenseCategories().enqueue(new Callback<List<CategoryResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<CategoryResponse>> call, @NonNull Response<List<CategoryResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Category> categories = new ArrayList<>();
+                    for (CategoryResponse res : response.body()) {
+                        categories.add(mapToCategory(res));
+                    }
+                    callback.onSuccess(categories);
+                } else {
+                    callback.onError("Không tải được danh mục chi: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<CategoryResponse>> call, @NonNull Throwable throwable) {
+                callback.onError("Lỗi kết nối: " + throwable.getMessage());
             }
         });
     }
 
-    public void insertCategory(Category category, Runnable onComplete) {
-        executor.execute(() -> {
-            categoryDao.insertCategory(category);
-            if (onComplete != null) onComplete.run();
+    public void getIncomeCategories(CategoryCallback<List<Category>> callback) {
+        apiService.getAllIncomeCategories().enqueue(new Callback<List<CategoryResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<CategoryResponse>> call, @NonNull Response<List<CategoryResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Category> categories = new ArrayList<>();
+                    for (CategoryResponse res : response.body()) {
+                        categories.add(mapToCategory(res));
+                    }
+                    callback.onSuccess(categories);
+                } else {
+                    callback.onError("Không tải được danh mục thu: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<CategoryResponse>> call, @NonNull Throwable throwable) {
+                callback.onError("Lỗi kết nối: " + throwable.getMessage());
+            }
         });
     }
 
-    public void updateCategory(Category category, Runnable onComplete) {
-        executor.execute(() -> {
-            categoryDao.updateCategory(category);
-            if (onComplete != null) onComplete.run();
+    public void createCategory(Category category, CategoryCallback<Void> callback) {
+        CategoryRequest request = new CategoryRequest(
+                category.getCategoryName(),
+                category.getMonthlyTarget(),
+                category.getColor(),
+                category.getIcon()
+        );
+
+
+        Call<Void> call;
+        if (category.getType() == CategoryType.INCOME) {
+            call = apiService.createIncomeCategory(request);
+        } else {
+            call = apiService.createExpenseCategory(request);
+        }
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onError("Tạo danh mục thất bại: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
+                callback.onError("Lỗi kết nối: " + throwable.getMessage());
+            }
         });
     }
-    
-    public void deleteCategory(Category category, Runnable onComplete) {
-        executor.execute(() -> {
-            categoryDao.deleteCategory(category);
-            if (onComplete != null) onComplete.run();
+
+    public void updateCategory(Category category, CategoryCallback<Void> callback) {
+        CategoryRequest request = new CategoryRequest(
+                category.getCategoryName(),
+                category.getMonthlyTarget(),
+                category.getColor(),
+                category.getIcon()
+        );
+
+        Call<Void> call;
+        if (category.getType() == CategoryType.INCOME) {
+            call = apiService.updateIncomeCategory(category.getCategoryId(), request);
+        } else {
+            call = apiService.updateExpenseCategory(category.getCategoryId(), request);
+        }
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onError("Cập nhật danh mục thất bại: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
+                callback.onError("Lỗi kết nối: " + throwable.getMessage());
+            }
+        });
+    }
+
+    public void deleteCategory(String id, String mode, String fallbackId, CategoryCallback<Void> callback) {
+        apiService.deleteCategory(id, mode, fallbackId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onError("Xóa danh mục thất bại: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
+                callback.onError("Lỗi kết nối: " + throwable.getMessage());
+            }
+        });
+    }
+
+    public void reorderCategory(Category category, int newOrder, CategoryCallback<Void> callback) {
+        ReorderCategoryRequest request = new ReorderCategoryRequest(newOrder);
+        Call<Void> call;
+        if (category.getType() == CategoryType.INCOME) {
+            call = apiService.reorderIncomeCategory(category.getCategoryId(), request);
+        } else {
+            call = apiService.reorderExpenseCategory(category.getCategoryId(), request);
+        }
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onError("Đổi thứ tự thất bại: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
+                callback.onError("Lỗi kết nối: " + throwable.getMessage());
+            }
         });
     }
 }

@@ -61,7 +61,6 @@
                         android:layout_height="wrap_content"
                         android:paddingBottom="24dp">
 
-                        <!-- Period Selector Tabs -->
                         <LinearLayout
                             android:id="@+id/layout_period_tabs"
                             android:layout_width="match_parent"
@@ -85,7 +84,6 @@
                             android:layout_marginHorizontal="24dp"
                             app:layout_constraintTop_toBottomOf="@id/layout_period_tabs"/>
 
-                        <!-- Month Navigator -->
                         <LinearLayout
                             android:id="@+id/layout_month_navigator"
                             android:layout_width="match_parent"
@@ -113,32 +111,32 @@
                                 app:tint="@android:color/black"/>
                         </LinearLayout>
 
-                        <!-- Pie Chart Container (Expanded) -->
                         <FrameLayout
                             android:id="@+id/pie_chart_container"
-                            android:layout_width="220dp"
-                            android:layout_height="220dp"
+                            android:layout_width="260dp"
+                            android:layout_height="260dp"
                             android:layout_marginTop="16dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/layout_month_navigator">
 
-                            <View
+                            <com.github.mikephil.charting.charts.PieChart
+                                android:id="@+id/main_pie_chart"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@drawable/sample_pie_chart" />
+                                android:layout_height="match_parent" />
 
                             <TextView
+                                android:id="@+id/tv_total_amount_pie"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:text="60.000"
+                                android:text="0"
                                 android:textColor="@android:color/black"
                                 android:textSize="32sp"
                                 android:textStyle="bold" />
                         </FrameLayout>
 
-                        <!-- Linear Chart Container (Collapsed) -->
+
                         <LinearLayout
                             android:id="@+id/linear_chart_container"
                             android:layout_width="match_parent"
@@ -149,22 +147,11 @@
                             android:visibility="gone"
                             app:layout_constraintTop_toBottomOf="@id/layout_month_navigator">
 
-                            <ProgressBar
-                                style="?android:attr/progressBarStyleHorizontal"
+                            <com.github.mikephil.charting.charts.HorizontalBarChart
+                                android:id="@+id/main_linear_chart"
                                 android:layout_width="match_parent"
-                                android:layout_height="24dp"
-                                android:progress="40"
-                                android:progressDrawable="@drawable/sample_linear_progress" />
+                                android:layout_height="32dp" />
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="12dp"
-                                android:gravity="center"
-                                android:text="60.000"
-                                android:textColor="@android:color/black"
-                                android:textSize="32sp"
-                                android:textStyle="bold" />
                         </LinearLayout>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
