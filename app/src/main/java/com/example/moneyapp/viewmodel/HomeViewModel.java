@@ -2,6 +2,7 @@ package com.example.moneyapp.viewmodel;
 
 import android.app.Application;
 import android.graphics.Color;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -10,7 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
 import com.example.moneyapp.data.repository.AccountRepository;
 import com.example.moneyapp.data.repository.StatisticRepository;
-import com.example.moneyapp.ui.home.PieChartItem;
+import com.example.moneyapp.view.home.PieChartItem;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,11 +34,25 @@ public class HomeViewModel extends AndroidViewModel {
         statisticRepository = new StatisticRepository(application);
     }
 
-    public LiveData<Double> getTotalBalance() { return totalBalance; }
-    public LiveData<List<PieChartItem>> getCategoryExpenses() { return categoryExpenses; }
-    public LiveData<Double> getChartTotalAmount() { return chartTotalAmount; }
-    public LiveData<String> getError() { return error; }
-    public LiveData<Boolean> getIsLoading() { return isLoading; }
+    public LiveData<Double> getTotalBalance() {
+        return totalBalance;
+    }
+
+    public LiveData<List<PieChartItem>> getCategoryExpenses() {
+        return categoryExpenses;
+    }
+
+    public LiveData<Double> getChartTotalAmount() {
+        return chartTotalAmount;
+    }
+
+    public LiveData<String> getError() {
+        return error;
+    }
+
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
 
     public void loadHomeData() {
         isLoading.setValue(true);
@@ -55,11 +70,20 @@ public class HomeViewModel extends AndroidViewModel {
             }
         });
 
-        // 2. Tải dữ liệu biểu đồ chi tiêu cho tháng hiện tại
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DAY_OF_MONTH, 1); // Set về ngày đầu tháng
-        Date startDate = cal.getTime();
-        Date endDate = new Date(); // Ngày hiện tại
+//        Calendar cal = Calendar.getInstance();
+//        cal.set(Calendar.DAY_OF_MONTH, 1); // Set về ngày đầu tháng
+//        Date startDate = cal.getTime();
+//        Date endDate = new Date();
+
+        // Ép startDate về 01/01/2025
+        Calendar calStart = Calendar.getInstance();
+        calStart.set(2025, Calendar.JANUARY, 1, 0, 0, 0);
+        Date startDate = calStart.getTime();
+
+// Ép endDate về 31/12/2025
+        Calendar calEnd = Calendar.getInstance();
+        calEnd.set(2025, Calendar.DECEMBER, 31, 23, 59, 59);
+        Date endDate = calEnd.getTime();
 
         statisticRepository.getExpensePieChart(startDate, endDate, new StatisticRepository.StatisticCallback<List<CategoryPieChartDto>>() {
             @Override
@@ -72,13 +96,8 @@ public class HomeViewModel extends AndroidViewModel {
                     int androidColor = mapColorIdToAndroidColor(dto.getColorId());
 
                     // Đóng gói thành UI Model (kèm ID để phục vụ tương tác Click)
-                    list.add(new PieChartItem(
-                            dto.getCategoryId(), // Chìa khóa tương tác
-                            dto.getCategoryName(),
-                            dto.getTotalAmount(),
-                            (float) dto.getPercentage(),
-                            androidColor
-                    ));
+                    list.add(new PieChartItem(dto.getCategoryId(), // Chìa khóa tương tác
+                            dto.getCategoryName(), dto.getTotalAmount(), (float) dto.getPercentage(), androidColor));
 
                     sumTotal += dto.getTotalAmount();
                 }
@@ -102,14 +121,22 @@ public class HomeViewModel extends AndroidViewModel {
     // ======================================================================
     private int mapColorIdToAndroidColor(int colorId) {
         switch (colorId) {
-            case 1: return Color.parseColor("#FFB300"); // Vàng cam
-            case 2: return Color.parseColor("#FF3D57"); // Đỏ hồng
-            case 3: return Color.parseColor("#7C4DFF"); // Tím
-            case 4: return Color.parseColor("#00E676"); // Xanh lá
-            case 5: return Color.parseColor("#29B6F6"); // Xanh dương
-            case 6: return Color.parseColor("#FF7043"); // Cam san hô
-            case 7: return Color.parseColor("#EC407A"); // Hồng phấn
-            default: return Color.parseColor("#9E9E9E"); // Xám (Fallback)
+            case 1:
+                return Color.parseColor("#FFB300"); // Vàng cam
+            case 2:
+                return Color.parseColor("#FF3D57"); // Đỏ hồng
+            case 3:
+                return Color.parseColor("#7C4DFF"); // Tím
+            case 4:
+                return Color.parseColor("#00E676"); // Xanh lá
+            case 5:
+                return Color.parseColor("#29B6F6"); // Xanh dương
+            case 6:
+                return Color.parseColor("#FF7043"); // Cam san hô
+            case 7:
+                return Color.parseColor("#EC407A"); // Hồng phấn
+            default:
+                return Color.parseColor("#9E9E9E"); // Xám (Fallback)
         }
     }
 }

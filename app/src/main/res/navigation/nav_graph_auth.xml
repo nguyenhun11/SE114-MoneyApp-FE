@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.moneyapp.ui.auth.LoginFragment"
+        android:name="com.example.moneyapp.view.auth.LoginFragment"
         android:label="Login"
         tools:layout="@layout/fragment_login">
         <action
@@ -20,13 +20,13 @@
 
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.example.moneyapp.ui.auth.RegisterFragment"
+        android:name="com.example.moneyapp.view.auth.RegisterFragment"
         android:label="Register"
         tools:layout="@layout/fragment_register" />
 
     <fragment
         android:id="@+id/forgotPasswordFragment"
-        android:name="com.example.moneyapp.ui.auth.ForgotPasswordFragment"
+        android:name="com.example.moneyapp.view.auth.ForgotPasswordFragment"
         android:label="Forgot Password"
         tools:layout="@layout/fragment_forgot_password" />
 </navigation>

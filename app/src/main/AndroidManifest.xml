@@ -14,7 +14,7 @@
         android:networkSecurityConfig="@xml/network_security_config">
 
         <activity
-            android:name=".ui.SplashActivity"
+            android:name=".view.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.MoneyApp">
             <intent-filter>
@@ -24,12 +24,12 @@
         </activity>
 
         <activity
-            android:name=".ui.auth.AuthActivity"
+            android:name=".view.auth.AuthActivity"
             android:exported="false"
             android:theme="@style/Theme.MoneyApp" />
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".view.MainActivity"
             android:exported="false"
             android:theme="@style/Theme.MoneyApp" />
 
