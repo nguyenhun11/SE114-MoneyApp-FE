@@ -11,6 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorSurface"
         android:padding="12dp">
 
         <View
@@ -28,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Ăn uống"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorOnSurface"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tv_percentage"
@@ -41,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"
             android:text="50%"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/colorOnSurfaceVariant"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tv_amount"
@@ -53,7 +54,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="30.000"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorOnSurface"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

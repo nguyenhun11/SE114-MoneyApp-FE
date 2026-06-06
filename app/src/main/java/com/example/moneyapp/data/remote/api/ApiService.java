@@ -10,6 +10,7 @@ import com.example.moneyapp.data.remote.request.CheckInRequest;
 import com.example.moneyapp.data.remote.request.GoogleLoginRequest;
 import com.example.moneyapp.data.remote.request.LoginRequest;
 import com.example.moneyapp.data.remote.request.LogoutRequest;
+import com.example.moneyapp.data.remote.request.RefreshTokenRequest;
 import com.example.moneyapp.data.remote.request.RegisterRequest;
 import com.example.moneyapp.data.remote.request.ReorderAccountRequest;
 import com.example.moneyapp.data.remote.request.ReorderCategoryRequest;
@@ -48,7 +49,7 @@ public interface ApiService {
     @POST("api/Auth/logout")
     Call<Void> logout(@Body LogoutRequest request);
     @POST("api/Auth/refresh-token")
-    Call<AuthResponse> refreshToken();
+    Call<AuthResponse> refreshToken(@Body RefreshTokenRequest request);
     @POST("api/Auth/change-password")
     Call<Void> changePassword(@Body ChangePasswordRequest request);
     //endregion

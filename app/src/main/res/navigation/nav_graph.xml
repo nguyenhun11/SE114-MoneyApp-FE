@@ -7,38 +7,38 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.moneyapp.ui.home.HomeFragment"
+        android:name="com.example.moneyapp.view.home.HomeFragment"
         android:label="@string/home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/transactionFragment"
-        android:name="com.example.moneyapp.ui.transaction.TransactionFragment"
+        android:name="com.example.moneyapp.view.transaction.TransactionFragment"
         android:label="@string/transaction"
         tools:layout="@layout/fragment_transaction" />
 
     <fragment
         android:id="@+id/accountFragment"
-        android:name="com.example.moneyapp.ui.account.AccountFragment"
+        android:name="com.example.moneyapp.view.account.AccountFragment"
         android:label="@string/account"
         tools:layout="@layout/fragment_account" />
 
     <fragment
         android:id="@+id/transactionDetailFragment"
-        android:name="com.example.moneyapp.ui.transaction.TransactionDetailFragment"
+        android:name="com.example.moneyapp.view.transaction.TransactionDetailFragment"
         android:label="Chi tiết giao dịch"
         tools:layout="@layout/fragment_transaction_detail" />
 
     <fragment
         android:id="@+id/addTransactionFragment"
-        android:name="com.example.moneyapp.ui.transaction.AddTransactionFragment"
+        android:name="com.example.moneyapp.view.transaction.AddTransactionFragment"
         android:label="Giao dịch mới"
         tools:layout="@layout/fragment_transaction_add" />
 
     <!-- Secondary fragments from More menu -->
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.moneyapp.ui.profile.ProfileFragment"
+        android:name="com.example.moneyapp.view.profile.ProfileFragment"
         android:label="Hồ sơ"
         tools:layout="@layout/fragment_profile">
         <action
@@ -51,19 +51,19 @@
 
     <fragment
         android:id="@+id/changePasswordFragment"
-        android:name="com.example.moneyapp.ui.profile.ChangePasswordFragment"
+        android:name="com.example.moneyapp.view.profile.ChangePasswordFragment"
         android:label="Thay đổi mật khẩu"
         tools:layout="@layout/fragment_change_password" />
 
     <fragment
         android:id="@+id/statisticsFragment"
-        android:name="com.example.moneyapp.ui.statistic.StatisticFragment"
+        android:name="com.example.moneyapp.view.statistic.StatisticFragment"
         android:label="Thống kê"
         tools:layout="@layout/fragment_statistics" />
 
     <fragment
         android:id="@+id/categoryFragment"
-        android:name="com.example.moneyapp.ui.category.CategoryFragment"
+        android:name="com.example.moneyapp.view.category.CategoryFragment"
         android:label="Hạng mục"
         tools:layout="@layout/fragment_category">
         <action
@@ -73,7 +73,7 @@
 
     <fragment
         android:id="@+id/addCategoryFragment"
-        android:name="com.example.moneyapp.ui.category.AddCategoryFragment"
+        android:name="com.example.moneyapp.view.category.AddCategoryFragment"
         android:label="Thêm hạng mục"
         tools:layout="@layout/fragment_category_add">
         <argument
@@ -84,13 +84,13 @@
 
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.example.moneyapp.ui.setting.SettingFragment"
+        android:name="com.example.moneyapp.view.setting.SettingFragment"
         android:label="Cài đặt"
         tools:layout="@layout/fragment_settings" />
 
     <fragment
         android:id="@+id/informationFragment"
-        android:name="com.example.moneyapp.ui.information.InformationFragment"
+        android:name="com.example.moneyapp.view.information.InformationFragment"
         android:label="Thông tin"
         tools:layout="@layout/fragment_information" />
 

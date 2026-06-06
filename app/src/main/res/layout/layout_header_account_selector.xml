@@ -34,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/total_balance"
-                android:textColor="@color/colorOnBackground"
+                android:textColor="@color/colorOnPrimary"
                 android:textSize="14sp" />
             <ImageView
                 android:id="@+id/iv_arrow_down"
@@ -42,7 +42,7 @@
                 android:layout_height="16dp"
                 android:layout_marginStart="4dp"
                 android:src="@drawable/ic_arrow_down"
-                app:tint="#333333" />
+                app:tint="@color/colorOnPrimary" />
         </LinearLayout>
 
         <!-- Dòng chính: Cố định 40dp và dùng RelativeLayout để khớp 100% cấu trúc file Title -->
@@ -56,7 +56,7 @@
                 android:layout_centerInParent="true"
                 android:gravity="center"
                 android:text="200.000"
-                android:textColor="@color/colorOnBackground"
+                android:textColor="@color/colorOnPrimary"
                 android:textSize="28sp"
                 android:textStyle="bold" />
         </RelativeLayout>
