@@ -14,7 +14,7 @@ import com.example.moneyapp.view.home.PieChartItem;
 import java.text.DecimalFormat;
 import java.util.List;
 
-public class CategoryExpenseAdapter extends RecyclerView.Adapter<CategoryExpenseAdapter.ViewHolder> {
+public class CategorySummaryAdapter extends RecyclerView.Adapter<CategorySummaryAdapter.ViewHolder> {
 
     private List<PieChartItem> items;
     private OnCategoryClickListener listener; // Bộ phát tín hiệu khi click
@@ -25,7 +25,7 @@ public class CategoryExpenseAdapter extends RecyclerView.Adapter<CategoryExpense
     }
 
     // Constructor mặc định
-    public CategoryExpenseAdapter(List<PieChartItem> items) {
+    public CategorySummaryAdapter(List<PieChartItem> items) {
         this.items = items;
     }
 
@@ -44,7 +44,7 @@ public class CategoryExpenseAdapter extends RecyclerView.Adapter<CategoryExpense
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_category_expense, parent, false);
+                .inflate(R.layout.item_category_summary, parent, false);
         return new ViewHolder(view);
     }
 
