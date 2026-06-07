@@ -71,7 +71,7 @@
                 android:id="@+id/btn_add_account"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                app:cardBackgroundColor="@color/bg_gradient_start"
+                app:cardBackgroundColor="@color/colorPrimary"
                 app:cardCornerRadius="@dimen/button_radius"
                 app:cardElevation="0dp">
 
