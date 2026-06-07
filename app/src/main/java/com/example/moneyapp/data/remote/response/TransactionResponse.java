@@ -1,5 +1,7 @@
 package com.example.moneyapp.data.remote.response;
 
+import com.example.moneyapp.model.CategoryType;
+
 import java.util.List;
 
 public class TransactionResponse {
@@ -8,6 +10,7 @@ public class TransactionResponse {
     private String accountName;
     private String categoryId;
     private String categoryName;
+    private Integer type;
     private Double amount;
     private String date;
     private String note;
@@ -15,12 +18,13 @@ public class TransactionResponse {
     private String createdAt;
     private String lastUpdatedAt;
 
-    public TransactionResponse(String id, String accountId, String accountName, String categoryId, String categoryName, Double amount, String date, String note, List<String> imageUrls, String createdAt, String lastUpdatedAt) {
+    public TransactionResponse(String id, String accountId, String accountName, String categoryId, String categoryName, Integer type, Double amount, String date, String note, List<String> imageUrls, String createdAt, String lastUpdatedAt) {
         this.id = id;
         this.accountId = accountId;
         this.accountName = accountName;
         this.categoryId = categoryId;
         this.categoryName = categoryName;
+        this.type = type;
         this.amount = amount;
         this.date = date;
         this.note = note;
@@ -115,5 +119,13 @@ public class TransactionResponse {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

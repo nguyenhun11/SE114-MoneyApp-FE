@@ -1,6 +1,7 @@
 package com.example.moneyapp.data.repository;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import com.example.moneyapp.data.remote.response.TransactionResponse;
@@ -20,6 +21,7 @@ public class TransactionRepository extends BaseRepository {
 
     public interface TransactionCallback<T> {
         void onSuccess(T result);
+
         void onError(String message);
     }
 
@@ -28,8 +30,17 @@ public class TransactionRepository extends BaseRepository {
     }
 
     private Transaction mapToTransaction(TransactionResponse response) {
-        CategoryType type = (response.getAmount() != null && response.getAmount() < 0)
-                ? CategoryType.EXPENSE : CategoryType.INCOME;
+        // Đọc trực tiếp loại giao dịch từ Response thay vì đoán qua Amount
+        // LƯU Ý: Đổi response.getType() thành tên hàm get thực tế trong TransactionResponse của bạn
+        CategoryType type = null; // Giá trị mặc định an toàn
+
+        if (response.getType() != null) {
+            if (response.getType() == 0) {
+                type = CategoryType.EXPENSE; // Chi tiêu
+            } else if (response.getType() == 1) {
+                type = CategoryType.INCOME;  // Thu nhập
+            }
+        }
 
         return new Transaction(
                 response.getId(),
@@ -37,7 +48,7 @@ public class TransactionRepository extends BaseRepository {
                 response.getAccountName(),
                 response.getCategoryId(),
                 response.getCategoryName(),
-                type,
+                type, // Truyền type chuẩn xác vào đây
                 response.getAmount(),
                 DateConverter.convertStringToDate(response.getDate()),
                 response.getNote(),
@@ -45,34 +56,31 @@ public class TransactionRepository extends BaseRepository {
         );
     }
 
-    public void getFilteredTransactions(
-            Date startDate, Date endDate, Integer categoryType,
-            String accountId, String categoryId,
-            TransactionCallback<List<Transaction>> callback) {
+    public void getFilteredTransactions(Date startDate, Date endDate, CategoryType categoryType, String accountId, String categoryId, TransactionCallback<List<Transaction>> callback) {
 
         String startStr = DateConverter.convertDateToString(startDate);
         String endStr = DateConverter.convertDateToString(endDate);
 
-        apiService.getTransactions(startStr, endStr, categoryType, accountId, categoryId)
-                .enqueue(new Callback<List<TransactionResponse>>() {
-                    @Override
-                    public void onResponse(@NonNull Call<List<TransactionResponse>> call, @NonNull Response<List<TransactionResponse>> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            List<Transaction> transactions = new ArrayList<>();
-                            for (TransactionResponse res : response.body()) {
-                                transactions.add(mapToTransaction(res));
-                            }
-                            callback.onSuccess(transactions);
-                        } else {
-                            callback.onError("Lỗi tải dữ liệu: " + response.code());
-                        }
+        Integer typeValue = (categoryType != null) ? categoryType.getValue() : null;
+        apiService.getTransactions(startStr, endStr, typeValue, accountId, categoryId).enqueue(new Callback<List<TransactionResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<TransactionResponse>> call, @NonNull Response<List<TransactionResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Transaction> transactions = new ArrayList<>();
+                    for (TransactionResponse res : response.body()) {
+                        transactions.add(mapToTransaction(res));
                     }
+                    callback.onSuccess(transactions);
+                } else {
+                    callback.onError("Lỗi tải dữ liệu: " + response.code());
+                }
+            }
 
-                    @Override
-                    public void onFailure(@NonNull Call<List<TransactionResponse>> call, @NonNull Throwable t) {
-                        callback.onError("Lỗi kết nối: " + t.getMessage());
-                    }
-                });
+            @Override
+            public void onFailure(@NonNull Call<List<TransactionResponse>> call, @NonNull Throwable t) {
+                callback.onError("Lỗi kết nối: " + t.getMessage());
+            }
+        });
     }
 
     public void getTransactionById(String id, TransactionCallback<Transaction> callback) {
@@ -85,6 +93,7 @@ public class TransactionRepository extends BaseRepository {
                     callback.onError("Không tìm thấy giao dịch");
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<TransactionResponse> call, @NonNull Throwable t) {
                 callback.onError("Lỗi kết nối");
@@ -107,6 +116,7 @@ public class TransactionRepository extends BaseRepository {
                 if (response.isSuccessful()) callback.onSuccess(null);
                 else callback.onError("Xóa thất bại");
             }
+
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 callback.onError("Lỗi kết nối");

@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.Transaction;
 
 import java.util.List;
@@ -64,7 +65,7 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
         holder.tvCategoryName.setText(t.getCategoryName() != null ? t.getCategoryName() : "Giao dịch");
         holder.tvAccountName.setText(t.getAccountName());
 
-        // Xử lý ghi chú: Có thì hiện, không có thì giấu luôn để tiết kiệm diện tích
+        // Xử lý ghi chú
         if (t.getDescription() != null && !t.getDescription().trim().isEmpty()) {
             holder.tvNote.setVisibility(View.VISIBLE);
             holder.tvNote.setText(t.getDescription());
@@ -72,27 +73,32 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
             holder.tvNote.setVisibility(View.GONE);
         }
 
-        // Xử lý tiền: Đổi màu theo giá trị Âm (Chi tiêu) hoặc Dương (Thu nhập)
+        // XỬ LÝ TIỀN: Đổi màu theo "Loại giao dịch" (CategoryType) thay vì âm/dương
         if (t.getAmount() != null) {
-            if (t.getAmount() < 0) {
-                holder.tvAmount.setText(String.format(Locale.getDefault(), "%,.0fđ", t.getAmount()).replace(",", "."));
-                // Lấy màu đỏ (colorDanger) từ colors.xml
+
+            // LƯU Ý: Tùy theo việc bạn đặt tên biến trong model Transaction là gì.
+            // Ở đây mình giả sử bạn dùng hàm getCategoryType() trả về int (0: Chi, 1: Thu).
+            // Nếu bạn đặt là getType(), hãy sửa lại cho đúng tên hàm nhé!
+            CategoryType type = t.getType();
+
+            if (type == CategoryType.EXPENSE) { // 0 là EXPENSE (Chi tiêu)
+                // Ép thêm dấu trừ (-) ở phía trước
+                holder.tvAmount.setText(String.format(Locale.getDefault(), "-%,.0fđ", t.getAmount()).replace(",", "."));
                 holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorDanger));
-            } else {
+            } else { // 1 là INCOME (Thu nhập)
+                // Ép thêm dấu cộng (+) ở phía trước
                 holder.tvAmount.setText(String.format(Locale.getDefault(), "+%,.0fđ", t.getAmount()).replace(",", "."));
-                // Lấy màu xanh (colorSuccess) từ colors.xml
                 holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorSuccess));
             }
         }
 
-        // Ẩn đường kẻ mờ ở phần tử cuối cùng của danh sách
+        // Ẩn đường kẻ mờ ở phần tử cuối cùng
         if (position == transactions.size() - 1) {
             holder.divider.setVisibility(View.GONE);
         } else {
             holder.divider.setVisibility(View.VISIBLE);
         }
 
-        // Bắt sự kiện Click vào 1 giao dịch
         holder.itemView.setOnClickListener(v -> listener.onItemClick(t));
     }
 

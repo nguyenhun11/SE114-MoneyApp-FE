@@ -5,7 +5,12 @@ public enum CategoryType {
     EXPENSE(0),
     INCOME(1);
 
-    CategoryType(int i) {
-        
+    private final int value;
+
+    CategoryType(int value) {
+        this.value = value;
+    }
+    public int getValue() {
+        return value;
     }
 }

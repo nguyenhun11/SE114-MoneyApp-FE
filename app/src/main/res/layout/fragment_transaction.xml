@@ -21,7 +21,7 @@
         <include layout="@layout/layout_header_account_selector" />
 
         <include
-            layout="@layout/layout_header_tab_two"
+            layout="@layout/layout_header_tab_three"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="50dp" />
@@ -29,9 +29,10 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             android:layout_marginHorizontal="20dp"
             android:layout_marginBottom="@dimen/card_bottom_margin"
+            android:layout_weight="1"
+            android:paddingBottom="20dp"
             app:cardBackgroundColor="@color/colorSurface"
             app:cardCornerRadius="@dimen/card_radius"
             app:cardElevation="0dp"
@@ -136,6 +137,7 @@
                         android:layout_height="16dp"
                         android:src="@drawable/ic_arrow_down"
                         app:tint="@color/colorPrimary" />
+
                     <TextView
                         android:id="@+id/tv_selected_category"
                         android:layout_width="wrap_content"
@@ -150,6 +152,7 @@
                     android:id="@+id/rvTransactions"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:layout_marginBottom="40dp"
                     android:layout_weight="1"
                     android:clipToPadding="false"
                     android:paddingBottom="80dp" />

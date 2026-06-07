@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.moneyapp.data.repository.AccountRepository;
 import com.example.moneyapp.data.repository.TransactionRepository;
+import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.DailyTransactionGroup;
 import com.example.moneyapp.model.Transaction;
 
@@ -55,7 +56,7 @@ public class TransactionViewModel extends AndroidViewModel {
         });
     }
 
-    public void loadTransactions(Date start, Date end, Integer type, String accountId, String categoryId) {
+    public void loadTransactions(Date start, Date end, CategoryType type, String accountId, String categoryId) {
         isLoading.setValue(true);
         repository.getFilteredTransactions(start, end, type, accountId, categoryId, new TransactionRepository.TransactionCallback<List<Transaction>>() {
             @Override

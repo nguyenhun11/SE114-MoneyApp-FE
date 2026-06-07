@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.TransactionViewModel;
 
@@ -31,6 +32,7 @@ public class TransactionFragment extends BaseFragment {
     private String selectedTime = "all";
     private String selectedSource = "Tất cả";
     private String selectedCategory = "Tất cả";
+    private CategoryType selectedTransactionType = null;
 
     @Nullable
     @Override
@@ -47,8 +49,15 @@ public class TransactionFragment extends BaseFragment {
 
         // Hiển thị số dư lên thẻ Account
         setupBalanceSelector(view, getString(R.string.total_balance), "0", true);
-        setupIncomeExpenseTabs(view, isExpense -> {
-            // Lọc theo loại chi phí/thu nhập nếu cần
+        setupThreeTabs(view, index -> {
+            if (index == 0) {
+                selectedTransactionType = null;
+            } else if (index == 1) {
+                selectedTransactionType = CategoryType.EXPENSE;
+            } else if (index == 2) {
+                selectedTransactionType = CategoryType.INCOME;
+            }
+            loadData();
         });
 
         RecyclerView recyclerView = view.findViewById(R.id.rvTransactions);
@@ -109,7 +118,7 @@ public class TransactionFragment extends BaseFragment {
         }
         Date startDate = cal.getTime();
 
-        transactionViewModel.loadTransactions(startDate, endDate, null, null, null);
+        transactionViewModel.loadTransactions(startDate, endDate, selectedTransactionType, null, null);
         transactionViewModel.loadTotalBalance();
     }
 
