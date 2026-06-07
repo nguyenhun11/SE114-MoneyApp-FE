@@ -6,8 +6,9 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.moneyapp.data.repository.AccountRepository;
 import com.example.moneyapp.data.repository.TransactionRepository;
-import com.example.moneyapp.model.ListItem;
+import com.example.moneyapp.model.DailyTransactionGroup;
 import com.example.moneyapp.model.Transaction;
 
 import java.util.ArrayList;
@@ -19,8 +20,10 @@ import java.util.Map;
 
 public class TransactionViewModel extends AndroidViewModel {
     private final TransactionRepository repository;
+    private final AccountRepository accountRepository;
+    private final MutableLiveData<Double> totalBalance = new MutableLiveData<>(0.0);
+    private final MutableLiveData<List<DailyTransactionGroup>> groupedTransactionsLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Transaction>> transactionsLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<ListItem>> groupedTransactionsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Transaction> selectedTransaction = new MutableLiveData<>();
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
@@ -29,13 +32,28 @@ public class TransactionViewModel extends AndroidViewModel {
     public TransactionViewModel(@NonNull Application application) {
         super(application);
         repository = new TransactionRepository(application);
+        accountRepository = new AccountRepository(application);
     }
 
-    public LiveData<List<ListItem>> getGroupedTransactions() { return groupedTransactionsLiveData; }
+    public LiveData<Double> getTotalBalance() { return totalBalance; }
+    public LiveData<List<DailyTransactionGroup>> getGroupedTransactions() { return groupedTransactionsLiveData; }
     public LiveData<Transaction> getSelectedTransaction() { return selectedTransaction; }
     public LiveData<String> getErrorLiveData() { return errorLiveData; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
     public LiveData<Boolean> getOperationSuccess() { return operationSuccess; }
+
+    public void loadTotalBalance() {
+        accountRepository.getTotalBalance(new AccountRepository.AccountCallback<Double>() {
+            @Override
+            public void onSuccess(Double result) {
+                totalBalance.postValue(result != null ? result : 0.0);
+            }
+            @Override
+            public void onError(String message) {
+                errorLiveData.postValue(message);
+            }
+        });
+    }
 
     public void loadTransactions(Date start, Date end, Integer type, String accountId, String categoryId) {
         isLoading.setValue(true);
@@ -46,7 +64,6 @@ public class TransactionViewModel extends AndroidViewModel {
                 groupedTransactionsLiveData.postValue(groupTransactionsByDate(result));
                 isLoading.postValue(false);
             }
-
             @Override
             public void onError(String message) {
                 errorLiveData.postValue(message);
@@ -100,25 +117,36 @@ public class TransactionViewModel extends AndroidViewModel {
         });
     }
 
-    private List<ListItem> groupTransactionsByDate(List<Transaction> transactions) {
-        if (transactions == null) return new ArrayList<>();
-        LinkedHashMap<String, List<Transaction>> map = new LinkedHashMap<>();
+    private List<DailyTransactionGroup> groupTransactionsByDate(List<Transaction> transactions) {
+        if (transactions == null || transactions.isEmpty()) return new ArrayList<>();
+
+        Map<String, List<Transaction>> groupedMap = new LinkedHashMap<>();
         for (Transaction t : transactions) {
-            String dateKey = t.getFormattedDate();
-            map.computeIfAbsent(dateKey, k -> new ArrayList<>()).add(t);
+            String dateKey = formatToDisplayDate(t.getDate());
+            if (!groupedMap.containsKey(dateKey)) {
+                groupedMap.put(dateKey, new ArrayList<>());
+            }
+            groupedMap.get(dateKey).add(t);
         }
 
-        List<ListItem> result = new ArrayList<>();
-        for (Map.Entry<String, List<Transaction>> entry : map.entrySet()) {
-            double total = 0;
+        List<DailyTransactionGroup> resultList = new ArrayList<>();
+        for (Map.Entry<String, List<Transaction>> entry : groupedMap.entrySet()) {
+            double totalDay = 0;
             for (Transaction t : entry.getValue()) {
-                if (t.getAmount() != null) total += t.getAmount();
+                if (t.getAmount() != null) {
+                    totalDay += t.getAmount();
+                }
             }
-            result.add(new ListItem(entry.getKey(), String.format(Locale.getDefault(), "%,.0f đ", total)));
-            for (Transaction t : entry.getValue()) {
-                result.add(new ListItem(t));
-            }
+            String dateSummary = String.format(Locale.getDefault(), "%,.0f đ", totalDay);
+            resultList.add(new DailyTransactionGroup(entry.getKey(), dateSummary, entry.getValue()));
         }
-        return result;
+        return resultList;
+    }
+
+    private String formatToDisplayDate(Date date) {
+        if (date == null) return "Chưa xác định";
+        java.text.DateFormat formatter = java.text.DateFormat.getDateInstance(
+                java.text.DateFormat.LONG, Locale.getDefault());
+        return formatter.format(date);
     }
 }

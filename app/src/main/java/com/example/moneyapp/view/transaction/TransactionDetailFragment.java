@@ -9,9 +9,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.TransactionViewModel;
 
@@ -36,26 +38,44 @@ public class TransactionDetailFragment extends BaseFragment {
         if (args != null && args.containsKey("transactionId")) {
             String transactionId = args.getString("transactionId");
             observeViewModel(view);
-            // Bạn có thể cần bổ sung method loadTransactionById vào TransactionViewModel nếu chưa có
-            // transactionViewModel.loadTransactionById(transactionId);
+            transactionViewModel.loadTransactionById(transactionId);
         } else {
             Toast.makeText(getContext(), "Không tìm thấy mã giao dịch", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void observeViewModel(View view) {
-        // Giả sử bạn cập nhật TransactionViewModel để có LiveData cho 1 transaction duy nhất
-        // Ở đây tôi lấy ví dụ sử dụng dữ liệu từ danh sách đã load hoặc bạn có thể bổ sung API getById
-        
-        TextView tvCategory    = view.findViewById(R.id.tvDetailCategoryLabel);
-        TextView tvAmount      = view.findViewById(R.id.tvDetailAmount);
-        TextView tvSource      = view.findViewById(R.id.tvDetailSource);
-        TextView tvDate        = view.findViewById(R.id.tvDetailDate);
-        TextView tvTime        = view.findViewById(R.id.tvDetailTime);
-        TextView tvDescription = view.findViewById(R.id.tvDetailDescription);
-        TextView tvBadge       = view.findViewById(R.id.tvDetailBadge);
+        transactionViewModel.getSelectedTransaction().observe(getViewLifecycleOwner(), t -> {
+            if (t == null) return;
 
-        // Logic cập nhật UI khi có dữ liệu từ TransactionViewModel...
+            TextView tvCategory    = view.findViewById(R.id.tvDetailCategoryLabel);
+            TextView tvAmount      = view.findViewById(R.id.tvDetailAmount);
+            TextView tvSource      = view.findViewById(R.id.tvDetailSource);
+            TextView tvDate        = view.findViewById(R.id.tvDetailDate);
+            TextView tvTime        = view.findViewById(R.id.tvDetailTime);
+            TextView tvDescription = view.findViewById(R.id.tvDetailDescription);
+            TextView tvBadge       = view.findViewById(R.id.tvDetailBadge);
+
+            tvCategory.setText(t.getCategoryName() != null ? t.getCategoryName() : "Hạng mục");
+            tvSource.setText(t.getAccountName() != null ? t.getAccountName() : "Ví");
+            tvDate.setText(t.getFormattedDate());
+            tvTime.setText(t.getFormattedTime());
+            tvDescription.setText(t.getDescription() != null && !t.getDescription().isEmpty() ? t.getDescription() : "-");
+
+            if (t.getAmount() != null && t.getAmount() < 0) {
+                tvAmount.setText(t.getFormattedAmount() + "đ");
+                tvAmount.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorDanger));
+                tvBadge.setText("Chi tiêu");
+            } else {
+                tvAmount.setText("+" + t.getFormattedAmount() + "đ");
+                tvAmount.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorSuccess));
+                tvBadge.setText("Thu nhập");
+            }
+        });
+
+        transactionViewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
+            if (error != null) Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+        });
     }
 
     @Override

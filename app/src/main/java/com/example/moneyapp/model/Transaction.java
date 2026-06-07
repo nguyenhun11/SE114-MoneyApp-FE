@@ -19,10 +19,22 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(String transactionId, String accountId, String categoryId, Double amount, Date date, String description, List<String> imageUrls) {
+    public Transaction(String transactionId,
+                       String accountId,
+                       String accountName,
+                       String categoryId,
+                       String categoryName,
+                       CategoryType type,
+                       Double amount,
+                       Date date,
+                       String description,
+                       List<String> imageUrls) {
         this.transactionId = transactionId;
         this.accountId = accountId;
+        this.accountName = accountName;
         this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.type = type;
         this.amount = amount;
         this.date = date;
         this.description = description;
@@ -86,4 +98,5 @@ public class Transaction {
     public String getCategory() {
         return categoryName != null ? categoryName : categoryId;
     }
+
 }
