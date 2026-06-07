@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.view.BaseFragment;
+import com.example.moneyapp.view.components.TimeSelectorView;
 import com.example.moneyapp.viewmodel.TransactionViewModel;
 
 import java.util.ArrayList;
@@ -71,6 +72,14 @@ public class TransactionFragment extends BaseFragment {
             Navigation.findNavController(view).navigate(R.id.transactionDetailFragment, args);
         });
         recyclerView.setAdapter(adapter);
+
+        TimeSelectorView timeSelector = view.findViewById(R.id.time_selector);
+        timeSelector.setOnTimeRangeChangeListener((startDate, endDate) -> {
+            // Component đã tính sẵn chính xác đến từng mili-giây, bạn chỉ việc quăng thẳng vào ViewModel!
+
+            transactionViewModel.loadTransactions(startDate, endDate, selectedTransactionType, null, null);
+            transactionViewModel.loadTotalBalance();
+        });
 
         // GỌI CÁC HÀM SETUP UI
         setupTimeFilters(view);

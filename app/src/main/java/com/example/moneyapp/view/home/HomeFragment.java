@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.category.CategorySummaryAdapter;
+import com.example.moneyapp.view.components.TimeSelectorView;
 import com.example.moneyapp.viewmodel.HomeViewModel;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -67,6 +68,11 @@ public class HomeFragment extends BaseFragment {
         pieChart = view.findViewById(R.id.main_pie_chart);
         tvTotalAmountPie = view.findViewById(R.id.tv_total_amount_pie);
         tvTotalAmountLinear = view.findViewById(R.id.tv_total_amount_linear); // Ánh xạ
+
+        TimeSelectorView timeSelector = view.findViewById(R.id.time_selector);
+        timeSelector.setOnTimeRangeChangeListener((startDate, endDate) -> {
+            homeViewModel.loadHomeData(); //TODO: Load real
+        });
 
         setupRecyclerView();
         setupPieChart();
