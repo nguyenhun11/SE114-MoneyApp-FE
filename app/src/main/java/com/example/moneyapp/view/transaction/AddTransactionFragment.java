@@ -73,6 +73,8 @@ public class AddTransactionFragment extends BaseFragment {
             categoryViewModel.loadCategories(transactionType);
         });
 
+
+
         observeViewModels();
         accountViewModel.loadAccounts();
         categoryViewModel.loadCategories(CategoryType.EXPENSE);
@@ -94,7 +96,7 @@ public class AddTransactionFragment extends BaseFragment {
                         calendar.get(Calendar.DAY_OF_MONTH)).show()
         );
 
-        view.findViewById(R.id.btnSave).setOnClickListener(this::saveTransaction);
+//        view.findViewById(R.id.btnSave).setOnClickListener(this::saveTransaction);
     }
 
     private void observeViewModels() {
@@ -130,17 +132,8 @@ public class AddTransactionFragment extends BaseFragment {
 
         try {
             double amountValue = Double.parseDouble(amountStr);
-            // Tạm thời chỉ thông báo, chưa thực hiện lưu thực tế để tránh lỗi API/Repository
             Toast.makeText(getContext(), "Tính năng lưu đang được hoàn thiện", Toast.LENGTH_SHORT).show();
             Navigation.findNavController(requireView()).navigateUp();
-            
-            /* Logic lưu thực tế sẽ phát triển sau:
-            Transaction t = new Transaction();
-            t.setAmount(transactionType == CategoryType.EXPENSE ? -Math.abs(amountValue) : Math.abs(amountValue));
-            t.setDate(selectedDate);
-            // ... set các trường khác
-            transactionViewModel.addTransaction(t);
-            */
         } catch (Exception e) {
             Toast.makeText(getContext(), "Dữ liệu không hợp lệ", Toast.LENGTH_SHORT).show();
         }
@@ -149,5 +142,11 @@ public class AddTransactionFragment extends BaseFragment {
     @Override
     protected boolean shouldShowBottomNavigation() { return false; }
     @Override
-    protected void onFabClick() {}
+    protected void onFabClick() {
+        saveTransaction(requireView());
+    }
+    @Override
+    protected int getFabIcon() {
+        return R.drawable.ic_check_white;
+    }
 }

@@ -41,7 +41,7 @@
                 android:layout_centerInParent="true"
                 android:gravity="center"
                 android:text="@string/header_title_default"
-                android:textColor="@color/colorOnSurface"
+                android:textColor="@color/colorOnPrimary"
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
@@ -55,7 +55,7 @@
                 android:layout_marginStart="16dp"
                 android:padding="8dp"
                 android:src="@drawable/ic_back"
-                app:tint="@color/colorOnSurface" />
+                app:tint="@color/colorOnPrimary" />
         </RelativeLayout>
     </LinearLayout>
 

@@ -22,15 +22,24 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         if (getActivity() instanceof MainActivity) {
             MainActivity mainActivity = (MainActivity) getActivity();
             MainUIHandler uiHandler = mainActivity.getUiHandler();
             if (uiHandler != null) {
-                uiHandler.updateFAB(getFabIcon(), v -> onFabClick());
                 uiHandler.setBottomNavigationVisibility(shouldShowBottomNavigation());
+
+                if (shouldShowFab()) {
+                    uiHandler.updateFAB(getFabIcon(), v -> onFabClick());
+                } else {
+                    uiHandler.hideFAB();
+                }
             }
         }
+    }
+
+    protected boolean shouldShowFab() {
+        return true;
     }
 
     @DrawableRes
