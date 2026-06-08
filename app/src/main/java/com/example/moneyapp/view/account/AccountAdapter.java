@@ -1,9 +1,7 @@
 package com.example.moneyapp.view.account;
 
-import static androidx.core.content.ContentProviderCompat.requireContext;
-
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
+import com.example.moneyapp.utils.ResourceMapper;
 
 import java.util.List;
 import java.util.Locale;
@@ -53,7 +52,6 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
 
         holder.tvName.setText(account.getAccountName());
 
-        // Format tiền tệ
         String formattedBalance = String.format(Locale.getDefault(), "%,.0f", account.getBalance()).replace(",", ".");
         holder.tvBalance.setText(formattedBalance);
 
@@ -63,17 +61,17 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
 
         if (account.isIncludeInTotal()) {
             holder.ivHiddenEye.setVisibility(View.GONE);
-            // 3. Truyền biến màu đã dịch vào hàm
             holder.tvBalance.setTextColor(normalColor);
         } else {
             holder.ivHiddenEye.setVisibility(View.VISIBLE);
             holder.tvBalance.setTextColor(dimColor);
         }
 
-        // Tùy chỉnh màu sắc và Icon thực tế dựa vào account.getColorId() / getIconId()
-        // (Ở đây mình giả sử bạn có hàm helper để lấy màu/icon, nếu chưa có thì gán tạm)
-        // holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#...")));
-        // holder.ivIcon.setImageResource(...);
+        int iconRes = ResourceMapper.getIconResourceById(account.getIcon());
+        int colorRes = ResourceMapper.getColorResourceById(account.getColor());
+        int actualColor = ContextCompat.getColor(context, colorRes);
+        holder.ivIcon.setImageResource(iconRes);
+        holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(actualColor));
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onItemClick(account);

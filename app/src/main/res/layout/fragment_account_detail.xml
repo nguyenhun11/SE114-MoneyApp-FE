@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <View
+        android:id="@+id/bg_header"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/header_height_large"
+        android:background="@drawable/bg_header_gradient"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/header_layout"
+        layout="@layout/layout_header_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="@dimen/card_bottom_margin"
+        app:cardBackgroundColor="@color/colorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_layout">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Tên tài khoản"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/et_account_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@drawable/bg_input_border"
+                    android:hint="Ví dụ: Tiền mặt"
+                    android:paddingHorizontal="16dp"
+                    android:singleLine="true"
+                    android:textColorHint="@color/colorOnSurfaceVariant"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Số dư"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/et_account_balance"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@drawable/bg_input_border"
+                    android:hint="0"
+                    android:inputType="numberDecimal"
+                    android:paddingHorizontal="16dp"
+                    android:textColorHint="@color/colorOnSurfaceVariant"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Hiển thị"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/btn_pick_icon"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input_border"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/colorEmpty">
+
+                            <ImageView
+                                android:id="@+id/iv_selected_icon"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_account"
+                                app:tint="@color/colorOnSurface" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Biểu tượng"
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btn_pick_color"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input_border"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <View
+                            android:id="@+id/v_selected_color"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/design_default_color_primary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Màu sắc"
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Ghi chú"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/et_account_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_input_border"
+                    android:hint="Nhập mô tả"
+                    android:paddingHorizontal="16dp"
+                    android:singleLine="true"
+                    android:textColorHint="@color/colorOnSurfaceVariant"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Không bao gồm vào tổng số dư"
+                        android:textColor="@color/colorOnSurface"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switch_exclude_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:thumbTint="@color/switch_colors"
+                        app:trackTint="@color/colorOnSurfaceVariant" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_created_at"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:text="Tạo vào 11:12 28/3/2026"
+                    android:textColor="@color/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    android:textStyle="italic"
+                    android:visibility="visible" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.card.MaterialCardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
