@@ -18,7 +18,12 @@
         android:layout_marginTop="-220dp"
         android:orientation="vertical">
 
-        <include layout="@layout/layout_header_account_selector" />
+        <include
+            android:id="@+id/layout_balance"
+            layout="@layout/layout_header_account_selector"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <include
             layout="@layout/layout_header_tab_three"
@@ -29,7 +34,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginHorizontal="20dp"
+            android:layout_marginHorizontal="@dimen/card_horizontal_margin"
             android:layout_marginBottom="@dimen/card_bottom_margin"
             android:layout_weight="1"
             android:paddingBottom="20dp"

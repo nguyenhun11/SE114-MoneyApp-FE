@@ -43,17 +43,10 @@ public class TransactionFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         transactionViewModel = new ViewModelProvider(this).get(TransactionViewModel.class);
-
-        setupBalanceSelector(view, getString(R.string.total_balance), "0", true);
-
-        // CẬP NHẬT: Ra lệnh cho ViewModel đổi Tab và tự Reload
         setupThreeTabs(view, index -> {
-            CategoryType type = null; // Mặc định là Tất cả
-            if (index == 1) {
-                type = CategoryType.EXPENSE;
-            } else if (index == 2) {
-                type = CategoryType.INCOME;
-            }
+            CategoryType type = null;
+            if (index == 1) type = CategoryType.EXPENSE;
+            else if (index == 2) type = CategoryType.INCOME;
             transactionViewModel.setTypeAndReload(type);
         });
 
@@ -68,11 +61,8 @@ public class TransactionFragment extends BaseFragment {
         recyclerView.setAdapter(adapter);
 
         TimeSelectorView timeSelector = view.findViewById(R.id.time_selector);
-
-        // CẬP NHẬT: Quăng ngày tháng cho ViewModel nhớ và tự Reload
         timeSelector.setOnTimeRangeChangeListener((startDate, endDate) -> {
             transactionViewModel.setTimeRangeAndReload(startDate, endDate);
-            transactionViewModel.loadTotalBalance();
         });
 
         setupCategoryFilter(view);
@@ -92,15 +82,15 @@ public class TransactionFragment extends BaseFragment {
 
         transactionViewModel.getTotalBalance().observe(getViewLifecycleOwner(), balance -> {
             setupBalanceSelector(requireView(), getString(R.string.total_balance),
-                    String.format(java.util.Locale.getDefault(), "%,.0f", balance).replace(",", "."), true);
+                    String.format("%,.0f", balance).replace(",", "."), true);
         });
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        transactionViewModel.reloadTransactions();
         transactionViewModel.loadTotalBalance();
+        transactionViewModel.reloadTransactions();
     }
 
     private void setupCategoryFilter(View view) {

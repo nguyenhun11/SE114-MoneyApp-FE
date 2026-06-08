@@ -22,7 +22,7 @@ import java.util.Map;
 public class TransactionViewModel extends AndroidViewModel {
     private final TransactionRepository repository;
     private final AccountRepository accountRepository;
-    private final MutableLiveData<Double> totalBalance = new MutableLiveData<>(0.0);
+    private final MutableLiveData<Double> totalBalance = new MutableLiveData<>();
     private final MutableLiveData<List<DailyTransactionGroup>> groupedTransactionsLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Transaction>> transactionsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Transaction> selectedTransaction = new MutableLiveData<>();
