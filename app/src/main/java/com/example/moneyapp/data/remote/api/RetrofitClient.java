@@ -2,6 +2,11 @@ package com.example.moneyapp.data.remote.api;
 
 import android.content.Context;
 import com.example.moneyapp.data.local.PreferenceManager;
+import com.example.moneyapp.utils.DateConverter;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -50,10 +55,15 @@ public class RetrofitClient {
                     .readTimeout(30, TimeUnit.SECONDS)
                     .build();
 
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> 
+                            DateConverter.convertStringToDate(json.getAsString()))
+                    .create();
+
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .client(okHttpClient)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
         }
         return retrofit;
