@@ -30,6 +30,10 @@ public class CategoryGroupAdapter extends RecyclerView.Adapter<CategoryGroupAdap
     public void setData(List<Category> categories) {
         groupedCategories.clear();
         groupNames.clear();
+        if (categories == null) {
+            notifyDataSetChanged();
+            return;
+        }
         for (Category category : categories) {
             String group = category.getGroupName();
             if (!groupedCategories.containsKey(group)) {

@@ -57,4 +57,12 @@ public class AppResourceManager {
         }
         return R.drawable.ic_transaction; // Mặc định
     }
+
+    public static int getColorCount() {
+        return COLOR_PALETTE.length;
+    }
+
+    public static int getIconCount() {
+        return ICON_LIST.length;
+    }
 }

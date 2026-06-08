@@ -3,6 +3,8 @@ package com.example.moneyapp.data.repository;
 import android.content.Context;
 import androidx.annotation.NonNull;
 
+import com.example.moneyapp.data.remote.request.CategoryGroupRequest;
+import com.example.moneyapp.data.remote.request.CategoryGroupResponse;
 import com.example.moneyapp.data.remote.request.CategoryRequest;
 import com.example.moneyapp.data.remote.request.ReorderCategoryRequest;
 import com.example.moneyapp.data.remote.response.CategoryResponse;
@@ -93,20 +95,21 @@ public class CategoryRepository extends BaseRepository {
                 category.getCategoryName(),
                 category.getMonthlyTarget(),
                 category.getColor(),
-                category.getIcon()
+                category.getIcon(),
+                category.getGroupId()
         );
 
 
-        Call<Void> call;
+        Call<CategoryResponse> call;
         if (category.getType() == CategoryType.INCOME) {
             call = apiService.createIncomeCategory(request);
         } else {
             call = apiService.createExpenseCategory(request);
         }
 
-        call.enqueue(new Callback<Void>() {
+        call.enqueue(new Callback<CategoryResponse>() {
             @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+            public void onResponse(@NonNull Call<CategoryResponse> call, @NonNull Response<CategoryResponse> response) {
                 if (response.isSuccessful()) {
                     callback.onSuccess(null);
                 } else {
@@ -115,7 +118,7 @@ public class CategoryRepository extends BaseRepository {
             }
 
             @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
+            public void onFailure(@NonNull Call<CategoryResponse> call, @NonNull Throwable throwable) {
                 callback.onError("Lỗi kết nối: " + throwable.getMessage());
             }
         });
@@ -126,7 +129,8 @@ public class CategoryRepository extends BaseRepository {
                 category.getCategoryName(),
                 category.getMonthlyTarget(),
                 category.getColor(),
-                category.getIcon()
+                category.getIcon(),
+                category.getGroupId()
         );
 
         Call<Void> call;
@@ -193,6 +197,78 @@ public class CategoryRepository extends BaseRepository {
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
                 callback.onError("Lỗi kết nối: " + throwable.getMessage());
+            }
+        });
+    }
+
+    public void createExpenseCategoryGroup(CategoryGroupRequest request, CategoryCallback<CategoryGroupResponse> callback) {
+        apiService.createExpenseCategoryGroup(request).enqueue(new Callback<CategoryGroupResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CategoryGroupResponse> call, @NonNull Response<CategoryGroupResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Tạo nhóm chi thất bại: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CategoryGroupResponse> call, @NonNull Throwable throwable) {
+                callback.onError("Lỗi kết nối: " + throwable.getMessage());
+            }
+        });
+    }
+
+    public void createIncomeCategoryGroup(CategoryGroupRequest request, CategoryCallback<CategoryGroupResponse> callback) {
+        apiService.createIncomeCategoryGroup(request).enqueue(new Callback<CategoryGroupResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CategoryGroupResponse> call, @NonNull Response<CategoryGroupResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Tạo nhóm thu thất bại: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CategoryGroupResponse> call, @NonNull Throwable throwable) {
+                callback.onError("Lỗi kết nối: " + throwable.getMessage());
+            }
+        });
+    }
+
+    public void getAllExpenseCategoryGroups(CategoryCallback<List<CategoryGroupResponse>> callback) {
+        apiService.getAllExpenseCategoryGroups().enqueue(new Callback<List<CategoryGroupResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<CategoryGroupResponse>> call, @NonNull Response<List<CategoryGroupResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Lỗi: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<CategoryGroupResponse>> call, @NonNull Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
+    }
+
+    public void getAllIncomeCategoryGroups(CategoryCallback<List<CategoryGroupResponse>> callback) {
+        apiService.getAllIncomeCategoryGroups().enqueue(new Callback<List<CategoryGroupResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<CategoryGroupResponse>> call, @NonNull Response<List<CategoryGroupResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Lỗi: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<CategoryGroupResponse>> call, @NonNull Throwable t) {
+                callback.onError(t.getMessage());
             }
         });
     }
