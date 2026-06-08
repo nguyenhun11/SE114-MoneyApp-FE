@@ -29,8 +29,13 @@ public abstract class BaseFragment extends Fragment {
             if (uiHandler != null) {
                 uiHandler.updateFAB(getFabIcon(), v -> onFabClick());
                 uiHandler.setBottomNavigationVisibility(shouldShowBottomNavigation());
+                uiHandler.setFABVisibility(shouldShowFAB());
             }
         }
+    }
+
+    protected boolean shouldShowFAB() {
+        return true;
     }
 
     @DrawableRes

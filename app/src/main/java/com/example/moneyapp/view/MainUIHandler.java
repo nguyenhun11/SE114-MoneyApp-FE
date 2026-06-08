@@ -73,6 +73,11 @@ public class MainUIHandler {
         if (bottomNav != null) {
             bottomNav.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
+        // FAB có thể cần hiển thị ngay cả khi BottomNav ẩn (ví dụ trong màn hình Thêm)
+        // Nên ta không tự động ẩn FAB theo BottomNav nếu fragment yêu cầu hiện FAB
+    }
+
+    public void setFABVisibility(boolean visible) {
         if (fabAdd != null) {
             fabAdd.setVisibility(visible ? View.VISIBLE : View.GONE);
         }

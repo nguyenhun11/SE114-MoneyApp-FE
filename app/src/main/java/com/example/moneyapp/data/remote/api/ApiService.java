@@ -113,9 +113,9 @@ public interface ApiService {
     @GET("api/Category/group/{groupId}")
     Call<List<CategoryResponse>> getCategoriesByGroupId(@Path("groupId") String groupId);
     @POST("api/Category/expense")
-    Call<Void> createExpenseCategory(@Body CategoryRequest request);
+    Call<CategoryResponse> createExpenseCategory(@Body CategoryRequest request);
     @POST("api/Category/income")
-    Call<Void> createIncomeCategory(@Body CategoryRequest request);
+    Call<CategoryResponse> createIncomeCategory(@Body CategoryRequest request);
     @PUT("api/Category/expense/{id}")
     Call<Void> updateExpenseCategory(@Path("id") String id, @Body CategoryRequest request);
     @PUT("api/Category/income/{id}")

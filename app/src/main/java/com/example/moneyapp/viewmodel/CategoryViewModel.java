@@ -9,7 +9,10 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.moneyapp.model.Category;
 import com.example.moneyapp.data.repository.CategoryRepository;
 import com.example.moneyapp.model.CategoryType;
+import com.example.moneyapp.data.remote.request.CategoryGroupRequest;
+import com.example.moneyapp.data.remote.request.CategoryGroupResponse;
 
+import java.util.Date;
 import java.util.List;
 
 public class CategoryViewModel extends AndroidViewModel {
@@ -46,10 +49,49 @@ public class CategoryViewModel extends AndroidViewModel {
 
     public void loadCategories(CategoryType type) {
         this.currentType = type;
+        
+        // Luôn xóa dữ liệu cũ trước khi tải mới để tránh UI bị lag hoặc hiển thị sai
+        categoriesLiveData.setValue(null);
+
+        CategoryRepository.CategoryCallback<List<CategoryGroupResponse>> groupCallback = new CategoryRepository.CategoryCallback<List<CategoryGroupResponse>>() {
+            @Override
+            public void onSuccess(List<CategoryGroupResponse> result) {
+                if (result == null || result.isEmpty()) {
+                    createDefaultCategories(type);
+                } else {
+                    // Nếu đã có nhóm, thử lấy hạng mục
+                    fetchCategories(type, result);
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                errorLiveData.postValue(message);
+            }
+        };
+
+        if (type == CategoryType.INCOME) {
+            repository.getAllIncomeCategoryGroups(groupCallback);
+        } else {
+            repository.getAllExpenseCategoryGroups(groupCallback);
+        }
+    }
+
+    private void fetchCategories(CategoryType type, List<CategoryGroupResponse> groups) {
         CategoryRepository.CategoryCallback<List<Category>> callback = new CategoryRepository.CategoryCallback<List<Category>>() {
             @Override
             public void onSuccess(List<Category> result) {
-                categoriesLiveData.postValue(result);
+                if (result == null || result.isEmpty()) {
+                    // Nếu đã có nhóm nhưng chưa có hạng mục, dùng nhóm đầu tiên để tạo hạng mục mẫu
+                    if (groups != null && !groups.isEmpty()) {
+                        CategoryGroupResponse targetGroup = groups.get(0);
+                        createDefaultCategoriesInGroup(type, targetGroup);
+                    } else {
+                        createDefaultCategories(type);
+                    }
+                } else {
+                    categoriesLiveData.postValue(result);
+                }
             }
 
             @Override
@@ -65,11 +107,78 @@ public class CategoryViewModel extends AndroidViewModel {
         }
     }
 
+    private void createDefaultCategoriesInGroup(CategoryType type, CategoryGroupResponse group) {
+        if (type == CategoryType.EXPENSE) {
+            addCategory(new Category(null, "Ăn uống", CategoryType.EXPENSE, group.getGroupId(), group.getGroupName(), 0.0, 4, 0, 0, new Date(), new Date()));
+            addCategory(new Category(null, "Di chuyển", CategoryType.EXPENSE, group.getGroupId(), group.getGroupName(), 0.0, 1, 7, 1, new Date(), new Date()));
+            addCategory(new Category(null, "Mua sắm", CategoryType.EXPENSE, group.getGroupId(), group.getGroupName(), 0.0, 9, 6, 2, new Date(), new Date()));
+        } else if (type == CategoryType.INCOME) {
+            addCategory(new Category(null, "Lương", CategoryType.INCOME, group.getGroupId(), group.getGroupName(), 0.0, 2, 2, 0, new Date(), new Date()));
+            addCategory(new Category(null, "Thưởng", CategoryType.INCOME, group.getGroupId(), group.getGroupName(), 0.0, 4, 5, 1, new Date(), new Date()));
+        }
+    }
+
+    private void createDefaultCategories(CategoryType type) {
+        CategoryGroupRequest groupRequest = new CategoryGroupRequest(type == CategoryType.EXPENSE ? "Cơ bản" : "Thu nhập");
+        
+        CategoryRepository.CategoryCallback<CategoryGroupResponse> groupCallback = new CategoryRepository.CategoryCallback<CategoryGroupResponse>() {
+            @Override
+            public void onSuccess(CategoryGroupResponse group) {
+                createDefaultCategoriesInGroup(type, group);
+            }
+
+            @Override
+            public void onError(String message) {
+                errorLiveData.postValue("Lỗi tạo nhóm: " + message);
+            }
+        };
+
+        if (type == CategoryType.EXPENSE) {
+            repository.createExpenseCategoryGroup(groupRequest, groupCallback);
+        } else {
+            repository.createIncomeCategoryGroup(groupRequest, groupCallback);
+        }
+    }
+
     public void addCategory(Category category) {
+        if (category.getGroupId() == null) {
+            // Sử dụng tên nhóm mặc định duy nhất cho mỗi loại để tránh phân mảnh
+            String defaultGroupName = (category.getType() == CategoryType.EXPENSE ? "Danh mục chi tiêu" : "Danh mục thu nhập");
+            CategoryGroupRequest groupRequest = new CategoryGroupRequest(defaultGroupName);
+            
+            CategoryRepository.CategoryCallback<CategoryGroupResponse> groupCallback = new CategoryRepository.CategoryCallback<CategoryGroupResponse>() {
+                @Override
+                public void onSuccess(CategoryGroupResponse group) {
+                    category.setGroupId(group.getGroupId());
+                    category.setGroupName(group.getGroupName());
+                    
+                    // Gọi repository để tạo hạng mục thật
+                    performActualCreate(category);
+                }
+
+                @Override
+                public void onError(String message) {
+                    errorLiveData.postValue("Lỗi tạo nhóm: " + message);
+                }
+            };
+
+            if (category.getType() == CategoryType.EXPENSE) {
+                repository.createExpenseCategoryGroup(groupRequest, groupCallback);
+            } else {
+                repository.createIncomeCategoryGroup(groupRequest, groupCallback);
+            }
+            return;
+        }
+
+        performActualCreate(category);
+    }
+
+    private void performActualCreate(Category category) {
         repository.createCategory(category, new CategoryRepository.CategoryCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 saveSuccess.postValue(true);
+                loadCategories(currentType);
             }
 
             @Override
