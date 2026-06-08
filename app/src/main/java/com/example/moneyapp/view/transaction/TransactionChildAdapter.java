@@ -92,8 +92,8 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
         // =====================================================================
         // ĐẮP MÀU VÀ ICON TỪ RESOURCEMAPPER
         // =====================================================================
-        int iconRes = ResourceMapper.getIconResourceById(t.getIconId());
-        int colorRes = ResourceMapper.getColorResourceById(t.getColorId());
+        int iconRes = ResourceMapper.getIconResourceById(t.getCategoryIconId());
+        int colorRes = ResourceMapper.getColorResourceById(t.getCategoryColorId());
         int actualColor = ContextCompat.getColor(context, colorRes);
 
         holder.ivIcon.setImageResource(iconRes);

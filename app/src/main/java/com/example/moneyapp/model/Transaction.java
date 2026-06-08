@@ -15,14 +15,13 @@ public class Transaction {
     private Double amount;
     private Date date;
     private String note;
-    private int colorId;
-    private int iconId;
+    private int categoryColorId;
+    private int categoryIconId;
+    private int accountColorId;
+    private int accountIconId;
     private List<String> imageUrls;
+    private Date createdAt;
 
-    public Transaction(int colorId, int iconId) {
-        this.colorId = colorId;
-        this.iconId = iconId;
-    }
 
     public Transaction(String transactionId,
                        String accountId,
@@ -32,8 +31,8 @@ public class Transaction {
                        CategoryType type,
                        Double amount,
                        Date date,
-                       String note, int colorId, int iconId,
-                       List<String> imageUrls) {
+                       String note, int categoryColorId, int categoryIconId, int accountColorId, int accountIconId,
+                       List<String> imageUrls, Date createdAt) {
         this.transactionId = transactionId;
         this.accountId = accountId;
         this.accountName = accountName;
@@ -43,9 +42,12 @@ public class Transaction {
         this.amount = amount;
         this.date = date;
         this.note = note;
-        this.colorId = colorId;
-        this.iconId = iconId;
+        this.categoryColorId = categoryColorId;
+        this.categoryIconId = categoryIconId;
+        this.accountColorId = accountColorId;
+        this.accountIconId = accountIconId;
         this.imageUrls = imageUrls;
+        this.createdAt = createdAt;
     }
 
     public String getTransactionId() { return transactionId; }
@@ -106,19 +108,43 @@ public class Transaction {
         return categoryName != null ? categoryName : categoryId;
     }
 
-    public int getColorId() {
-        return colorId;
+    public int getCategoryColorId() {
+        return categoryColorId;
     }
 
-    public void setColorId(int colorId) {
-        this.colorId = colorId;
+    public void setCategoryColorId(int categoryColorId) {
+        this.categoryColorId = categoryColorId;
     }
 
-    public int getIconId() {
-        return iconId;
+    public int getCategoryIconId() {
+        return categoryIconId;
     }
 
-    public void setIconId(int iconId) {
-        this.iconId = iconId;
+    public void setCategoryIconId(int categoryIconId) {
+        this.categoryIconId = categoryIconId;
+    }
+
+    public int getAccountColorId() {
+        return accountColorId;
+    }
+
+    public void setAccountColorId(int accountColorId) {
+        this.accountColorId = accountColorId;
+    }
+
+    public int getAccountIconId() {
+        return accountIconId;
+    }
+
+    public void setAccountIconId(int accountIconId) {
+        this.accountIconId = accountIconId;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }
