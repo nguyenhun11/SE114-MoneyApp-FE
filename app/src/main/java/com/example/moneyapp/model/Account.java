@@ -84,7 +84,7 @@ public class Account {
         this.description = description;
     }
 
-    public Boolean getIncludeInTotal() {
+    public Boolean isIncludeInTotal() {
         return includeInTotal;
     }
 
