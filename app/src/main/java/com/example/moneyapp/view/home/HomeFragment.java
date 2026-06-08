@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,6 +29,7 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.google.android.material.appbar.AppBarLayout;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class HomeFragment extends BaseFragment {
@@ -48,6 +50,10 @@ public class HomeFragment extends BaseFragment {
     private TextView tvTotalAmountLinear;
 
     private HomeViewModel homeViewModel;
+
+    private boolean isExpenseTab = true;
+    private Date currentStartDate;
+    private Date currentEndDate;
 
     @Nullable
     @Override
@@ -73,6 +79,8 @@ public class HomeFragment extends BaseFragment {
         TimeSelectorView timeSelector = view.findViewById(R.id.time_selector);
 
         timeSelector.setOnTimeRangeChangeListener((startDate, endDate) -> {
+            currentStartDate = startDate;
+            currentEndDate = endDate;
             homeViewModel.setTimeRangeAndReload(startDate, endDate);
         });
 
@@ -81,10 +89,129 @@ public class HomeFragment extends BaseFragment {
         setupScrollBehavior();
 
         setupIncomeExpenseTabs(view, true, isExpense -> {
+            isExpenseTab = isExpense;
             int tabType = isExpense ? 0 : 1;
             homeViewModel.setTabTypeAndReload(tabType);
         });
         observeViewModel();
+    }
+
+    private String getEmptyMessage() {
+        String typeStr = isExpenseTab ? "chi tiêu" : "thu nhập";
+        String timeStr = "thời gian này";
+
+        if (currentStartDate != null && currentEndDate != null) {
+            long diffMillis = currentEndDate.getTime() - currentStartDate.getTime();
+            long days = diffMillis / (1000 * 60 * 60 * 24);
+
+            if (days <= 1) timeStr = "hôm nay";
+            else if (days <= 7) timeStr = "tuần này";
+            else if (days <= 31) timeStr = "tháng này";
+            else timeStr = "năm này";
+        }
+        return "Không có " + typeStr + " phát sinh trong " + timeStr;
+    }
+
+    private void observeViewModel() {
+        homeViewModel.getTotalBalance().observe(getViewLifecycleOwner(), balance -> {
+            setupBalanceSelector(requireView(), getString(R.string.total_balance),
+                    String.format("%,.0f", balance).replace(",", "."), true);
+        });
+
+        homeViewModel.getCategoryExpenses().observe(getViewLifecycleOwner(), items -> {
+            adapter.updateData(items);
+            populateCharts(items);
+        });
+
+        homeViewModel.getChartTotalAmount().observe(getViewLifecycleOwner(), total -> {
+            if (total == null || total == 0) {
+                if (tvTotalAmountPie != null) tvTotalAmountPie.setText("0đ");
+                if (tvTotalAmountLinear != null) tvTotalAmountLinear.setText("0đ");
+            } else {
+                String formattedTotal = String.format("%,.0f", total).replace(",", ".");
+                if (tvTotalAmountPie != null) tvTotalAmountPie.setText(formattedTotal);
+                if (tvTotalAmountLinear != null) tvTotalAmountLinear.setText(formattedTotal);
+            }
+        });
+
+        homeViewModel.getError().observe(getViewLifecycleOwner(), error -> {
+            if (error != null) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void populateCharts(List<PieChartItem> items) {
+        if (items == null || items.isEmpty()) {
+            int emptyColor = ContextCompat.getColor(requireContext(), R.color.colorEmpty);
+
+            ArrayList<PieEntry> emptyEntries = new ArrayList<>();
+            emptyEntries.add(new PieEntry(100f, ""));
+            PieDataSet emptyDataSet = new PieDataSet(emptyEntries, "");
+            emptyDataSet.setColor(emptyColor);
+            emptyDataSet.setDrawValues(false);
+
+            pieChart.setData(new PieData(emptyDataSet));
+            pieChart.animateY(0);
+            pieChart.invalidate();
+
+            LinearLayout customLinearChart = requireView().findViewById(R.id.custom_linear_chart);
+            if (customLinearChart != null) {
+                customLinearChart.removeAllViews();
+                View segment = new View(getContext());
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                );
+                segment.setLayoutParams(params);
+                segment.setBackgroundColor(emptyColor);
+                customLinearChart.addView(segment);
+            }
+            return;
+        }
+
+        ArrayList<PieEntry> pieEntries = new ArrayList<>();
+        ArrayList<Integer> colors = new ArrayList<>();
+
+        for (int i = 0; i < items.size(); i++) {
+            PieChartItem item = items.get(i);
+            pieEntries.add(new PieEntry(item.getPercentage(), item.getName()));
+            colors.add(item.getColor());
+        }
+
+        PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
+        pieDataSet.setColors(colors);
+        pieDataSet.setDrawValues(false);
+        pieDataSet.setSelectionShift(5f);
+        pieDataSet.setSliceSpace(4f);
+
+        PieData pieData = new PieData(pieDataSet);
+        pieChart.setData(pieData);
+        pieChart.animateY(0);
+        pieChart.invalidate();
+
+        LinearLayout customLinearChart = requireView().findViewById(R.id.custom_linear_chart);
+        customLinearChart.removeAllViews();
+
+        for (int i = 0; i < items.size(); i++) {
+            PieChartItem item = items.get(i);
+
+            View segment = new View(getContext());
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    item.getPercentage()
+            );
+
+            if (i < items.size() - 1) {
+                params.setMarginEnd(dpToPx(4));
+            }
+
+            segment.setLayoutParams(params);
+            segment.setBackgroundColor(item.getColor());
+
+            customLinearChart.addView(segment);
+        }
     }
 
     private void setupScrollBehavior() {
@@ -94,9 +221,7 @@ public class HomeFragment extends BaseFragment {
 
         chartsWrapper.post(() -> {
             int topHeight = topSlice.getHeight();
-
             int linearHeight = linearChartContainer.getHeight();
-
             int wrapperMarginBottom = 0;
             ViewGroup.LayoutParams wrapParams = chartsWrapper.getLayoutParams();
             if (wrapParams instanceof ViewGroup.MarginLayoutParams) {
@@ -139,6 +264,7 @@ public class HomeFragment extends BaseFragment {
             }
         });
     }
+
     private void setupRecyclerView() {
         adapter = new CategorySummaryAdapter(new ArrayList<>());
         rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -149,96 +275,14 @@ public class HomeFragment extends BaseFragment {
         pieChart.setUsePercentValues(true);
         pieChart.getDescription().setEnabled(false);
         pieChart.setDrawHoleEnabled(true);
-
         pieChart.setHoleRadius(70f);
         pieChart.setTransparentCircleRadius(55f);
-
         pieChart.setHoleColor(Color.TRANSPARENT);
         pieChart.setDrawEntryLabels(false);
         pieChart.setDrawCenterText(false);
         pieChart.getLegend().setEnabled(false);
         pieChart.animate().cancel();
         pieChart.setExtraOffsets(10f, 10f, 10f, 10f);
-    }
-
-    private void observeViewModel() {
-        homeViewModel.getTotalBalance().observe(getViewLifecycleOwner(), balance -> {
-            setupBalanceSelector(requireView(), getString(R.string.total_balance),
-                    String.format("%,.0f", balance).replace(",", "."), true);
-        });
-
-        homeViewModel.getCategoryExpenses().observe(getViewLifecycleOwner(), items -> {
-            adapter.updateData(items);
-            populateCharts(items);
-        });
-
-        homeViewModel.getChartTotalAmount().observe(getViewLifecycleOwner(), total -> {
-            String formattedTotal = String.format("%,.0f", total).replace(",", ".");
-            if (tvTotalAmountPie != null) {
-                tvTotalAmountPie.setText(formattedTotal);
-            }
-            if (tvTotalAmountLinear != null) {
-                tvTotalAmountLinear.setText(formattedTotal);
-            }
-        });
-
-        homeViewModel.getError().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) {
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void populateCharts(List<PieChartItem> items) {
-        if (items == null || items.isEmpty()) {
-            pieChart.clear();
-            LinearLayout customLinearChart = requireView().findViewById(R.id.custom_linear_chart);
-            if (customLinearChart != null) customLinearChart.removeAllViews();
-            return;
-        }
-
-        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-        ArrayList<Integer> colors = new ArrayList<>();
-
-        for (int i = 0; i < items.size(); i++) {
-            PieChartItem item = items.get(i);
-            pieEntries.add(new PieEntry(item.getPercentage(), item.getName()));
-            colors.add(item.getColor());
-        }
-
-        PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
-        pieDataSet.setColors(colors);
-        pieDataSet.setDrawValues(false);
-        pieDataSet.setSelectionShift(5f);
-        pieDataSet.setSliceSpace(4f);
-
-        PieData pieData = new PieData(pieDataSet);
-        pieChart.setData(pieData);
-        pieChart.animateY(500);
-        pieChart.invalidate();
-
-        LinearLayout customLinearChart = requireView().findViewById(R.id.custom_linear_chart);
-        customLinearChart.removeAllViews(); // Xóa view cũ khi reload
-
-        for (int i = 0; i < items.size(); i++) {
-            PieChartItem item = items.get(i);
-
-            View segment = new View(getContext());
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    item.getPercentage()
-            );
-
-            if (i < items.size() - 1) {
-                params.setMarginEnd(dpToPx(4));
-            }
-
-            segment.setLayoutParams(params);
-            segment.setBackgroundColor(item.getColor());
-
-            customLinearChart.addView(segment);
-        }
     }
 
     @Override
