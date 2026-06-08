@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.moneyapp.R;
-import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.TransactionViewModel;
 
@@ -60,7 +59,7 @@ public class TransactionDetailFragment extends BaseFragment {
             tvSource.setText(t.getAccountName() != null ? t.getAccountName() : "Ví");
             tvDate.setText(t.getFormattedDate());
             tvTime.setText(t.getFormattedTime());
-            tvDescription.setText(t.getDescription() != null && !t.getDescription().isEmpty() ? t.getDescription() : "-");
+            tvDescription.setText(t.getNote() != null && !t.getNote().isEmpty() ? t.getNote() : "-");
 
             if (t.getAmount() != null && t.getAmount() < 0) {
                 tvAmount.setText(t.getFormattedAmount() + "đ");

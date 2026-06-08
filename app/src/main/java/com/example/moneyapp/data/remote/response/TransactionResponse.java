@@ -14,11 +14,13 @@ public class TransactionResponse {
     private Double amount;
     private String date;
     private String note;
+    private int colorId;
+    private int iconId;
     private List<String> imageUrls;
     private String createdAt;
     private String lastUpdatedAt;
 
-    public TransactionResponse(String id, String accountId, String accountName, String categoryId, String categoryName, Integer type, Double amount, String date, String note, List<String> imageUrls, String createdAt, String lastUpdatedAt) {
+    public TransactionResponse(String id, String accountId, String accountName, String categoryId, String categoryName, Integer type, Double amount, String date, String note, int colorId, int iconId, List<String> imageUrls, String createdAt, String lastUpdatedAt) {
         this.id = id;
         this.accountId = accountId;
         this.accountName = accountName;
@@ -28,6 +30,8 @@ public class TransactionResponse {
         this.amount = amount;
         this.date = date;
         this.note = note;
+        this.colorId = colorId;
+        this.iconId = iconId;
         this.imageUrls = imageUrls;
         this.createdAt = createdAt;
         this.lastUpdatedAt = lastUpdatedAt;
@@ -127,5 +131,21 @@ public class TransactionResponse {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public int getColorId() {
+        return colorId;
+    }
+
+    public void setColorId(int colorId) {
+        this.colorId = colorId;
+    }
+
+    public int getIconId() {
+        return iconId;
+    }
+
+    public void setIconId(int iconId) {
+        this.iconId = iconId;
     }
 }

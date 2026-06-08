@@ -52,6 +52,8 @@ public class TransactionRepository extends BaseRepository {
                 response.getAmount(),
                 DateConverter.convertStringToDate(response.getDate()),
                 response.getNote(),
+                response.getColorId(),
+                response.getIconId(),
                 response.getImageUrls()
         );
     }

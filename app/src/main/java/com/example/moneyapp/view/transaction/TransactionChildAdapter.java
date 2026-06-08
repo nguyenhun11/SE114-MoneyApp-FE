@@ -1,10 +1,12 @@
 package com.example.moneyapp.view.transaction;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.Transaction;
+import com.example.moneyapp.utils.ResourceMapper;
 
 import java.util.List;
 import java.util.Locale;
@@ -33,13 +36,15 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
 
     // Định nghĩa ViewHolder để ánh xạ View từ file XML
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        View viewCategoryIcon;
+        FrameLayout flIconContainer;
+        ImageView ivIcon;
         TextView tvCategoryName, tvAccountName, tvNote, tvAmount;
         View divider;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            viewCategoryIcon = itemView.findViewById(R.id.viewCategoryIcon);
+            flIconContainer = itemView.findViewById(R.id.fl_icon_container);
+            ivIcon = itemView.findViewById(R.id.iv_transaction_icon);
             tvCategoryName = itemView.findViewById(R.id.tvCategoryName);
             tvAccountName = itemView.findViewById(R.id.tvAccountName);
             tvNote = itemView.findViewById(R.id.tvNote);
@@ -51,7 +56,6 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Nạp layout item_transaction_child.xml
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_transaction_child, parent, false);
         return new ViewHolder(view);
@@ -66,31 +70,34 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
         holder.tvAccountName.setText(t.getAccountName());
 
         // Xử lý ghi chú
-        if (t.getDescription() != null && !t.getDescription().trim().isEmpty()) {
+        if (t.getNote() != null && !t.getNote().trim().isEmpty()) {
             holder.tvNote.setVisibility(View.VISIBLE);
-            holder.tvNote.setText(t.getDescription());
+            holder.tvNote.setText(t.getNote());
         } else {
             holder.tvNote.setVisibility(View.GONE);
         }
 
-        // XỬ LÝ TIỀN: Đổi màu theo "Loại giao dịch" (CategoryType) thay vì âm/dương
+        // XỬ LÝ TIỀN
         if (t.getAmount() != null) {
-
-            // LƯU Ý: Tùy theo việc bạn đặt tên biến trong model Transaction là gì.
-            // Ở đây mình giả sử bạn dùng hàm getCategoryType() trả về int (0: Chi, 1: Thu).
-            // Nếu bạn đặt là getType(), hãy sửa lại cho đúng tên hàm nhé!
             CategoryType type = t.getType();
-
-            if (type == CategoryType.EXPENSE) { // 0 là EXPENSE (Chi tiêu)
-                // Ép thêm dấu trừ (-) ở phía trước
-                holder.tvAmount.setText(String.format(Locale.getDefault(), "-%,.0fđ", t.getAmount()).replace(",", "."));
+            if (type == CategoryType.EXPENSE) {
+                holder.tvAmount.setText(String.format(Locale.getDefault(), "-%,.0f", t.getAmount()).replace(",", "."));
                 holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorDanger));
-            } else { // 1 là INCOME (Thu nhập)
-                // Ép thêm dấu cộng (+) ở phía trước
-                holder.tvAmount.setText(String.format(Locale.getDefault(), "+%,.0fđ", t.getAmount()).replace(",", "."));
+            } else {
+                holder.tvAmount.setText(String.format(Locale.getDefault(), "+%,.0f", t.getAmount()).replace(",", "."));
                 holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorSuccess));
             }
         }
+
+        // =====================================================================
+        // ĐẮP MÀU VÀ ICON TỪ RESOURCEMAPPER
+        // =====================================================================
+        int iconRes = ResourceMapper.getIconResourceById(t.getIconId());
+        int colorRes = ResourceMapper.getColorResourceById(t.getColorId());
+        int actualColor = ContextCompat.getColor(context, colorRes);
+
+        holder.ivIcon.setImageResource(iconRes);
+        holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(actualColor));
 
         // Ẩn đường kẻ mờ ở phần tử cuối cùng
         if (position == transactions.size() - 1) {

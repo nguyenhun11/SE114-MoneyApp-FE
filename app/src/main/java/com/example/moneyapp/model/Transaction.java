@@ -14,10 +14,15 @@ public class Transaction {
     private CategoryType type;
     private Double amount;
     private Date date;
-    private String description;
+    private String note;
+    private int colorId;
+    private int iconId;
     private List<String> imageUrls;
 
-    public Transaction() {}
+    public Transaction(int colorId, int iconId) {
+        this.colorId = colorId;
+        this.iconId = iconId;
+    }
 
     public Transaction(String transactionId,
                        String accountId,
@@ -27,7 +32,7 @@ public class Transaction {
                        CategoryType type,
                        Double amount,
                        Date date,
-                       String description,
+                       String note, int colorId, int iconId,
                        List<String> imageUrls) {
         this.transactionId = transactionId;
         this.accountId = accountId;
@@ -37,7 +42,9 @@ public class Transaction {
         this.type = type;
         this.amount = amount;
         this.date = date;
-        this.description = description;
+        this.note = note;
+        this.colorId = colorId;
+        this.iconId = iconId;
         this.imageUrls = imageUrls;
     }
 
@@ -65,8 +72,8 @@ public class Transaction {
     public Date getDate() { return date; }
     public void setDate(Date date) { this.date = date; }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getNote() { return note; }
+    public void setNote(String note) { this.note = note; }
 
     public List<String> getImageUrls() { return imageUrls; }
     public void setImageUrls(List<String> imageUrls) { this.imageUrls = imageUrls; }
@@ -99,4 +106,19 @@ public class Transaction {
         return categoryName != null ? categoryName : categoryId;
     }
 
+    public int getColorId() {
+        return colorId;
+    }
+
+    public void setColorId(int colorId) {
+        this.colorId = colorId;
+    }
+
+    public int getIconId() {
+        return iconId;
+    }
+
+    public void setIconId(int iconId) {
+        this.iconId = iconId;
+    }
 }

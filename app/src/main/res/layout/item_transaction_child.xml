@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
@@ -7,68 +9,89 @@
     android:focusable="true"
     android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
         android:padding="16dp">
 
-        <View
-            android:id="@+id/viewCategoryIcon"
+        <FrameLayout
+            android:id="@+id/fl_icon_container"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/circle_shape" />
+            android:background="@drawable/bg_circle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_transaction_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                app:tint="@color/white"
+                tools:src="@drawable/ic_account" />
+        </FrameLayout>
 
         <LinearLayout
+            android:id="@+id/ll_info"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@+id/fl_icon_container"
+            app:layout_constraintEnd_toStartOf="@+id/tvAmount"
+            app:layout_constraintStart_toEndOf="@id/fl_icon_container"
+            app:layout_constraintTop_toTopOf="@+id/fl_icon_container">
 
             <TextView
                 android:id="@+id/tvCategoryName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sinh hoạt"
                 android:textColor="@color/colorOnSurface"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="Sinh hoạt" />
 
             <TextView
                 android:id="@+id/tvAccountName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="Tiền mặt"
                 android:textColor="@color/colorOnSurfaceVariant"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                tools:text="Tiền mặt" />
 
-            <TextView
-                android:id="@+id/tvNote"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif-italic"
-                android:maxLines="1"
-                android:text="Mua đồ siêu thị"
-                android:textColor="@color/colorOnSurfaceVariant"
-                android:textSize="13sp"
-                android:visibility="gone" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/tvAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="20.000đ"
-            android:textColor="@color/colorOnSurface"
+            android:textColor="#E8435A"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/fl_icon_container"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/fl_icon_container"
+            tools:text="- 20.000đ" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/tvNote"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorOnSurfaceVariant"
+            android:textSize="13sp"
+            android:textStyle="italic"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/ll_info"
+            app:layout_constraintTop_toBottomOf="@+id/fl_icon_container"
+            tools:text="Mua đồ siêu thị có ghi chú rất dài sẽ tự bẻ dòng ở đây"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:id="@+id/divider"

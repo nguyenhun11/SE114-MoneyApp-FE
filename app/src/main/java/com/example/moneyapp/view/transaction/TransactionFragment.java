@@ -22,14 +22,11 @@ import com.example.moneyapp.view.components.TimeSelectorView;
 import com.example.moneyapp.viewmodel.TransactionViewModel;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 public class TransactionFragment extends BaseFragment {
 
     private TransactionGroupAdapter adapter;
     private TransactionViewModel transactionViewModel;
-
 
     @Nullable
     @Override
@@ -43,6 +40,10 @@ public class TransactionFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         transactionViewModel = new ViewModelProvider(this).get(TransactionViewModel.class);
+
+        // 1. Cấu hình Header Title mới
+        setupHeader(view, "Lịch sử giao dịch", false); // Truyền true nếu muốn có nút Back
+
         setupThreeTabs(view, index -> {
             CategoryType type = null;
             if (index == 1) type = CategoryType.EXPENSE;
@@ -65,7 +66,7 @@ public class TransactionFragment extends BaseFragment {
             transactionViewModel.setTimeRangeAndReload(startDate, endDate);
         });
 
-        setupCategoryFilter(view);
+        setupFilters(view);
         observeViewModel();
     }
 
@@ -79,27 +80,29 @@ public class TransactionFragment extends BaseFragment {
                 Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
             }
         });
-
-        transactionViewModel.getTotalBalance().observe(getViewLifecycleOwner(), balance -> {
-            setupBalanceSelector(requireView(), getString(R.string.total_balance),
-                    String.format("%,.0f", balance).replace(",", "."), true);
-        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        transactionViewModel.loadTotalBalance();
+        // Không gọi loadTotalBalance() nữa
         transactionViewModel.reloadTransactions();
     }
 
-    private void setupCategoryFilter(View view) {
+    // 2. Gom chung cấu hình 2 bộ lọc
+    private void setupFilters(View view) {
+        LinearLayout btnAccountFilter = view.findViewById(R.id.btn_account_filter);
         LinearLayout btnCategoryFilter = view.findViewById(R.id.btn_category_filter);
+
+        btnAccountFilter.setOnClickListener(v -> {
+            // Chút nữa bạn có thể dùng BottomSheet Dialog giống hệt như lúc chọn Icon/Màu để làm form chọn tài khoản
+            Toast.makeText(getContext(), "Mở chọn Tài khoản", Toast.LENGTH_SHORT).show();
+        });
+
         btnCategoryFilter.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Mở menu chọn hạng mục", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Mở chọn Hạng mục", Toast.LENGTH_SHORT).show();
         });
     }
-
 
     @Override
     protected void onFabClick() {
