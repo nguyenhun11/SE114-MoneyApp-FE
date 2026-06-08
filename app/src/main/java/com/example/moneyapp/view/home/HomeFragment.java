@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -67,11 +68,12 @@ public class HomeFragment extends BaseFragment {
 
         pieChart = view.findViewById(R.id.main_pie_chart);
         tvTotalAmountPie = view.findViewById(R.id.tv_total_amount_pie);
-        tvTotalAmountLinear = view.findViewById(R.id.tv_total_amount_linear); // Ánh xạ
+        tvTotalAmountLinear = view.findViewById(R.id.tv_total_amount_linear);
 
         TimeSelectorView timeSelector = view.findViewById(R.id.time_selector);
+
         timeSelector.setOnTimeRangeChangeListener((startDate, endDate) -> {
-            homeViewModel.loadHomeData(); //TODO: Load real
+            homeViewModel.setTimeRangeAndReload(startDate, endDate);
         });
 
         setupRecyclerView();
@@ -83,8 +85,6 @@ public class HomeFragment extends BaseFragment {
             homeViewModel.setTabTypeAndReload(tabType);
         });
         observeViewModel();
-
-        homeViewModel.loadHomeData();
     }
 
     private void setupScrollBehavior() {
@@ -243,7 +243,7 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     protected void onFabClick() {
-        // TODO: Add transaction
+        Navigation.findNavController(requireView()).navigate(R.id.addTransactionFragment);
     }
 
     private int dpToPx(int dp) {
