@@ -55,6 +55,7 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
     implementation(libs.glide)
     annotationProcessor(libs.glide.compiler)
+    implementation(libs.play.services.auth)
     implementation(platform("com.google.firebase:firebase-bom:34.12.0"))
     implementation("com.google.firebase:firebase-auth")
 
