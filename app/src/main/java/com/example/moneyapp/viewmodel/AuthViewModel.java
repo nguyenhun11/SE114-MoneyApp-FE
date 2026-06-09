@@ -68,6 +68,37 @@ public class AuthViewModel extends AndroidViewModel {
         authRepository.loginByEmail(loginInput, password, callback);
     }
 
+    public void loginWithGoogle(String idToken) {
+        isLoading.setValue(true);
+        AuthRepository.AuthCallback<Integer> callback = new AuthRepository.AuthCallback<Integer>() {
+            @Override
+            public void onSuccess(Integer userId) {
+                userRepository.getUserProfile(new UserRepository.UserCallback<UserProfileResponse>() {
+                    @Override
+                    public void onSuccess(UserProfileResponse response) {
+                        User user = mapToUser(response);
+                        loginSuccess.postValue(user);
+                        isLoading.postValue(false);
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        errorMessage.postValue("Đăng nhập Google thành công nhưng lỗi tải thông tin: " + message);
+                        isLoading.postValue(false);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String message) {
+                errorMessage.postValue(message);
+                isLoading.postValue(false);
+            }
+        };
+
+        authRepository.loginByGoogle(idToken, callback);
+    }
+
     public void register(
             String name,
             String email,

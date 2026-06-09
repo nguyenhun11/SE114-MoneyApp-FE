@@ -29,16 +29,17 @@ public abstract class BaseFragment extends Fragment {
             if (uiHandler != null) {
                 uiHandler.setBottomNavigationVisibility(shouldShowBottomNavigation());
 
-                if (shouldShowFab()) {
+                if (shouldShowFAB()) {
                     uiHandler.updateFAB(getFabIcon(), v -> onFabClick());
+                    uiHandler.setFABVisibility(true);
                 } else {
-                    uiHandler.hideFAB();
+                    uiHandler.setFABVisibility(false);
                 }
             }
         }
     }
 
-    protected boolean shouldShowFab() {
+    protected boolean shouldShowFAB() {
         return true;
     }
 

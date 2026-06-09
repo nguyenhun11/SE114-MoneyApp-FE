@@ -1,19 +1,42 @@
 package com.example.moneyapp.data.remote.response;
 
+import com.google.gson.annotations.SerializedName;
+
 public class CategoryResponse {
+    @SerializedName("id")
     private String id;
+    
+    @SerializedName("categoryName")
     private String categoryName;
+    
+    @SerializedName("type")
     private int type;
+    
+    @SerializedName("groupId")
     private String groupId;
+    
+    @SerializedName("groupName")
     private String groupName;
+    
+    @SerializedName("monthlyTarget")
     private double monthlyTarget;
+    
+    @SerializedName("colorId")
     private int colorId;
+    
+    @SerializedName("iconId")
     private int iconId;
+    
+    @SerializedName("sortingOrder")
     private int sortingOrder;
+    
+    @SerializedName("createdAt")
     private String createdAt;
+    
+    @SerializedName("lastUpdatedAt")
     private String lastUpdatedAt;
 
-    public CategoryResponse(String id, String categoryName, int type, String groupId, String groupName, double monthlyTarget, int colorId, int iconId, boolean isDefault, int sortingOrder, String createdAt, String lastUpdatedAt) {
+    public CategoryResponse(String id, String categoryName, int type, String groupId, String groupName, double monthlyTarget, int colorId, int iconId, int sortingOrder, String createdAt, String lastUpdatedAt) {
         this.id = id;
         this.categoryName = categoryName;
         this.type = type;

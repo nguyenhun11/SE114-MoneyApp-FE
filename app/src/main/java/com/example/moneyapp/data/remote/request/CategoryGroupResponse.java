@@ -1,15 +1,27 @@
 package com.example.moneyapp.data.remote.request;
 
 import com.example.moneyapp.model.CategoryType;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
 public class CategoryGroupResponse {
+    @SerializedName("id")
     private String groupId;
+    
+    @SerializedName("groupName")
     private String groupName;
+    
+    @SerializedName("type")
     private CategoryType type;
+    
+    @SerializedName("sortingOrder")
     private int sortingOrder;
+    
+    @SerializedName("createdAt")
     private Date createdAt;
+    
+    @SerializedName("lastUpdatedAt")
     private Date updateAt;
 
     public CategoryGroupResponse(String groupId, String groupName, CategoryType type, int sortingOrder, Date createdAt, Date updateAt) {
