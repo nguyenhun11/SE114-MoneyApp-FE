@@ -123,7 +123,7 @@ public class AccountRepository extends BaseRepository {
                 account.getColor(),
                 account.getIcon(),
                 account.getDescription(),
-                account.getIncludeInTotal()
+                account.isIncludeInTotal()
         );
 
         apiService.createAccount(request).enqueue(new Callback<AccountResponse>() {
@@ -158,7 +158,7 @@ public class AccountRepository extends BaseRepository {
                 account.getColor(),
                 account.getIcon(),
                 account.getDescription(),
-                account.getIncludeInTotal()
+                account.isIncludeInTotal()
         );
 
         apiService.updateAccount(account.getAccountId(), request).enqueue(new Callback<AccountResponse>() {

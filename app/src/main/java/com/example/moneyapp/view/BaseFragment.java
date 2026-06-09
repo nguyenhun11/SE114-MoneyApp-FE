@@ -22,7 +22,7 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         if (getActivity() instanceof MainActivity) {
             MainActivity mainActivity = (MainActivity) getActivity();
             MainUIHandler uiHandler = mainActivity.getUiHandler();
@@ -56,6 +56,35 @@ public abstract class BaseFragment extends Fragment {
     }
 
     //region Header Setup
+    private void setupActionButtons(View view,
+                                    @DrawableRes int leftIcon, View.OnClickListener leftListener,
+                                    @DrawableRes int rightIcon, View.OnClickListener rightListener) {
+        ImageView btnLeft = view.findViewById(R.id.btn_action_left);
+        ImageView btnRight = view.findViewById(R.id.btn_action_right);
+
+        if (btnLeft != null) {
+            if (leftIcon != 0) {
+                btnLeft.setVisibility(View.VISIBLE);
+                btnLeft.setImageResource(leftIcon);
+                btnLeft.setOnClickListener(leftListener);
+            } else {
+                btnLeft.setVisibility(View.GONE);
+                btnLeft.setOnClickListener(null);
+            }
+        }
+
+        if (btnRight != null) {
+            if (rightIcon != 0) {
+                btnRight.setVisibility(View.VISIBLE);
+                btnRight.setImageResource(rightIcon);
+                btnRight.setOnClickListener(rightListener);
+            } else {
+                btnRight.setVisibility(View.GONE);
+                btnRight.setOnClickListener(null);
+            }
+        }
+    }
+
     /**
      * Cấu hình Header với String resource
      */
@@ -67,20 +96,19 @@ public abstract class BaseFragment extends Fragment {
      * Cấu hình Header với String title
      */
     protected void setupHeader(View view, String titleText, boolean showBackBtn) {
-        TextView tvTitle = view.findViewById(R.id.tv_header_title);
-        ImageView btnBack = view.findViewById(R.id.btn_back);
-
-        if (tvTitle != null) {
-            tvTitle.setText(titleText);
-        }
-
-        if (btnBack != null) {
-            btnBack.setVisibility(showBackBtn ? View.VISIBLE : View.GONE);
-            if (showBackBtn) {
-                btnBack.setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
-            }
-        }
+        int leftIcon = showBackBtn ? R.drawable.ic_back : 0;
+        View.OnClickListener leftListener = showBackBtn ? v -> Navigation.findNavController(v).navigateUp() : null;
+        setupHeader(view, titleText, leftIcon, leftListener, 0, null);
     }
+
+    protected void setupHeader(View view, String titleText,
+                               @DrawableRes int leftIcon, View.OnClickListener leftListener,
+                               @DrawableRes int rightIcon, View.OnClickListener rightListener) {
+        TextView tvTitle = view.findViewById(R.id.tv_header_title);
+        if (tvTitle != null) tvTitle.setText(titleText);
+        setupActionButtons(view, leftIcon, leftListener, rightIcon, rightListener);
+    }
+
     //endregion
 
     //region Balance Selector Setup
@@ -89,6 +117,12 @@ public abstract class BaseFragment extends Fragment {
      * @param canSelect true nếu cho phép nhấn để chọn tài khoản (hiện mũi tên)
      */
     protected void setupBalanceSelector(View view, String accountName, String balance, boolean canSelect) {
+        setupBalanceSelector(view, accountName, balance, canSelect, 0, null, 0, null);
+    }
+
+    protected void setupBalanceSelector(View view, String accountName, String balance, boolean canSelect,
+                                        @DrawableRes int leftIcon, View.OnClickListener leftListener,
+                                        @DrawableRes int rightIcon, View.OnClickListener rightListener) {
         View selector = view.findViewById(R.id.btn_select_account);
         TextView tvAccount = view.findViewById(R.id.tv_account_name);
         TextView tvAmount = view.findViewById(R.id.tv_total_amount);
@@ -96,7 +130,7 @@ public abstract class BaseFragment extends Fragment {
 
         if (tvAccount != null) tvAccount.setText(accountName);
         if (tvAmount != null) tvAmount.setText(balance);
-        
+
         if (selector != null) {
             if (canSelect) {
                 selector.setOnClickListener(v -> showAccountPopup());
@@ -107,6 +141,7 @@ public abstract class BaseFragment extends Fragment {
                 if (ivArrow != null) ivArrow.setVisibility(View.GONE);
             }
         }
+        setupActionButtons(view, leftIcon, leftListener, rightIcon, rightListener);
     }
 
     private void showAccountPopup() {

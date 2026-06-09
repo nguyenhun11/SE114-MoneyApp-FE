@@ -14,10 +14,14 @@ public class Transaction {
     private CategoryType type;
     private Double amount;
     private Date date;
-    private String description;
+    private String note;
+    private int categoryColorId;
+    private int categoryIconId;
+    private int accountColorId;
+    private int accountIconId;
     private List<String> imageUrls;
+    private Date createdAt;
 
-    public Transaction() {}
 
     public Transaction(String transactionId,
                        String accountId,
@@ -27,8 +31,8 @@ public class Transaction {
                        CategoryType type,
                        Double amount,
                        Date date,
-                       String description,
-                       List<String> imageUrls) {
+                       String note, int categoryColorId, int categoryIconId, int accountColorId, int accountIconId,
+                       List<String> imageUrls, Date createdAt) {
         this.transactionId = transactionId;
         this.accountId = accountId;
         this.accountName = accountName;
@@ -37,8 +41,13 @@ public class Transaction {
         this.type = type;
         this.amount = amount;
         this.date = date;
-        this.description = description;
+        this.note = note;
+        this.categoryColorId = categoryColorId;
+        this.categoryIconId = categoryIconId;
+        this.accountColorId = accountColorId;
+        this.accountIconId = accountIconId;
         this.imageUrls = imageUrls;
+        this.createdAt = createdAt;
     }
 
     public String getTransactionId() { return transactionId; }
@@ -65,8 +74,8 @@ public class Transaction {
     public Date getDate() { return date; }
     public void setDate(Date date) { this.date = date; }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getNote() { return note; }
+    public void setNote(String note) { this.note = note; }
 
     public List<String> getImageUrls() { return imageUrls; }
     public void setImageUrls(List<String> imageUrls) { this.imageUrls = imageUrls; }
@@ -99,4 +108,43 @@ public class Transaction {
         return categoryName != null ? categoryName : categoryId;
     }
 
+    public int getCategoryColorId() {
+        return categoryColorId;
+    }
+
+    public void setCategoryColorId(int categoryColorId) {
+        this.categoryColorId = categoryColorId;
+    }
+
+    public int getCategoryIconId() {
+        return categoryIconId;
+    }
+
+    public void setCategoryIconId(int categoryIconId) {
+        this.categoryIconId = categoryIconId;
+    }
+
+    public int getAccountColorId() {
+        return accountColorId;
+    }
+
+    public void setAccountColorId(int accountColorId) {
+        this.accountColorId = accountColorId;
+    }
+
+    public int getAccountIconId() {
+        return accountIconId;
+    }
+
+    public void setAccountIconId(int accountIconId) {
+        this.accountIconId = accountIconId;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
 }

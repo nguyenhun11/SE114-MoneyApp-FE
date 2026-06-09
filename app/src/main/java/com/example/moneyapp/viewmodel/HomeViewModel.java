@@ -13,7 +13,6 @@ import com.example.moneyapp.data.repository.StatisticRepository;
 import com.example.moneyapp.view.home.PieChartItem;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +27,8 @@ public class HomeViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
     private int currentTabType = 0;
+    private Date currentStartDate;
+    private Date currentEndDate;
 
     public HomeViewModel(@NonNull Application application) {
         super(application);
@@ -41,12 +42,20 @@ public class HomeViewModel extends AndroidViewModel {
     public LiveData<String> getError() { return error; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
 
+    public void setTimeRangeAndReload(Date startDate, Date endDate) {
+        this.currentStartDate = startDate;
+        this.currentEndDate = endDate;
+        loadHomeData();
+    }
+
     public void setTabTypeAndReload(int type) {
         this.currentTabType = type;
         loadHomeData();
     }
 
-    public void loadHomeData() {
+    private void loadHomeData() {
+        if (currentStartDate == null || currentEndDate == null) return;
+
         isLoading.setValue(true);
 
         accountRepository.getTotalBalance(new AccountRepository.AccountCallback<Double>() {
@@ -59,15 +68,6 @@ public class HomeViewModel extends AndroidViewModel {
                 error.postValue(message);
             }
         });
-
-        // TODO: Lấy tạm dữ liệu năm 2025
-        Calendar calStart = Calendar.getInstance();
-        calStart.set(2025, Calendar.JANUARY, 1, 0, 0, 0);
-        Date startDate = calStart.getTime();
-
-        Calendar calEnd = Calendar.getInstance();
-        calEnd.set(2025, Calendar.DECEMBER, 31, 23, 59, 59);
-        Date endDate = calEnd.getTime();
 
         StatisticRepository.StatisticCallback<List<CategoryPieChartDto>> callback = new StatisticRepository.StatisticCallback<List<CategoryPieChartDto>>() {
             @Override
@@ -94,9 +94,9 @@ public class HomeViewModel extends AndroidViewModel {
         };
 
         if (currentTabType == 0) {
-            statisticRepository.getExpensePieChart(startDate, endDate, callback);
+            statisticRepository.getExpensePieChart(currentStartDate, currentEndDate, callback);
         } else {
-            statisticRepository.getIncomePieChart(startDate, endDate, callback);
+            statisticRepository.getIncomePieChart(currentStartDate, currentEndDate, callback);
         }
     }
 

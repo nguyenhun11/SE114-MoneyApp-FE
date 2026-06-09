@@ -1,7 +1,5 @@
 package com.example.moneyapp.data.remote.response;
 
-import com.example.moneyapp.model.CategoryType;
-
 import java.util.List;
 
 public class TransactionResponse {
@@ -14,11 +12,15 @@ public class TransactionResponse {
     private Double amount;
     private String date;
     private String note;
+    private int categoryColorId;
+    private int categoryIconId;
+    private int accountColorId;
+    private int accountIconId;
     private List<String> imageUrls;
     private String createdAt;
     private String lastUpdatedAt;
 
-    public TransactionResponse(String id, String accountId, String accountName, String categoryId, String categoryName, Integer type, Double amount, String date, String note, List<String> imageUrls, String createdAt, String lastUpdatedAt) {
+    public TransactionResponse(String id, String accountId, String accountName, String categoryId, String categoryName, Integer type, Double amount, String date, String note, int categoryColorId, int categoryIconId, int accountColorId, int accountIconId, List<String> imageUrls, String createdAt, String lastUpdatedAt) {
         this.id = id;
         this.accountId = accountId;
         this.accountName = accountName;
@@ -28,6 +30,10 @@ public class TransactionResponse {
         this.amount = amount;
         this.date = date;
         this.note = note;
+        this.categoryColorId = categoryColorId;
+        this.categoryIconId = categoryIconId;
+        this.accountColorId = accountColorId;
+        this.accountIconId = accountIconId;
         this.imageUrls = imageUrls;
         this.createdAt = createdAt;
         this.lastUpdatedAt = lastUpdatedAt;
@@ -127,5 +133,37 @@ public class TransactionResponse {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public int getCategoryColorId() {
+        return categoryColorId;
+    }
+
+    public void setCategoryColorId(int categoryColorId) {
+        this.categoryColorId = categoryColorId;
+    }
+
+    public int getCategoryIconId() {
+        return categoryIconId;
+    }
+
+    public void setCategoryIconId(int categoryIconId) {
+        this.categoryIconId = categoryIconId;
+    }
+
+    public int getAccountColorId() {
+        return accountColorId;
+    }
+
+    public void setAccountColorId(int accountColorId) {
+        this.accountColorId = accountColorId;
+    }
+
+    public int getAccountIconId() {
+        return accountIconId;
+    }
+
+    public void setAccountIconId(int accountIconId) {
+        this.accountIconId = accountIconId;
     }
 }

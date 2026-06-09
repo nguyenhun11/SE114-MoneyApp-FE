@@ -4,6 +4,7 @@
     android:id="@+id/btn_select_account"
     android:layout_width="match_parent"
     android:layout_height="@dimen/header_title_height"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="?attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.Guideline
@@ -55,10 +56,35 @@
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 android:gravity="center"
-                android:text="200.000"
+                android:text=""
                 android:textColor="@color/colorOnPrimary"
                 android:textSize="28sp"
                 android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/btn_action_left"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:visibility="gone"
+                android:src="@drawable/ic_back"
+                app:tint="@color/colorOnPrimary" />
+
+            <ImageView
+                android:id="@+id/btn_action_right"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:visibility="gone"
+                android:src="@drawable/ic_plus"
+                app:tint="@color/colorOnPrimary" />
         </RelativeLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

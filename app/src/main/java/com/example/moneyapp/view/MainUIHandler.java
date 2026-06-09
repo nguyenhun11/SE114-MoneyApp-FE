@@ -12,6 +12,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 
@@ -28,7 +29,7 @@ public class MainUIHandler {
     private final Context context;
     private final NavController navController;
     private final BottomNavigationView bottomNav;
-    private final FloatingActionButton fabAdd;
+    private final AppCompatImageButton fabAdd;
 
     // Các fragment chính sẽ hiện BottomNav
     private final Set<Integer> mainFragments = new HashSet<>(Arrays.asList(
@@ -38,7 +39,7 @@ public class MainUIHandler {
             R.id.categoryFragment
     ));
 
-    public MainUIHandler(Context context, NavController navController, BottomNavigationView bottomNav, FloatingActionButton fabAdd) {
+    public MainUIHandler(Context context, NavController navController, BottomNavigationView bottomNav, AppCompatImageButton fabAdd) {
         this.context = context;
         this.navController = navController;
         this.bottomNav = bottomNav;
@@ -66,6 +67,13 @@ public class MainUIHandler {
         if (fabAdd != null) {
             fabAdd.setImageResource(iconRes);
             fabAdd.setOnClickListener(listener);
+            fabAdd.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void hideFAB() {
+        if (fabAdd != null) {
+            fabAdd.setVisibility(View.GONE);
         }
     }
 

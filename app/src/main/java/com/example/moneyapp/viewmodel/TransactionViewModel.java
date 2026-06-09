@@ -22,13 +22,19 @@ import java.util.Map;
 public class TransactionViewModel extends AndroidViewModel {
     private final TransactionRepository repository;
     private final AccountRepository accountRepository;
-    private final MutableLiveData<Double> totalBalance = new MutableLiveData<>(0.0);
+    private final MutableLiveData<Double> totalBalance = new MutableLiveData<>();
     private final MutableLiveData<List<DailyTransactionGroup>> groupedTransactionsLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Transaction>> transactionsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Transaction> selectedTransaction = new MutableLiveData<>();
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     private final MutableLiveData<Boolean> operationSuccess = new MutableLiveData<>();
+
+    private Date currentStartDate;
+    private Date currentEndDate;
+    private CategoryType currentType = null;
+    private String currentAccountId = null;
+    private String currentCategoryId = null;
 
     public TransactionViewModel(@NonNull Application application) {
         super(application);
@@ -43,6 +49,22 @@ public class TransactionViewModel extends AndroidViewModel {
     public LiveData<Boolean> getIsLoading() { return isLoading; }
     public LiveData<Boolean> getOperationSuccess() { return operationSuccess; }
 
+    public void setTimeRangeAndReload(Date start, Date end) {
+        this.currentStartDate = start;
+        this.currentEndDate = end;
+        reloadTransactions();
+    }
+
+    public void setTypeAndReload(CategoryType type) {
+        this.currentType = type;
+        reloadTransactions();
+    }
+
+    public void reloadTransactions() {
+        if (currentStartDate == null || currentEndDate == null) return;
+        loadTransactions(currentStartDate, currentEndDate, currentType, currentAccountId, currentCategoryId);
+    }
+
     public void loadTotalBalance() {
         accountRepository.getTotalBalance(new AccountRepository.AccountCallback<Double>() {
             @Override
@@ -56,7 +78,7 @@ public class TransactionViewModel extends AndroidViewModel {
         });
     }
 
-    public void loadTransactions(Date start, Date end, CategoryType type, String accountId, String categoryId) {
+    private void loadTransactions(Date start, Date end, CategoryType type, String accountId, String categoryId) {
         isLoading.setValue(true);
         repository.getFilteredTransactions(start, end, type, accountId, categoryId, new TransactionRepository.TransactionCallback<List<Transaction>>() {
             @Override
