@@ -27,9 +27,14 @@ public abstract class BaseFragment extends Fragment {
             MainActivity mainActivity = (MainActivity) getActivity();
             MainUIHandler uiHandler = mainActivity.getUiHandler();
             if (uiHandler != null) {
-                uiHandler.updateFAB(getFabIcon(), v -> onFabClick());
                 uiHandler.setBottomNavigationVisibility(shouldShowBottomNavigation());
-                uiHandler.setFABVisibility(shouldShowFAB());
+
+                if (shouldShowFAB()) {
+                    uiHandler.updateFAB(getFabIcon(), v -> onFabClick());
+                    uiHandler.setFABVisibility(true);
+                } else {
+                    uiHandler.setFABVisibility(false);
+                }
             }
         }
     }
