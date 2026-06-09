@@ -46,11 +46,6 @@ public class AccountDetailFragment extends BaseFragment {
     private boolean isDataPopulated = false;
 
     @Override
-    protected boolean shouldShowFab() {
-        return true;
-    }
-
-    @Override
     protected int getFabIcon() {
         return R.drawable.ic_check_white;
     }
