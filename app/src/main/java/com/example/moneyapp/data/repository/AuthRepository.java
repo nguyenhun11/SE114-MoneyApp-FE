@@ -7,6 +7,7 @@ import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.data.remote.api.ApiService;
 import com.example.moneyapp.data.remote.api.RetrofitClient;
 import com.example.moneyapp.data.remote.request.ChangePasswordRequest;
+import com.example.moneyapp.data.remote.request.GoogleLoginRequest;
 import com.example.moneyapp.data.remote.request.LoginRequest;
 import com.example.moneyapp.data.remote.request.LogoutRequest;
 import com.example.moneyapp.data.remote.request.RegisterRequest;
@@ -49,6 +50,34 @@ public class AuthRepository {
                     callback.onSuccess(auth.getId());
                 } else {
                     callback.onError("Đăng nhập thất bại: Sai email hoặc mật khẩu");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<AuthResponse> call, @NonNull Throwable t) {
+                callback.onError("Lỗi kết nối: " + t.getMessage());
+            }
+        });
+    }
+
+    public void loginByGoogle(String idToken, AuthCallback<Integer> callback) {
+        GoogleLoginRequest request = new GoogleLoginRequest(idToken);
+        apiService.googleLogin(request).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<AuthResponse> call, @NonNull Response<AuthResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    AuthResponse auth = response.body();
+
+                    PreferenceManager prefs = PreferenceManager.getInstance(context);
+                    prefs.setLoggedIn(true);
+                    prefs.setUserID(String.valueOf(auth.getId()));
+                    prefs.setUserEmail(auth.getEmail());
+                    prefs.setToken(auth.getToken());
+                    prefs.setRefreshToken(auth.getRefreshToken());
+
+                    callback.onSuccess(auth.getId());
+                } else {
+                    callback.onError("Đăng nhập Google thất bại: " + response.code());
                 }
             }
 

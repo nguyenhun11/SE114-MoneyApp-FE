@@ -10,6 +10,7 @@ navigationFragment = "2.9.7"
 navigationUi = "2.9.7"
 roomVersion = "2.6.1"
 glide = "4.16.0"
+playServicesAuth = "21.3.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -24,6 +25,7 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVer
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
