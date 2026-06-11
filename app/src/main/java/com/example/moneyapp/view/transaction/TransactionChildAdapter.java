@@ -81,10 +81,10 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
         if (t.getAmount() != null) {
             CategoryType type = t.getType();
             if (type == CategoryType.EXPENSE) {
-                holder.tvAmount.setText(String.format(Locale.getDefault(), "-%,.0f", t.getAmount()).replace(",", "."));
+                holder.tvAmount.setText("-" + t.getFormattedAmount() + "đ");
                 holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorDanger));
             } else {
-                holder.tvAmount.setText(String.format(Locale.getDefault(), "+%,.0f", t.getAmount()).replace(",", "."));
+                holder.tvAmount.setText("+" + t.getFormattedAmount() + "đ");
                 holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorSuccess));
             }
         }

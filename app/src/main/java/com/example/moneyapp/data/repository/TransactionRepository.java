@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import com.example.moneyapp.data.remote.request.TransactionRequest;
 import com.example.moneyapp.data.remote.response.TransactionResponse;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.Transaction;
@@ -61,6 +62,20 @@ public class TransactionRepository extends BaseRepository {
         );
     }
 
+    private TransactionRequest mapToRequest(Transaction transaction) {
+        // Chuyển kiểu Date sang String (Sử dụng DateConverter bạn đã có sẵn)
+        String dateStr = DateConverter.convertDateToString(transaction.getDate());
+
+        return new TransactionRequest(
+                transaction.getAccountId(),
+                transaction.getCategoryId(),
+                transaction.getAmount(),
+                dateStr,
+                transaction.getNote(),
+                transaction.getImageUrls()
+        );
+    }
+
     public void getFilteredTransactions(Date startDate, Date endDate, CategoryType categoryType, String accountId, String categoryId, TransactionCallback<List<Transaction>> callback) {
 
         String startStr = DateConverter.convertDateToString(startDate);
@@ -107,11 +122,49 @@ public class TransactionRepository extends BaseRepository {
     }
 
     public void createTransaction(Transaction transaction, TransactionCallback<Transaction> callback) {
-        callback.onError("Chức năng đang được cập nhật");
+        // 1. Map Transaction model thành TransactionRequest để gửi lên API
+        TransactionRequest request = mapToRequest(transaction);
+
+        // 2. Gọi API POST
+        apiService.createTransaction(request).enqueue(new Callback<TransactionResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<TransactionResponse> call, @NonNull Response<TransactionResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // API trả về Response -> Map ngược lại thành Transaction Model và báo UI
+                    callback.onSuccess(mapToTransaction(response.body()));
+                } else {
+                    callback.onError("Thêm giao dịch thất bại. Mã lỗi: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<TransactionResponse> call, @NonNull Throwable t) {
+                callback.onError("Lỗi kết nối khi thêm giao dịch: " + t.getMessage());
+            }
+        });
     }
 
     public void updateTransaction(Transaction transaction, TransactionCallback<Transaction> callback) {
-        callback.onError("Chức năng đang được cập nhật");
+        // 1. Map Transaction model thành TransactionRequest để gửi lên API
+        TransactionRequest request = mapToRequest(transaction);
+
+        // 2. Gọi API PUT
+        apiService.updateTransaction(transaction.getTransactionId(), request).enqueue(new Callback<TransactionResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<TransactionResponse> call, @NonNull Response<TransactionResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // API trả về Response -> Map ngược lại thành Transaction Model và báo UI
+                    callback.onSuccess(mapToTransaction(response.body()));
+                } else {
+                    callback.onError("Cập nhật thất bại. Mã lỗi: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<TransactionResponse> call, @NonNull Throwable t) {
+                callback.onError("Lỗi kết nối khi cập nhật: " + t.getMessage());
+            }
+        });
     }
 
     public void deleteTransaction(String id, TransactionCallback<Void> callback) {

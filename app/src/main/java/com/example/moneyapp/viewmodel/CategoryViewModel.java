@@ -12,6 +12,7 @@ import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.data.remote.request.CategoryGroupRequest;
 import com.example.moneyapp.data.remote.request.CategoryGroupResponse;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class CategoryViewModel extends AndroidViewModel {
         this.currentType = type;
         
         // Luôn xóa dữ liệu cũ trước khi tải mới để tránh UI bị lag hoặc hiển thị sai
-        categoriesLiveData.setValue(null);
+        categoriesLiveData.setValue(new ArrayList<>());
 
         CategoryRepository.CategoryCallback<List<CategoryGroupResponse>> groupCallback = new CategoryRepository.CategoryCallback<List<CategoryGroupResponse>>() {
             @Override

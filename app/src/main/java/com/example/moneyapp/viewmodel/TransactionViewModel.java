@@ -172,4 +172,14 @@ public class TransactionViewModel extends AndroidViewModel {
                 java.text.DateFormat.LONG, Locale.getDefault());
         return formatter.format(date);
     }
+
+    public void setAccountFilterAndReload(String accountId) {
+        this.currentAccountId = accountId;
+        reloadTransactions();
+    }
+
+    public void setCategoryFilterAndReload(String categoryId) {
+        this.currentCategoryId = categoryId;
+        reloadTransactions();
+    }
 }

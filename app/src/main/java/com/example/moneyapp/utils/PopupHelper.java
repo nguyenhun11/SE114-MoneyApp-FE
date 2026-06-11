@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.view.transaction.AccountQuickAdapter;
+import com.example.moneyapp.view.transaction.CategoryQuickAdapter;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.List;
@@ -91,4 +93,58 @@ public class PopupHelper {
         dialog.setContentView(recyclerView);
         dialog.show();
     }
+
+    // ==========================================
+    // MỞ POPUP CHỌN TÀI KHOẢN (Tái sử dụng AccountQuickAdapter)
+    // ==========================================
+    public static void showAccountFilterPopup(Context context, List<com.example.moneyapp.model.Account> accountList, AccountQuickAdapter.OnAccountClickListener listener) {
+        BottomSheetDialog dialog = new BottomSheetDialog(context);
+
+        RecyclerView recyclerView = new RecyclerView(context);
+        recyclerView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        recyclerView.setPadding(24, 48, 24, 48); // Padding cho thoáng
+        recyclerView.setClipToPadding(false);
+
+        // Hiển thị dạng lưới 4 cột cho đẹp
+        recyclerView.setLayoutManager(new GridLayoutManager(context, 4));
+
+        // Tái sử dụng Adapter đã tạo
+        AccountQuickAdapter adapter = new AccountQuickAdapter(accountList, account -> {
+            if (listener != null) listener.onAccountClick(account);
+            dialog.dismiss(); // Tự đóng sau khi chọn
+        });
+
+        recyclerView.setAdapter(adapter);
+        dialog.setContentView(recyclerView);
+        dialog.show();
+    }
+
+    // ==========================================
+    // MỞ POPUP CHỌN HẠNG MỤC (Tái sử dụng CategoryQuickAdapter)
+    // ==========================================
+    public static void showCategoryFilterPopup(Context context, List<com.example.moneyapp.model.Category> categoryList, CategoryQuickAdapter.OnCategoryClickListener listener) {
+        BottomSheetDialog dialog = new BottomSheetDialog(context);
+
+        RecyclerView recyclerView = new RecyclerView(context);
+        recyclerView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        recyclerView.setPadding(24, 48, 24, 48);
+        recyclerView.setClipToPadding(false);
+
+        // Hiển thị dạng lưới 4 cột
+        recyclerView.setLayoutManager(new GridLayoutManager(context, 4));
+
+        CategoryQuickAdapter adapter = new CategoryQuickAdapter(categoryList, category -> {
+            if (listener != null) listener.onCategoryClick(category);
+            dialog.dismiss();
+        });
+
+        recyclerView.setAdapter(adapter);
+        dialog.setContentView(recyclerView);
+        dialog.show();
+    }
+
 }

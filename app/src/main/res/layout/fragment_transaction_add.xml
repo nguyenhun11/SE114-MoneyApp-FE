@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
@@ -28,116 +28,194 @@
         android:layout_marginHorizontal="50dp"
         app:layout_constraintTop_toBottomOf="@id/header_layout" />
 
-    <com.google.android.material.card.MaterialCardView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="@dimen/card_horizontal_margin"
-        android:layout_marginBottom="@dimen/card_bottom_margin"
-        app:cardBackgroundColor="@color/colorSurface"
-        app:cardCornerRadius="@dimen/card_radius"
-        app:strokeWidth="1dp"
-        app:strokeColor="@color/colorBorder"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layout_tabs">
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:layout_marginHorizontal="@dimen/card_horizontal_margin"
+            app:cardBackgroundColor="@color/colorSurface"
+            app:cardCornerRadius="@dimen/card_radius"
+            app:strokeColor="@color/colorBorder"
+            app:strokeWidth="1dp">
 
-            <!-- Số tiền -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Số tiền"
-                android:textColor="@color/colorOnSurface"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="6dp"/>
-
-            <EditText
-                android:id="@+id/etAmount"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="0đ"
-                android:inputType="numberDecimal"
-                android:textSize="16sp"
-                android:padding="12dp"
-                android:background="@drawable/bg_circle"
-                android:layout_marginBottom="16dp"/>
+                android:orientation="vertical"
+                android:padding="24dp">
 
-            <!-- Hạng mục -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hạng mục"
-                android:textColor="@color/colorOnSurface"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="6dp"/>
+                <EditText
+                    android:id="@+id/etAmount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:gravity="center"
+                    android:hint="0"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/colorDanger"
+                    android:textSize="40sp"
+                    android:textStyle="bold" />
 
-            <Spinner
-                android:id="@+id/spinnerCategory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:layout_marginBottom="16dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:gravity="center"
+                    android:text="VND"
+                    android:textColor="@color/colorOnSurfaceVariant"
+                    android:textSize="14sp" />
 
-            <!-- Nguồn tiền -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nguồn tiền"
-                android:textColor="@color/colorOnSurface"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="6dp"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@color/colorBorder" />
 
-            <Spinner
-                android:id="@+id/spinnerSource"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:layout_marginBottom="16dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-            <!-- Ngày -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ngày"
-                android:textColor="@color/colorOnSurface"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="6dp"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Hạng mục"
+                        android:textColor="@color/colorOnSurfaceVariant"
+                        android:textSize="15sp" />
 
-            <Button
-                android:id="@+id/btnPickDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Chọn ngày"
-                android:layout_marginBottom="16dp"/>
+                    <ImageView
+                        android:id="@+id/btnMoreCategory"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_plus"
+                        app:tint="@color/colorOnSurface" />
+                </LinearLayout>
 
-            <!-- Ghi chú -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ghi chú"
-                android:textColor="@color/colorOnSurface"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="6dp"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvCategoryQuick"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_category" />
 
-            <EditText
-                android:id="@+id/etDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Nhập ghi chú..."
-                android:textSize="16sp"
-                android:padding="12dp"
-                android:layout_marginBottom="24dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Nguồn tiền"
+                        android:textColor="@color/colorOnSurfaceVariant"
+                        android:textSize="15sp" />
 
+                    <ImageView
+                        android:id="@+id/btnMoreSource"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_plus"
+                        app:tint="@color/colorOnSurface" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvSourceQuick"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_category" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Ngày"
+                        android:textColor="@color/colorOnSurfaceVariant"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/tvDateToday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_chip_selected"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="6dp"
+                        android:text="Hôm nay"
+                        android:textColor="@color/colorOnPrimary"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/tvDateYesterday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_chip_unselected"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="6dp"
+                        android:text="Hôm qua"
+                        android:textColor="@color/colorOnSurface"
+                        android:textSize="13sp" />
+
+                    <ImageView
+                        android:id="@+id/btnPickDate"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="12dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_calendar"
+                        app:tint="@color/colorOnSurface" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ghi chú"
+                    android:textColor="@color/colorOnSurfaceVariant"
+                    android:textSize="15sp"
+                    android:layout_marginBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/etDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_input_border"
+                    android:hint="Nhập ghi chú..."
+                    android:minLines="2"
+                    android:padding="12dp"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
