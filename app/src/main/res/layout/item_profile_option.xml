@@ -8,11 +8,11 @@
     android:clickable="true"
     android:focusable="true">
 
-    <ImageView
+    <com.mikepenz.iconics.view.IconicsImageView
         android:id="@+id/iv_option_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/ic_profile"
+        app:iiv_icon="gmd_person_outline"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -32,15 +32,14 @@
         app:layout_constraintStart_toEndOf="@id/iv_option_icon"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
+    <com.mikepenz.iconics.view.IconicsImageView
         android:id="@+id/iv_arrow"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:src="@drawable/ic_back"
-        android:rotation="180"
+        app:iiv_color="@color/colorOnSurfaceVariant"
+        app:iiv_icon="gmd_keyboard_arrow_right"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#BCBCBC" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

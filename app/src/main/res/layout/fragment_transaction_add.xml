@@ -92,14 +92,14 @@
                         android:textColor="@color/colorOnSurfaceVariant"
                         android:textSize="15sp" />
 
-                    <ImageView
+                    <com.mikepenz.iconics.view.IconicsImageView
                         android:id="@+id/btnMoreCategory"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:padding="4dp"
-                        android:src="@drawable/ic_plus"
-                        app:tint="@color/colorOnSurface" />
+                        app:iiv_color="@color/colorOnSurface"
+                        app:iiv_icon="gmd_add" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -127,14 +127,14 @@
                         android:textColor="@color/colorOnSurfaceVariant"
                         android:textSize="15sp" />
 
-                    <ImageView
+                    <com.mikepenz.iconics.view.IconicsImageView
                         android:id="@+id/btnMoreSource"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:padding="4dp"
-                        android:src="@drawable/ic_plus"
-                        app:tint="@color/colorOnSurface" />
+                        app:iiv_color="@color/colorOnSurface"
+                        app:iiv_icon="gmd_add" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -186,15 +186,15 @@
                         android:textColor="@color/colorOnSurface"
                         android:textSize="13sp" />
 
-                    <ImageView
+                    <com.mikepenz.iconics.view.IconicsImageView
                         android:id="@+id/btnPickDate"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:layout_marginStart="12dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:padding="4dp"
-                        android:src="@drawable/ic_calendar"
-                        app:tint="@color/colorOnSurface" />
+                        app:iiv_color="@color/colorOnSurface"
+                        app:iiv_icon="gmd_calendar_month" />
                 </LinearLayout>
 
                 <TextView

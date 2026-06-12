@@ -9,12 +9,11 @@
     android:paddingHorizontal="16dp"
     android:paddingVertical="12dp">
 
-    <ImageView
+    <com.mikepenz.iconics.view.IconicsImageView
         android:id="@+id/iv_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/ic_account"
-        app:tint="#444444" />
+        app:ico_color="@color/colorOnSurface" />
 
     <TextView
         android:id="@+id/tv_title"
@@ -23,15 +22,14 @@
         android:layout_marginStart="12dp"
         android:layout_weight="1"
         android:text="Menu Item"
-        android:textColor="#333333"
+        android:textColor="@color/colorOnSurface"
         android:textSize="16sp" />
 
-    <ImageView
+    <com.mikepenz.iconics.view.IconicsImageView
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:alpha="0.5"
-        android:rotation="-90"
-        android:src="@drawable/ic_arrow_down"
-        app:tint="#444444" />
+        app:ico_color="@color/colorOnSurface"
+        app:ico_icon="gmd_chevron_right" />
 
 </LinearLayout>

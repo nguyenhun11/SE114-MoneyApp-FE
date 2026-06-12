@@ -90,8 +90,8 @@ public class AccountFragment extends BaseFragment {
     }
 
     @Override
-    protected int getFabIcon() {
-        return R.drawable.ic_transfer;
+    protected String getFabIcon() {
+        return "gmd_swap_horiz";
     }
 
     @Override

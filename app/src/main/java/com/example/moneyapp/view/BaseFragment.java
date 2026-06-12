@@ -42,9 +42,8 @@ public abstract class BaseFragment extends Fragment {
         return true;
     }
 
-    @DrawableRes
-    protected int getFabIcon() {
-        return R.drawable.ic_add_white; // Cái này vẫn dùng file XML vì nó nằm ở MainActivity
+    protected String getFabIcon() {
+        return "gmd_add";
     }
 
     protected boolean shouldShowBottomNavigation() {

@@ -62,12 +62,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent">
 
-                            <ImageView
+                            <com.mikepenz.iconics.view.IconicsImageView
                                 android:id="@+id/iv_profile_avatar"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:scaleType="centerCrop"
-                                android:src="@drawable/ic_profile" />
+                                app:iiv_icon="gmd_account_circle" />
 
                             <!-- Camera Overlay -->
                             <View
@@ -119,12 +119,12 @@
                             android:textSize="24sp"
                             android:textStyle="bold" />
 
-                        <ImageView
+                        <com.mikepenz.iconics.view.IconicsImageView
                             android:layout_width="16dp"
                             android:layout_height="16dp"
                             android:layout_marginStart="8dp"
                             android:alpha="0.4"
-                            android:src="@android:drawable/ic_menu_edit"
+                            app:iiv_icon="gmd_edit"
                             app:tint="@color/black" />
                     </LinearLayout>
 

@@ -15,6 +15,9 @@ import com.example.moneyapp.R;
 import com.example.moneyapp.view.transaction.AccountQuickAdapter;
 import com.example.moneyapp.view.transaction.CategoryQuickAdapter;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.mikepenz.iconics.view.IconicsImageView;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import java.util.List;
 
@@ -24,40 +27,31 @@ public class PopupHelper {
         void onSelected(int id);
     }
 
-    // ==========================================
-    // MỞ POPUP CHỌN MÀU
-    // ==========================================
     public static void showColorPicker(Context context, OnResourceSelectedListener listener) {
-        showPicker(context, ResourceMapper.getAvailableColors(), true, listener);
+        showPicker(context, true, listener);
     }
 
-    // ==========================================
-    // MỞ POPUP CHỌN ICON
-    // ==========================================
     public static void showIconPicker(Context context, OnResourceSelectedListener listener) {
-        showPicker(context, ResourceMapper.getAvailableIcons(), false, listener);
+        showPicker(context, false, listener);
     }
 
     // Hàm lõi xử lý chung cho cả 2 loại Popup
-    private static void showPicker(Context context, List<ResourceMapper.ResourceItem> items, boolean isColorPicker, OnResourceSelectedListener listener) {
+    public static void showPicker(Context context, boolean isColorPicker, OnResourceSelectedListener listener) {
         BottomSheetDialog dialog = new BottomSheetDialog(context);
-
-        // Tạo RecyclerView bằng code thay vì XML để tiết kiệm file
         RecyclerView recyclerView = new RecyclerView(context);
-        recyclerView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-        recyclerView.setPadding(32, 32, 32, 32);
-        recyclerView.setClipToPadding(false);
-
-        // Hiển thị dạng lưới (Grid) 5 cột
+        recyclerView.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         recyclerView.setLayoutManager(new GridLayoutManager(context, 5));
 
-        // Tạo Adapter nhanh
         RecyclerView.Adapter<RecyclerView.ViewHolder> adapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            @Override
+            public int getItemCount() {
+                return isColorPicker ? AppResourceManager.getColorCount() : AppResourceManager.getIconCount();
+            }
+
             @NonNull
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                // Layout của cậu phải đổi thẻ ImageView thành com.mikepenz.iconics.view.IconicsImageView
                 int layoutId = isColorPicker ? R.layout.item_picker_color : R.layout.item_picker_icon;
                 View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
                 return new RecyclerView.ViewHolder(view) {};
@@ -65,27 +59,22 @@ public class PopupHelper {
 
             @Override
             public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-                ResourceMapper.ResourceItem item = items.get(position);
-
                 if (isColorPicker) {
                     View colorCircle = holder.itemView.findViewById(R.id.v_color_circle);
-                    int actualColor = ContextCompat.getColor(context, item.resourceId);
-                    colorCircle.getBackground().setTint(actualColor);
+                    colorCircle.getBackground().setTint(AppResourceManager.getColor(position));
                 } else {
-                    ImageView ivIcon = holder.itemView.findViewById(R.id.iv_icon);
-                    ivIcon.setImageResource(item.resourceId);
+                    // ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT
+                    IconicsImageView ivIcon = holder.itemView.findViewById(R.id.iv_icon);
+                    String iconName = AppResourceManager.getIconName(position);
+
+                    ivIcon.setIcon(new com.mikepenz.iconics.IconicsDrawable(context, iconName));
+                    ivIcon.setColorFilter(android.graphics.Color.BLACK); // Nhuộm màu icon trong popup
                 }
 
-                // Xử lý sự kiện Click
                 holder.itemView.setOnClickListener(v -> {
-                    if (listener != null) listener.onSelected(item.id);
-                    dialog.dismiss(); // Tự động đóng popup sau khi chọn
+                    if (listener != null) listener.onSelected(position); // Trả về index
+                    dialog.dismiss();
                 });
-            }
-
-            @Override
-            public int getItemCount() {
-                return items.size();
             }
         };
 

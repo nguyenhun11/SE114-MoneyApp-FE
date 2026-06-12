@@ -17,7 +17,7 @@ import com.example.moneyapp.R;
 import com.example.moneyapp.data.remote.response.CashFlowBarDto;
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
-import com.example.moneyapp.utils.ResourceMapper;
+import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.category.CategorySummaryAdapter;
 import com.example.moneyapp.view.components.CustomMarkerView;
@@ -194,7 +194,7 @@ public class StatisticFragment extends BaseFragment {
         for (CategoryPieChartDto cat : breakdowns) total += cat.getTotalAmount();
 
         for (CategoryPieChartDto cat : breakdowns) {
-            int colorRes = ResourceMapper.getColorResourceById(cat.getColorId());
+            int colorRes = AppResourceManager.getColor(cat.getColorId());
             int actualColor = ContextCompat.getColor(requireContext(), colorRes);
             float percent = (total > 0) ? (float) (cat.getTotalAmount() / total * 100) : 0f;
 
@@ -378,7 +378,7 @@ public class StatisticFragment extends BaseFragment {
                 if (!uniqueCatIds.contains(cat.getCategoryId())) {
                     uniqueCatIds.add(cat.getCategoryId());
                     uniqueCatNames.add(cat.getCategoryName());
-                    int colorResId = ResourceMapper.getColorResourceById(cat.getColorId());
+                    int colorResId = AppResourceManager.getColor(cat.getColorId());
                     uniqueColors.add(ContextCompat.getColor(requireContext(), colorResId));
                 }
             }

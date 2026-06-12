@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,7 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
-import com.example.moneyapp.utils.ResourceMapper;
+import com.example.moneyapp.utils.AppResourceManager;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.List;
 import java.util.Locale;
@@ -67,12 +68,10 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
             holder.tvBalance.setTextColor(dimColor);
         }
 
-        int iconRes = ResourceMapper.getIconResourceById(account.getIcon());
-        int colorRes = ResourceMapper.getColorResourceById(account.getColor());
-        int actualColor = ContextCompat.getColor(context, colorRes);
-        holder.ivIcon.setImageResource(iconRes);
-        holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(actualColor));
+        int actualColor = AppResourceManager.getColor(account.getColor());
 
+        holder.ivIcon.setIcon(AppResourceManager.getWhiteIcon(context,account.getIcon()));
+        holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(actualColor));
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onItemClick(account);
         });
@@ -85,7 +84,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
 
     public static class AccountViewHolder extends RecyclerView.ViewHolder {
         FrameLayout flIconContainer;
-        ImageView ivIcon, ivHiddenEye;
+        IconicsImageView ivIcon, ivHiddenEye;
         TextView tvName, tvBalance;
 
         public AccountViewHolder(@NonNull View itemView) {

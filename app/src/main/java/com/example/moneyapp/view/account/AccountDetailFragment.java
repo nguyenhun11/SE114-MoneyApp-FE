@@ -1,5 +1,6 @@
 package com.example.moneyapp.view.account;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -19,10 +20,12 @@ import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
+import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.PopupHelper;
-import com.example.moneyapp.utils.ResourceMapper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.AccountViewModel;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,7 +37,7 @@ public class AccountDetailFragment extends BaseFragment {
 
     // Ánh xạ UI
     private EditText etName, etBalance, etDescription;
-    private ImageView ivSelectedIcon;
+    private IconicsImageView ivSelectedIcon;
     private View vSelectedColor;
     private SwitchCompat switchExclude;
     private TextView tvCreatedAt;
@@ -46,8 +49,8 @@ public class AccountDetailFragment extends BaseFragment {
     private boolean isDataPopulated = false;
 
     @Override
-    protected int getFabIcon() {
-        return R.drawable.ic_check_white;
+    protected String getFabIcon() {
+        return "gmd_check";
     }
 
     @Override
@@ -117,13 +120,12 @@ public class AccountDetailFragment extends BaseFragment {
     }
 
     private void updateIconUI(int iconId) {
-        int resourceId = ResourceMapper.getIconResourceById(iconId);
-        ivSelectedIcon.setImageResource(resourceId);
+        Context context = requireContext();
+        ivSelectedIcon.setIcon(AppResourceManager.getWhiteIcon(context, iconId));
     }
 
     private void updateColorUI(int colorId) {
-        int resourceId = ResourceMapper.getColorResourceById(colorId);
-        int actualColor = ContextCompat.getColor(requireContext(), resourceId);
+        int actualColor = AppResourceManager.getColor(colorId);
         vSelectedColor.getBackground().setTint(actualColor);
     }
 

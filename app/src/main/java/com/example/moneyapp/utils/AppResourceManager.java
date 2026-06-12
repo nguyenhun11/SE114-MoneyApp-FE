@@ -1,7 +1,10 @@
 package com.example.moneyapp.utils;
 
+import android.content.Context;
 import android.graphics.Color;
-import com.example.moneyapp.R;
+import android.graphics.PorterDuff;
+
+import com.mikepenz.iconics.IconicsDrawable;
 
 public class AppResourceManager {
 
@@ -21,23 +24,27 @@ public class AppResourceManager {
             "#FF4CAF50"  // 11: Xanh lá đậm
     };
 
-    // Danh sách các Icon khả dụng
-    private static final int[] ICON_LIST = {
-            R.drawable.ic_transaction, // 0
-            R.drawable.ic_home,        // 1
-            R.drawable.ic_account,     // 2
-            R.drawable.ic_profile,     // 3
-            R.drawable.ic_statistics,  // 4
-            R.drawable.ic_plus,        // 5
-            R.drawable.ic_more,        // 6
-            R.drawable.ic_transfer,    // 7
-            R.drawable.ic_back         // 8
+    // Danh sách các Icon khả dụng (Format gmd-xxx cho Iconics)
+    private static final String[] ICON_LIST = {
+            "gmd-receipt",          // 0: Giao dịch
+            "gmd-home",             // 1: Nhà
+            "gmd-account-balance",  // 2: Ngân hàng/Ví
+            "gmd-person",           // 3: Người dùng
+            "gmd-insert-chart",     // 4: Thống kê
+            "gmd-add",              // 5: Thêm
+            "gmd-more-vert",        // 6: Thêm nữa
+            "gmd-swap-horiz",       // 7: Chuyển khoản
+            "gmd-arrow-back",       // 8: Quay lại
+            "gmd-account-balance-wallet", // 9: Ví
+            "gmd-shopping-cart",    // 10: Mua sắm
+            "gmd-restaurant",       // 11: Ăn uống
+            "gmd-directions-car",   // 12: Di chuyển
+            "gmd-local-attraction", // 13: Giải trí
+            "gmd-work"              // 14: Lương/Công việc
     };
 
     /**
      * Lấy mã màu từ Color ID (index)
-     * @param colorId ID màu từ API/Database
-     * @return Giá trị màu (int)
      */
     public static int getColor(int colorId) {
         if (colorId >= 0 && colorId < COLOR_PALETTE.length) {
@@ -47,15 +54,38 @@ public class AppResourceManager {
     }
 
     /**
-     * Lấy Resource ID của Icon từ Icon ID (index)
-     * @param iconId ID icon từ API/Database
-     * @return Resource ID của drawable
+     * Lấy tên Icon cho Android-Iconics
      */
-    public static int getIconRes(int iconId) {
+    public static String getIconName(int iconId) {
         if (iconId >= 0 && iconId < ICON_LIST.length) {
             return ICON_LIST[iconId];
         }
-        return R.drawable.ic_transaction; // Mặc định
+        return "gmd-receipt"; // Mặc định
+    }
+
+    // =========================================================
+    // CÁC HÀM TIỆN ÍCH TRẢ VỀ TRỰC TIẾP ICON (CHỐNG MÀU ĐEN)
+    // =========================================================
+
+    /**
+     * Trả về một Icon đã được nhuộm màu tùy ý
+     * @param context Môi trường hiện tại (requireContext(), this, itemView.getContext())
+     * @param iconId ID của icon trong mảng
+     * @param colorInt Giá trị màu thực tế (Color.WHITE, hoặc lấy từ getColor())
+     */
+    public static IconicsDrawable getIconDrawable(Context context, int iconId, int colorInt) {
+        String iconName = getIconName(iconId);
+        IconicsDrawable drawable = new IconicsDrawable(context, iconName);
+        drawable.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN);
+        return drawable;
+    }
+
+    public static IconicsDrawable getWhiteIcon(Context context, int iconId) {
+        return getIconDrawable(context, iconId, Color.WHITE);
+    }
+
+    public static IconicsDrawable getBlackIcon(Context context, int iconId) {
+        return getIconDrawable(context, iconId, Color.BLACK);
     }
 
     public static int getColorCount() {

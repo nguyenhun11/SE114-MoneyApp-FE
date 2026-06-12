@@ -81,11 +81,11 @@
                             android:textColor="@color/colorOnSurface"
                             android:textSize="14sp" />
 
-                        <ImageView
+                        <com.mikepenz.iconics.view.IconicsImageView
                             android:layout_width="16dp"
                             android:layout_height="16dp"
                             android:layout_marginStart="4dp"
-                            android:src="@drawable/ic_arrow_down"
+                            app:iiv_icon="gmd_keyboard_arrow_down"
                             app:tint="@color/colorPrimary" />
                     </LinearLayout>
 
@@ -110,11 +110,11 @@
                             android:textColor="@color/colorOnSurface"
                             android:textSize="14sp" />
 
-                        <ImageView
+                        <com.mikepenz.iconics.view.IconicsImageView
                             android:layout_width="16dp"
                             android:layout_height="16dp"
                             android:layout_marginStart="4dp"
-                            android:src="@drawable/ic_arrow_down"
+                            app:iiv_icon="gmd_keyboard_arrow_down"
                             app:tint="@color/colorPrimary" />
                     </LinearLayout>
 

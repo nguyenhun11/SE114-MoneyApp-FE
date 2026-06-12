@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
@@ -25,6 +26,7 @@ import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.MainActivity;
 import com.example.moneyapp.view.SplashActivity;
 import com.example.moneyapp.viewmodel.ProfileViewModel;
+import com.mikepenz.iconics.IconicsDrawable;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -41,9 +43,10 @@ public class ProfileFragment extends BaseFragment {
             }
     );
 
+    // XÓA HÀM getFabIcon() VÀ DÙNG HÀM NÀY ĐỂ ẨN FAB CHUẨN XÁC NHẤT
     @Override
-    protected int getFabIcon() {
-        return 0; // Hide FAB
+    protected boolean shouldShowFAB() {
+        return false;
     }
 
     @Override
@@ -92,21 +95,21 @@ public class ProfileFragment extends BaseFragment {
             if (user != null) {
                 tvName.setText(user.getName());
                 tvEmail.setText(user.getEmail());
-                tvUserId.setText("UserID: " + user.getUserId()); // Show short ID
+                tvUserId.setText("UserID: " + user.getUserId());
 
-                // Load Avatar
+                IconicsDrawable defaultAvatar = new IconicsDrawable(requireContext(), "gmd-person");
+                defaultAvatar.setColorFilter(ContextCompat.getColor(requireContext(), R.color.colorOnSurfaceVariant), android.graphics.PorterDuff.Mode.SRC_IN);
+
                 if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isEmpty()) {
                     Glide.with(this)
                             .load(user.getProfileImageUrl())
-                            .placeholder(R.drawable.ic_profile)
+                            .placeholder(defaultAvatar) // Dùng Iconics làm placeholder
                             .into(ivAvatar);
+                } else {
+                    ivAvatar.setImageDrawable(defaultAvatar);
                 }
 
-                // Format Date: "Thứ 7 ngày 28/3/2026"
                 if (user.getCreatedAt() != null) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("'Thứ' u 'ngày' d/M/yyyy", new Locale("vi", "VN"));
-                    String dateStr = sdf.format(user.getCreatedAt());
-                    // SimpleDateFormat 'u' (day of week) returns 1-7, need manual mapping for Vietnamese "Thứ ..."
                     tvCreatedAt.setText(getVietnameseDate(user.getCreatedAt()));
                 }
             }
@@ -128,8 +131,6 @@ public class ProfileFragment extends BaseFragment {
             android.widget.EditText input = new android.widget.EditText(requireContext());
             input.setText(tvName.getText().toString());
             input.setPadding(50, 40, 50, 40);
-
-            // Giới hạn 20 ký tự
             input.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(20)});
 
             new android.app.AlertDialog.Builder(requireContext())
@@ -162,7 +163,7 @@ public class ProfileFragment extends BaseFragment {
                         profileViewModel.deleteAccount();
                     })
                     .setNegativeButton("Hủy", null)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setIcon(android.R.drawable.ic_dialog_alert) // Đây là icon hệ thống, không sao cả
                     .show();
         });
 

@@ -115,12 +115,12 @@
                             android:background="@drawable/bg_circle"
                             android:backgroundTint="@color/colorEmpty">
 
-                            <ImageView
+                            <com.mikepenz.iconics.view.IconicsImageView
                                 android:id="@+id/iv_selected_icon"
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_account"
+                                app:iiv_icon="gmd_wallet"
                                 app:tint="@color/colorOnSurface" />
                         </FrameLayout>
 

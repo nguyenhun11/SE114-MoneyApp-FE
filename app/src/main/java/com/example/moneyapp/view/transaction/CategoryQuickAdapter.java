@@ -1,10 +1,10 @@
 package com.example.moneyapp.view.transaction;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Category;
-import com.example.moneyapp.utils.ResourceMapper;
+import com.example.moneyapp.utils.AppResourceManager;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.List;
 
@@ -43,9 +45,11 @@ public class CategoryQuickAdapter extends RecyclerView.Adapter<CategoryQuickAdap
         Category category = list.get(position);
         holder.tvName.setText(category.getCategoryName());
 
-        holder.ivIcon.setImageResource(ResourceMapper.getIconResourceById(category.getIcon()));
-        int colorRes = ResourceMapper.getColorResourceById(category.getColor());
-        holder.viewColorCircle.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), colorRes)));
+        Context context = holder.itemView.getContext();
+        holder.ivIcon.setIcon(AppResourceManager.getWhiteIcon(context, category.getIcon()));
+        
+        int colorValue = AppResourceManager.getColor(category.getColor());
+        holder.viewColorCircle.setBackgroundTintList(ColorStateList.valueOf(colorValue));
 
         if (selectedPosition == position) {
             holder.cardBg.setStrokeWidth(3);
@@ -77,7 +81,7 @@ public class CategoryQuickAdapter extends RecyclerView.Adapter<CategoryQuickAdap
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName;
-        ImageView ivIcon;
+        IconicsImageView ivIcon;
         View viewColorCircle;
         com.google.android.material.card.MaterialCardView cardBg;
 

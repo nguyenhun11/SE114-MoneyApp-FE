@@ -22,13 +22,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
+            <com.mikepenz.iconics.view.IconicsImageView
                 android:id="@+id/iv_transaction_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
-                app:tint="@color/white"
-                tools:src="@drawable/ic_account" />
+                app:iiv_color="@color/white"
+                tools:iiv_icon="gmd-account-balance" />
         </FrameLayout>
 
         <LinearLayout

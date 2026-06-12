@@ -49,12 +49,10 @@
             android:elevation="4dp"
             android:padding="18dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_add_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:tint="@color/colorOnPrimary" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- 2. SIDE MENU (NGĂN KÉO BÊN PHẢI) -->

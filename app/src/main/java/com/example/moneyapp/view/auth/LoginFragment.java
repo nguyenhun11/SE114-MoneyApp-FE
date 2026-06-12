@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +15,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -29,6 +30,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
 
 public class LoginFragment extends Fragment {
     private AuthViewModel authViewModel;
@@ -55,17 +57,35 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // 1. ÉP KÍCH THƯỚC ẢNH CHUẨN 50% MÀN HÌNH (Đồng bộ với Splash)
+        View cvHeader = view.findViewById(R.id.cv_login_header);
+        int screenHeight = getResources().getDisplayMetrics().heightPixels;
+        ViewGroup.LayoutParams params = cvHeader.getLayoutParams();
+        params.height = (int) (screenHeight * 0.5); // Ép đúng 50% màn hình
+        cvHeader.setLayoutParams(params);
+
+        // 2. KÍCH HOẠT THANH CUỘN CHO BÀN PHÍM
+        View rootView = view.findViewById(R.id.root_scroll_view);
+        if (rootView != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
+                int bottomPadding = insets.getInsets(WindowInsetsCompat.Type.ime() | WindowInsetsCompat.Type.systemBars()).bottom;
+                v.setPadding(0, 0, 0, bottomPadding); // Đẩy nội dung lên khi có bàn phím
+                return insets;
+            });
+        }
+
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
         // Configure Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-                .requestIdToken(getString(R.string.default_web_client_id)) // Cần định nghĩa trong strings.xml
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .build();
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
 
-        Button btnLogin = view.findViewById(R.id.btn_login);
-        View btnGoogleLogin = view.findViewById(R.id.btn_google_login);
+        // Ánh xạ UI - Đã cập nhật thành MaterialButton
+        MaterialButton btnLogin = view.findViewById(R.id.btn_login);
+        MaterialButton btnGoogleLogin = view.findViewById(R.id.btn_google_login);
         TextView tvGoToRegister = view.findViewById(R.id.tv_go_to_register);
         TextView tvForgotPassword = view.findViewById(R.id.tv_forgot_password);
         EditText etEmail = view.findViewById(R.id.et_email);

@@ -6,6 +6,7 @@ import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 
 import com.example.moneyapp.R;
@@ -53,11 +54,15 @@ public class MainUIHandler {
         });
     }
 
-    public void updateFAB(@DrawableRes int iconRes, View.OnClickListener listener) {
+    public void updateFAB(String iconName, View.OnClickListener listener) {
         if (fabAdd != null) {
-            fabAdd.setImageResource(iconRes);
+            Context context = fabAdd.getContext();
+            if (iconName != null && !iconName.isEmpty()) {
+                com.mikepenz.iconics.IconicsDrawable drawable = new com.mikepenz.iconics.IconicsDrawable(context, iconName);
+                drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorOnPrimary), android.graphics.PorterDuff.Mode.SRC_IN);
+                fabAdd.setImageDrawable(drawable);
+            }
             fabAdd.setOnClickListener(listener);
-            fabAdd.setVisibility(View.VISIBLE);
         }
     }
 
