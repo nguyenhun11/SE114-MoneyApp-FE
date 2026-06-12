@@ -66,4 +66,9 @@ dependencies {
 
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
+    implementation("com.mikepenz:iconics-core:5.3.3")
+    implementation("com.mikepenz:iconics-views:5.3.3")
+    implementation("com.mikepenz:google-material-typeface:4.0.0.2-kotlin@aar")
+    implementation("com.mikepenz:fontawesome-typeface:5.9.0.2-kotlin@aar")
+
 }

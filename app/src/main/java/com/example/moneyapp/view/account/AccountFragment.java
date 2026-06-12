@@ -60,13 +60,20 @@ public class AccountFragment extends BaseFragment {
         accountViewModel.getTotalBalanceLiveData().observe(getViewLifecycleOwner(), balance -> {
             String formattedBalance = String.format(Locale.getDefault(), "%,.0f", balance).replace(",", ".");
 
-            setupBalanceSelector(view, getString(R.string.total_balance), formattedBalance, false,
-                    R.drawable.ic_transaction, v -> {
+            setupBalanceSelector(
+                    view,
+                    getString(R.string.total_balance),
+                    formattedBalance,
+                    false,
+                    "gmd_history",
+                    v -> {
                         Toast.makeText(getContext(), "Lịch sử tài khoản (Đang phát triển)", Toast.LENGTH_SHORT).show();
                     },
-                    R.drawable.ic_plus, v -> {
+                    "gmd_add_circle_outline",
+                    v -> {
                         Navigation.findNavController(view).navigate(R.id.accountDetailFragment);
-                    });
+                    }
+            );
         });
 
         accountViewModel.getAccountsLiveData().observe(getViewLifecycleOwner(), accounts -> {

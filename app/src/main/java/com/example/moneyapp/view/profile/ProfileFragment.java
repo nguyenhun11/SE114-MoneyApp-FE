@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
@@ -18,16 +20,14 @@ import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.example.moneyapp.R;
-import com.example.moneyapp.view.BaseFragment;
-import com.example.moneyapp.view.SplashActivity;
 import com.example.moneyapp.data.local.PreferenceManager;
+import com.example.moneyapp.view.BaseFragment;
+import com.example.moneyapp.view.MainActivity;
+import com.example.moneyapp.view.SplashActivity;
 import com.example.moneyapp.viewmodel.ProfileViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 
 public class ProfileFragment extends BaseFragment {
     private ProfileViewModel profileViewModel;
@@ -61,6 +61,18 @@ public class ProfileFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+
+        setupHeader(
+                view,
+                getString(R.string.profile_title),
+                null, null,
+                "gmd_menu",
+                v -> {
+                    if (getActivity() instanceof MainActivity) {
+                        ((MainActivity) getActivity()).openRightSideMenu();
+                    }
+                }
+        );
 
         // UI Components
         TextView tvName = view.findViewById(R.id.tv_profile_name);

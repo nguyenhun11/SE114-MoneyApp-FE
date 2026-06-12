@@ -47,10 +47,11 @@ public class TransactionDetailFragment extends BaseFragment {
 
             setupHeader(view,
                     "Chi tiết giao dịch",
-                    R.drawable.ic_back, v -> Navigation.findNavController(v).navigateUp(),
-                    R.drawable.ic_delete, v -> {
+                    "gmd_arrow_back", v -> Navigation.findNavController(v).navigateUp(),
+                    "gmd_delete_outline", v -> {
                         Toast.makeText(getContext(), "Xóa giao dịch", Toast.LENGTH_SHORT).show();
-                        // Navigation.findNavController(view).navigate(...);
+                        // TODO: Gọi ViewModel để xóa dữ liệu, sau đó back về trang trước
+                        // Navigation.findNavController(view).navigateUp();
                     });
 
             observeViewModel(view);
