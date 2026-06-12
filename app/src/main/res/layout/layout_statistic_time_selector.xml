@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp">
+
+            <TextView
+                android:id="@+id/tab_day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:text="Ngày"
+                android:textColor="@color/colorOnSurfaceVariant" />
+
+            <TextView
+                android:id="@+id/tab_week"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:text="Tuần"
+                android:textColor="@color/colorOnSurfaceVariant" />
+
+            <TextView
+                android:id="@+id/tab_month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:text="Tháng"
+                android:textColor="@color/colorOnSurface"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tab_year"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:text="Năm"
+                android:textColor="@color/colorOnSurfaceVariant" />
+        </LinearLayout>
+    </HorizontalScrollView>
+</merge>

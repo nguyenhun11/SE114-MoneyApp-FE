@@ -32,7 +32,8 @@ public class StatisticRepository extends BaseRepository {
     }
 
     public void getExpensePieChart(Date startDate, Date endDate, StatisticCallback<List<CategoryPieChartDto>> callback) {
-        String startStr = DateConverter.convertDateToString(startDate);
+        // Đồng bộ logic an toàn: Nếu startDate là null thì truyền null cho Retrofit
+        String startStr = (startDate != null) ? DateConverter.convertDateToString(startDate) : null;
         String endStr = DateConverter.convertDateToString(endDate);
 
         apiService.getExpensePieChart(startStr, endStr, getTimeZoneOffset()).enqueue(new Callback<List<CategoryPieChartDto>>() {
@@ -53,7 +54,7 @@ public class StatisticRepository extends BaseRepository {
     }
 
     public void getIncomePieChart(Date startDate, Date endDate, StatisticCallback<List<CategoryPieChartDto>> callback) {
-        String startStr = DateConverter.convertDateToString(startDate);
+        String startStr = (startDate != null) ? DateConverter.convertDateToString(startDate) : null;
         String endStr = DateConverter.convertDateToString(endDate);
 
         apiService.getIncomePieChart(startStr, endStr, getTimeZoneOffset()).enqueue(new Callback<List<CategoryPieChartDto>>() {
@@ -74,7 +75,7 @@ public class StatisticRepository extends BaseRepository {
     }
 
     public void getExpenseStackedBarChart(Date startDate, Date endDate, int groupBy, StatisticCallback<List<StackedBarChartDto>> callback) {
-        String startStr = DateConverter.convertDateToString(startDate);
+        String startStr = (startDate != null) ? DateConverter.convertDateToString(startDate) : null;
         String endStr = DateConverter.convertDateToString(endDate);
 
         apiService.getExpenseStackedBarChart(startStr, endStr, groupBy, getTimeZoneOffset()).enqueue(new Callback<List<StackedBarChartDto>>() {
@@ -94,8 +95,30 @@ public class StatisticRepository extends BaseRepository {
         });
     }
 
+    // THÊM MỚI: Hàm load biểu đồ cột chồng Thu nhập
+    public void getIncomeStackedBarChart(Date startDate, Date endDate, int groupBy, StatisticCallback<List<StackedBarChartDto>> callback) {
+        String startStr = (startDate != null) ? DateConverter.convertDateToString(startDate) : null;
+        String endStr = DateConverter.convertDateToString(endDate);
+
+        apiService.getIncomeStackedBarChart(startStr, endStr, groupBy, getTimeZoneOffset()).enqueue(new Callback<List<StackedBarChartDto>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<StackedBarChartDto>> call, @NonNull Response<List<StackedBarChartDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Không tải được biểu đồ cột thu: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<StackedBarChartDto>> call, @NonNull Throwable t) {
+                callback.onError("Lỗi kết nối: " + t.getMessage());
+            }
+        });
+    }
+
     public void getCashFlowBarChart(Date startDate, Date endDate, int groupBy, StatisticCallback<List<CashFlowBarDto>> callback) {
-        String startStr = DateConverter.convertDateToString(startDate);
+        String startStr = (startDate != null) ? DateConverter.convertDateToString(startDate) : null;
         String endStr = DateConverter.convertDateToString(endDate);
 
         apiService.getCashFlowBarChart(startStr, endStr, groupBy, getTimeZoneOffset()).enqueue(new Callback<List<CashFlowBarDto>>() {
