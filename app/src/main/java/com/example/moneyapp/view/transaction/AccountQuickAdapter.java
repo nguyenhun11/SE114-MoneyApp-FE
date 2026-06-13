@@ -46,7 +46,7 @@ public class AccountQuickAdapter extends RecyclerView.Adapter<AccountQuickAdapte
         Account account = list.get(position);
 
         holder.tvName.setText(account.getAccountName());
-        holder.ivIcon.setIcon(AppResourceManager.getWhiteIcon(context, account.getIcon()));
+        holder.ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, account.getIcon()));
         
         int colorValue = AppResourceManager.getColor(account.getColor());
         holder.viewColorCircle.setBackgroundTintList(ColorStateList.valueOf(colorValue));

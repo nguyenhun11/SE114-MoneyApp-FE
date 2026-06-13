@@ -89,7 +89,7 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
             }
         }
 
-        holder.ivIcon.setIcon(AppResourceManager.getWhiteIcon(context, t.getCategoryIconId()));
+        holder.ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, t.getCategoryIconId()));
         int actualColor = AppResourceManager.getColor(t.getCategoryColorId());
         holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(actualColor));
 

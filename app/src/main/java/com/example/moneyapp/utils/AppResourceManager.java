@@ -3,8 +3,13 @@ package com.example.moneyapp.utils;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 
 import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.IconicsSize;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.IconicsSize;
 
 public class AppResourceManager {
 
@@ -73,18 +78,20 @@ public class AppResourceManager {
      * @param iconId ID của icon trong mảng
      * @param colorInt Giá trị màu thực tế (Color.WHITE, hoặc lấy từ getColor())
      */
-    public static IconicsDrawable getIconDrawable(Context context, int iconId, int colorInt) {
+    public static Drawable getIconDrawable(Context context, int iconId, int colorInt) {
         String iconName = getIconName(iconId);
         IconicsDrawable drawable = new IconicsDrawable(context, iconName);
         drawable.setColorFilter(colorInt, PorterDuff.Mode.SRC_IN);
-        return drawable;
+
+        int paddingPx = (int) (3 * context.getResources().getDisplayMetrics().density);
+        return new InsetDrawable(drawable, paddingPx);
     }
 
-    public static IconicsDrawable getWhiteIcon(Context context, int iconId) {
+    public static Drawable getWhiteIcon(Context context, int iconId) {
         return getIconDrawable(context, iconId, Color.WHITE);
     }
 
-    public static IconicsDrawable getBlackIcon(Context context, int iconId) {
+    public static Drawable getBlackIcon(Context context, int iconId) {
         return getIconDrawable(context, iconId, Color.BLACK);
     }
 

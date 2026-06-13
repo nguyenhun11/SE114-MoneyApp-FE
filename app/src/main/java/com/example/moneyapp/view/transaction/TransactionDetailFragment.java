@@ -109,9 +109,9 @@ public class TransactionDetailFragment extends BaseFragment {
             }
 
             Context context = view.getContext();
-            ivCategoryIcon.setIcon(AppResourceManager.getWhiteIcon(context, t.getCategoryIconId()));
+            ivCategoryIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, t.getCategoryIconId()));
             flCategoryIcon.setBackgroundTintList(ColorStateList.valueOf(AppResourceManager.getColor(t.getCategoryColorId())));
-            ivAccountIcon.setIcon(AppResourceManager.getWhiteIcon(context, t.getAccountIconId()));
+            ivAccountIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, t.getAccountIconId()));
             flAccountIcon.setBackgroundTintList(ColorStateList.valueOf(AppResourceManager.getColor(t.getAccountIconId())));
         });
 

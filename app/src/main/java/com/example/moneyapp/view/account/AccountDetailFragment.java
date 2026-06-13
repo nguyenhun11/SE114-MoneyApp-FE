@@ -121,7 +121,7 @@ public class AccountDetailFragment extends BaseFragment {
 
     private void updateIconUI(int iconId) {
         Context context = requireContext();
-        ivSelectedIcon.setIcon(AppResourceManager.getWhiteIcon(context, iconId));
+        ivSelectedIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, iconId));
     }
 
     private void updateColorUI(int colorId) {

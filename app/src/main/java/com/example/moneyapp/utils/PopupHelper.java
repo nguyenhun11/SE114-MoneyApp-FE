@@ -51,7 +51,6 @@ public class PopupHelper {
             @NonNull
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                // Layout của cậu phải đổi thẻ ImageView thành com.mikepenz.iconics.view.IconicsImageView
                 int layoutId = isColorPicker ? R.layout.item_picker_color : R.layout.item_picker_icon;
                 View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
                 return new RecyclerView.ViewHolder(view) {};
@@ -63,16 +62,15 @@ public class PopupHelper {
                     View colorCircle = holder.itemView.findViewById(R.id.v_color_circle);
                     colorCircle.getBackground().setTint(AppResourceManager.getColor(position));
                 } else {
-                    // ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT
                     IconicsImageView ivIcon = holder.itemView.findViewById(R.id.iv_icon);
                     String iconName = AppResourceManager.getIconName(position);
 
                     ivIcon.setIcon(new com.mikepenz.iconics.IconicsDrawable(context, iconName));
-                    ivIcon.setColorFilter(android.graphics.Color.BLACK); // Nhuộm màu icon trong popup
+                    ivIcon.setColorFilter(android.graphics.Color.BLACK);
                 }
 
                 holder.itemView.setOnClickListener(v -> {
-                    if (listener != null) listener.onSelected(position); // Trả về index
+                    if (listener != null) listener.onSelected(position);
                     dialog.dismiss();
                 });
             }
@@ -82,10 +80,6 @@ public class PopupHelper {
         dialog.setContentView(recyclerView);
         dialog.show();
     }
-
-    // ==========================================
-    // MỞ POPUP CHỌN TÀI KHOẢN (Tái sử dụng AccountQuickAdapter)
-    // ==========================================
     public static void showAccountFilterPopup(Context context, List<com.example.moneyapp.model.Account> accountList, AccountQuickAdapter.OnAccountClickListener listener) {
         BottomSheetDialog dialog = new BottomSheetDialog(context);
 
@@ -96,10 +90,8 @@ public class PopupHelper {
         recyclerView.setPadding(24, 48, 24, 48); // Padding cho thoáng
         recyclerView.setClipToPadding(false);
 
-        // Hiển thị dạng lưới 4 cột cho đẹp
         recyclerView.setLayoutManager(new GridLayoutManager(context, 4));
 
-        // Tái sử dụng Adapter đã tạo
         AccountQuickAdapter adapter = new AccountQuickAdapter(accountList, account -> {
             if (listener != null) listener.onAccountClick(account);
             dialog.dismiss(); // Tự đóng sau khi chọn
@@ -110,9 +102,6 @@ public class PopupHelper {
         dialog.show();
     }
 
-    // ==========================================
-    // MỞ POPUP CHỌN HẠNG MỤC (Tái sử dụng CategoryQuickAdapter)
-    // ==========================================
     public static void showCategoryFilterPopup(Context context, List<com.example.moneyapp.model.Category> categoryList, CategoryQuickAdapter.OnCategoryClickListener listener) {
         BottomSheetDialog dialog = new BottomSheetDialog(context);
 
@@ -123,7 +112,6 @@ public class PopupHelper {
         recyclerView.setPadding(24, 48, 24, 48);
         recyclerView.setClipToPadding(false);
 
-        // Hiển thị dạng lưới 4 cột
         recyclerView.setLayoutManager(new GridLayoutManager(context, 4));
 
         CategoryQuickAdapter adapter = new CategoryQuickAdapter(categoryList, category -> {

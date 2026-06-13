@@ -46,7 +46,7 @@ public class CategoryQuickAdapter extends RecyclerView.Adapter<CategoryQuickAdap
         holder.tvName.setText(category.getCategoryName());
 
         Context context = holder.itemView.getContext();
-        holder.ivIcon.setIcon(AppResourceManager.getWhiteIcon(context, category.getIcon()));
+        holder.ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, category.getIcon()));
         
         int colorValue = AppResourceManager.getColor(category.getColor());
         holder.viewColorCircle.setBackgroundTintList(ColorStateList.valueOf(colorValue));

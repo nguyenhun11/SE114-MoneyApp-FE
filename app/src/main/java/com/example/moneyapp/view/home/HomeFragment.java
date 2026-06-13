@@ -115,7 +115,7 @@ public class HomeFragment extends BaseFragment {
     private void observeViewModel() {
         homeViewModel.getTotalBalance().observe(getViewLifecycleOwner(), balance -> {
             setupBalanceSelector(requireView(), getString(R.string.total_balance),
-                    String.format("%,.0f", balance).replace(",", "."), true);
+                    String.format("%,.0f", balance).replace(",", "."));
         });
 
         homeViewModel.getCategoryExpenses().observe(getViewLifecycleOwner(), items -> {

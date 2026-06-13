@@ -70,7 +70,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
 
         int actualColor = AppResourceManager.getColor(account.getColor());
 
-        holder.ivIcon.setIcon(AppResourceManager.getWhiteIcon(context,account.getIcon()));
+        holder.ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context,account.getIcon()));
         holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(actualColor));
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onItemClick(account);

@@ -1,5 +1,7 @@
 package com.example.moneyapp.view;
 
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -34,12 +36,11 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         AppCompatImageButton fabAdd = findViewById(R.id.fab_add);
 
-        // Setup Iconics cho Bottom Navigation
         Menu menu = bottomNav.getMenu();
-        menu.findItem(R.id.homeFragment).setIcon(new IconicsDrawable(this, "gmd_home"));
-        menu.findItem(R.id.transactionFragment).setIcon(new IconicsDrawable(this, "gmd_receipt"));
-        menu.findItem(R.id.accountFragment).setIcon(new IconicsDrawable(this, "gmd_account_balance_wallet"));
-        menu.findItem(R.id.profileFragment).setIcon(new IconicsDrawable(this, "gmd_person"));
+        menu.findItem(R.id.homeFragment).setIcon(getShrunkIcon("gmd_home", 0));
+        menu.findItem(R.id.transactionFragment).setIcon(getShrunkIcon("gmd_receipt", 0));
+        menu.findItem(R.id.accountFragment).setIcon(getShrunkIcon("gmd_account_balance_wallet", 0));
+        menu.findItem(R.id.profileFragment).setIcon(getShrunkIcon("gmd_person", 0));
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
@@ -49,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
             NavigationUI.setupWithNavController(bottomNav, navController);
             uiHandler = new MainUIHandler(this, navController, bottomNav, fabAdd);
 
-            // GỌI HÀM SETUP SIDE MENU TẠI ĐÂY
             setupSideMenuIcons(navController);
 
             bottomNav.setOnItemSelectedListener(item -> {
@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Hàm public để ProfileFragment có thể gọi tới
     public void openRightSideMenu() {
         if (drawerLayout != null) {
             drawerLayout.openDrawer(GravityCompat.END);
@@ -87,11 +86,7 @@ public class MainActivity extends AppCompatActivity {
         View menuItem = findViewById(viewId);
         if (menuItem != null) {
             IconicsImageView ivIcon = menuItem.findViewById(R.id.iv_icon);
-            IconicsDrawable drawable = new IconicsDrawable(this, iconName);
-            int color = ContextCompat.getColor(this, R.color.colorOnSurface);
-            drawable.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
-
-            ivIcon.setIcon(drawable);
+            ivIcon.setImageDrawable(getShrunkIcon(iconName, R.color.colorOnSurface));
 
             ((TextView) menuItem.findViewById(R.id.tv_title)).setText(title);
 
@@ -100,6 +95,18 @@ public class MainActivity extends AppCompatActivity {
                 navController.navigate(destinationId);
             });
         }
+    }
+
+    private Drawable getShrunkIcon(String iconName, int colorResId) {
+        IconicsDrawable drawable = new IconicsDrawable(this, iconName);
+        if (colorResId != 0) {
+            int color = ContextCompat.getColor(this, colorResId);
+            drawable.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
+        }
+
+        int paddingPx = (int) (3 * getResources().getDisplayMetrics().density);
+
+        return new InsetDrawable(drawable, paddingPx);
     }
 
     public MainUIHandler getUiHandler() {

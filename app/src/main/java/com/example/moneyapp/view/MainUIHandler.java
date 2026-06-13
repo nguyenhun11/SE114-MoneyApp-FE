@@ -1,16 +1,17 @@
 package com.example.moneyapp.view;
 
 import android.content.Context;
+import android.graphics.drawable.InsetDrawable;
 import android.view.Menu;
 import android.view.View;
 
-import androidx.annotation.DrawableRes;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 
 import com.example.moneyapp.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.mikepenz.iconics.IconicsDrawable;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -18,12 +19,10 @@ import java.util.Set;
 
 public class MainUIHandler {
 
-    private final Context context;
     private final NavController navController;
     private final BottomNavigationView bottomNav;
     private final AppCompatImageButton fabAdd;
 
-    // THÊM R.id.moreFragment vào đây để BottomNav giữ nguyên khi mở màn hình Khác
     private final Set<Integer> mainFragments = new HashSet<>(Arrays.asList(
             R.id.homeFragment,
             R.id.transactionFragment,
@@ -33,7 +32,6 @@ public class MainUIHandler {
     ));
 
     public MainUIHandler(Context context, NavController navController, BottomNavigationView bottomNav, AppCompatImageButton fabAdd) {
-        this.context = context;
         this.navController = navController;
         this.bottomNav = bottomNav;
         this.fabAdd = fabAdd;
@@ -58,9 +56,12 @@ public class MainUIHandler {
         if (fabAdd != null) {
             Context context = fabAdd.getContext();
             if (iconName != null && !iconName.isEmpty()) {
-                com.mikepenz.iconics.IconicsDrawable drawable = new com.mikepenz.iconics.IconicsDrawable(context, iconName);
+                IconicsDrawable drawable = new IconicsDrawable(context, iconName);
                 drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorOnPrimary), android.graphics.PorterDuff.Mode.SRC_IN);
-                fabAdd.setImageDrawable(drawable);
+                int paddingPx = (int) (4 * context.getResources().getDisplayMetrics().density);
+
+                InsetDrawable insetDrawable = new InsetDrawable(drawable, paddingPx);
+                fabAdd.setImageDrawable(insetDrawable);
             }
             fabAdd.setOnClickListener(listener);
         }
@@ -93,6 +94,4 @@ public class MainUIHandler {
         }
         menu.setGroupCheckable(0, true, true);
     }
-
-    // ĐÃ XÓA TOÀN BỘ CÁC HÀM SHOW POPUP LÀM RỐI CODE
 }

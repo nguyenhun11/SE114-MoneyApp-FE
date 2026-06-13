@@ -1,12 +1,13 @@
 package com.example.moneyapp.view;
 
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -15,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
+import com.mikepenz.iconics.IconicsDrawable;
 
 public abstract class BaseFragment extends Fragment {
 
@@ -54,7 +56,18 @@ public abstract class BaseFragment extends Fragment {
     }
 
     //region Header Setup
-    //region Header Setup
+    private Drawable getShrunkIcon(String iconName, int color) {
+        IconicsDrawable drawable = new IconicsDrawable(requireContext(), iconName);
+        drawable.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
+        int paddingDp = 1;
+        if ("gmd_navigate_before".equals(iconName)
+                || "gmd_arrow_back".equals(iconName)) {
+            paddingDp = 4;
+        }
+        int paddingPx = (int) (paddingDp * getResources().getDisplayMetrics().density);
+        return new InsetDrawable(drawable, paddingPx);
+    }
+
     private void setupActionButtons(View view,
                                     String leftIconName, View.OnClickListener leftListener,
                                     String rightIconName, View.OnClickListener rightListener) {
@@ -62,16 +75,12 @@ public abstract class BaseFragment extends Fragment {
         com.mikepenz.iconics.view.IconicsImageView btnLeft = view.findViewById(R.id.btn_action_left);
         com.mikepenz.iconics.view.IconicsImageView btnRight = view.findViewById(R.id.btn_action_right);
 
-        // 1. Lấy màu sắc từ file colors.xml (Màu chữ trên nền Header)
         int iconColor = ContextCompat.getColor(requireContext(), R.color.colorOnPrimary);
 
         if (btnLeft != null) {
             if (leftIconName != null && !leftIconName.isEmpty()) {
                 btnLeft.setVisibility(View.VISIBLE);
-                btnLeft.setIcon(new com.mikepenz.iconics.IconicsDrawable(requireContext(), leftIconName));
-
-                btnLeft.setColorFilter(iconColor);
-
+                btnLeft.setImageDrawable(getShrunkIcon(leftIconName, iconColor));
                 btnLeft.setOnClickListener(leftListener);
             } else {
                 btnLeft.setVisibility(View.GONE);
@@ -82,10 +91,7 @@ public abstract class BaseFragment extends Fragment {
         if (btnRight != null) {
             if (rightIconName != null && !rightIconName.isEmpty()) {
                 btnRight.setVisibility(View.VISIBLE);
-                btnRight.setIcon(new com.mikepenz.iconics.IconicsDrawable(requireContext(), rightIconName));
-
-                btnRight.setColorFilter(iconColor);
-
+                btnRight.setImageDrawable(getShrunkIcon(rightIconName, iconColor));
                 btnRight.setOnClickListener(rightListener);
             } else {
                 btnRight.setVisibility(View.GONE);
@@ -99,7 +105,7 @@ public abstract class BaseFragment extends Fragment {
     }
 
     protected void setupHeader(View view, String titleText, boolean showBackBtn) {
-        String leftIcon = showBackBtn ? "gmd_arrow_back" : null;
+        String leftIcon = showBackBtn ? "gmd_navigate_before" : null;
         View.OnClickListener leftListener = showBackBtn ? v -> Navigation.findNavController(v).navigateUp() : null;
         setupHeader(view, titleText, leftIcon, leftListener, null, null);
     }
@@ -114,16 +120,10 @@ public abstract class BaseFragment extends Fragment {
     //endregion
 
     //region Balance Selector Setup
-    /**
-     * Cấu hình bộ chọn tài khoản/số dư
-     * @param canSelect true nếu cho phép nhấn để chọn tài khoản (hiện mũi tên)
-     */
-    protected void setupBalanceSelector(View view, String accountName, String balance, boolean canSelect) {
-        // Đã sửa tham số mặc định từ 0 thành null để khớp kiểu String
-        setupBalanceSelector(view, accountName, balance, canSelect, null, null, null, null);
+    protected void setupBalanceSelector(View view, String accountName, String balance) {
+        setupBalanceSelector(view, accountName, balance, true, null, null, null, null);
     }
 
-    // Đã đổi kiểu tham số icon sang String
     protected void setupBalanceSelector(View view, String accountName, String balance, boolean canSelect,
                                         String leftIconName, View.OnClickListener leftListener,
                                         String rightIconName, View.OnClickListener rightListener) {
@@ -200,9 +200,6 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
-    /**
-     * Cấu hình 3 tabs: Chung, Chi, Thu
-     */
     protected void setupThreeTabs(View view, ThreeTabSwitchListener listener) {
         TextView tvGeneral = view.findViewById(R.id.tv_tab_general);
         TextView tvExpense = view.findViewById(R.id.tv_tab_expense);
