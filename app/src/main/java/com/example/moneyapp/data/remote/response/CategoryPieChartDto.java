@@ -4,13 +4,15 @@ public class CategoryPieChartDto {
     private String categoryId;
     private String categoryName;
     private int colorId;
+    private int iconId;
     private double totalAmount;
     private double percentage;
 
-    public CategoryPieChartDto(String categoryId, String categoryName, int colorId, double totalAmount, double percentage) {
+    public CategoryPieChartDto(String categoryId, String categoryName, int colorId, int iconId, double totalAmount, double percentage) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.colorId = colorId;
+        this.iconId = iconId;
         this.totalAmount = totalAmount;
         this.percentage = percentage;
     }
@@ -53,5 +55,13 @@ public class CategoryPieChartDto {
 
     public void setPercentage(double percentage) {
         this.percentage = percentage;
+    }
+
+    public int getIconId() {
+        return iconId;
+    }
+
+    public void setIconId(int iconId) {
+        this.iconId = iconId;
     }
 }

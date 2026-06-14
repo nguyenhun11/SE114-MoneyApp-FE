@@ -86,7 +86,7 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/ll_info"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fl_icon_container"
             tools:text="Mua đồ siêu thị có ghi chú rất dài sẽ tự bẻ dòng ở đây"
             tools:visibility="visible" />

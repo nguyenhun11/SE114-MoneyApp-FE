@@ -182,7 +182,6 @@ public class TimeSelectorView extends LinearLayout {
         }
     }
 
-    // --- LOGIC ANIMATION ĐÃ ĐƯỢC TÁCH BẠCH KHỎI SHIFT TIME ---
     private void animateChangeAndShift(int direction) {
         float screenOut = direction < 0 ? 300f : -300f;
         float screenIn = direction < 0 ? -300f : 300f;
@@ -192,13 +191,8 @@ public class TimeSelectorView extends LinearLayout {
                 .alpha(0f)
                 .setDuration(150)
                 .withEndAction(() -> {
-                    // Cập nhật ngầm dữ liệu Lịch
                     shiftTimeInternal(direction);
-
-                    // Cập nhật lại UI nhưng KHÔNG báo cáo cho listener vội để tránh giật lag
                     updateUIOnly();
-
-                    // Vòng chữ về đầu bên kia và hiện lên
                     tvDateRange.setTranslationX(screenIn);
                     tvDateRange.animate()
                             .translationX(0f)
@@ -231,7 +225,6 @@ public class TimeSelectorView extends LinearLayout {
                 .start();
     }
 
-    // Hàm tính toán Lịch ngầm (Không đụng vào UI)
     private void shiftTimeInternal(int amount) {
         switch (currentMode) {
             case DAY:   currentCalendar.add(Calendar.DAY_OF_YEAR, amount); break;
@@ -242,7 +235,6 @@ public class TimeSelectorView extends LinearLayout {
         }
     }
 
-    // Hàm này chỉ cập nhật chữ và ẩn/hiện nút (Tránh giật khi đang animation)
     private void updateUIOnly() {
         boolean present = isPresent();
         int nextVis = (currentMode == TimeMode.CUSTOM || present) ? View.INVISIBLE : View.VISIBLE;
@@ -288,6 +280,33 @@ public class TimeSelectorView extends LinearLayout {
                 break;
         }
         tvDateRange.setText(displayText);
+    }
+
+    public void setPredefinedDateRange(Date startDate, Date endDate) {
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTime(startDate);
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTime(endDate);
+
+        long diffInMillis = endDate.getTime() - startDate.getTime();
+        long diffInDays = java.util.concurrent.TimeUnit.MILLISECONDS.toDays(diffInMillis);
+
+        if (diffInDays == 0) {
+            setMode(TimeMode.DAY);
+        } else if (diffInDays >= 6 && diffInDays <= 7) {
+            setMode(TimeMode.WEEK);
+        } else if (diffInDays >= 27 && diffInDays <= 30) {
+            setMode(TimeMode.MONTH);
+        } else if (diffInDays >= 364) {
+            setMode(TimeMode.YEAR);
+        } else {
+            setMode(TimeMode.CUSTOM);
+            customStartCal = startCal;
+            customEndCal = endCal;
+        }
+
+        this.currentCalendar = startCal;
+        updateUIOnly();
     }
 
     // Hàm báo cáo API

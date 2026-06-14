@@ -20,10 +20,19 @@
             android:id="@+id/view_color"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@drawable/circle_shape"
+            android:background="@drawable/bg_circle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_category_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            app:layout_constraintBottom_toBottomOf="@id/view_color"
+            app:layout_constraintEnd_toEndOf="@id/view_color"
+            app:layout_constraintStart_toStartOf="@id/view_color"
+            app:layout_constraintTop_toTopOf="@id/view_color" />
 
         <TextView
             android:id="@+id/tv_category_name"
@@ -64,5 +73,4 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </com.google.android.material.card.MaterialCardView>

@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.category.CategorySummaryAdapter;
 import com.example.moneyapp.view.components.TimeSelectorView;
@@ -36,7 +37,6 @@ public class HomeFragment extends BaseFragment {
 
     private RecyclerView rvCategories;
     private CategorySummaryAdapter adapter;
-
     private View chartsWrapper;
 
     // View Containers
@@ -94,22 +94,6 @@ public class HomeFragment extends BaseFragment {
             homeViewModel.setTabTypeAndReload(tabType);
         });
         observeViewModel();
-    }
-
-    private String getEmptyMessage() {
-        String typeStr = isExpenseTab ? "chi tiêu" : "thu nhập";
-        String timeStr = "thời gian này";
-
-        if (currentStartDate != null && currentEndDate != null) {
-            long diffMillis = currentEndDate.getTime() - currentStartDate.getTime();
-            long days = diffMillis / (1000 * 60 * 60 * 24);
-
-            if (days <= 1) timeStr = "hôm nay";
-            else if (days <= 7) timeStr = "tuần này";
-            else if (days <= 31) timeStr = "tháng này";
-            else timeStr = "năm này";
-        }
-        return "Không có " + typeStr + " phát sinh trong " + timeStr;
     }
 
     private void observeViewModel() {
@@ -267,6 +251,18 @@ public class HomeFragment extends BaseFragment {
 
     private void setupRecyclerView() {
         adapter = new CategorySummaryAdapter(new ArrayList<>());
+        adapter.setOnCategoryClickListener((categoryId, categoryName) -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("tabType", isExpenseTab ? 1 : 2);
+
+            bundle.putString("categoryId", categoryId);
+            bundle.putString("categoryName", categoryName);
+
+            if (currentStartDate != null) bundle.putLong("startDate", currentStartDate.getTime());
+            if (currentEndDate != null) bundle.putLong("endDate", currentEndDate.getTime());
+
+            Navigation.findNavController(requireView()).navigate(R.id.transactionFragment, bundle);
+        });
         rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
         rvCategories.setAdapter(adapter);
     }

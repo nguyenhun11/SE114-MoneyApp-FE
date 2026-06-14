@@ -5,7 +5,7 @@ import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.ImageView; // Chuyển sang dùng ImageView thường
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,8 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Category;
 import com.example.moneyapp.utils.AppResourceManager;
-import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.List;
 
@@ -57,30 +55,33 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     }
 
     static class CategoryViewHolder extends RecyclerView.ViewHolder {
-        private final IconicsImageView ivIcon;
+        private final ImageView ivIcon; // Sửa 'Draw' thành 'ImageView'
         private final TextView tvName;
         private final View viewColorCircle;
 
         public CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
+            // Ánh xạ View
             ivIcon = itemView.findViewById(R.id.iv_category_icon);
             tvName = itemView.findViewById(R.id.tv_category_name);
             viewColorCircle = itemView.findViewById(R.id.view_color_circle);
         }
 
         public void bind(Category category, OnCategoryClickListener listener) {
+            Context context = itemView.getContext();
+
+            // 1. Gắn Tên hạng mục
             tvName.setText(category.getCategoryName());
-            
-            // Lấy màu thực tế từ ID thông qua AppResourceManager
-            int colorValue = AppResourceManager.getColor(category.getColor());
+
+            // 2. Lấy màu và tô cho nền tròn phía sau
+            int colorValue = AppResourceManager.getColor(category.getColor()); // Lưu ý: model của bạn có thể là getColor() hoặc getColorId()
             viewColorCircle.setBackgroundTintList(ColorStateList.valueOf(colorValue));
             viewColorCircle.setBackgroundResource(R.drawable.bg_circle);
-            
-            // Lấy Resource ID của icon từ ID thông qua AppResourceManager
-            String iconName = AppResourceManager.getIconName(category.getIcon());
-            Context context = itemView.getContext();
-            ivIcon.setIcon(new IconicsDrawable(context, iconName));
 
+            // 3. Lấy Icon Trắng và gắn vào ImageView
+            ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, category.getIcon())); // Tương tự: getIcon() hoặc getIconId()
+
+            // 4. Xử lý sự kiện click
             itemView.setOnClickListener(v -> {
                 if (listener != null) listener.onCategoryClick(category);
             });

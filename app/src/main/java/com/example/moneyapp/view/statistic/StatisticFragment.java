@@ -198,7 +198,13 @@ public class StatisticFragment extends BaseFragment {
             int actualColor = ContextCompat.getColor(requireContext(), colorRes);
             float percent = (total > 0) ? (float) (cat.getTotalAmount() / total * 100) : 0f;
 
-            list.add(new PieChartItem(cat.getCategoryId(), cat.getCategoryName(), cat.getTotalAmount(), percent, actualColor));
+            list.add(new PieChartItem(
+                    cat.getCategoryId(),
+                    cat.getCategoryName(),
+                    cat.getTotalAmount(),
+                    percent,
+                    actualColor,
+                    cat.getIconId()));
         }
         list.sort((o1, o2) -> Double.compare(o2.getAmount(), o1.getAmount()));
         return list;

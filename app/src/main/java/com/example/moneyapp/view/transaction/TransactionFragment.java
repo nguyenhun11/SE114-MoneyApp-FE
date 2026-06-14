@@ -1,6 +1,5 @@
 package com.example.moneyapp.view.transaction;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +19,7 @@ import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
+import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.components.TimeSelectorView;
 import com.example.moneyapp.viewmodel.AccountViewModel;
@@ -27,6 +27,7 @@ import com.example.moneyapp.viewmodel.CategoryViewModel;
 import com.example.moneyapp.viewmodel.TransactionViewModel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class TransactionFragment extends BaseFragment {
@@ -36,13 +37,14 @@ public class TransactionFragment extends BaseFragment {
     private AccountViewModel accountViewModel;
     private CategoryViewModel categoryViewModel;
 
-    // Danh sách dữ liệu dùng cho Popup
+    // region Filters
+    private TimeSelectorView timeSelector;
     private final List<Account> accountList = new ArrayList<>();
     private final List<Category> categoryList = new ArrayList<>();
-
-    // View text để hiển thị tên filter đã chọn
     private TextView tvAccountFilter;
     private TextView tvCategoryFilter;
+    private LinearLayout btnCategoryFilter;
+    // endregion
 
     @Nullable
     @Override
@@ -55,32 +57,70 @@ public class TransactionFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Khởi tạo các ViewModels
         transactionViewModel = new ViewModelProvider(this).get(TransactionViewModel.class);
         accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
         categoryViewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
 
         setupHeader(view, "Lịch sử giao dịch", false);
+        setupFilters(view);
 
-        setupThreeTabs(view, index -> {
+        timeSelector = view.findViewById(R.id.time_selector);
+
+        // --- XỬ LÝ DỮ LIỆU TỪ MÀN HÌNH KHÁC TRUYỀN TỚI ---
+        int preSelectedTab = 0; // Mặc định Tab 0
+        if (getArguments() != null) {
+            preSelectedTab = getArguments().getInt("tabType", 0);
+
+            String categoryId = getArguments().getString("categoryId");
+            String categoryName = getArguments().getString("categoryName"); // Truyền thêm biến này từ Home
+            if (categoryId != null) {
+                transactionViewModel.setCategoryFilterAndReload(categoryId);
+                if (categoryName != null && tvCategoryFilter != null) {
+                    tvCategoryFilter.setText(categoryName); // Ép UI đổi tên
+                }
+            }
+
+            long startDateLong = getArguments().getLong("startDate", 0);
+            long endDateLong = getArguments().getLong("endDate", 0);
+            if (startDateLong > 0 && endDateLong > 0) {
+                Date startDate = new Date(startDateLong);
+                Date endDate = new Date(endDateLong);
+                transactionViewModel.setTimeRangeAndReload(startDate, endDate);
+
+                // Ép UI của TimeSelectorView hiển thị đúng thời gian
+                timeSelector.setPredefinedDateRange(startDate, endDate);
+            }
+        }
+
+        // --- CẬP NHẬT HÀM SETUP TABS ---
+        // Bạn cần sửa hàm setupThreeTabs trong BaseFragment để nhận thêm tham số preSelectedTab
+        setupThreeTabs(view, preSelectedTab, index -> {
             CategoryType type = null;
-            if (index == 1) type = CategoryType.EXPENSE;
-            else if (index == 2) type = CategoryType.INCOME;
+            if (index == 1) {
+                type = CategoryType.EXPENSE;
+                btnCategoryFilter.setVisibility(View.VISIBLE);
+            } else if (index == 2) {
+                type = CategoryType.INCOME;
+                btnCategoryFilter.setVisibility(View.VISIBLE);
+            } else {
+                btnCategoryFilter.setVisibility(View.GONE);
+            }
 
             transactionViewModel.setTypeAndReload(type);
 
-            // Khi đổi tab, cần tải lại danh sách Hạng mục tương ứng cho Popup Filter
             if (type != null) {
                 categoryViewModel.loadCategories(type);
             } else {
-                categoryViewModel.loadCategories(CategoryType.EXPENSE); // Fallback cho tab "Tất cả"
+                categoryViewModel.loadCategories(CategoryType.EXPENSE);
             }
 
-            // Đặt lại text filter hạng mục về mặc định khi chuyển tab
-            if (tvCategoryFilter != null) {
-                tvCategoryFilter.setText("Hạng mục");
-                transactionViewModel.setCategoryFilterAndReload(null);
+            if (getArguments() == null) {
+                if (tvCategoryFilter != null) {
+                    tvCategoryFilter.setText("Tất cả hạng mục");
+                    transactionViewModel.setCategoryFilterAndReload(null);
+                }
             }
+            setArguments(null);
         });
 
         RecyclerView recyclerView = view.findViewById(R.id.rvTransactions);
@@ -93,20 +133,14 @@ public class TransactionFragment extends BaseFragment {
         });
         recyclerView.setAdapter(adapter);
 
-        TimeSelectorView timeSelector = view.findViewById(R.id.time_selector);
         timeSelector.setOnTimeRangeChangeListener((startDate, endDate) -> {
             transactionViewModel.setTimeRangeAndReload(startDate, endDate);
         });
 
-        setupFilters(view);
         observeViewModels();
-
-        // Tải danh sách tài khoản ngay khi vào màn hình
         accountViewModel.loadAccounts();
     }
-
     private void observeViewModels() {
-        // Lắng nghe dữ liệu Lịch sử giao dịch
         transactionViewModel.getGroupedTransactions().observe(getViewLifecycleOwner(), items -> {
             adapter.updateList(items);
         });
@@ -117,7 +151,6 @@ public class TransactionFragment extends BaseFragment {
             }
         });
 
-        // Lắng nghe dữ liệu Tài khoản đổ vào mảng
         accountViewModel.getAccountsLiveData().observe(getViewLifecycleOwner(), accounts -> {
             if (accounts != null) {
                 accountList.clear();
@@ -125,7 +158,6 @@ public class TransactionFragment extends BaseFragment {
             }
         });
 
-        // Lắng nghe dữ liệu Hạng mục đổ vào mảng
         categoryViewModel.getCategoriesLiveData().observe(getViewLifecycleOwner(), categories -> {
             if (categories != null) {
                 categoryList.clear();
@@ -140,26 +172,16 @@ public class TransactionFragment extends BaseFragment {
         transactionViewModel.reloadTransactions();
     }
 
-    // 2. Thiết lập bộ lọc (Popup Dialog)
     private void setupFilters(View view) {
         LinearLayout btnAccountFilter = view.findViewById(R.id.btn_account_filter);
-        LinearLayout btnCategoryFilter = view.findViewById(R.id.btn_category_filter);
+        btnCategoryFilter = view.findViewById(R.id.btn_category_filter);
 
-        // Cố gắng tìm TextView bên trong LinearLayout để đổi chữ (Giả định ID là tv_account_filter_name)
-        // Nếu bạn chưa đặt ID cho TextView bên trong, hãy tìm theo index: (TextView) btnAccountFilter.getChildAt(0);
         tvAccountFilter = view.findViewById(R.id.tv_selected_account);
         tvCategoryFilter = view.findViewById(R.id.tv_selected_category);
 
-        // Dự phòng nếu không tìm thấy ID, lấy trực tiếp View con
-        if (tvAccountFilter == null && btnAccountFilter.getChildCount() > 0) {
-            tvAccountFilter = (TextView) btnAccountFilter.getChildAt(0);
-        }
-        if (tvCategoryFilter == null && btnCategoryFilter.getChildCount() > 0) {
-            tvCategoryFilter = (TextView) btnCategoryFilter.getChildAt(0);
-        }
-
         btnAccountFilter.setOnClickListener(v -> showAccountFilterPopup());
         btnCategoryFilter.setOnClickListener(v -> showCategoryFilterPopup());
+        btnCategoryFilter.setVisibility(View.GONE);
     }
 
     private void showAccountFilterPopup() {
@@ -167,13 +189,19 @@ public class TransactionFragment extends BaseFragment {
             Toast.makeText(getContext(), "Không có dữ liệu tài khoản", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // Gọi Popup xịn xò từ PopupHelper
-        com.example.moneyapp.utils.PopupHelper.showAccountFilterPopup(requireContext(), accountList, selectedAcc -> {
-            // Khi người dùng chọn xong, thực hiện filter
-            if (tvAccountFilter != null) tvAccountFilter.setText(selectedAcc.getAccountName());
-            transactionViewModel.setAccountFilterAndReload(selectedAcc.getAccountId());
-        });
+        String currentAccountId = transactionViewModel.getCurrentAccountId();
+        PopupHelper.showAccountFilterPopup(requireContext(), accountList,
+                currentAccountId,
+                true,
+                selectedAcc -> {
+                    if (selectedAcc == null) {
+                        if (tvAccountFilter != null) tvAccountFilter.setText("Tất cả tài khoản");
+                        transactionViewModel.setAccountFilterAndReload(null);
+                    } else {
+                        if (tvAccountFilter != null) tvAccountFilter.setText(selectedAcc.getAccountName());
+                        transactionViewModel.setAccountFilterAndReload(selectedAcc.getAccountId());
+                    }
+                });
     }
 
     private void showCategoryFilterPopup() {
@@ -182,12 +210,18 @@ public class TransactionFragment extends BaseFragment {
             return;
         }
 
-        // Gọi Popup xịn xò từ PopupHelper
-        com.example.moneyapp.utils.PopupHelper.showCategoryFilterPopup(requireContext(), categoryList, selectedCat -> {
-            // Khi người dùng chọn xong, thực hiện filter
-            if (tvCategoryFilter != null) tvCategoryFilter.setText(selectedCat.getCategoryName());
-            transactionViewModel.setCategoryFilterAndReload(selectedCat.getCategoryId());
-        });
+        PopupHelper.showCategoryFilterPopup(requireContext(),
+                categoryList,
+                true,
+                selectedCat -> {
+                    if (selectedCat == null) {
+                        if (tvCategoryFilter != null) tvCategoryFilter.setText("Tất cả hạng mục");
+                        transactionViewModel.setCategoryFilterAndReload(null);
+                    } else {
+                        if (tvCategoryFilter != null) tvCategoryFilter.setText(selectedCat.getCategoryName());
+                        transactionViewModel.setCategoryFilterAndReload(selectedCat.getCategoryId());
+                    }
+                });
     }
 
     @Override

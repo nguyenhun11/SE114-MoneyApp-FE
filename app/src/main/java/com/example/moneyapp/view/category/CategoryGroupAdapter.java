@@ -36,6 +36,10 @@ public class CategoryGroupAdapter extends RecyclerView.Adapter<CategoryGroupAdap
         }
         for (Category category : categories) {
             String group = category.getGroupName();
+            if (group == null || group.trim().isEmpty()) {
+                group = "Khác";
+            }
+
             if (!groupedCategories.containsKey(group)) {
                 groupedCategories.put(group, new ArrayList<>());
                 groupNames.add(group);

@@ -15,8 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.Category;
-import com.example.moneyapp.view.transaction.AccountQuickAdapter;
-import com.example.moneyapp.view.transaction.CategoryQuickAdapter;
+import com.example.moneyapp.view.account.AccountPopupAdapter;
+import com.example.moneyapp.view.category.CategoryAdapter;
+import com.example.moneyapp.view.category.CategoryGroupAdapter;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
@@ -32,39 +34,66 @@ public class PopupHelper {
         return view;
     }
 
-    public static void showAccountFilterPopup(Context context, List<Account> accountList, AccountQuickAdapter.OnAccountClickListener listener) {
+    public static void showAccountFilterPopup(Context context, List<Account> accountList,
+                                              String currentAccountId,
+                                              boolean showAllOption,
+                                              AccountPopupAdapter.OnAccountClickListener listener) {
         BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
-        View view = createBaseSheetView(context, "Chọn nguồn tiền");
+        View view = createBaseSheetView(context, "Chọn tài khoản");
+
+        TextView tvSelectAll = view.findViewById(R.id.tv_select_all);
+        if (showAllOption) {
+            tvSelectAll.setVisibility(View.VISIBLE);
+            tvSelectAll.setText("Tất cả tài khoản");
+            tvSelectAll.setOnClickListener(v -> {
+                if (listener != null) listener.onAccountClick(null);
+                dialog.dismiss();
+            });
+        }
 
         RecyclerView rvList = view.findViewById(R.id.rv_items);
         rvList.setLayoutManager(new LinearLayoutManager(context));
 
-        AccountQuickAdapter adapter = new AccountQuickAdapter(accountList, account -> {
+        AccountPopupAdapter adapter = new AccountPopupAdapter(accountList, currentAccountId, account -> {
             if (listener != null) listener.onAccountClick(account);
             dialog.dismiss();
         });
         rvList.setAdapter(adapter);
 
         dialog.setContentView(view);
-//        View bottomSheet = (View) view.getParent();
-//        bottomSheet.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+        setupBottomSheetBehavior(dialog, context);
         dialog.show();
     }
 
-    public static void showCategoryFilterPopup(Context context, List<Category> categoryList, CategoryQuickAdapter.OnCategoryClickListener listener) {
+    public static void showCategoryFilterPopup(Context context,
+                                               List<Category> categoryList,
+                                               boolean showAllOption,
+                                               CategoryAdapter.OnCategoryClickListener listener) {
         BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
         View view = createBaseSheetView(context, "Chọn hạng mục");
 
-        RecyclerView rvList = view.findViewById(R.id.rv_items);
-        rvList.setLayoutManager(new GridLayoutManager(context, 4)); // Lưới 4 cột
+        TextView tvSelectAll = view.findViewById(R.id.tv_select_all);
+        if (showAllOption) {
+            tvSelectAll.setVisibility(View.VISIBLE);
+            tvSelectAll.setText("Tất cả hạng mục");
+            tvSelectAll.setOnClickListener(v -> {
+                if (listener != null) listener.onCategoryClick(null);
+                dialog.dismiss();
+            });
+        }
 
-        CategoryQuickAdapter adapter = new CategoryQuickAdapter(categoryList, category -> {
+        RecyclerView rvList = view.findViewById(R.id.rv_items);
+        rvList.setLayoutManager(new LinearLayoutManager(context));
+
+        CategoryGroupAdapter adapter = new CategoryGroupAdapter(category -> {
             if (listener != null) listener.onCategoryClick(category);
             dialog.dismiss();
         });
-        rvList.setAdapter(adapter);
+        adapter.setData(categoryList);
 
+        rvList.setAdapter(adapter);
         dialog.setContentView(view);
+        setupBottomSheetBehavior(dialog, context);
         dialog.show();
     }
     public interface OnResourceSelectedListener {
@@ -122,8 +151,29 @@ public class PopupHelper {
 
         rvList.setAdapter(adapter);
         dialog.setContentView(view);
-        View bottomSheet = (View) view.getParent();
-        bottomSheet.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+        setupBottomSheetBehavior(dialog, context);
         dialog.show();
+    }
+
+    private static void setupBottomSheetBehavior(BottomSheetDialog dialog, Context context) {
+        dialog.setOnShowListener(dialogInterface -> {
+            BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
+
+            View bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+
+            if (bottomSheet != null) {
+                int screenHeight = context.getResources().getDisplayMetrics().heightPixels;
+
+                ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
+                layoutParams.height = (int) (screenHeight * 0.85);
+                bottomSheet.setLayoutParams(layoutParams);
+
+                com.google.android.material.bottomsheet.BottomSheetBehavior<View> behavior =
+                        BottomSheetBehavior.from(bottomSheet);
+
+                behavior.setPeekHeight((int) (screenHeight * 0.5));
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
     }
 }

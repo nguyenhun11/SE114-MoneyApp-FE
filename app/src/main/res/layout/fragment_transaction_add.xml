@@ -156,7 +156,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginEnd="6dp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_chip_selected"
+                        android:background="@drawable/bg_date_selected"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -165,7 +165,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="14/06"
-                            android:textColor="@color/colorOnPrimary"
+                            android:textColor="@color/colorOnSurface"
                             android:textSize="13sp"
                             android:textStyle="bold" />
 
@@ -174,7 +174,7 @@
                             android:layout_height="wrap_content"
                             android:alpha="0.8"
                             android:text="Hôm nay"
-                            android:textColor="@color/colorOnPrimary"
+                            android:textColor="@color/colorOnSurfaceVariant"
                             android:textSize="11sp" />
                     </LinearLayout>
 

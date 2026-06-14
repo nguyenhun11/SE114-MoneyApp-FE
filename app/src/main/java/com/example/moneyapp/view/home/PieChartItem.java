@@ -6,13 +6,15 @@ public class PieChartItem {
     private Double amount;
     private float percentage;
     private int color;
+    private int iconId;
 
-    public PieChartItem(String categoryId, String name, Double amount, float percentage, int color) {
+    public PieChartItem(String categoryId, String name, Double amount, float percentage, int color, int iconId) {
         this.categoryId = categoryId;
         this.name = name;
         this.amount = amount;
         this.percentage = percentage;
         this.color = color;
+        this.iconId = iconId;
     }
 
     public String getCategoryId() {
@@ -53,5 +55,13 @@ public class PieChartItem {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    public int getIconId() {
+        return iconId;
+    }
+
+    public void setIconId(int iconId) {
+        this.iconId = iconId;
     }
 }

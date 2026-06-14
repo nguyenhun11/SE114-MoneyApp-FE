@@ -11,10 +11,11 @@
         android:id="@+id/card_item_bg"
         android:layout_width="85dp"
         android:layout_height="85dp"
-        app:cardBackgroundColor="#F2F2F2"
-        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="@color/colorBackground"
+        app:cardCornerRadius="@dimen/button_radius"
         app:cardElevation="0dp"
-        app:strokeWidth="0dp">
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/colorBorder">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -34,7 +35,7 @@
                 android:layout_height="24dp"
                 android:layout_gravity="center|top"
                 android:layout_marginTop="20dp"
-                app:iiv_color="@color/white"
+                app:iiv_color="@color/colorOnSurface"
                 app:iiv_icon="gmd-receipt" />
 
             <TextView

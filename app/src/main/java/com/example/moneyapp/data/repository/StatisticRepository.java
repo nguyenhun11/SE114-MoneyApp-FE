@@ -7,10 +7,12 @@ import com.example.moneyapp.data.remote.response.CashFlowBarDto;
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
 import com.example.moneyapp.utils.DateConverter;
+import com.example.moneyapp.utils.TimeUtils;
 
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,16 +29,15 @@ public class StatisticRepository extends BaseRepository {
         super(context);
     }
 
-    private int getTimeZoneOffset() {
-        return TimeZone.getDefault().getRawOffset() / (60 * 60 * 1000);
-    }
-
     public void getExpensePieChart(Date startDate, Date endDate, StatisticCallback<List<CategoryPieChartDto>> callback) {
-        // Đồng bộ logic an toàn: Nếu startDate là null thì truyền null cho Retrofit
         String startStr = (startDate != null) ? DateConverter.convertDateToString(startDate) : null;
         String endStr = DateConverter.convertDateToString(endDate);
+        int offset = TimeUtils.getCurrentTimeZoneOffset();
 
-        apiService.getExpensePieChart(startStr, endStr, getTimeZoneOffset()).enqueue(new Callback<List<CategoryPieChartDto>>() {
+        apiService.getExpensePieChart(startStr,
+                endStr,
+                TimeUtils.getCurrentTimeZoneOffset()
+        ).enqueue(new Callback<List<CategoryPieChartDto>>() {
             @Override
             public void onResponse(@NonNull Call<List<CategoryPieChartDto>> call, @NonNull Response<List<CategoryPieChartDto>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -57,7 +58,10 @@ public class StatisticRepository extends BaseRepository {
         String startStr = (startDate != null) ? DateConverter.convertDateToString(startDate) : null;
         String endStr = DateConverter.convertDateToString(endDate);
 
-        apiService.getIncomePieChart(startStr, endStr, getTimeZoneOffset()).enqueue(new Callback<List<CategoryPieChartDto>>() {
+        apiService.getIncomePieChart(startStr,
+                endStr,
+                TimeUtils.getCurrentTimeZoneOffset()
+        ).enqueue(new Callback<List<CategoryPieChartDto>>() {
             @Override
             public void onResponse(@NonNull Call<List<CategoryPieChartDto>> call, @NonNull Response<List<CategoryPieChartDto>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -78,7 +82,11 @@ public class StatisticRepository extends BaseRepository {
         String startStr = (startDate != null) ? DateConverter.convertDateToString(startDate) : null;
         String endStr = DateConverter.convertDateToString(endDate);
 
-        apiService.getExpenseStackedBarChart(startStr, endStr, groupBy, getTimeZoneOffset()).enqueue(new Callback<List<StackedBarChartDto>>() {
+        apiService.getExpenseStackedBarChart(startStr,
+                endStr,
+                groupBy,
+                TimeUtils.getCurrentTimeZoneOffset()
+        ).enqueue(new Callback<List<StackedBarChartDto>>() {
             @Override
             public void onResponse(@NonNull Call<List<StackedBarChartDto>> call, @NonNull Response<List<StackedBarChartDto>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -100,7 +108,11 @@ public class StatisticRepository extends BaseRepository {
         String startStr = (startDate != null) ? DateConverter.convertDateToString(startDate) : null;
         String endStr = DateConverter.convertDateToString(endDate);
 
-        apiService.getIncomeStackedBarChart(startStr, endStr, groupBy, getTimeZoneOffset()).enqueue(new Callback<List<StackedBarChartDto>>() {
+        apiService.getIncomeStackedBarChart(startStr,
+                endStr,
+                groupBy,
+                TimeUtils.getCurrentTimeZoneOffset()
+        ).enqueue(new Callback<List<StackedBarChartDto>>() {
             @Override
             public void onResponse(@NonNull Call<List<StackedBarChartDto>> call, @NonNull Response<List<StackedBarChartDto>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -121,7 +133,10 @@ public class StatisticRepository extends BaseRepository {
         String startStr = (startDate != null) ? DateConverter.convertDateToString(startDate) : null;
         String endStr = DateConverter.convertDateToString(endDate);
 
-        apiService.getCashFlowBarChart(startStr, endStr, groupBy, getTimeZoneOffset()).enqueue(new Callback<List<CashFlowBarDto>>() {
+        apiService.getCashFlowBarChart(startStr,
+                endStr,
+                groupBy, TimeUtils.getCurrentTimeZoneOffset()
+        ).enqueue(new Callback<List<CashFlowBarDto>>() {
             @Override
             public void onResponse(@NonNull Call<List<CashFlowBarDto>> call, @NonNull Response<List<CashFlowBarDto>> response) {
                 if (response.isSuccessful() && response.body() != null) {

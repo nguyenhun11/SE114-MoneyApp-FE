@@ -64,20 +64,6 @@ public class TransactionViewModel extends AndroidViewModel {
         if (currentStartDate == null || currentEndDate == null) return;
         loadTransactions(currentStartDate, currentEndDate, currentType, currentAccountId, currentCategoryId);
     }
-
-    public void loadTotalBalance() {
-        accountRepository.getTotalBalance(new AccountRepository.AccountCallback<Double>() {
-            @Override
-            public void onSuccess(Double result) {
-                totalBalance.postValue(result != null ? result : 0.0);
-            }
-            @Override
-            public void onError(String message) {
-                errorLiveData.postValue(message);
-            }
-        });
-    }
-
     private void loadTransactions(Date start, Date end, CategoryType type, String accountId, String categoryId) {
         isLoading.setValue(true);
         repository.getFilteredTransactions(start, end, type, accountId, categoryId, new TransactionRepository.TransactionCallback<List<Transaction>>() {
@@ -140,6 +126,23 @@ public class TransactionViewModel extends AndroidViewModel {
         });
     }
 
+    public void updateTransaction(Transaction transaction) {
+        isLoading.setValue(true);
+        repository.updateTransaction(transaction, new TransactionRepository.TransactionCallback<Transaction>() {
+            @Override
+            public void onSuccess(Transaction result) {
+                operationSuccess.postValue(true);
+                isLoading.postValue(false);
+            }
+
+            @Override
+            public void onError(String message) {
+                errorLiveData.postValue(message);
+                isLoading.postValue(false);
+            }
+        });
+    }
+
     private List<DailyTransactionGroup> groupTransactionsByDate(List<Transaction> transactions) {
         if (transactions == null || transactions.isEmpty()) return new ArrayList<>();
 
@@ -157,7 +160,11 @@ public class TransactionViewModel extends AndroidViewModel {
             double totalDay = 0;
             for (Transaction t : entry.getValue()) {
                 if (t.getAmount() != null) {
-                    totalDay += t.getAmount();
+                    if (t.getType() == CategoryType.EXPENSE) {
+                        totalDay -= t.getAmount();
+                    } else {
+                        totalDay += t.getAmount();
+                    }
                 }
             }
             String dateSummary = String.format(Locale.getDefault(), "%,.0f đ", totalDay);
@@ -182,4 +189,7 @@ public class TransactionViewModel extends AndroidViewModel {
         this.currentCategoryId = categoryId;
         reloadTransactions();
     }
+
+    public String getCurrentAccountId() { return currentAccountId; }
+    public String getCurrentCategoryId() { return currentCategoryId; }
 }

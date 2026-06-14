@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager; // Cập nhật import này
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
@@ -18,14 +18,11 @@ import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
 
-import java.util.ArrayList;
-
 public class CategoryFragment extends BaseFragment {
 
     private RecyclerView rvCategories;
-    private CategoryAdapter categoryAdapter;
+    private CategoryGroupAdapter groupAdapter; // Đổi sang Group Adapter
     private CategoryViewModel viewModel;
-    private boolean isExpenseTab = true;
 
     @Nullable
     @Override
@@ -36,31 +33,30 @@ public class CategoryFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
-        // Sử dụng Activity ViewModel để giữ trạng thái khi Fragment bị destroy
+
         viewModel = new ViewModelProvider(requireActivity()).get(CategoryViewModel.class);
-        
+
         rvCategories = view.findViewById(R.id.rv_category_groups);
-        rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        
-        categoryAdapter = new CategoryAdapter(new ArrayList<>(), category -> {
+        rvCategories.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        groupAdapter = new CategoryGroupAdapter(category -> {
             String message = getString(R.string.menu_item_default) + ": " + category.getCategoryName();
             Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         });
-        rvCategories.setAdapter(categoryAdapter);
+        rvCategories.setAdapter(groupAdapter);
 
-        setupHeader(view, R.string.category_list_title, false);
-        
-        // Khởi tạo Tab dựa trên giá trị lưu trong ViewModel
+        setupHeader(view, R.string.category_list_title, true);
+
         setupIncomeExpenseTabs(view, viewModel.getCurrentType() == CategoryType.EXPENSE, isExpense -> {
             CategoryType newType = isExpense ? CategoryType.EXPENSE : CategoryType.INCOME;
             viewModel.setCurrentType(newType);
             viewModel.loadCategories(newType);
         });
 
-        // Observe LiveData from ViewModel
         viewModel.getCategoriesLiveData().observe(getViewLifecycleOwner(), categories -> {
-            categoryAdapter.updateData(categories);
+            if (categories != null) {
+                groupAdapter.setData(categories); // Gọi setData() để chia nhóm
+            }
         });
 
         viewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
@@ -69,7 +65,6 @@ public class CategoryFragment extends BaseFragment {
             }
         });
 
-        // Load dữ liệu ban đầu từ trạng thái đã lưu
         viewModel.loadCategories(viewModel.getCurrentType());
     }
 
@@ -78,5 +73,10 @@ public class CategoryFragment extends BaseFragment {
         Bundle bundle = new Bundle();
         bundle.putInt("type", viewModel.getCurrentType() == CategoryType.EXPENSE ? 0 : 1);
         Navigation.findNavController(requireView()).navigate(R.id.action_categoryFragment_to_addCategoryFragment, bundle);
+    }
+
+    @Override
+    protected boolean shouldShowBottomNavigation() {
+        return false;
     }
 }

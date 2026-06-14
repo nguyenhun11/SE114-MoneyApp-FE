@@ -31,8 +31,6 @@ public class TransactionRepository extends BaseRepository {
     }
 
     private Transaction mapToTransaction(TransactionResponse response) {
-        // Đọc trực tiếp loại giao dịch từ Response thay vì đoán qua Amount
-        // LƯU Ý: Đổi response.getType() thành tên hàm get thực tế trong TransactionResponse của bạn
         CategoryType type = null; // Giá trị mặc định an toàn
 
         if (response.getType() != null) {

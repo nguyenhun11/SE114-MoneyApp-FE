@@ -175,8 +175,11 @@ public abstract class BaseFragment extends Fragment {
         tvTabExpense.setOnClickListener(v -> handleTabSwitch(true, tvTabExpense, tvTabIncome, animatedIndicator, listener));
         tvTabIncome.setOnClickListener(v -> handleTabSwitch(false, tvTabExpense, tvTabIncome, animatedIndicator, listener));
 
+        // Dùng view.post để đảm bảo Layout đã vẽ xong tọa độ X trước khi chạy Animation trượt
         view.post(() -> {
             handleTabSwitch(initialIsExpense, tvTabExpense, tvTabIncome, animatedIndicator, null);
+            // Kích hoạt listener lần đầu để load dữ liệu
+            if (listener != null) listener.onTabSwitched(initialIsExpense);
         });
     }
 
@@ -207,6 +210,10 @@ public abstract class BaseFragment extends Fragment {
     }
 
     protected void setupThreeTabs(View view, ThreeTabSwitchListener listener) {
+        setupThreeTabs(view, 0, listener);
+    }
+
+    protected void setupThreeTabs(View view, int preSelectedTab, ThreeTabSwitchListener listener) {
         TextView tvGeneral = view.findViewById(R.id.tv_tab_general);
         TextView tvExpense = view.findViewById(R.id.tv_tab_expense);
         TextView tvIncome = view.findViewById(R.id.tv_tab_income);
@@ -217,6 +224,12 @@ public abstract class BaseFragment extends Fragment {
         tvGeneral.setOnClickListener(v -> handleThreeTabSwitch(0, tvGeneral, tvExpense, tvIncome, animatedIndicator, listener));
         tvExpense.setOnClickListener(v -> handleThreeTabSwitch(1, tvGeneral, tvExpense, tvIncome, animatedIndicator, listener));
         tvIncome.setOnClickListener(v -> handleThreeTabSwitch(2, tvGeneral, tvExpense, tvIncome, animatedIndicator, listener));
+
+        // Tương tự, ép nó chạy lần đầu sau khi Layout đã vẽ xong tọa độ
+        view.post(() -> {
+            handleThreeTabSwitch(preSelectedTab, tvGeneral, tvExpense, tvIncome, animatedIndicator, null);
+            if (listener != null) listener.onTabSwitched(preSelectedTab);
+        });
     }
 
     private void handleThreeTabSwitch(int index, TextView tv0, TextView tv1, TextView tv2, View animatedIndicator, ThreeTabSwitchListener listener) {
@@ -247,7 +260,6 @@ public abstract class BaseFragment extends Fragment {
             listener.onTabSwitched(index);
         }
     }
-
     public interface TabSwitchListener {
         void onTabSwitched(boolean isExpense);
     }

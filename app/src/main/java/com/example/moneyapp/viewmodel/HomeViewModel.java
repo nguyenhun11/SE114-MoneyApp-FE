@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
 import com.example.moneyapp.data.repository.AccountRepository;
 import com.example.moneyapp.data.repository.StatisticRepository;
+import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.view.home.PieChartItem;
 
 import java.util.ArrayList;
@@ -55,18 +56,18 @@ public class HomeViewModel extends AndroidViewModel {
 
     private void loadHomeData() {
         if (currentStartDate == null || currentEndDate == null) return;
+        android.util.Log.d("BUG_TRACKING", "Bắt đầu gọi API." +
+                "\nTab: " + (currentTabType == 0 ? "Chi tiêu" : "Thu nhập") +
+                "\nTừ ngày: " + currentStartDate.toString() +
+                "\nĐến ngày: " + currentEndDate.toString());
 
         isLoading.setValue(true);
 
         accountRepository.getTotalBalance(new AccountRepository.AccountCallback<Double>() {
             @Override
-            public void onSuccess(Double result) {
-                totalBalance.postValue(result);
-            }
+            public void onSuccess(Double result) { totalBalance.postValue(result); }
             @Override
-            public void onError(String message) {
-                error.postValue(message);
-            }
+            public void onError(String message) { error.postValue(message); }
         });
 
         StatisticRepository.StatisticCallback<List<CategoryPieChartDto>> callback = new StatisticRepository.StatisticCallback<List<CategoryPieChartDto>>() {
@@ -76,8 +77,16 @@ public class HomeViewModel extends AndroidViewModel {
                 double sumTotal = 0.0;
 
                 for (CategoryPieChartDto dto : result) {
-                    int androidColor = mapColorIdToAndroidColor(dto.getColorId());
-                    list.add(new PieChartItem(dto.getCategoryId(), dto.getCategoryName(), dto.getTotalAmount(), (float) dto.getPercentage(), androidColor));
+                    int androidColor = AppResourceManager.getColor(dto.getColorId());
+
+                    list.add(new PieChartItem(
+                            dto.getCategoryId(),
+                            dto.getCategoryName(),
+                            dto.getTotalAmount(),
+                            (float) dto.getPercentage(),
+                            androidColor,
+                            dto.getIconId()
+                    ));
                     sumTotal += dto.getTotalAmount();
                 }
 
@@ -97,19 +106,6 @@ public class HomeViewModel extends AndroidViewModel {
             statisticRepository.getExpensePieChart(currentStartDate, currentEndDate, callback);
         } else {
             statisticRepository.getIncomePieChart(currentStartDate, currentEndDate, callback);
-        }
-    }
-
-    private int mapColorIdToAndroidColor(int colorId) {
-        switch (colorId) {
-            case 1: return Color.parseColor("#FFB300");
-            case 2: return Color.parseColor("#FF3D57");
-            case 3: return Color.parseColor("#7C4DFF");
-            case 4: return Color.parseColor("#00E676");
-            case 5: return Color.parseColor("#29B6F6");
-            case 6: return Color.parseColor("#FF7043");
-            case 7: return Color.parseColor("#EC407A");
-            default: return Color.parseColor("#9E9E9E");
         }
     }
 }

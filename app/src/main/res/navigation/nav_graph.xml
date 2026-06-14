@@ -43,7 +43,7 @@
 
     <fragment
         android:id="@+id/addTransactionFragment"
-        android:name="com.example.moneyapp.view.transaction.AddTransactionFragment"
+        android:name="com.example.moneyapp.view.transaction.TransactionAddFragment"
         android:label="Giao dịch mới"
         tools:layout="@layout/fragment_transaction_add" />
 
