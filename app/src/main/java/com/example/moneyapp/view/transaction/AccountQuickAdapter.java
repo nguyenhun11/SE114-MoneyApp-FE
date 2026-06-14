@@ -5,6 +5,7 @@ import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.utils.AppResourceManager;
-import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.iconics.view.IconicsImageView;
+import com.example.moneyapp.utils.CurrencyFormatter; // Nhớ import thư viện format tiền
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
 
@@ -36,7 +37,8 @@ public class AccountQuickAdapter extends RecyclerView.Adapter<AccountQuickAdapte
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_category, parent, false);
+        // Đổi layout thành danh sách dọc mới
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_account_list, parent, false);
         return new ViewHolder(view);
     }
 
@@ -45,19 +47,24 @@ public class AccountQuickAdapter extends RecyclerView.Adapter<AccountQuickAdapte
         Context context = holder.itemView.getContext();
         Account account = list.get(position);
 
+        // Gắn Tên và Số dư
         holder.tvName.setText(account.getAccountName());
+        holder.tvBalance.setText(CurrencyFormatter.formatVND(account.getBalance()));
+
+        // Gắn Icon trắng và đổ màu nền tròn
         holder.ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, account.getIcon()));
-        
         int colorValue = AppResourceManager.getColor(account.getColor());
         holder.viewColorCircle.setBackgroundTintList(ColorStateList.valueOf(colorValue));
 
+        // Logic chọn viền (Stroke)
         if (selectedPosition == position) {
             holder.cardBg.setStrokeWidth(3);
-            holder.cardBg.setStrokeColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorPrimary));
+            holder.cardBg.setStrokeColor(ContextCompat.getColor(context, R.color.colorPrimary));
         } else {
             holder.cardBg.setStrokeWidth(0);
         }
 
+        // Sự kiện Click chọn
         holder.itemView.setOnClickListener(v -> {
             int oldPos = selectedPosition;
             selectedPosition = holder.getAdapterPosition();
@@ -80,16 +87,19 @@ public class AccountQuickAdapter extends RecyclerView.Adapter<AccountQuickAdapte
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName;
-        IconicsImageView ivIcon;
+        TextView tvBalance; // Thêm ánh xạ số dư
+        ImageView ivIcon;   // Dùng ImageView thường
         View viewColorCircle;
-        com.google.android.material.card.MaterialCardView cardBg;
+        MaterialCardView cardBg;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvName = itemView.findViewById(R.id.tv_category_name);
-            ivIcon = itemView.findViewById(R.id.iv_category_icon);
-            viewColorCircle = itemView.findViewById(R.id.view_color_circle);
-            cardBg = itemView.findViewById(R.id.card_item_bg);
+            // Ánh xạ khớp với các ID trong file item_account_list.xml
+            cardBg = itemView.findViewById(R.id.cardBg);
+            viewColorCircle = itemView.findViewById(R.id.viewColorCircle);
+            ivIcon = itemView.findViewById(R.id.ivIcon);
+            tvName = itemView.findViewById(R.id.tvAccountName);
+            tvBalance = itemView.findViewById(R.id.tvAccountBalance);
         }
     }
 }

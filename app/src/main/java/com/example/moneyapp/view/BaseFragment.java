@@ -110,6 +110,12 @@ public abstract class BaseFragment extends Fragment {
         setupHeader(view, titleText, leftIcon, leftListener, null, null);
     }
 
+    protected void setupHeader(View view,  @StringRes int titleResId,
+                               String leftIconName, View.OnClickListener leftListener,
+                               String rightIconName, View.OnClickListener rightListener) {
+        setupHeader(view, getString(titleResId), leftIconName, leftListener, rightIconName, rightListener);
+    }
+
     protected void setupHeader(View view, String titleText,
                                String leftIconName, View.OnClickListener leftListener,
                                String rightIconName, View.OnClickListener rightListener) {

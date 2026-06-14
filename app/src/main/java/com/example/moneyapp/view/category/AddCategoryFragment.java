@@ -18,6 +18,7 @@ import com.example.moneyapp.R;
 import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.utils.AppResourceManager;
+import com.example.moneyapp.utils.PopupHelper; // <-- Nhớ import PopupHelper
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -53,7 +54,7 @@ public class AddCategoryFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         viewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
 
         etName = view.findViewById(R.id.et_category_name);
@@ -71,17 +72,17 @@ public class AddCategoryFragment extends BaseFragment {
         updatePreview();
 
         view.findViewById(R.id.btn_select_color).setOnClickListener(v -> {
-            ColorSelectorBottomSheet.newInstance(colorId -> {
+            PopupHelper.showColorPicker(requireContext(), colorId -> {
                 selectedColorId = colorId;
                 updatePreview();
-            }).show(getChildFragmentManager(), "ColorSelector");
+            });
         });
 
         view.findViewById(R.id.btn_select_icon).setOnClickListener(v -> {
-            IconSelectorBottomSheet.newInstance(iconId -> {
+            PopupHelper.showIconPicker(requireContext(), iconId -> {
                 selectedIconId = iconId;
                 updatePreview();
-            }).show(getChildFragmentManager(), "IconSelector");
+            });
         });
 
         // Observe kết quả lưu
@@ -124,7 +125,7 @@ public class AddCategoryFragment extends BaseFragment {
         CategoryType type = (categoryTypeIndex == 0) ? CategoryType.EXPENSE : CategoryType.INCOME;
 
         Category newCategory = new Category(
-                null, 
+                null,
                 name,
                 type,
                 null,

@@ -1,46 +1,90 @@
 package com.example.moneyapp.utils;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.model.Account;
+import com.example.moneyapp.model.Category;
 import com.example.moneyapp.view.transaction.AccountQuickAdapter;
 import com.example.moneyapp.view.transaction.CategoryQuickAdapter;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import java.util.List;
 
 public class PopupHelper {
 
+    private static View createBaseSheetView(Context context, String title) {
+        View view = LayoutInflater.from(context).inflate(R.layout.layout_selector_bottom_sheet, null);
+        TextView tvTitle = view.findViewById(R.id.tv_sheet_title);
+        tvTitle.setText(title);
+        return view;
+    }
+
+    public static void showAccountFilterPopup(Context context, List<Account> accountList, AccountQuickAdapter.OnAccountClickListener listener) {
+        BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
+        View view = createBaseSheetView(context, "Chọn nguồn tiền");
+
+        RecyclerView rvList = view.findViewById(R.id.rv_items);
+        rvList.setLayoutManager(new LinearLayoutManager(context));
+
+        AccountQuickAdapter adapter = new AccountQuickAdapter(accountList, account -> {
+            if (listener != null) listener.onAccountClick(account);
+            dialog.dismiss();
+        });
+        rvList.setAdapter(adapter);
+
+        dialog.setContentView(view);
+//        View bottomSheet = (View) view.getParent();
+//        bottomSheet.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+        dialog.show();
+    }
+
+    public static void showCategoryFilterPopup(Context context, List<Category> categoryList, CategoryQuickAdapter.OnCategoryClickListener listener) {
+        BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
+        View view = createBaseSheetView(context, "Chọn hạng mục");
+
+        RecyclerView rvList = view.findViewById(R.id.rv_items);
+        rvList.setLayoutManager(new GridLayoutManager(context, 4)); // Lưới 4 cột
+
+        CategoryQuickAdapter adapter = new CategoryQuickAdapter(categoryList, category -> {
+            if (listener != null) listener.onCategoryClick(category);
+            dialog.dismiss();
+        });
+        rvList.setAdapter(adapter);
+
+        dialog.setContentView(view);
+        dialog.show();
+    }
     public interface OnResourceSelectedListener {
         void onSelected(int id);
     }
 
     public static void showColorPicker(Context context, OnResourceSelectedListener listener) {
-        showPicker(context, true, listener);
+        showPicker(context, true, "Chọn màu sắc", listener);
     }
 
     public static void showIconPicker(Context context, OnResourceSelectedListener listener) {
-        showPicker(context, false, listener);
+        showPicker(context, false, "Chọn biểu tượng", listener);
     }
 
-    // Hàm lõi xử lý chung cho cả 2 loại Popup
-    public static void showPicker(Context context, boolean isColorPicker, OnResourceSelectedListener listener) {
+    private static void showPicker(Context context, boolean isColorPicker, String title, OnResourceSelectedListener listener) {
         BottomSheetDialog dialog = new BottomSheetDialog(context);
-        RecyclerView recyclerView = new RecyclerView(context);
-        recyclerView.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
-        recyclerView.setLayoutManager(new GridLayoutManager(context, 5));
+        View view = createBaseSheetView(context, title);
+
+        RecyclerView rvList = view.findViewById(R.id.rv_items);
+        rvList.setLayoutManager(new GridLayoutManager(context, 4));
 
         RecyclerView.Adapter<RecyclerView.ViewHolder> adapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             @Override
@@ -51,22 +95,22 @@ public class PopupHelper {
             @NonNull
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                int layoutId = isColorPicker ? R.layout.item_picker_color : R.layout.item_picker_icon;
-                View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
-                return new RecyclerView.ViewHolder(view) {};
+                int layoutId = isColorPicker ? R.layout.item_selector_color : R.layout.item_selector_icon;
+                View itemView = LayoutInflater.from(context).inflate(layoutId, parent, false);
+                return new RecyclerView.ViewHolder(itemView) {
+                };
             }
 
             @Override
             public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
                 if (isColorPicker) {
-                    View colorCircle = holder.itemView.findViewById(R.id.v_color_circle);
-                    colorCircle.getBackground().setTint(AppResourceManager.getColor(position));
+                    View colorCircle = holder.itemView.findViewById(R.id.view_color);
+                    int colorValue = AppResourceManager.getColor(position);
+                    colorCircle.setBackgroundTintList(ColorStateList.valueOf(colorValue));
                 } else {
                     IconicsImageView ivIcon = holder.itemView.findViewById(R.id.iv_icon);
                     String iconName = AppResourceManager.getIconName(position);
-
-                    ivIcon.setIcon(new com.mikepenz.iconics.IconicsDrawable(context, iconName));
-                    ivIcon.setColorFilter(android.graphics.Color.BLACK);
+                    ivIcon.setIcon(new IconicsDrawable(context, iconName));
                 }
 
                 holder.itemView.setOnClickListener(v -> {
@@ -76,52 +120,10 @@ public class PopupHelper {
             }
         };
 
-        recyclerView.setAdapter(adapter);
-        dialog.setContentView(recyclerView);
+        rvList.setAdapter(adapter);
+        dialog.setContentView(view);
+        View bottomSheet = (View) view.getParent();
+        bottomSheet.setBackgroundColor(android.graphics.Color.TRANSPARENT);
         dialog.show();
     }
-    public static void showAccountFilterPopup(Context context, List<com.example.moneyapp.model.Account> accountList, AccountQuickAdapter.OnAccountClickListener listener) {
-        BottomSheetDialog dialog = new BottomSheetDialog(context);
-
-        RecyclerView recyclerView = new RecyclerView(context);
-        recyclerView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-        recyclerView.setPadding(24, 48, 24, 48); // Padding cho thoáng
-        recyclerView.setClipToPadding(false);
-
-        recyclerView.setLayoutManager(new GridLayoutManager(context, 4));
-
-        AccountQuickAdapter adapter = new AccountQuickAdapter(accountList, account -> {
-            if (listener != null) listener.onAccountClick(account);
-            dialog.dismiss(); // Tự đóng sau khi chọn
-        });
-
-        recyclerView.setAdapter(adapter);
-        dialog.setContentView(recyclerView);
-        dialog.show();
-    }
-
-    public static void showCategoryFilterPopup(Context context, List<com.example.moneyapp.model.Category> categoryList, CategoryQuickAdapter.OnCategoryClickListener listener) {
-        BottomSheetDialog dialog = new BottomSheetDialog(context);
-
-        RecyclerView recyclerView = new RecyclerView(context);
-        recyclerView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-        recyclerView.setPadding(24, 48, 24, 48);
-        recyclerView.setClipToPadding(false);
-
-        recyclerView.setLayoutManager(new GridLayoutManager(context, 4));
-
-        CategoryQuickAdapter adapter = new CategoryQuickAdapter(categoryList, category -> {
-            if (listener != null) listener.onCategoryClick(category);
-            dialog.dismiss();
-        });
-
-        recyclerView.setAdapter(adapter);
-        dialog.setContentView(recyclerView);
-        dialog.show();
-    }
-
 }

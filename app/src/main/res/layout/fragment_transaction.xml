@@ -86,7 +86,8 @@
                             android:layout_height="16dp"
                             android:layout_marginStart="4dp"
                             app:iiv_icon="gmd_keyboard_arrow_down"
-                            app:tint="@color/colorPrimary" />
+                            app:iiv_padding="4dp"
+                            app:tint="@color/colorOnSurface" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -114,8 +115,9 @@
                             android:layout_width="16dp"
                             android:layout_height="16dp"
                             android:layout_marginStart="4dp"
+                            app:iiv_padding="4dp"
                             app:iiv_icon="gmd_keyboard_arrow_down"
-                            app:tint="@color/colorPrimary" />
+                            app:tint="@color/colorOnSurface" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -130,6 +132,5 @@
             android:layout_weight="1"
             android:clipToPadding="false"
             android:paddingBottom="80dp" />
-
     </LinearLayout>
 </LinearLayout>
