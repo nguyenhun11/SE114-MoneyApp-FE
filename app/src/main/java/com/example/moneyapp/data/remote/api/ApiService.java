@@ -3,7 +3,7 @@ package com.example.moneyapp.data.remote.api;
 import com.example.moneyapp.data.remote.request.AccountRequest;
 import com.example.moneyapp.data.remote.request.AdjustBalanceRequest;
 import com.example.moneyapp.data.remote.request.CategoryGroupRequest;
-import com.example.moneyapp.data.remote.request.CategoryGroupResponse;
+import com.example.moneyapp.data.remote.response.CategoryGroupResponse;
 import com.example.moneyapp.data.remote.request.CategoryRequest;
 import com.example.moneyapp.data.remote.request.ChangePasswordRequest;
 import com.example.moneyapp.data.remote.request.CheckInRequest;
