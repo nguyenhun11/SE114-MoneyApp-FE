@@ -12,9 +12,11 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
@@ -26,6 +28,8 @@ public class CategoryFragment extends BaseFragment {
     private RecyclerView rvCategories;
     private CategoryAdapter categoryAdapter;
     private CategoryViewModel viewModel;
+    private View layoutEditControls;
+    private ItemTouchHelper itemTouchHelper;
     private boolean isExpenseTab = true;
 
     @Nullable
@@ -50,10 +54,16 @@ public class CategoryFragment extends BaseFragment {
         });
 
         categoryAdapter.setOnCategoryLongClickListener((category, anchorView) -> {
-            showContextMenu(category, anchorView);
+            if (!categoryAdapter.isEditMode()) {
+                showContextMenu(category, anchorView);
+            }
         });
 
         rvCategories.setAdapter(categoryAdapter);
+        layoutEditControls = view.findViewById(R.id.layout_edit_mode_controls);
+        
+        view.findViewById(R.id.btn_done_reorder).setOnClickListener(v -> exitEditMode(true));
+        view.findViewById(R.id.btn_cancel_reorder).setOnClickListener(v -> exitEditMode(false));
 
         setupHeader(view, R.string.category_list_title, false);
         
@@ -75,18 +85,88 @@ public class CategoryFragment extends BaseFragment {
             }
         });
 
+        // Nút điều chỉnh hạng mục thường dùng
+        view.findViewById(R.id.btn_adjust_frequent).setOnClickListener(v -> {
+            enterEditMode();
+        });
+
         // Load dữ liệu ban đầu từ trạng thái đã lưu
         viewModel.loadCategories(viewModel.getCurrentType());
     }
 
+    private void enterEditMode() {
+        categoryAdapter.setEditMode(true);
+        layoutEditControls.setVisibility(View.VISIBLE);
+        setupDragAndDrop();
+        Toast.makeText(getContext(), "Chế độ sắp xếp: Kéo thả hạng mục", Toast.LENGTH_SHORT).show();
+    }
+
+    private void exitEditMode(boolean saveChanges) {
+        categoryAdapter.setEditMode(false);
+        layoutEditControls.setVisibility(View.GONE);
+        if (itemTouchHelper != null) {
+            itemTouchHelper.attachToRecyclerView(null);
+            itemTouchHelper = null;
+        }
+
+        if (saveChanges) {
+            saveNewOrders();
+        } else {
+            categoryAdapter.restoreBackup();
+        }
+    }
+
+    private void setupDragAndDrop() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, 0) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                int fromPos = viewHolder.getBindingAdapterPosition();
+                int toPos = target.getBindingAdapterPosition();
+                categoryAdapter.onItemMove(fromPos, toPos);
+                return true;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                // Not supported
+            }
+
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+                // We save only when "Done" is clicked now, not on every drop
+            }
+        };
+
+        itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(rvCategories);
+    }
+
+    private void saveNewOrders() {
+        java.util.List<Category> categories = categoryAdapter.getCategories();
+        for (int i = 0; i < categories.size(); i++) {
+            Category cat = categories.get(i);
+            viewModel.reorderCategory(cat, i);
+        }
+    }
+
     private void showContextMenu(com.example.moneyapp.model.Category category, View anchorView) {
         PopupMenu popupMenu = new PopupMenu(requireContext(), anchorView);
-        popupMenu.getMenu().add(0, 1, 0, "Xóa");
+        
+        // Không cho phép xóa hạng mục "Khác" mặc định
+        if (!"Khác".equals(category.getCategoryName())) {
+            popupMenu.getMenu().add(0, 1, 0, "Xóa");
+        }
+
+        popupMenu.getMenu().add(0, 2, 0, "Sắp xếp");
         
         popupMenu.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == 1) {
-                // Mặc định dùng soft_delete như kế hoạch
                 viewModel.deleteCategory(category.getCategoryId(), "soft_delete", null);
+                return true;
+            } else if (item.getItemId() == 2) {
+                enterEditMode();
                 return true;
             }
             return false;

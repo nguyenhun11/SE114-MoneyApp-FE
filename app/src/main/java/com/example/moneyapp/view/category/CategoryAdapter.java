@@ -17,11 +17,15 @@ import com.example.moneyapp.utils.AppResourceManager;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
 
     private List<Category> categories;
+    private List<Category> backupCategories;
+    private boolean isEditMode = false;
     private OnCategoryClickListener listener;
     private OnCategoryLongClickListener longClickListener;
 
@@ -42,6 +46,25 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         this.longClickListener = longClickListener;
     }
 
+    public void setEditMode(boolean editMode) {
+        this.isEditMode = editMode;
+        if (editMode) {
+            this.backupCategories = new ArrayList<>(categories);
+        }
+        notifyDataSetChanged();
+    }
+
+    public boolean isEditMode() {
+        return isEditMode;
+    }
+
+    public void restoreBackup() {
+        if (backupCategories != null) {
+            this.categories = new ArrayList<>(backupCategories);
+            notifyDataSetChanged();
+        }
+    }
+
     @NonNull
     @Override
     public CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -52,7 +75,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     @Override
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
         Category category = categories.get(position);
-        holder.bind(category, listener, longClickListener);
+        holder.bind(category, listener, longClickListener, isEditMode);
     }
 
     @Override
@@ -63,6 +86,23 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     public void updateData(List<Category> newCategories) {
         this.categories = newCategories;
         notifyDataSetChanged();
+    }
+
+    public void onItemMove(int fromPosition, int toPosition) {
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(categories, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(categories, i, i - 1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    public List<Category> getCategories() {
+        return categories;
     }
 
     static class CategoryViewHolder extends RecyclerView.ViewHolder {
@@ -77,13 +117,19 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             viewColorCircle = itemView.findViewById(R.id.view_color_circle);
         }
 
-        public void bind(Category category, OnCategoryClickListener listener, OnCategoryLongClickListener longClickListener) {
+        public void bind(Category category, OnCategoryClickListener listener, OnCategoryLongClickListener longClickListener, boolean isEditMode) {
             tvName.setText(category.getCategoryName());
             
             // Lấy màu thực tế từ ID thông qua AppResourceManager
             int colorValue = AppResourceManager.getColor(category.getColor());
             viewColorCircle.setBackgroundTintList(ColorStateList.valueOf(colorValue));
             viewColorCircle.setBackgroundResource(R.drawable.bg_circle);
+
+            if (isEditMode) {
+                itemView.setBackgroundResource(R.drawable.bg_category_item_edit);
+            } else {
+                itemView.setBackgroundResource(0);
+            }
             
             // Lấy Resource ID của icon từ ID thông qua AppResourceManager
             String iconName = AppResourceManager.getIconName(category.getIcon());

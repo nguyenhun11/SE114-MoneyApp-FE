@@ -45,7 +45,8 @@ public class AppResourceManager {
             "gmd-restaurant",       // 11: Ăn uống
             "gmd-directions-car",   // 12: Di chuyển
             "gmd-local-attraction", // 13: Giải trí
-            "gmd-work"              // 14: Lương/Công việc
+            "gmd-work",             // 14: Lương/Công việc
+            "gmd-help-outline"      // 15: Khác
     };
 
     /**

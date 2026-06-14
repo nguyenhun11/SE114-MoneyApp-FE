@@ -68,4 +68,34 @@
             app:ico_icon="gmd_keyboard_arrow_right" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/layout_edit_mode_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:elevation="8dp"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cancel_reorder"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Hủy bỏ"
+            android:textColor="@color/colorDanger" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_done_reorder"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:text="Hoàn tất"
+            app:cornerRadius="8dp" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

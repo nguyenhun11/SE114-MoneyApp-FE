@@ -24,12 +24,6 @@
         tools:layout="@layout/fragment_account" />
 
     <fragment
-        android:id="@+id/moreFragment"
-        android:name="com.example.moneyapp.view.more.MoreFragment"
-        android:label="Thêm"
-        tools:layout="@layout/fragment_more" />
-
-    <fragment
         android:id="@+id/accountDetailFragment"
         android:name="com.example.moneyapp.view.account.AccountDetailFragment"
         android:label="Account Detail"
