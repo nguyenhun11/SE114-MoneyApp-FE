@@ -5,42 +5,42 @@ import com.google.gson.annotations.SerializedName;
 public class CategoryResponse {
     @SerializedName("id")
     private String id;
-    
+
     @SerializedName("categoryName")
     private String categoryName;
-    
+
     @SerializedName("type")
     private int type;
-    
-    @SerializedName("groupId")
-    private String groupId;
-    
+
+    @SerializedName("categoryGroupId")
+    private String categoryGroupId;
+
     @SerializedName("groupName")
     private String groupName;
-    
+
     @SerializedName("monthlyTarget")
     private double monthlyTarget;
-    
+
     @SerializedName("colorId")
     private int colorId;
-    
+
     @SerializedName("iconId")
     private int iconId;
-    
+
     @SerializedName("sortingOrder")
     private int sortingOrder;
-    
+
     @SerializedName("createdAt")
     private String createdAt;
-    
+
     @SerializedName("lastUpdatedAt")
     private String lastUpdatedAt;
 
-    public CategoryResponse(String id, String categoryName, int type, String groupId, String groupName, double monthlyTarget, int colorId, int iconId, int sortingOrder, String createdAt, String lastUpdatedAt) {
+    public CategoryResponse(String id, String categoryName, int type, String categoryGroupId, String groupName, double monthlyTarget, int colorId, int iconId, int sortingOrder, String createdAt, String lastUpdatedAt) {
         this.id = id;
         this.categoryName = categoryName;
         this.type = type;
-        this.groupId = groupId;
+        this.categoryGroupId = categoryGroupId;
         this.groupName = groupName;
         this.monthlyTarget = monthlyTarget;
         this.colorId = colorId;
@@ -54,87 +54,43 @@ public class CategoryResponse {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getCategoryName() {
         return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
     }
 
     public int getType() {
         return type;
     }
 
-    public void setType(int type) {
-        this.type = type;
-    }
-
     public double getMonthlyTarget() {
         return monthlyTarget;
-    }
-
-    public void setMonthlyTarget(double monthlyTarget) {
-        this.monthlyTarget = monthlyTarget;
     }
 
     public int getColorId() {
         return colorId;
     }
 
-    public void setColorId(int colorId) {
-        this.colorId = colorId;
-    }
-
     public int getIconId() {
         return iconId;
-    }
-
-    public void setIconId(int iconId) {
-        this.iconId = iconId;
     }
 
     public int getSortingOrder() {
         return sortingOrder;
     }
 
-    public void setSortingOrder(int sortingOrder) {
-        this.sortingOrder = sortingOrder;
-    }
-
     public String getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
     }
 
     public String getLastUpdatedAt() {
         return lastUpdatedAt;
     }
 
-    public void setLastUpdatedAt(String lastUpdatedAt) {
-        this.lastUpdatedAt = lastUpdatedAt;
-    }
-
-    public String getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
+    public String getCategoryGroupId() {
+        return categoryGroupId;
     }
 
     public String getGroupName() {
         return groupName;
-    }
-
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
     }
 }

@@ -4,7 +4,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.example.moneyapp.data.remote.request.CategoryGroupRequest;
-import com.example.moneyapp.data.remote.request.CategoryGroupResponse;
+import com.example.moneyapp.data.remote.response.CategoryGroupResponse;
 import com.example.moneyapp.data.remote.request.CategoryRequest;
 import com.example.moneyapp.data.remote.request.ReorderCategoryRequest;
 import com.example.moneyapp.data.remote.response.CategoryResponse;
@@ -35,7 +35,7 @@ public class CategoryRepository extends BaseRepository {
                 response.getId(),
                 response.getCategoryName(),
                 response.getType() == 1 ? CategoryType.INCOME : CategoryType.EXPENSE,
-                response.getGroupId(),
+                response.getCategoryGroupId(),
                 response.getGroupName(),
                 response.getMonthlyTarget(),
                 response.getColorId(),
@@ -93,10 +93,10 @@ public class CategoryRepository extends BaseRepository {
     public void createCategory(Category category, CategoryCallback<Void> callback) {
         CategoryRequest request = new CategoryRequest(
                 category.getCategoryName(),
+                category.getGroupId(),
                 category.getMonthlyTarget(),
                 category.getColor(),
-                category.getIcon(),
-                category.getGroupId()
+                category.getIcon()
         );
 
 
@@ -127,10 +127,10 @@ public class CategoryRepository extends BaseRepository {
     public void updateCategory(Category category, CategoryCallback<Void> callback) {
         CategoryRequest request = new CategoryRequest(
                 category.getCategoryName(),
+                category.getGroupId(),
                 category.getMonthlyTarget(),
                 category.getColor(),
-                category.getIcon(),
-                category.getGroupId()
+                category.getIcon()
         );
 
         Call<Void> call;
