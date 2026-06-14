@@ -26,43 +26,46 @@ public class TokenAuthenticator implements Authenticator {
 
     @Nullable
     @Override
-    public Request authenticate(@Nullable Route route, @NonNull Response response) throws IOException {
+    public synchronized Request authenticate(@Nullable Route route, @NonNull Response response) throws IOException {
         PreferenceManager prefs = PreferenceManager.getInstance(context);
-
-        // 1. Tránh lặp vô hạn: Nếu chính API refresh-token bị lỗi 401, tức là hết cứu -> Đăng xuất
         if (response.request().url().encodedPath().contains("refresh-token")) {
             prefs.clear();
             return null;
         }
 
-        // 2. Tạo một Retrofit "Trắng" (Không dính Interceptor) để gọi API làm mới Token
+        String currentTokenInPrefs = prefs.getToken();
+        String failedToken = response.request().header("Authorization");
+
+        if (failedToken != null && currentTokenInPrefs != null && !failedToken.contains(currentTokenInPrefs)) {
+            return response.request().newBuilder()
+                    .header("Authorization", "Bearer " + currentTokenInPrefs)
+                    .build();
+        }
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(RetrofitClient.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         ApiService authApi = retrofit.create(ApiService.class);
 
-        // 3. Gọi API xin Token mới (Gọi đồng bộ bằng .execute() thay vì .enqueue())
         var refreshToken = prefs.getRefreshToken();
         if (refreshToken == null || refreshToken.isEmpty()) {
             prefs.clear();
             return null;
         }
+
         Call<AuthResponse> call = authApi.refreshToken(new RefreshTokenRequest(refreshToken));
         retrofit2.Response<AuthResponse> refreshResponse = call.execute();
 
         if (refreshResponse.isSuccessful() && refreshResponse.body() != null) {
-            // 4. Lấy được Token mới -> Cất vào két sắt
             AuthResponse newTokens = refreshResponse.body();
             prefs.setToken(newTokens.getToken());
             prefs.setRefreshToken(newTokens.getRefreshToken());
 
-            // 5. Giải cứu API bị lỗi ban đầu bằng cách đính Token mới vào và cho chạy tiếp
             return response.request().newBuilder()
                     .header("Authorization", "Bearer " + newTokens.getToken())
                     .build();
         } else {
-            // 6. Refresh Token cũng đã hết hạn hoặc server từ chối -> Đăng xuất
             prefs.clear();
             return null;
         }

@@ -1,13 +1,13 @@
 package com.example.moneyapp.view;
 
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
+import com.mikepenz.iconics.IconicsDrawable;
 
 public abstract class BaseFragment extends Fragment {
 
@@ -43,9 +44,8 @@ public abstract class BaseFragment extends Fragment {
         return true;
     }
 
-    @DrawableRes
-    protected int getFabIcon() {
-        return R.drawable.ic_add_white;
+    protected String getFabIcon() {
+        return "gmd_add";
     }
 
     protected boolean shouldShowBottomNavigation() {
@@ -56,16 +56,31 @@ public abstract class BaseFragment extends Fragment {
     }
 
     //region Header Setup
+    private Drawable getShrunkIcon(String iconName, int color) {
+        IconicsDrawable drawable = new IconicsDrawable(requireContext(), iconName);
+        drawable.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
+        int paddingDp = 1;
+        if ("gmd_navigate_before".equals(iconName)
+                || "gmd_arrow_back".equals(iconName)) {
+            paddingDp = 4;
+        }
+        int paddingPx = (int) (paddingDp * getResources().getDisplayMetrics().density);
+        return new InsetDrawable(drawable, paddingPx);
+    }
+
     private void setupActionButtons(View view,
-                                    @DrawableRes int leftIcon, View.OnClickListener leftListener,
-                                    @DrawableRes int rightIcon, View.OnClickListener rightListener) {
-        ImageView btnLeft = view.findViewById(R.id.btn_action_left);
-        ImageView btnRight = view.findViewById(R.id.btn_action_right);
+                                    String leftIconName, View.OnClickListener leftListener,
+                                    String rightIconName, View.OnClickListener rightListener) {
+
+        com.mikepenz.iconics.view.IconicsImageView btnLeft = view.findViewById(R.id.btn_action_left);
+        com.mikepenz.iconics.view.IconicsImageView btnRight = view.findViewById(R.id.btn_action_right);
+
+        int iconColor = ContextCompat.getColor(requireContext(), R.color.colorOnPrimary);
 
         if (btnLeft != null) {
-            if (leftIcon != 0) {
+            if (leftIconName != null && !leftIconName.isEmpty()) {
                 btnLeft.setVisibility(View.VISIBLE);
-                btnLeft.setImageResource(leftIcon);
+                btnLeft.setImageDrawable(getShrunkIcon(leftIconName, iconColor));
                 btnLeft.setOnClickListener(leftListener);
             } else {
                 btnLeft.setVisibility(View.GONE);
@@ -74,9 +89,9 @@ public abstract class BaseFragment extends Fragment {
         }
 
         if (btnRight != null) {
-            if (rightIcon != 0) {
+            if (rightIconName != null && !rightIconName.isEmpty()) {
                 btnRight.setVisibility(View.VISIBLE);
-                btnRight.setImageResource(rightIcon);
+                btnRight.setImageDrawable(getShrunkIcon(rightIconName, iconColor));
                 btnRight.setOnClickListener(rightListener);
             } else {
                 btnRight.setVisibility(View.GONE);
@@ -85,48 +100,38 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
-    /**
-     * Cấu hình Header với String resource
-     */
     protected void setupHeader(View view, @StringRes int titleResId, boolean showBackBtn) {
         setupHeader(view, getString(titleResId), showBackBtn);
     }
 
-    /**
-     * Cấu hình Header với String title
-     */
     protected void setupHeader(View view, String titleText, boolean showBackBtn) {
-        int leftIcon = showBackBtn ? R.drawable.ic_back : 0;
+        String leftIcon = showBackBtn ? "gmd_navigate_before" : null;
         View.OnClickListener leftListener = showBackBtn ? v -> Navigation.findNavController(v).navigateUp() : null;
-        setupHeader(view, titleText, leftIcon, leftListener, 0, null);
+        setupHeader(view, titleText, leftIcon, leftListener, null, null);
     }
 
     protected void setupHeader(View view, String titleText,
-                               @DrawableRes int leftIcon, View.OnClickListener leftListener,
-                               @DrawableRes int rightIcon, View.OnClickListener rightListener) {
+                               String leftIconName, View.OnClickListener leftListener,
+                               String rightIconName, View.OnClickListener rightListener) {
         TextView tvTitle = view.findViewById(R.id.tv_header_title);
         if (tvTitle != null) tvTitle.setText(titleText);
-        setupActionButtons(view, leftIcon, leftListener, rightIcon, rightListener);
+        setupActionButtons(view, leftIconName, leftListener, rightIconName, rightListener);
     }
-
     //endregion
 
     //region Balance Selector Setup
-    /**
-     * Cấu hình bộ chọn tài khoản/số dư
-     * @param canSelect true nếu cho phép nhấn để chọn tài khoản (hiện mũi tên)
-     */
-    protected void setupBalanceSelector(View view, String accountName, String balance, boolean canSelect) {
-        setupBalanceSelector(view, accountName, balance, canSelect, 0, null, 0, null);
+    protected void setupBalanceSelector(View view, String accountName, String balance) {
+        setupBalanceSelector(view, accountName, balance, true, null, null, null, null);
     }
 
     protected void setupBalanceSelector(View view, String accountName, String balance, boolean canSelect,
-                                        @DrawableRes int leftIcon, View.OnClickListener leftListener,
-                                        @DrawableRes int rightIcon, View.OnClickListener rightListener) {
+                                        String leftIconName, View.OnClickListener leftListener,
+                                        String rightIconName, View.OnClickListener rightListener) {
         View selector = view.findViewById(R.id.btn_select_account);
         TextView tvAccount = view.findViewById(R.id.tv_account_name);
         TextView tvAmount = view.findViewById(R.id.tv_total_amount);
-        ImageView ivArrow = view.findViewById(R.id.iv_arrow_down);
+
+        View ivArrow = view.findViewById(R.id.iv_arrow_down);
 
         if (tvAccount != null) tvAccount.setText(accountName);
         if (tvAmount != null) tvAmount.setText(balance);
@@ -141,7 +146,7 @@ public abstract class BaseFragment extends Fragment {
                 if (ivArrow != null) ivArrow.setVisibility(View.GONE);
             }
         }
-        setupActionButtons(view, leftIcon, leftListener, rightIcon, rightListener);
+        setupActionButtons(view, leftIconName, leftListener, rightIconName, rightListener);
     }
 
     private void showAccountPopup() {
@@ -164,7 +169,6 @@ public abstract class BaseFragment extends Fragment {
         tvTabExpense.setOnClickListener(v -> handleTabSwitch(true, tvTabExpense, tvTabIncome, animatedIndicator, listener));
         tvTabIncome.setOnClickListener(v -> handleTabSwitch(false, tvTabExpense, tvTabIncome, animatedIndicator, listener));
 
-        // Set initial state without animation if possible, or just call handleTabSwitch
         view.post(() -> {
             handleTabSwitch(initialIsExpense, tvTabExpense, tvTabIncome, animatedIndicator, null);
         });
@@ -196,9 +200,6 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
-    /**
-     * Cấu hình 3 tabs: Chung, Chi, Thu
-     */
     protected void setupThreeTabs(View view, ThreeTabSwitchListener listener) {
         TextView tvGeneral = view.findViewById(R.id.tv_tab_general);
         TextView tvExpense = view.findViewById(R.id.tv_tab_expense);
@@ -233,7 +234,7 @@ public abstract class BaseFragment extends Fragment {
         } else if (index == 2) {
             translationX = tv2.getX() - tv0.getX();
         }
-        
+
         animatedIndicator.animate().translationX(translationX).setDuration(250).start();
 
         if (listener != null) {
@@ -246,9 +247,6 @@ public abstract class BaseFragment extends Fragment {
     }
 
     public interface ThreeTabSwitchListener {
-        /**
-         * @param index 0: General, 1: Expense, 2: Income
-         */
         void onTabSwitched(int index);
     }
     //endregion

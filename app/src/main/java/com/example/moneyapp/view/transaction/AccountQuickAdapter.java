@@ -1,10 +1,10 @@
 package com.example.moneyapp.view.transaction;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
-import com.example.moneyapp.utils.ResourceMapper;
+import com.example.moneyapp.utils.AppResourceManager;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.List;
 
@@ -40,13 +42,14 @@ public class AccountQuickAdapter extends RecyclerView.Adapter<AccountQuickAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Context context = holder.itemView.getContext();
         Account account = list.get(position);
 
-        // Chú ý: Dùng các phương thức get tương ứng của Account
         holder.tvName.setText(account.getAccountName());
-        holder.ivIcon.setImageResource(ResourceMapper.getIconResourceById(account.getIcon()));
-        int colorRes = ResourceMapper.getColorResourceById(account.getColor());
-        holder.viewColorCircle.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), colorRes)));
+        holder.ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, account.getIcon()));
+        
+        int colorValue = AppResourceManager.getColor(account.getColor());
+        holder.viewColorCircle.setBackgroundTintList(ColorStateList.valueOf(colorValue));
 
         if (selectedPosition == position) {
             holder.cardBg.setStrokeWidth(3);
@@ -58,7 +61,7 @@ public class AccountQuickAdapter extends RecyclerView.Adapter<AccountQuickAdapte
         holder.itemView.setOnClickListener(v -> {
             int oldPos = selectedPosition;
             selectedPosition = holder.getAdapterPosition();
-            notifyItemChanged(oldPos);
+            if (oldPos != -1) notifyItemChanged(oldPos);
             notifyItemChanged(selectedPosition);
 
             if (listener != null) {
@@ -77,7 +80,7 @@ public class AccountQuickAdapter extends RecyclerView.Adapter<AccountQuickAdapte
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName;
-        ImageView ivIcon;
+        IconicsImageView ivIcon;
         View viewColorCircle;
         com.google.android.material.card.MaterialCardView cardBg;
 

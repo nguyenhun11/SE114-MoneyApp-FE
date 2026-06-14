@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,13 +20,15 @@ import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.Date;
 
 public class AddCategoryFragment extends BaseFragment {
 
     private EditText etName, etMonthlyTarget;
-    private ImageView ivPreviewIcon;
+    private IconicsImageView ivPreviewIcon;
     private View viewPreviewColor;
     private int categoryTypeIndex = 0; // 0 for Expense, 1 for Income
     private CategoryViewModel viewModel;
@@ -94,15 +95,15 @@ public class AddCategoryFragment extends BaseFragment {
 
     private void updatePreview() {
         int colorValue = AppResourceManager.getColor(selectedColorId);
-        ivPreviewIcon.setImageResource(AppResourceManager.getIconRes(selectedIconId));
+        ivPreviewIcon.setIcon(new IconicsDrawable(requireContext(), AppResourceManager.getIconName(selectedIconId)));
         ivPreviewIcon.setImageTintList(ColorStateList.valueOf(colorValue));
         viewPreviewColor.setBackgroundTintList(ColorStateList.valueOf(colorValue));
         viewPreviewColor.setBackgroundResource(R.drawable.bg_circle);
     }
 
     @Override
-    protected int getFabIcon() {
-        return R.drawable.ic_check_white;
+    protected String getFabIcon() {
+        return "gmd_check";
     }
 
     @Override

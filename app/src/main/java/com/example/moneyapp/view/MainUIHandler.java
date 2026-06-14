@@ -1,24 +1,17 @@
 package com.example.moneyapp.view;
 
 import android.content.Context;
-import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.graphics.drawable.InsetDrawable;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 
-import androidx.annotation.DrawableRes;
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
-import androidx.navigation.NavOptions;
 
 import com.example.moneyapp.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.mikepenz.iconics.IconicsDrawable;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -26,21 +19,19 @@ import java.util.Set;
 
 public class MainUIHandler {
 
-    private final Context context;
     private final NavController navController;
     private final BottomNavigationView bottomNav;
     private final AppCompatImageButton fabAdd;
 
-    // Các fragment chính sẽ hiện BottomNav
     private final Set<Integer> mainFragments = new HashSet<>(Arrays.asList(
             R.id.homeFragment,
             R.id.transactionFragment,
             R.id.accountFragment,
-            R.id.categoryFragment
+            R.id.categoryFragment,
+            R.id.profileFragment
     ));
 
     public MainUIHandler(Context context, NavController navController, BottomNavigationView bottomNav, AppCompatImageButton fabAdd) {
-        this.context = context;
         this.navController = navController;
         this.bottomNav = bottomNav;
         this.fabAdd = fabAdd;
@@ -50,11 +41,9 @@ public class MainUIHandler {
     private void setupNavigationListener() {
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             int destId = destination.getId();
-            
-            // Tự động xử lý ẩn hiện BottomNav
+
             setBottomNavigationVisibility(mainFragments.contains(destId));
 
-            // Tự động xử lý trạng thái Menu
             if (!mainFragments.contains(destId)) {
                 unselectAllMenuItems();
             } else {
@@ -63,11 +52,18 @@ public class MainUIHandler {
         });
     }
 
-    public void updateFAB(@DrawableRes int iconRes, View.OnClickListener listener) {
+    public void updateFAB(String iconName, View.OnClickListener listener) {
         if (fabAdd != null) {
-            fabAdd.setImageResource(iconRes);
+            Context context = fabAdd.getContext();
+            if (iconName != null && !iconName.isEmpty()) {
+                IconicsDrawable drawable = new IconicsDrawable(context, iconName);
+                drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorOnPrimary), android.graphics.PorterDuff.Mode.SRC_IN);
+                int paddingPx = (int) (4 * context.getResources().getDisplayMetrics().density);
+
+                InsetDrawable insetDrawable = new InsetDrawable(drawable, paddingPx);
+                fabAdd.setImageDrawable(insetDrawable);
+            }
             fabAdd.setOnClickListener(listener);
-            fabAdd.setVisibility(View.VISIBLE);
         }
     }
 
@@ -81,8 +77,6 @@ public class MainUIHandler {
         if (bottomNav != null) {
             bottomNav.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
-        // FAB có thể cần hiển thị ngay cả khi BottomNav ẩn (ví dụ trong màn hình Thêm)
-        // Nên ta không tự động ẩn FAB theo BottomNav nếu fragment yêu cầu hiện FAB
     }
 
     public void setFABVisibility(boolean visible) {
@@ -99,41 +93,5 @@ public class MainUIHandler {
             menu.getItem(i).setChecked(false);
         }
         menu.setGroupCheckable(0, true, true);
-    }
-
-    public void showCustomMorePopup() {
-        View popupView = LayoutInflater.from(context).inflate(R.layout.layout_more_popup, null);
-        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-
-        setupPopupItem(popupView.findViewById(R.id.item_profile), R.drawable.ic_account, "Hồ sơ", R.id.profileFragment, popupWindow);
-        setupPopupItem(popupView.findViewById(R.id.item_info), R.drawable.ic_transaction, "Thông tin", R.id.informationFragment, popupWindow);
-        setupPopupItem(popupView.findViewById(R.id.item_settings), R.drawable.ic_more, "Cài đặt", R.id.settingsFragment, popupWindow);
-        setupPopupItem(popupView.findViewById(R.id.item_statistics), R.drawable.ic_transaction, "Thống kê", R.id.statisticsFragment, popupWindow);
-        setupPopupItem(popupView.findViewById(R.id.item_categories), R.drawable.ic_more, "Hạng mục", R.id.categoryFragment, popupWindow);
-
-        float density = context.getResources().getDisplayMetrics().density;
-        int yOffset = bottomNav.getHeight() + (int)(20 * density);
-        popupWindow.showAtLocation(bottomNav.getRootView(), Gravity.BOTTOM | Gravity.END, (int)(20 * density), yOffset);
-        dimBehind(popupWindow);
-    }
-
-    private void dimBehind(PopupWindow popupWindow) {
-        View container = popupWindow.getContentView().getRootView();
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        WindowManager.LayoutParams p = (WindowManager.LayoutParams) container.getLayoutParams();
-        p.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
-        p.dimAmount = 0.4f;
-        wm.updateViewLayout(container, p);
-    }
-
-    private void setupPopupItem(View itemView, int iconRes, String title, int destinationId, PopupWindow popupWindow) {
-        if (itemView == null) return;
-        ((ImageView)itemView.findViewById(R.id.iv_icon)).setImageResource(iconRes);
-        ((TextView)itemView.findViewById(R.id.tv_title)).setText(title);
-        itemView.setOnClickListener(v -> {
-            NavOptions options = new NavOptions.Builder().setPopUpTo(R.id.homeFragment, false).setLaunchSingleTop(true).build();
-            navController.navigate(destinationId, null, options);
-            popupWindow.dismiss();
-        });
     }
 }

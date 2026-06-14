@@ -300,7 +300,7 @@ public class AddTransactionFragment extends BaseFragment {
     protected boolean shouldShowBottomNavigation() { return false; }
 
     @Override
-    protected int getFabIcon() { return R.drawable.ic_check_white; }
+    protected String getFabIcon() { return "gmd_check"; }
 
     @Override
     protected void onFabClick() {

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -77,19 +78,18 @@
         android:paddingTop="12dp"
         android:paddingBottom="8dp">
 
-        <ImageView
+        <com.mikepenz.iconics.view.IconicsImageView
             android:id="@+id/btn_prev"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:padding="6dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_arrow_left"
-            app:tint="@color/colorOnSurface" />
+            android:padding="8dp"
+            app:iiv_color="@color/colorOnSurface"
+            app:iiv_icon="gmd_keyboard_arrow_left" />
 
         <Space
             android:layout_width="32dp"
             android:layout_height="32dp" />
-
 
         <TextView
             android:id="@+id/tv_date_range"
@@ -102,23 +102,23 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <ImageView
+        <com.mikepenz.iconics.view.IconicsImageView
             android:id="@+id/btn_jump_today"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:padding="6dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_jump_today"
-            app:tint="@color/colorOnSurface" />
+            android:padding="8dp"
+            app:iiv_color="@color/colorOnSurface"
+            app:iiv_icon="gmd_last_page" />
 
-        <ImageView
+        <com.mikepenz.iconics.view.IconicsImageView
             android:id="@+id/btn_next"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:padding="6dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_arrow_right"
-            app:tint="@color/colorOnSurface" />
+            android:padding="8dp"
+            app:iiv_color="@color/colorOnSurface"
+            app:iiv_icon="gmd_keyboard_arrow_right" />
     </LinearLayout>
 
-</merge>
+</LinearLayout>

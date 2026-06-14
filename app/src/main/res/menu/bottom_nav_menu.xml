@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/homeFragment"
-        android:icon="@drawable/ic_home"
+        android:icon="@android:color/transparent"
         android:title="@string/home" />
     <item
         android:id="@+id/transactionFragment"
-        android:icon="@drawable/ic_transaction"
+        android:icon="@android:color/transparent"
         android:title="@string/transaction" />
     <item
         android:id="@+id/placeholder"
@@ -14,10 +14,10 @@
         android:enabled="false" />
     <item
         android:id="@+id/accountFragment"
-        android:icon="@drawable/ic_account"
+        android:icon="@android:color/transparent"
         android:title="@string/account" />
     <item
-        android:id="@+id/moreFragment"
-        android:icon="@drawable/ic_more"
-        android:title="@string/more" />
+        android:id="@+id/profileFragment"
+        android:icon="@android:color/transparent"
+        android:title="@string/profile_title" />
 </menu>

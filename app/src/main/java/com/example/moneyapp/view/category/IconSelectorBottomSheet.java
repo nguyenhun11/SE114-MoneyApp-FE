@@ -1,5 +1,6 @@
 package com.example.moneyapp.view.category;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.view.IconicsImageView;
 
 public class IconSelectorBottomSheet extends BottomSheetDialogFragment {
 
@@ -59,8 +62,9 @@ public class IconSelectorBottomSheet extends BottomSheetDialogFragment {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            int iconRes = AppResourceManager.getIconRes(position);
-            holder.ivIcon.setImageResource(iconRes);
+            String iconName = AppResourceManager.getIconName(position);
+            Context context = holder.itemView.getContext();
+            holder.ivIcon.setIcon(new IconicsDrawable(context, iconName));
             holder.itemView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onIconSelected(position);
@@ -75,7 +79,7 @@ public class IconSelectorBottomSheet extends BottomSheetDialogFragment {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            ImageView ivIcon;
+            IconicsImageView ivIcon;
 
             ViewHolder(View itemView) {
                 super(itemView);

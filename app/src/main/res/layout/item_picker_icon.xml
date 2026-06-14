@@ -12,11 +12,11 @@
         android:background="@drawable/bg_circle"
         android:backgroundTint="@color/colorEmpty">
 
-        <ImageView
+        <com.mikepenz.iconics.view.IconicsImageView
             android:id="@+id/iv_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center"
-            app:tint="@color/colorOnSurface" />
+            app:ico_color="@color/colorOnSurface" />
     </FrameLayout>
 </FrameLayout>

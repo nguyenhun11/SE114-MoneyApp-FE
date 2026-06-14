@@ -41,7 +41,6 @@
         android:label="Giao dịch mới"
         tools:layout="@layout/fragment_transaction_add" />
 
-    <!-- Secondary fragments from More menu -->
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.moneyapp.view.profile.ProfileFragment"

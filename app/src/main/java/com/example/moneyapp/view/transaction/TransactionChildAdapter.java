@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,7 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.Transaction;
-import com.example.moneyapp.utils.ResourceMapper;
+import com.example.moneyapp.utils.AppResourceManager;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.List;
 import java.util.Locale;
@@ -34,10 +35,9 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
         this.listener = listener;
     }
 
-    // Định nghĩa ViewHolder để ánh xạ View từ file XML
     public static class ViewHolder extends RecyclerView.ViewHolder {
         FrameLayout flIconContainer;
-        ImageView ivIcon;
+        IconicsImageView ivIcon;
         TextView tvCategoryName, tvAccountName, tvNote, tvAmount;
         View divider;
 
@@ -89,14 +89,8 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
             }
         }
 
-        // =====================================================================
-        // ĐẮP MÀU VÀ ICON TỪ RESOURCEMAPPER
-        // =====================================================================
-        int iconRes = ResourceMapper.getIconResourceById(t.getCategoryIconId());
-        int colorRes = ResourceMapper.getColorResourceById(t.getCategoryColorId());
-        int actualColor = ContextCompat.getColor(context, colorRes);
-
-        holder.ivIcon.setImageResource(iconRes);
+        holder.ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, t.getCategoryIconId()));
+        int actualColor = AppResourceManager.getColor(t.getCategoryColorId());
         holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(actualColor));
 
         // Ẩn đường kẻ mờ ở phần tử cuối cùng
