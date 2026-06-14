@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -47,6 +48,11 @@ public class CategoryFragment extends BaseFragment {
             String message = getString(R.string.menu_item_default) + ": " + category.getCategoryName();
             Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         });
+
+        categoryAdapter.setOnCategoryLongClickListener((category, anchorView) -> {
+            showContextMenu(category, anchorView);
+        });
+
         rvCategories.setAdapter(categoryAdapter);
 
         setupHeader(view, R.string.category_list_title, false);
@@ -71,6 +77,22 @@ public class CategoryFragment extends BaseFragment {
 
         // Load dữ liệu ban đầu từ trạng thái đã lưu
         viewModel.loadCategories(viewModel.getCurrentType());
+    }
+
+    private void showContextMenu(com.example.moneyapp.model.Category category, View anchorView) {
+        PopupMenu popupMenu = new PopupMenu(requireContext(), anchorView);
+        popupMenu.getMenu().add(0, 1, 0, "Xóa");
+        
+        popupMenu.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == 1) {
+                // Mặc định dùng soft_delete như kế hoạch
+                viewModel.deleteCategory(category.getCategoryId(), "soft_delete", null);
+                return true;
+            }
+            return false;
+        });
+        
+        popupMenu.show();
     }
 
     @Override

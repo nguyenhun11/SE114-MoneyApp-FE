@@ -23,14 +23,23 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     private List<Category> categories;
     private OnCategoryClickListener listener;
+    private OnCategoryLongClickListener longClickListener;
 
     public interface OnCategoryClickListener {
         void onCategoryClick(Category category);
     }
 
+    public interface OnCategoryLongClickListener {
+        void onCategoryLongClick(Category category, View anchorView);
+    }
+
     public CategoryAdapter(List<Category> categories, OnCategoryClickListener listener) {
         this.categories = categories;
         this.listener = listener;
+    }
+
+    public void setOnCategoryLongClickListener(OnCategoryLongClickListener longClickListener) {
+        this.longClickListener = longClickListener;
     }
 
     @NonNull
@@ -43,7 +52,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     @Override
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
         Category category = categories.get(position);
-        holder.bind(category, listener);
+        holder.bind(category, listener, longClickListener);
     }
 
     @Override
@@ -68,7 +77,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             viewColorCircle = itemView.findViewById(R.id.view_color_circle);
         }
 
-        public void bind(Category category, OnCategoryClickListener listener) {
+        public void bind(Category category, OnCategoryClickListener listener, OnCategoryLongClickListener longClickListener) {
             tvName.setText(category.getCategoryName());
             
             // Lấy màu thực tế từ ID thông qua AppResourceManager
@@ -83,6 +92,14 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
             itemView.setOnClickListener(v -> {
                 if (listener != null) listener.onCategoryClick(category);
+            });
+
+            itemView.setOnLongClickListener(v -> {
+                if (longClickListener != null) {
+                    longClickListener.onCategoryLongClick(category, v);
+                    return true;
+                }
+                return false;
             });
         }
     }
