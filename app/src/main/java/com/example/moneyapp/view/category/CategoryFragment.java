@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import com.google.android.material.snackbar.Snackbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,8 +50,23 @@ public class CategoryFragment extends BaseFragment {
         rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 3));
         
         categoryAdapter = new CategoryAdapter(new ArrayList<>(), category -> {
-            String message = getString(R.string.menu_item_default) + ": " + category.getCategoryName();
-            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+            if ("Khác".equals(category.getCategoryName())) {
+                Snackbar.make(requireView(), "Đây là một hạng mục dịch vụ và không thể được chỉnh sửa", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Đóng", v -> {})
+                        .show();
+                return;
+            }
+
+            Bundle bundle = new Bundle();
+            bundle.putString("categoryId", category.getCategoryId());
+            bundle.putString("categoryName", category.getCategoryName());
+            bundle.putDouble("monthlyTarget", category.getMonthlyTarget() != null ? category.getMonthlyTarget() : 0.0);
+            bundle.putInt("colorId", category.getColor());
+            bundle.putInt("iconId", category.getIcon());
+            bundle.putString("groupId", category.getGroupId());
+            bundle.putInt("type", category.getType() == CategoryType.EXPENSE ? 0 : 1);
+            
+            Navigation.findNavController(requireView()).navigate(R.id.action_categoryFragment_to_addCategoryFragment, bundle);
         });
 
         categoryAdapter.setOnCategoryLongClickListener((category, anchorView) -> {
