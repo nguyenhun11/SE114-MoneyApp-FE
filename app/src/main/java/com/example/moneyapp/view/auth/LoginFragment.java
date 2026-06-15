@@ -101,7 +101,10 @@ public class LoginFragment extends Fragment {
 
         if (btnGoogleLogin != null) {
             btnGoogleLogin.setOnClickListener(v -> {
-                googleSignInLauncher.launch(googleSignInClient.getSignInIntent());
+                // Buộc Google Sign-In hiện hộp thoại chọn tài khoản bằng cách Logout trước khi tiến hành Launch
+                googleSignInClient.signOut().addOnCompleteListener(requireActivity(), task -> {
+                    googleSignInLauncher.launch(googleSignInClient.getSignInIntent());
+                });
             });
         }
 

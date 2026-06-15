@@ -19,6 +19,7 @@ public class AuthViewModel extends AndroidViewModel {
     public final MutableLiveData<User> loginSuccess = new MutableLiveData<>();
     public final MutableLiveData<Boolean> registerSuccess = new MutableLiveData<>();
     public final MutableLiveData<Boolean> resetPasswordSuccess = new MutableLiveData<>();
+    public final MutableLiveData<Boolean> resetCompleteSuccess = new MutableLiveData<>();
     public final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     public final MutableLiveData<String> errorMessage = new MutableLiveData<>();
 
@@ -150,10 +151,40 @@ public class AuthViewModel extends AndroidViewModel {
             return;
         }
         isLoading.setValue(true);
-        authRepository.sendPasswordResetEmail(email, new AuthRepository.AuthCallback<String>() {
+        authRepository.sendPasswordResetEmail(email, new AuthRepository.AuthCallback<Void>() {
             @Override
-            public void onSuccess(String message) {
+            public void onSuccess(Void result) {
                 resetPasswordSuccess.postValue(true);
+                isLoading.postValue(false);
+            }
+
+            @Override
+            public void onError(String message) {
+                errorMessage.postValue(message);
+                isLoading.postValue(false);
+            }
+        });
+    }
+
+    public void completeResetPassword(String email, String token, String newPassword, String confirmPassword) {
+        if (token == null || token.trim().isEmpty()) {
+            errorMessage.setValue("Vui lòng nhập mã xác nhận");
+            return;
+        }
+        if (newPassword == null || newPassword.length() < 6) {
+            errorMessage.setValue("Mật khẩu phải từ 6 ký tự trở lên");
+            return;
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            errorMessage.setValue("Mật khẩu xác nhận không khớp");
+            return;
+        }
+
+        isLoading.setValue(true);
+        authRepository.resetPassword(email, token, newPassword, new AuthRepository.AuthCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                resetCompleteSuccess.postValue(true);
                 isLoading.postValue(false);
             }
 

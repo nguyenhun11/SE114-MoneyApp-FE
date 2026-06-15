@@ -56,6 +56,14 @@
     <string name="forgot_password_send_btn">Gửi hướng dẫn</string>
     <string name="forgot_password_back_to_login">Quay lại Đăng nhập</string>
 
+    <string name="reset_password_title">Đặt lại mật khẩu</string>
+    <string name="reset_password_desc">Nhập mã xác nhận vừa được gửi vào email của bạn và mật khẩu mới.</string>
+    <string name="reset_password_token_hint">Mã xác nhận (OTP)</string>
+    <string name="reset_password_new_hint">Mật khẩu mới</string>
+    <string name="reset_password_confirm_hint">Xác nhận mật khẩu mới</string>
+    <string name="reset_password_btn">Cập nhật mật khẩu</string>
+    <string name="reset_password_success">Đổi mật khẩu thành công! Vui lòng đăng nhập lại.</string>
+
     <!-- Password Change -->
     <string name="change_password_title">Thay đổi mật khẩu</string>
     <string name="change_password_current">Mật khẩu hiện tại</string>
