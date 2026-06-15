@@ -17,8 +17,9 @@ public class AuthViewModel extends AndroidViewModel {
     private final UserRepository userRepository;
 
     public final MutableLiveData<User> loginSuccess = new MutableLiveData<>();
-    public final MutableLiveData<User> registerSuccess = new MutableLiveData<>();
+    public final MutableLiveData<Boolean> registerSuccess = new MutableLiveData<>();
     public final MutableLiveData<Boolean> resetPasswordSuccess = new MutableLiveData<>();
+    public final MutableLiveData<Boolean> resetCompleteSuccess = new MutableLiveData<>();
     public final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     public final MutableLiveData<String> errorMessage = new MutableLiveData<>();
 
@@ -105,12 +106,16 @@ public class AuthViewModel extends AndroidViewModel {
             String password,
             String confirmPassword
     ){
-        if (email == null || email.trim().isEmpty()){
+        if (name == null || name.trim().isEmpty()){
+            errorMessage.setValue("Họ và tên không được để trống");
+            return;
+        }
+        if (email == null || email.trim().isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             errorMessage.setValue("Email không hợp lệ");
             return;
         }
-        if (password == null || password.trim().isEmpty()){
-            errorMessage.setValue("Mật khẩu không hợp lệ");
+        if (password == null || password.length() < 6){
+            errorMessage.setValue("Mật khẩu phải từ 6 ký tự trở lên");
             return;
         }
         if (confirmPassword == null || confirmPassword.trim().isEmpty()){
@@ -126,21 +131,9 @@ public class AuthViewModel extends AndroidViewModel {
         AuthRepository.AuthCallback<Integer> callback = new AuthRepository.AuthCallback<Integer>() {
             @Override
             public void onSuccess(Integer userId) {
-                userRepository.getUserProfile(new UserRepository.UserCallback<UserProfileResponse>() {
-                    @Override
-                    public void onSuccess(UserProfileResponse response) {
-                        // 🌟 Dùng trực tiếp dữ liệu từ API trả về
-                        User user = mapToUser(response);
-                        registerSuccess.postValue(user);
-                        isLoading.postValue(false);
-                    }
-                    @Override
-                    public void onError(String message) {
-                        // 🌟 Báo lỗi ra UI
-                        errorMessage.postValue("Đăng ký thành công nhưng lỗi tải thông tin: " + message);
-                        isLoading.postValue(false);
-                    }
-                });
+                // 🌟 Chỉ cần báo thành công bằng Boolean để quay về màn hình đăng nhập
+                registerSuccess.postValue(true);
+                isLoading.postValue(false);
             }
             @Override
             public void onError(String message) {
@@ -158,10 +151,40 @@ public class AuthViewModel extends AndroidViewModel {
             return;
         }
         isLoading.setValue(true);
-        authRepository.sendPasswordResetEmail(email, new AuthRepository.AuthCallback<String>() {
+        authRepository.sendPasswordResetEmail(email, new AuthRepository.AuthCallback<Void>() {
             @Override
-            public void onSuccess(String message) {
+            public void onSuccess(Void result) {
                 resetPasswordSuccess.postValue(true);
+                isLoading.postValue(false);
+            }
+
+            @Override
+            public void onError(String message) {
+                errorMessage.postValue(message);
+                isLoading.postValue(false);
+            }
+        });
+    }
+
+    public void completeResetPassword(String email, String token, String newPassword, String confirmPassword) {
+        if (token == null || token.trim().isEmpty()) {
+            errorMessage.setValue("Vui lòng nhập mã xác nhận");
+            return;
+        }
+        if (newPassword == null || newPassword.length() < 6) {
+            errorMessage.setValue("Mật khẩu phải từ 6 ký tự trở lên");
+            return;
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            errorMessage.setValue("Mật khẩu xác nhận không khớp");
+            return;
+        }
+
+        isLoading.setValue(true);
+        authRepository.resetPassword(email, token, newPassword, new AuthRepository.AuthCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                resetCompleteSuccess.postValue(true);
                 isLoading.postValue(false);
             }
 

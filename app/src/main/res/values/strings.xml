@@ -37,17 +37,32 @@
     <string name="default_web_client_id" translatable="false">1081285408020-ogd4tkssqid3g9n4tfpc71dfa9vhq26j.apps.googleusercontent.com</string>
 
     <string name="register_title">Đăng ký</string>
+    <string name="register_name_hint">Họ và tên</string>
     <string name="register_email_hint">Email</string>
     <string name="register_password_hint">Mật khẩu</string>
     <string name="register_repassword_hint">Nhập lại mật khẩu</string>
     <string name="register_already_have_account">Đã có tài khoản? Đăng nhập</string>
     <string name="register_btn">Đăng ký</string>
+    <string name="register_helper_password">Mật khẩu phải có ít nhất 6 ký tự</string>
+    <string name="error_name_empty">Họ và tên không được để trống</string>
+    <string name="error_invalid_email">Email không đúng định dạng</string>
+    <string name="error_password_too_short">Mật khẩu phải từ 6 ký tự trở lên</string>
+    <string name="error_password_mismatch">Mật khẩu xác nhận không khớp</string>
+    <string name="error_field_required">Vui lòng điền đầy đủ thông tin</string>
 
     <string name="forgot_password_title">Quên mật khẩu</string>
     <string name="forgot_password_desc">Vui lòng nhập email của bạn để nhận hướng dẫn khôi phục mật khẩu.</string>
     <string name="forgot_password_email_hint">Email của bạn</string>
     <string name="forgot_password_send_btn">Gửi hướng dẫn</string>
     <string name="forgot_password_back_to_login">Quay lại Đăng nhập</string>
+
+    <string name="reset_password_title">Đặt lại mật khẩu</string>
+    <string name="reset_password_desc">Nhập mã xác nhận vừa được gửi vào email của bạn và mật khẩu mới.</string>
+    <string name="reset_password_token_hint">Mã xác nhận (OTP)</string>
+    <string name="reset_password_new_hint">Mật khẩu mới</string>
+    <string name="reset_password_confirm_hint">Xác nhận mật khẩu mới</string>
+    <string name="reset_password_btn">Cập nhật mật khẩu</string>
+    <string name="reset_password_success">Đổi mật khẩu thành công! Vui lòng đăng nhập lại.</string>
 
     <!-- Password Change -->
     <string name="change_password_title">Thay đổi mật khẩu</string>

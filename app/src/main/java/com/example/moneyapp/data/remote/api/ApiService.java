@@ -7,6 +7,7 @@ import com.example.moneyapp.data.remote.response.CategoryGroupResponse;
 import com.example.moneyapp.data.remote.request.CategoryRequest;
 import com.example.moneyapp.data.remote.request.ChangePasswordRequest;
 import com.example.moneyapp.data.remote.request.CheckInRequest;
+import com.example.moneyapp.data.remote.request.ForgotPasswordRequest;
 import com.example.moneyapp.data.remote.request.GoogleLoginRequest;
 import com.example.moneyapp.data.remote.request.LoginRequest;
 import com.example.moneyapp.data.remote.request.LogoutRequest;
@@ -14,6 +15,7 @@ import com.example.moneyapp.data.remote.request.RefreshTokenRequest;
 import com.example.moneyapp.data.remote.request.RegisterRequest;
 import com.example.moneyapp.data.remote.request.ReorderAccountRequest;
 import com.example.moneyapp.data.remote.request.ReorderCategoryRequest;
+import com.example.moneyapp.data.remote.request.ResetPasswordRequest;
 import com.example.moneyapp.data.remote.request.TransactionRequest;
 import com.example.moneyapp.data.remote.request.UserProfileRequest;
 import com.example.moneyapp.data.remote.response.AccountResponse;
@@ -52,6 +54,10 @@ public interface ApiService {
     Call<AuthResponse> refreshToken(@Body RefreshTokenRequest request);
     @POST("api/Auth/change-password")
     Call<Void> changePassword(@Body ChangePasswordRequest request);
+    @POST("api/Auth/forgot-password")
+    Call<Void> forgotPassword(@Body ForgotPasswordRequest request);
+    @POST("api/Auth/reset-password")
+    Call<Void> resetPassword(@Body ResetPasswordRequest request);
     //endregion
 
     //region User
