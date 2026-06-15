@@ -30,17 +30,28 @@ public class AddCategoryFragment extends BaseFragment {
     private EditText etName, etMonthlyTarget;
     private IconicsImageView ivPreviewIcon;
     private View viewPreviewColor;
+    private TextView btnDelete;
     private int categoryTypeIndex = 0; // 0 for Expense, 1 for Income
     private CategoryViewModel viewModel;
 
     private int selectedColorId = 0;
     private int selectedIconId = 0;
+    
+    // Edit mode properties
+    private String categoryId = null;
+    private String currentGroupId = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             categoryTypeIndex = getArguments().getInt("type", 0);
+            categoryId = getArguments().getString("categoryId");
+            if (categoryId != null) {
+                selectedColorId = getArguments().getInt("colorId");
+                selectedIconId = getArguments().getInt("iconId");
+                currentGroupId = getArguments().getString("groupId");
+            }
         }
     }
 
@@ -61,12 +72,30 @@ public class AddCategoryFragment extends BaseFragment {
         TextView tvBudgetLabel = view.findViewById(R.id.tv_budget_label);
         ivPreviewIcon = view.findViewById(R.id.iv_preview_icon);
         viewPreviewColor = view.findViewById(R.id.view_preview_color);
+        btnDelete = view.findViewById(R.id.btn_delete_category);
 
         String title = (categoryTypeIndex == 0) ? getString(R.string.category_expense_title) : getString(R.string.category_income_title);
+        if (categoryId != null) {
+            title = "Chỉnh sửa hạng mục";
+        }
+        
         String label = (categoryTypeIndex == 0) ? getString(R.string.category_expense_budget_label) : getString(R.string.category_income_budget_label);
 
         setupHeader(view, title, true);
         tvBudgetLabel.setText(label);
+
+        // Pre-fill data if in edit mode
+        if (categoryId != null) {
+            etName.setText(getArguments().getString("categoryName"));
+            double target = getArguments().getDouble("monthlyTarget");
+            etMonthlyTarget.setText(String.valueOf((int) target));
+            
+            // Hạng mục "Khác" không thể xóa
+            if (!"Khác".equals(getArguments().getString("categoryName"))) {
+                btnDelete.setVisibility(View.VISIBLE);
+                btnDelete.setOnClickListener(v -> deleteCategory());
+            }
+        }
 
         updatePreview();
 
@@ -123,11 +152,11 @@ public class AddCategoryFragment extends BaseFragment {
         double target = targetStr.isEmpty() ? 0.0 : Double.parseDouble(targetStr);
         CategoryType type = (categoryTypeIndex == 0) ? CategoryType.EXPENSE : CategoryType.INCOME;
 
-        Category newCategory = new Category(
-                null, 
+        Category category = new Category(
+                categoryId, 
                 name,
                 type,
-                null,
+                currentGroupId,
                 null,
                 target,
                 selectedColorId,
@@ -137,7 +166,17 @@ public class AddCategoryFragment extends BaseFragment {
                 new Date()
         );
 
-        viewModel.addCategory(newCategory);
+        if (categoryId == null) {
+            viewModel.addCategory(category);
+        } else {
+            viewModel.updateCategory(category);
+        }
+    }
+
+    private void deleteCategory() {
+        if (categoryId != null) {
+            viewModel.deleteCategory(categoryId, "soft_delete", null);
+        }
     }
 
     @Override
