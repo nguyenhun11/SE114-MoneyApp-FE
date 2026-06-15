@@ -23,19 +23,47 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Name Field -->
+        <TextView
+            android:id="@+id/tv_label_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="32dp"
+            android:text="@string/register_name_hint"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_register_title" />
+
+        <EditText
+            android:id="@+id/et_name_register"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_edittext_outline"
+            android:hint="@string/register_name_hint"
+            android:gravity="center"
+            android:inputType="textPersonName"
+            android:paddingHorizontal="20dp"
+            android:textColor="@color/black"
+            android:textColorHint="#BCBCBC"
+            app:layout_constraintTop_toBottomOf="@id/tv_label_name" />
+
         <!-- Email Field -->
         <TextView
             android:id="@+id/tv_label_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="16dp"
             android:text="@string/register_email_hint"
             android:textColor="@color/black"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_register_title" />
+            app:layout_constraintTop_toBottomOf="@id/et_name_register" />
 
         <EditText
             android:id="@+id/et_email_register"
@@ -79,19 +107,31 @@
             android:textColorHint="#BCBCBC"
             app:layout_constraintTop_toBottomOf="@id/tv_label_password" />
 
+        <TextView
+            android:id="@+id/tv_helper_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/register_helper_password"
+            android:textColor="#757575"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/et_password_register" />
+
         <!-- Confirm Password Field -->
         <TextView
             android:id="@+id/tv_label_confirm_password"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:text="@string/register_repassword_hint"
             android:textColor="@color/black"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/et_password_register" />
+            app:layout_constraintTop_toBottomOf="@id/tv_helper_password" />
 
         <EditText
             android:id="@+id/et_confirm_password_register"

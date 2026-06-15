@@ -13,6 +13,8 @@ import com.example.moneyapp.data.remote.request.LogoutRequest;
 import com.example.moneyapp.data.remote.request.RegisterRequest;
 import com.example.moneyapp.data.remote.response.AuthResponse;
 
+import org.json.JSONObject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,7 +51,16 @@ public class AuthRepository {
 
                     callback.onSuccess(auth.getId());
                 } else {
-                    callback.onError("Đăng nhập thất bại: Sai email hoặc mật khẩu");
+                    String errorMessage = "Đăng nhập thất bại";
+                    try {
+                        if (response.errorBody() != null) {
+                            JSONObject jObjError = new JSONObject(response.errorBody().string());
+                            errorMessage = jObjError.getString("message");
+                        }
+                    } catch (Exception e) {
+                        errorMessage += ": " + response.code();
+                    }
+                    callback.onError(errorMessage);
                 }
             }
 
@@ -106,7 +117,16 @@ public class AuthRepository {
 
                     callback.onSuccess(auth.getId());
                 } else {
-                    callback.onError("Đăng ký thất bại: " + response.code());
+                    String errorMessage = "Đăng ký thất bại";
+                    try {
+                        if (response.errorBody() != null) {
+                            JSONObject jObjError = new JSONObject(response.errorBody().string());
+                            errorMessage = jObjError.getString("message");
+                        }
+                    } catch (Exception e) {
+                        errorMessage += ": " + response.code();
+                    }
+                    callback.onError(errorMessage);
                 }
             }
 
