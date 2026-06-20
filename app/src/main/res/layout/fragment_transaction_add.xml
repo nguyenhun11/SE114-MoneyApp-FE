@@ -110,35 +110,11 @@
                     style="@style/InputLabel"
                     android:text="Nguồn tiền" />
 
-                <LinearLayout
-                    android:id="@+id/btnSelectSource"
-                    style="@style/InputSelectorContainer"
-                    android:layout_marginBottom="24dp">
-
-                    <com.mikepenz.iconics.view.IconicsImageView
-                        android:id="@+id/ivSourceIcon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="8dp"
-                        app:iiv_color="@color/colorOnSurface"
-                        app:iiv_icon="gmd_account_balance_wallet" />
-
-                    <TextView
-                        android:id="@+id/tvSelectedSource"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Chọn nguồn tiền..."
-                        android:textColor="@color/colorOnSurface"
-                        android:textSize="15sp" />
-
-                    <com.mikepenz.iconics.view.IconicsImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        app:iiv_color="@color/colorOnSurfaceVariant"
-                        app:iiv_icon="gmd_keyboard_arrow_down"
-                        app:iiv_padding="4dp" />
-                </LinearLayout>
+                <com.example.moneyapp.view.components.AccountSelectorView
+                    android:id="@+id/viewSelectSource"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp" />
 
                 <TextView
                     style="@style/InputLabel"
