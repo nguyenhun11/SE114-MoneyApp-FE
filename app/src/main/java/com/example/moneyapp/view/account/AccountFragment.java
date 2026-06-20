@@ -96,6 +96,6 @@ public class AccountFragment extends BaseFragment {
 
     @Override
     protected void onFabClick() {
-        Toast.makeText(getContext(), "Mở màn hình chuyển khoản", Toast.LENGTH_SHORT).show();
+        Navigation.findNavController(requireView()).navigate(R.id.addTransferFragment);
     }
 }

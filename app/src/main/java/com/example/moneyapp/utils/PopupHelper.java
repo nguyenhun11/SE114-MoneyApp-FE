@@ -155,6 +155,28 @@ public class PopupHelper {
         dialog.show();
     }
 
+    public static void showActionPicker(Context context, OnActionClickListener listener) {
+        BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
+        View view = LayoutInflater.from(context).inflate(R.layout.layout_action_selector, null);
+
+        view.findViewById(R.id.btn_add_transaction).setOnClickListener(v -> {
+            if (listener != null) listener.onActionClick(0);
+            dialog.dismiss();
+        });
+
+        view.findViewById(R.id.btn_add_transfer).setOnClickListener(v -> {
+            if (listener != null) listener.onActionClick(1);
+            dialog.dismiss();
+        });
+
+        dialog.setContentView(view);
+        dialog.show();
+    }
+
+    public interface OnActionClickListener {
+        void onActionClick(int actionType); // 0: Transaction, 1: Transfer
+    }
+
     private static void setupBottomSheetBehavior(BottomSheetDialog dialog, Context context) {
         dialog.setOnShowListener(dialogInterface -> {
             BottomSheetDialog d = (BottomSheetDialog) dialogInterface;

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <View
+        android:id="@+id/bg_header"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/header_height_large"
+        android:background="@drawable/bg_header_gradient"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/header_layout"
+        layout="@layout/layout_header_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="@dimen/card_horizontal_margin"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="80dp"
+        app:cardBackgroundColor="@color/colorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
+        app:strokeColor="@color/colorBorder"
+        app:strokeWidth="1dp">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <EditText
+                    android:id="@+id/etAmount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:gravity="center"
+                    android:hint="0"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="40sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="100dp"
+                    android:layout_height="2dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/colorOnSurface" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:gravity="center"
+                    android:text="VND"
+                    android:textColor="@color/colorOnSurfaceVariant"
+                    android:textSize="14sp" />
+
+
+                <TextView
+                    style="@style/InputLabel"
+                    android:text="Chuyển từ" />
+
+                <LinearLayout
+                    android:id="@+id/btnSelectSource"
+                    style="@style/InputSelectorContainer"
+                    android:layout_marginBottom="16dp">
+
+                    <com.mikepenz.iconics.view.IconicsImageView
+                        android:id="@+id/ivSourceIcon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="8dp"
+                        app:iiv_color="@color/colorOnSurface"
+                        app:iiv_icon="gmd_account_balance_wallet" />
+
+                    <TextView
+                        android:id="@+id/tvSelectedSource"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Chọn nguồn tiền..."
+                        android:textColor="@color/colorOnSurface"
+                        android:textSize="15sp" />
+
+                    <com.mikepenz.iconics.view.IconicsImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        app:iiv_color="@color/colorOnSurfaceVariant"
+                        app:iiv_icon="gmd_keyboard_arrow_down"
+                        app:iiv_padding="4dp" />
+                </LinearLayout>
+
+                <TextView
+                    style="@style/InputLabel"
+                    android:text="Chuyển đến" />
+
+                <LinearLayout
+                    android:id="@+id/btnSelectDestination"
+                    style="@style/InputSelectorContainer"
+                    android:layout_marginBottom="24dp">
+
+                    <com.mikepenz.iconics.view.IconicsImageView
+                        android:id="@+id/ivDestinationIcon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="8dp"
+                        app:iiv_color="@color/colorOnSurface"
+                        app:iiv_icon="gmd_account_balance_wallet" />
+
+                    <TextView
+                        android:id="@+id/tvSelectedDestination"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Chọn nguồn nhận..."
+                        android:textColor="@color/colorOnSurface"
+                        android:textSize="15sp" />
+
+                    <com.mikepenz.iconics.view.IconicsImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        app:iiv_color="@color/colorOnSurfaceVariant"
+                        app:iiv_icon="gmd_keyboard_arrow_down"
+                        app:iiv_padding="4dp" />
+                </LinearLayout>
+
+                <TextView
+                    style="@style/InputLabel"
+                    android:text="Thời gian" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginBottom="24dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/btnDateToday"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_date_selected"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvTodayValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="14/06"
+                            android:textColor="@color/colorOnSurface"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:alpha="0.8"
+                            android:text="Hôm nay"
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btnDateRecent"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input_border"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvRecentValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="11/06"
+                            android:textColor="@color/colorOnSurface"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvRecentLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Gần đây"
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btnPickDate"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input_border"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_marginBottom="2dp"
+                            app:iiv_color="@color/colorOnSurface"
+                            app:iiv_icon="gmd_calendar_today" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chọn ngày"
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/InputLabel"
+                    android:text="Mô tả" />
+
+                <EditText
+                    android:id="@+id/etDescription"
+                    style="@style/InputField"
+                    android:gravity="top|start"
+                    android:hint="Nhập mô tả..."
+                    android:minLines="3" />
+
+            </LinearLayout>
+        </ScrollView>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

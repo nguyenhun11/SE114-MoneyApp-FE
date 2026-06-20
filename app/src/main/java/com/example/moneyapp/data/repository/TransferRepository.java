@@ -3,7 +3,7 @@ package com.example.moneyapp.data.repository;
 import android.content.Context;
 import androidx.annotation.NonNull;
 
-import com.example.moneyapp.data.remote.request.TransactionRequest;
+import com.example.moneyapp.data.remote.request.TransferRequest;
 import com.example.moneyapp.data.remote.response.TransferResponse;
 import com.example.moneyapp.model.Transfer;
 import com.example.moneyapp.utils.DateConverter;
@@ -67,7 +67,7 @@ public class TransferRepository extends BaseRepository {
         });
     }
 
-    public void createTransfer(TransactionRequest request, TransferCallback<Transfer> callback) {
+    public void createTransfer(TransferRequest request, TransferCallback<Transfer> callback) {
         apiService.createTransfer(request).enqueue(new Callback<TransferResponse>() {
             @Override
             public void onResponse(@NonNull Call<TransferResponse> call, @NonNull Response<TransferResponse> response) {

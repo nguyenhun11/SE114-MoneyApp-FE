@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"
+        android:background="@color/colorBorder" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Thêm mới"
+        android:textColor="@color/colorOnSurface"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/btn_add_transaction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="16dp">
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            app:ico_color="@color/colorOnSurface"
+            app:ico_icon="gmd_receipt" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Giao dịch"
+            android:textColor="@color/colorOnSurface"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorBorder" />
+
+    <LinearLayout
+        android:id="@+id/btn_add_transfer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="16dp">
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            app:ico_color="@color/colorOnSurface"
+            app:ico_icon="gmd_swap_horiz" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Chuyển khoản"
+            android:textColor="@color/colorOnSurface"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</LinearLayout>

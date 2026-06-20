@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.moneyapp.data.remote.request.TransactionRequest;
+import com.example.moneyapp.data.remote.request.TransferRequest;
 import com.example.moneyapp.data.repository.TransferRepository;
 import com.example.moneyapp.model.Transfer;
 
@@ -50,7 +50,7 @@ public class TransferViewModel extends AndroidViewModel {
         });
     }
 
-    public void createTransfer(TransactionRequest request) {
+    public void createTransfer(TransferRequest request) {
         repository.createTransfer(request, new TransferRepository.TransferCallback<Transfer>() {
             @Override
             public void onSuccess(Transfer result) {

@@ -17,6 +17,7 @@ import com.example.moneyapp.data.remote.request.ReorderAccountRequest;
 import com.example.moneyapp.data.remote.request.ReorderCategoryRequest;
 import com.example.moneyapp.data.remote.request.ResetPasswordRequest;
 import com.example.moneyapp.data.remote.request.TransactionRequest;
+import com.example.moneyapp.data.remote.request.TransferRequest;
 import com.example.moneyapp.data.remote.request.UserProfileRequest;
 import com.example.moneyapp.data.remote.response.AccountResponse;
 import com.example.moneyapp.data.remote.response.AdjustBalanceResponse;
@@ -168,7 +169,7 @@ public interface ApiService {
     @GET("api/Transfer/{id}")
     Call<TransferResponse> getTransferById(@Path("id") String id);
     @POST("api/Transfer")
-    Call<TransferResponse> createTransfer(@Body TransactionRequest request);
+    Call<TransferResponse> createTransfer(@Body TransferRequest request);
     @PUT("api/Transfer/{id}")
     Call<TransferResponse> updateTransfer(@Path("id") String id, @Body TransactionRequest request);
     @DELETE("api/Transfer/{id}")

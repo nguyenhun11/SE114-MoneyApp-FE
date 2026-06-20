@@ -42,6 +42,12 @@
         tools:layout="@layout/fragment_transaction_add" />
 
     <fragment
+        android:id="@+id/addTransferFragment"
+        android:name="com.example.moneyapp.view.transfer.TransferAddFragment"
+        android:label="Chuyển khoản"
+        tools:layout="@layout/fragment_transfer_add" />
+
+    <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.moneyapp.view.profile.ProfileFragment"
         android:label="Hồ sơ"
