@@ -12,8 +12,11 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Category;
@@ -21,12 +24,16 @@ import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
 
+import java.util.ArrayList;
+
 public class CategoryFragment extends BaseFragment {
 
     private RecyclerView rvCategories;
-    private CategoryGroupAdapter groupAdapter; // Chỉ dùng GroupAdapter
+    private CategoryGroupAdapter groupAdapter; // Dùng để XEM (Phân nhóm)
+    private CategoryAdapter flatAdapter;       // Dùng để SẮP XẾP (Kéo thả)
     private CategoryViewModel viewModel;
     private View layoutEditControls;
+    private ItemTouchHelper itemTouchHelper;
 
     @Nullable
     @Override
@@ -40,15 +47,10 @@ public class CategoryFragment extends BaseFragment {
 
         viewModel = new ViewModelProvider(requireActivity()).get(CategoryViewModel.class);
         rvCategories = view.findViewById(R.id.rv_category_groups);
-        rvCategories.setLayoutManager(new LinearLayoutManager(requireContext()));
+        layoutEditControls = view.findViewById(R.id.layout_edit_mode_controls);
 
-        // Khởi tạo Adapter
-        groupAdapter = new CategoryGroupAdapter(category -> {
-            String message = "Hạng mục: " + category.getCategoryName();
-            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-        rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 3));
-
-        categoryAdapter = new CategoryAdapter(new ArrayList<>(), category -> {
+        // 1. ĐỊNH NGHĨA SỰ KIỆN CLICK CHUNG CHO CẢ 2 ADAPTER
+        CategoryAdapter.OnCategoryClickListener clickListener = category -> {
             if ("Khác".equals(category.getCategoryName())) {
                 Snackbar.make(requireView(), "Đây là một hạng mục dịch vụ và không thể được chỉnh sửa", Snackbar.LENGTH_INDEFINITE)
                         .setAction("Đóng", v -> {})
@@ -66,22 +68,31 @@ public class CategoryFragment extends BaseFragment {
             bundle.putInt("type", category.getType() == CategoryType.EXPENSE ? 0 : 1);
 
             Navigation.findNavController(requireView()).navigate(R.id.action_categoryFragment_to_addCategoryFragment, bundle);
-        });
+        };
 
-        // Gắn listener cho sự kiện nhấn giữ
-        groupAdapter.setOnCategoryLongClickListener((category, anchorView) -> {
-            if (!groupAdapter.isEditMode()) {
+        CategoryAdapter.OnCategoryLongClickListener longClickListener = (category, anchorView) -> {
+            if (!flatAdapter.isEditMode()) {
                 showContextMenu(category, anchorView);
             }
-        });
+        };
 
+        // 2. KHỞI TẠO CẢ 2 ADAPTER
+        groupAdapter = new CategoryGroupAdapter(clickListener);
+        groupAdapter.setOnCategoryLongClickListener(longClickListener);
+
+        flatAdapter = new CategoryAdapter(new ArrayList<>(), clickListener);
+        flatAdapter.setOnCategoryLongClickListener(longClickListener);
+
+        // 3. SET TRẠNG THÁI MẶC ĐỊNH LÀ XEM (GROUP)
+        rvCategories.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvCategories.setAdapter(groupAdapter);
-        layoutEditControls = view.findViewById(R.id.layout_edit_mode_controls);
 
+        // 4. CÁC NÚT ĐIỀU KHIỂN
         view.findViewById(R.id.btn_done_reorder).setOnClickListener(v -> exitEditMode(true));
         view.findViewById(R.id.btn_cancel_reorder).setOnClickListener(v -> exitEditMode(false));
+        view.findViewById(R.id.btn_adjust_frequent).setOnClickListener(v -> enterEditMode());
 
-        setupHeader(view, "Danh mục", true);
+        setupHeader(view, "Danh mục", false);
 
         setupIncomeExpenseTabs(view, viewModel.getCurrentType() == CategoryType.EXPENSE, isExpense -> {
             CategoryType newType = isExpense ? CategoryType.EXPENSE : CategoryType.INCOME;
@@ -89,8 +100,9 @@ public class CategoryFragment extends BaseFragment {
             viewModel.loadCategories(newType);
         });
 
+        // 5. LẮNG NGHE DỮ LIỆU
         viewModel.getCategoriesLiveData().observe(getViewLifecycleOwner(), categories -> {
-            if (categories != null) {
+            if (categories != null && !flatAdapter.isEditMode()) {
                 groupAdapter.setData(categories);
             }
         });
@@ -99,34 +111,80 @@ public class CategoryFragment extends BaseFragment {
             if (error != null) Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
         });
 
-        view.findViewById(R.id.btn_adjust_frequent).setOnClickListener(v -> enterEditMode());
-
         viewModel.loadCategories(viewModel.getCurrentType());
     }
 
+    // --- LOGIC HOÁN ĐỔI ADAPTER ---
+
     private void enterEditMode() {
-        groupAdapter.setEditMode(true);
+        // 1. Lấy dữ liệu dạng phẳng từ GroupAdapter chuyển sang FlatAdapter
+        java.util.List<Category> allCategories = groupAdapter.getAllCategoriesFlattened();
+        flatAdapter.updateData(allCategories);
+        flatAdapter.setEditMode(true);
+
+        // 2. Đổi LayoutManager sang Grid và gắn FlatAdapter
+        rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        rvCategories.setAdapter(flatAdapter);
+
+        // 3. Hiển thị UI và bật Kéo thả
         layoutEditControls.setVisibility(View.VISIBLE);
-        Toast.makeText(getContext(), "Chế độ sắp xếp: Đang bật", Toast.LENGTH_SHORT).show();
+        setupDragAndDrop();
+        Toast.makeText(getContext(), "Chế độ sắp xếp: Kéo thả hạng mục", Toast.LENGTH_SHORT).show();
     }
 
     private void exitEditMode(boolean saveChanges) {
-        groupAdapter.setEditMode(false);
+        flatAdapter.setEditMode(false);
         layoutEditControls.setVisibility(View.GONE);
+
+        // Tắt kéo thả
+        if (itemTouchHelper != null) {
+            itemTouchHelper.attachToRecyclerView(null);
+            itemTouchHelper = null;
+        }
 
         if (saveChanges) {
             saveNewOrders();
+            // Cập nhật lại UI nhóm ngay lập tức với thứ tự mới
+            groupAdapter.setData(flatAdapter.getCategories());
         } else {
-            groupAdapter.restoreBackup();
+            flatAdapter.restoreBackup();
         }
+
+        // Đổi LayoutManager về lại Linear và gắn GroupAdapter
+        rvCategories.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rvCategories.setAdapter(groupAdapter);
+    }
+
+    // --- LOGIC KÉO THẢ (Giữ nguyên của Dev) ---
+
+    private void setupDragAndDrop() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, 0) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                int fromPos = viewHolder.getBindingAdapterPosition();
+                int toPos = target.getBindingAdapterPosition();
+                flatAdapter.onItemMove(fromPos, toPos); // Gọi vào FlatAdapter
+                return true;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {}
+
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+            }
+        };
+
+        itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(rvCategories);
     }
 
     private void saveNewOrders() {
-        // Lưu ý: Với CategoryGroupAdapter, bạn cần duyệt qua danh sách các nhóm
-        // để lấy danh sách hạng mục phẳng sau khi đã kéo thả
-        java.util.List<Category> allCategories = groupAdapter.getAllCategoriesFlattened();
-        for (int i = 0; i < allCategories.size(); i++) {
-            Category cat = allCategories.get(i);
+        java.util.List<Category> categories = flatAdapter.getCategories(); // Lấy từ FlatAdapter
+        for (int i = 0; i < categories.size(); i++) {
+            Category cat = categories.get(i);
             viewModel.reorderCategory(cat, i);
         }
     }

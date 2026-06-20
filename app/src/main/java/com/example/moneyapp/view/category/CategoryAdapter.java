@@ -36,7 +36,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     }
 
     public CategoryAdapter(List<Category> categories, OnCategoryClickListener listener) {
-        this.categories = categories;
+        // TẠO BẢN SAO NGAY TỪ ĐẦU
+        this.categories = categories != null ? new ArrayList<>(categories) : new ArrayList<>();
         this.listener = listener;
     }
 
@@ -47,6 +48,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     public void setEditMode(boolean editMode) {
         this.isEditMode = editMode;
         if (editMode) {
+            // Lưu lại bản backup trước khi bắt đầu kéo thả
             this.backupCategories = new ArrayList<>(categories);
         }
         notifyDataSetChanged();
@@ -71,7 +73,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     @Override
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
         Category category = categories.get(position);
-        // TRUYỀN ĐỦ THAM SỐ VÀO ĐÂY
         holder.bind(category, listener, longClickListener, isEditMode);
     }
 
@@ -79,13 +80,27 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     public int getItemCount() { return categories != null ? categories.size() : 0; }
 
     public void updateData(List<Category> newCategories) {
-        this.categories = newCategories;
+        // QUAN TRỌNG: Tạo bản sao mới để không dính dáng đến dữ liệu của GroupAdapter
+        this.categories = newCategories != null ? new ArrayList<>(newCategories) : new ArrayList<>();
         notifyDataSetChanged();
     }
 
+    // ĐÃ PHỤC HỒI LOGIC KÉO THẢ MƯỢT MÀ CỦA DEV
     public void onItemMove(int fromPosition, int toPosition) {
-        Collections.swap(categories, fromPosition, toPosition);
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(categories, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(categories, i, i - 1);
+            }
+        }
         notifyItemMoved(fromPosition, toPosition);
+    }
+
+    public List<Category> getCategories() {
+        return categories;
     }
 
     static class CategoryViewHolder extends RecyclerView.ViewHolder {
@@ -100,7 +115,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             viewColorCircle = itemView.findViewById(R.id.view_color_circle);
         }
 
-        // HÀM BIND CẦN NHẬN ĐỦ THAM SỐ
         public void bind(Category category, OnCategoryClickListener listener, OnCategoryLongClickListener longClickListener, boolean isEditMode) {
             Context context = itemView.getContext();
 
@@ -115,10 +129,14 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, category.getIcon()));
 
             // Mode sửa đổi (nếu cần đổi nền)
+            // Mode sửa đổi (nếu cần đổi nền)
             if (isEditMode) {
                 itemView.setBackgroundResource(R.drawable.bg_category_item_edit);
             } else {
-                itemView.setBackgroundResource(0);
+                // SỬA TẠI ĐÂY: Dùng TypedValue để giải mã Attribute ID thành Drawable ID
+                android.util.TypedValue outValue = new android.util.TypedValue();
+                context.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+                itemView.setBackgroundResource(outValue.resourceId);
             }
 
             itemView.setOnClickListener(v -> {

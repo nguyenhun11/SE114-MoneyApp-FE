@@ -194,8 +194,7 @@ public class StatisticFragment extends BaseFragment {
         for (CategoryPieChartDto cat : breakdowns) total += cat.getTotalAmount();
 
         for (CategoryPieChartDto cat : breakdowns) {
-            int colorRes = AppResourceManager.getColor(cat.getColorId());
-            int actualColor = ContextCompat.getColor(requireContext(), colorRes);
+            int actualColor = AppResourceManager.getColor(cat.getColorId());
             float percent = (total > 0) ? (float) (cat.getTotalAmount() / total * 100) : 0f;
 
             list.add(new PieChartItem(
@@ -384,8 +383,8 @@ public class StatisticFragment extends BaseFragment {
                 if (!uniqueCatIds.contains(cat.getCategoryId())) {
                     uniqueCatIds.add(cat.getCategoryId());
                     uniqueCatNames.add(cat.getCategoryName());
-                    int colorResId = AppResourceManager.getColor(cat.getColorId());
-                    uniqueColors.add(ContextCompat.getColor(requireContext(), colorResId));
+                    int actualColor = AppResourceManager.getColor(cat.getColorId());
+                    uniqueColors.add(actualColor);
                 }
             }
         }
