@@ -33,6 +33,7 @@ public class RegisterFragment extends Fragment {
         // Đổi từ MaterialButton sang Button để tránh ClassCastException khi dùng AppCompatButton trong XML
         Button btnRegister = view.findViewById(R.id.btn_register);
         TextView tvGoToLogin = view.findViewById(R.id.tv_go_to_login);
+        EditText etName = view.findViewById(R.id.et_name_register);
         EditText etEmail = view.findViewById(R.id.et_email_register);
         EditText etPassword = view.findViewById(R.id.et_password_register);
         EditText etConfirmPassword = view.findViewById(R.id.et_confirm_password_register);
@@ -40,7 +41,7 @@ public class RegisterFragment extends Fragment {
         if (btnRegister != null) {
             btnRegister.setOnClickListener(v -> {
                 authViewModel.register(
-                        etEmail.getText().toString(),//TODO tạm thời lấy email là tên đăng nhập
+                        etName.getText().toString(),
                         etEmail.getText().toString(),
                         etPassword.getText().toString(),
                         etConfirmPassword.getText().toString()
@@ -54,9 +55,11 @@ public class RegisterFragment extends Fragment {
             });
         }
 
-        authViewModel.registerSuccess.observe(getViewLifecycleOwner(), user -> {
-            Toast.makeText(requireContext(), "Register successful", Toast.LENGTH_SHORT).show();
-            Navigation.findNavController(view).navigateUp();
+        authViewModel.registerSuccess.observe(getViewLifecycleOwner(), success -> {
+            if (success != null && success) {
+                Toast.makeText(requireContext(), "Đăng ký thành công! Vui lòng đăng nhập.", Toast.LENGTH_LONG).show();
+                Navigation.findNavController(view).navigateUp();
+            }
         });
         authViewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();

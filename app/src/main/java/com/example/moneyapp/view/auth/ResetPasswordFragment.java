@@ -4,27 +4,30 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+
 import com.example.moneyapp.R;
 import com.example.moneyapp.viewmodel.AuthViewModel;
 
-public class ForgotPasswordFragment extends Fragment {
+public class ResetPasswordFragment extends Fragment {
     private AuthViewModel authViewModel;
-    private EditText etEmail;
+    private EditText etToken, etNewPassword, etConfirmPassword;
+    private String email;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_forgot_password, container, false);
+        return inflater.inflate(R.layout.fragment_reset_password, container, false);
     }
 
     @Override
@@ -32,36 +35,43 @@ public class ForgotPasswordFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
-        etEmail = view.findViewById(R.id.et_email_forgot);
-        Button btnSend = view.findViewById(R.id.btn_send_instructions);
-        TextView tvBack = view.findViewById(R.id.tv_back_to_login);
+        
+        if (getArguments() != null) {
+            email = getArguments().getString("email");
+        }
+
+        etToken = view.findViewById(R.id.et_reset_token);
+        etNewPassword = view.findViewById(R.id.et_reset_password);
+        etConfirmPassword = view.findViewById(R.id.et_reset_confirm_password);
+        AppCompatButton btnReset = view.findViewById(R.id.btn_reset_password);
+        TextView tvBack = view.findViewById(R.id.tv_reset_back_to_login);
 
         observeViewModel();
 
-        if (btnSend != null) {
-            btnSend.setOnClickListener(v -> {
-                String email = etEmail.getText().toString().trim();
-                authViewModel.resetPassword(email);
+        if (btnReset != null) {
+            btnReset.setOnClickListener(v -> {
+                String token = etToken.getText().toString().trim();
+                String newPassword = etNewPassword.getText().toString().trim();
+                String confirmPassword = etConfirmPassword.getText().toString().trim();
+                authViewModel.completeResetPassword(email, token, newPassword, confirmPassword);
             });
         }
 
         if (tvBack != null) {
             tvBack.setOnClickListener(v -> {
-                Navigation.findNavController(v).navigateUp();
+                Navigation.findNavController(v).popBackStack(R.id.loginFragment, false);
             });
         }
     }
 
     private void observeViewModel() {
-        authViewModel.resetPasswordSuccess.observe(getViewLifecycleOwner(), success -> {
+        authViewModel.resetCompleteSuccess.observe(getViewLifecycleOwner(), success -> {
             if (success) {
                 new AlertDialog.Builder(requireContext())
                         .setTitle("Thành công")
-                        .setMessage("Yêu cầu đã được gửi! Vui lòng kiểm tra email của bạn để lấy mã xác nhận.")
-                        .setPositiveButton("Tiếp tục", (dialog, which) -> {
-                            Bundle bundle = new Bundle();
-                            bundle.putString("email", etEmail.getText().toString().trim());
-                            Navigation.findNavController(requireView()).navigate(R.id.action_forgotPasswordFragment_to_resetPasswordFragment, bundle);
+                        .setMessage(getString(R.string.reset_password_success))
+                        .setPositiveButton("Đăng nhập ngay", (dialog, which) -> {
+                            Navigation.findNavController(requireView()).popBackStack(R.id.loginFragment, false);
                         })
                         .setCancelable(false)
                         .show();
@@ -71,17 +81,16 @@ public class ForgotPasswordFragment extends Fragment {
         authViewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
             if (message != null) {
                 new AlertDialog.Builder(requireContext())
-                        .setTitle("Thông báo")
+                        .setTitle("Lỗi")
                         .setMessage(message)
-                        .setPositiveButton("Đã hiểu", null)
+                        .setPositiveButton("Thử lại", null)
                         .show();
-                // Xóa message sau khi hiển thị để tránh hiện lại khi xoay màn hình
                 authViewModel.errorMessage.setValue(null);
             }
         });
 
         authViewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
-            // Bạn có thể thêm ProgressBar ở đây nếu muốn
+            // Handle loading state
         });
     }
 }
