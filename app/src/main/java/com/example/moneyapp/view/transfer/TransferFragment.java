@@ -56,7 +56,8 @@ public class TransferFragment extends BaseFragment {
         RecyclerView rvTransfers = view.findViewById(R.id.rvTransfers);
         rvTransfers.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new TransferGroupAdapter(new ArrayList<>(), transfer -> {
+        // ĐÃ SỬA: Truyền thêm accountList vào tham số thứ 2, và sửa getId() thành getTransferId()
+        adapter = new TransferGroupAdapter(new ArrayList<>(), accountList, transfer -> {
             Bundle args = new Bundle();
             args.putString("transferId", transfer.getId());
             Navigation.findNavController(view).navigate(R.id.action_transferFragment_to_transferDetailFragment, args);
@@ -74,8 +75,11 @@ public class TransferFragment extends BaseFragment {
     }
 
     private void observeViewModels() {
+        // ĐÃ SỬA: Dùng hàm updateData và truyền kèm cả accountList để đồng bộ hiển thị icon/màu
         transferViewModel.getGroupedTransfers().observe(getViewLifecycleOwner(), groups -> {
-            adapter.updateList(groups);
+            if (groups != null) {
+                adapter.updateData(groups, accountList);
+            }
         });
 
         transferViewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
@@ -88,6 +92,12 @@ public class TransferFragment extends BaseFragment {
             if (accounts != null) {
                 accountList.clear();
                 accountList.addAll(accounts);
+
+                // Khi danh sách ví cập nhật, ép adapter update lại
+                // phòng trường hợp dữ liệu lịch sử tải về trước danh sách ví
+                if (transferViewModel.getGroupedTransfers().getValue() != null) {
+                    adapter.updateData(transferViewModel.getGroupedTransfers().getValue(), accountList);
+                }
             }
         });
     }
@@ -103,9 +113,9 @@ public class TransferFragment extends BaseFragment {
             Toast.makeText(getContext(), "Đang tải dữ liệu...", Toast.LENGTH_SHORT).show();
             return;
         }
-        PopupHelper.showAccountFilterPopup(requireContext(), accountList, 
-                transferViewModel.getCurrentAccountId(), 
-                true, 
+        PopupHelper.showAccountFilterPopup(requireContext(), accountList,
+                transferViewModel.getCurrentAccountId(),
+                true,
                 selectedAcc -> {
                     if (selectedAcc == null) {
                         tvAccountFilter.setText("Tất cả tài khoản");

@@ -1,18 +1,17 @@
-package com.example.moneyapp.data.remote.response;
+package com.example.moneyapp.model;
 
+import java.util.Date;
 
-public class AdjustBalanceResponse {
-    private String id;
-    private String accountId;
-    private String accountName;
-    private double amount;
-    private String createdAt;
+public class AdjustBalance {
+    private  String id;
+    private  String accountId;
+    private  String accountName;
+    private  double amount;
+    private  Date createdAt;
 
-    public AdjustBalanceResponse(String id, String accountId, String accountName, double amount, String createdAt) {
+    public AdjustBalance(String id, String accountId, String accountName, double amount, Date createdAt) {
         this.id = id;
         this.accountId = accountId;
-
-
         this.accountName = accountName;
         this.amount = amount;
         this.createdAt = createdAt;
@@ -50,11 +49,11 @@ public class AdjustBalanceResponse {
         this.amount = amount;
     }
 
-    public String getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 }

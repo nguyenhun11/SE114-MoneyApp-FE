@@ -4,11 +4,11 @@ import java.util.List;
 
 public class DailyTransferGroup {
     private String dateLabel;
-    private List<Transfer> transfers;
+    private List<HistoryItem> items;
 
-    public DailyTransferGroup(String dateLabel, List<Transfer> transfers) {
+    public DailyTransferGroup(String dateLabel, List<HistoryItem> items) {
         this.dateLabel = dateLabel;
-        this.transfers = transfers;
+        this.items = items;
     }
 
     public String getDateLabel() {
@@ -19,11 +19,11 @@ public class DailyTransferGroup {
         this.dateLabel = dateLabel;
     }
 
-    public List<Transfer> getTransfers() {
-        return transfers;
+    public List<HistoryItem> getTransfers() {
+        return items;
     }
 
-    public void setTransfers(List<Transfer> transfers) {
-        this.transfers = transfers;
+    public void setTransfers(List<HistoryItem> items) {
+        this.items = items;
     }
 }

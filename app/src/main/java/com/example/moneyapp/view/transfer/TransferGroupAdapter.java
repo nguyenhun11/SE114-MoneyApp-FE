@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.model.Account; // Import thêm model Account
 import com.example.moneyapp.model.DailyTransferGroup;
 
 import java.util.List;
@@ -17,15 +18,20 @@ import java.util.List;
 public class TransferGroupAdapter extends RecyclerView.Adapter<TransferGroupAdapter.ViewHolder> {
 
     private List<DailyTransferGroup> groups;
+    private List<Account> accountList; // Thêm biến lưu danh sách tài khoản
     private final TransferChildAdapter.OnItemClickListener childListener;
 
-    public TransferGroupAdapter(List<DailyTransferGroup> groups, TransferChildAdapter.OnItemClickListener listener) {
+    // ĐÃ SỬA: Constructor nhận thêm accountList
+    public TransferGroupAdapter(List<DailyTransferGroup> groups, List<Account> accountList, TransferChildAdapter.OnItemClickListener listener) {
         this.groups = groups;
+        this.accountList = accountList;
         this.childListener = listener;
     }
 
-    public void updateList(List<DailyTransferGroup> newGroups) {
+    // ĐÃ TỐI ƯU: Cập nhật hàm updateData để nhận cả 2 list mới nếu cần
+    public void updateData(List<DailyTransferGroup> newGroups, List<Account> newAccountList) {
         this.groups = newGroups;
+        this.accountList = newAccountList;
         notifyDataSetChanged();
     }
 
@@ -52,7 +58,8 @@ public class TransferGroupAdapter extends RecyclerView.Adapter<TransferGroupAdap
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         DailyTransferGroup group = groups.get(position);
         holder.tvDateLabel.setText(group.getDateLabel());
-        TransferChildAdapter childAdapter = new TransferChildAdapter(group.getTransfers(), childListener);
+
+        TransferChildAdapter childAdapter = new TransferChildAdapter(group.getTransfers(), accountList, childListener);
 
         holder.rvDailyTransactions.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
         holder.rvDailyTransactions.setAdapter(childAdapter);
