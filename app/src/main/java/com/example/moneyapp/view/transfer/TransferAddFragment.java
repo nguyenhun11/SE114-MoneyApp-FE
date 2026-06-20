@@ -256,6 +256,11 @@ public class TransferAddFragment extends BaseFragment {
         try {
             double amount = Double.parseDouble(amountStr);
 
+            if (amount <= 0) {
+                Toast.makeText(getContext(), "Số tiền chuyển phải lớn hơn 0!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             if (amount > sourceAccount.getBalance()) {
                 Toast.makeText(getContext(), "Số dư không đủ để thực hiện chuyển khoản!", Toast.LENGTH_SHORT).show();
                 return;

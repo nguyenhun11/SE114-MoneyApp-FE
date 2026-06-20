@@ -67,7 +67,7 @@ public class AccountFragment extends BaseFragment {
                     false,
                     "gmd_history",
                     v -> {
-                        Toast.makeText(getContext(), "Lịch sử tài khoản (Đang phát triển)", Toast.LENGTH_SHORT).show();
+                        Navigation.findNavController(view).navigate(R.id.transferHistoryFragment);
                     },
                     "gmd_add_circle_outline",
                     v -> {
