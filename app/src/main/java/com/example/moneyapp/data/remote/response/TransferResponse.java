@@ -4,8 +4,12 @@ public class TransferResponse {
     private String id;
     private String sourceAccountId;
     private String sourceAccountName;
+    private int sourceAccountIcon;
+    private int sourceAccountColor;
     private String destinationAccountId;
     private String destinationAccountName;
+    private int destinationAccountIcon;
+    private int destinationAccountColor;
     private Double amount;
     private String transferDate;
     private String description;
@@ -14,18 +18,22 @@ public class TransferResponse {
 
     public TransferResponse(String id,
                             String sourceAccountId,
-                            String sourceAccountName,
+                            String sourceAccountName, int sourceAccountIcon, int sourceAccountColor,
                             String destinationAccountId,
-                            String destinationAccountName,
+                            String destinationAccountName, int destinationAccountIcon, int destinationAccountColor,
                             Double amount, String transferDate,
                             String description,
-                            String createdAt, 
+                            String createdAt,
                             String lastUpdatedAt) {
         this.id = id;
         this.sourceAccountId = sourceAccountId;
         this.sourceAccountName = sourceAccountName;
+        this.sourceAccountIcon = sourceAccountIcon;
+        this.sourceAccountColor = sourceAccountColor;
         this.destinationAccountId = destinationAccountId;
         this.destinationAccountName = destinationAccountName;
+        this.destinationAccountIcon = destinationAccountIcon;
+        this.destinationAccountColor = destinationAccountColor;
         this.amount = amount;
         this.transferDate = transferDate;
         this.description = description;
@@ -111,5 +119,37 @@ public class TransferResponse {
 
     public void setLastUpdatedAt(String lastUpdatedAt) {
         this.lastUpdatedAt = lastUpdatedAt;
+    }
+
+    public int getSourceAccountIcon() {
+        return sourceAccountIcon;
+    }
+
+    public void setSourceAccountIcon(int sourceAccountIcon) {
+        this.sourceAccountIcon = sourceAccountIcon;
+    }
+
+    public int getSourceAccountColor() {
+        return sourceAccountColor;
+    }
+
+    public void setSourceAccountColor(int sourceAccountColor) {
+        this.sourceAccountColor = sourceAccountColor;
+    }
+
+    public int getDestinationAccountIcon() {
+        return destinationAccountIcon;
+    }
+
+    public void setDestinationAccountIcon(int destinationAccountIcon) {
+        this.destinationAccountIcon = destinationAccountIcon;
+    }
+
+    public int getDestinationAccountColor() {
+        return destinationAccountColor;
+    }
+
+    public void setDestinationAccountColor(int destinationAccountColor) {
+        this.destinationAccountColor = destinationAccountColor;
     }
 }

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <View
+        android:id="@+id/bg_header"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/header_height_small"
+        android:background="@drawable/bg_header_gradient"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/header_layout"
+        layout="@layout/layout_header_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/card_horizontal_margin"
+        android:layout_marginTop="32dp"
+        app:cardBackgroundColor="@color/colorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
+        app:strokeColor="@color/colorBorder"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="32dp"
+            android:paddingTop="32dp"
+            android:paddingBottom="32dp">
+
+            <TextView
+                android:id="@+id/tvDetailAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="24dp"
+                android:textColor="@color/colorInfo"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                tools:text="2.000.000đ" />
+
+            <!-- Nguồn tiền -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Tài khoản chuyển"
+                    android:textColor="@color/colorOnSurfaceVariant"
+                    android:textSize="15sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:id="@+id/fl_source_icon"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/bg_circle"
+                        android:backgroundTint="@color/colorInfo">
+
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:id="@+id/iv_source_icon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            app:iiv_color="@color/white"
+                            app:iiv_icon="gmd-account-balance-wallet" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/tvDetailSource"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorOnSurface"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        tools:text="Tiền mặt" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Tài khoản nhận -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Tài khoản nhận"
+                    android:textColor="@color/colorOnSurfaceVariant"
+                    android:textSize="15sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:id="@+id/fl_dest_icon"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/bg_circle"
+                        android:backgroundTint="@color/colorSuccess">
+
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:id="@+id/iv_dest_icon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            app:iiv_color="@color/white"
+                            app:iiv_icon="gmd-account-balance-wallet" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/tvDetailDest"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorOnSurface"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        tools:text="BIDV" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Ngày -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Ngày"
+                    android:textColor="@color/colorOnSurfaceVariant"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tvDetailDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="08/06/2026" />
+            </LinearLayout>
+
+            <!-- Ghi chú -->
+            <LinearLayout
+                android:id="@+id/ll_description_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Ghi chú"
+                    android:textColor="@color/colorOnSurfaceVariant"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tvDetailDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="end"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="Chuyển tiền tiêu vặt" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvCreatedAt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/colorOnSurfaceVariant"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/card_detail"
+        tools:text="Tạo lúc: 08/06/2026" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

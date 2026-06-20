@@ -1,25 +1,34 @@
 package com.example.moneyapp.model;
 
 import java.util.Date;
+import java.util.Locale;
 
 public class Transfer {
     private String id;
     private String sourceAccountId;
     private String sourceAccountName;
+    private int sourceAccountIcon;
+    private int sourceAccountColor;
     private String destinationAccountId;
     private String destinationAccountName;
+    private int destinationAccountIcon;
+    private int destinationAccountColor;
     private Double amount;
     private Date date;
     private String description;
     private Date createdAt;
     private Date updatedAt;
 
-    public Transfer(String id, String sourceAccountId, String sourceAccountName, String destinationAccountId, String destinationAccountName, Double amount, Date date, String description, Date createdAt, Date updatedAt) {
+    public Transfer(String id, String sourceAccountId, String sourceAccountName, int sourceAccountIcon, int sourceAccountColor, String destinationAccountId, String destinationAccountName, int destinationAccountIcon, int destinationAccountColor, Double amount, Date date, String description, Date createdAt, Date updatedAt) {
         this.id = id;
         this.sourceAccountId = sourceAccountId;
         this.sourceAccountName = sourceAccountName;
+        this.sourceAccountIcon = sourceAccountIcon;
+        this.sourceAccountColor = sourceAccountColor;
         this.destinationAccountId = destinationAccountId;
         this.destinationAccountName = destinationAccountName;
+        this.destinationAccountIcon = destinationAccountIcon;
+        this.destinationAccountColor = destinationAccountColor;
         this.amount = amount;
         this.date = date;
         this.description = description;
@@ -105,5 +114,42 @@ public class Transfer {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getFormattedAmount() {
+        if (amount == null) return "0";
+        return String.format(Locale.getDefault(), "%,.0f", Math.abs(amount)).replace(",", ".");
+    }
+
+    public int getSourceAccountIcon() {
+        return sourceAccountIcon;
+    }
+
+    public void setSourceAccountIcon(int sourceAccountIcon) {
+        this.sourceAccountIcon = sourceAccountIcon;
+    }
+
+    public int getSourceAccountColor() {
+        return sourceAccountColor;
+    }
+
+    public void setSourceAccountColor(int sourceAccountColor) {
+        this.sourceAccountColor = sourceAccountColor;
+    }
+
+    public int getDestinationAccountIcon() {
+        return destinationAccountIcon;
+    }
+
+    public void setDestinationAccountIcon(int destinationAccountIcon) {
+        this.destinationAccountIcon = destinationAccountIcon;
+    }
+
+    public int getDestinationAccountColor() {
+        return destinationAccountColor;
+    }
+
+    public void setDestinationAccountColor(int destinationAccountColor) {
+        this.destinationAccountColor = destinationAccountColor;
     }
 }

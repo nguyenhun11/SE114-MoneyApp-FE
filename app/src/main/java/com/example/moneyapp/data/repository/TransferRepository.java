@@ -3,7 +3,7 @@ package com.example.moneyapp.data.repository;
 import android.content.Context;
 import androidx.annotation.NonNull;
 
-import com.example.moneyapp.data.remote.request.TransactionRequest;
+import com.example.moneyapp.data.remote.request.TransferRequest;
 import com.example.moneyapp.data.remote.response.TransferResponse;
 import com.example.moneyapp.model.Transfer;
 import com.example.moneyapp.utils.DateConverter;
@@ -17,7 +17,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class TransferRepository extends BaseRepository {
-
     public interface TransferCallback<T> {
         void onSuccess(T result);
         void onError(String message);
@@ -32,8 +31,12 @@ public class TransferRepository extends BaseRepository {
                 response.getId(),
                 response.getSourceAccountId(),
                 response.getSourceAccountName(),
+                response.getSourceAccountIcon(),
+                response.getSourceAccountColor(),
                 response.getDestinationAccountId(),
                 response.getDestinationAccountName(),
+                response.getDestinationAccountIcon(),
+                response.getDestinationAccountColor(),
                 response.getAmount(),
                 DateConverter.convertStringToDate(response.getTransferDate()),
                 response.getDescription(),
@@ -67,7 +70,25 @@ public class TransferRepository extends BaseRepository {
         });
     }
 
-    public void createTransfer(TransactionRequest request, TransferCallback<Transfer> callback) {
+    public void getTransferById(String id, TransferCallback<Transfer> callback) {
+        apiService.getTransferById(id).enqueue(new Callback<TransferResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<TransferResponse> call, @NonNull Response<TransferResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(mapToTransfer(response.body()));
+                } else {
+                    callback.onError("Không tìm thấy thông tin chuyển khoản: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<TransferResponse> call, @NonNull Throwable t) {
+                callback.onError("Lỗi kết nối: " + t.getMessage());
+            }
+        });
+    }
+
+    public void createTransfer(TransferRequest request, TransferCallback<Transfer> callback) {
         apiService.createTransfer(request).enqueue(new Callback<TransferResponse>() {
             @Override
             public void onResponse(@NonNull Call<TransferResponse> call, @NonNull Response<TransferResponse> response) {
@@ -75,6 +96,24 @@ public class TransferRepository extends BaseRepository {
                     callback.onSuccess(mapToTransfer(response.body()));
                 } else {
                     callback.onError("Chuyển khoản thất bại: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<TransferResponse> call, @NonNull Throwable t) {
+                callback.onError("Lỗi kết nối: " + t.getMessage());
+            }
+        });
+    }
+
+    public void updateTransfer(String id, TransferRequest request, TransferCallback<Transfer> callback) {
+        apiService.updateTransfer(id, request).enqueue(new Callback<TransferResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<TransferResponse> call, @NonNull Response<TransferResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(mapToTransfer(response.body()));
+                } else {
+                    callback.onError("Cập nhật thất bại: " + response.code());
                 }
             }
 

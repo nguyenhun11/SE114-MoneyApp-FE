@@ -3,6 +3,7 @@ package com.example.moneyapp.data.remote.api;
 import com.example.moneyapp.data.remote.request.AccountRequest;
 import com.example.moneyapp.data.remote.request.AdjustBalanceRequest;
 import com.example.moneyapp.data.remote.request.CategoryGroupRequest;
+import com.example.moneyapp.data.remote.request.TransferRequest;
 import com.example.moneyapp.data.remote.response.CategoryGroupResponse;
 import com.example.moneyapp.data.remote.request.CategoryRequest;
 import com.example.moneyapp.data.remote.request.ChangePasswordRequest;
@@ -168,9 +169,9 @@ public interface ApiService {
     @GET("api/Transfer/{id}")
     Call<TransferResponse> getTransferById(@Path("id") String id);
     @POST("api/Transfer")
-    Call<TransferResponse> createTransfer(@Body TransactionRequest request);
+    Call<TransferResponse> createTransfer(@Body TransferRequest request);
     @PUT("api/Transfer/{id}")
-    Call<TransferResponse> updateTransfer(@Path("id") String id, @Body TransactionRequest request);
+    Call<TransferResponse> updateTransfer(@Path("id") String id, @Body TransferRequest request);
     @DELETE("api/Transfer/{id}")
     Call<Void> deleteTransfer(@Path("id") String id);
     //endregion
