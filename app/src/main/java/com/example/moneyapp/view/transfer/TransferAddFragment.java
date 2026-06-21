@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
@@ -48,6 +49,8 @@ public class TransferAddFragment extends BaseFragment {
 
     // Views
     private EditText etAmount, etDescription;
+    private View btnOpenCalculator, btnSelectCurrency;
+    private TextView tvCurrency;
     private AccountSelectorView viewSelectSource, viewSelectDest; // Chỉ dùng Component mới
     private LinearLayout btnDateToday, btnDateYesterday, btnDateRecent, btnPickDate;
     private TextView tvTodayValue, tvYesterdayValue, tvRecentValue, tvRecentLabel;
@@ -90,6 +93,10 @@ public class TransferAddFragment extends BaseFragment {
 
     private void initViews(View view) {
         etAmount = view.findViewById(R.id.etAmount);
+        btnOpenCalculator = view.findViewById(R.id.btnOpenCalculator);
+        btnSelectCurrency = view.findViewById(R.id.btnSelectCurrency);
+        tvCurrency = view.findViewById(R.id.tvCurrency);
+
         etDescription = view.findViewById(R.id.etDescription);
 
         // Ánh xạ Component
@@ -138,6 +145,27 @@ public class TransferAddFragment extends BaseFragment {
                     etAmount.addTextChangedListener(this);
                 }
             }
+        });
+        etAmount.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorInfo));
+
+        btnOpenCalculator.setOnClickListener(v -> {
+            String currentValue = etAmount.getText().toString();
+            PopupHelper.showCalculatorPopup(requireContext(), currentValue, result -> {
+                etAmount.setText(String.format(Locale.US, "%.0f", result));
+            });
+        });
+
+        btnSelectCurrency.setOnClickListener(v -> {
+            android.widget.PopupMenu popup = new android.widget.PopupMenu(requireContext(), v);
+            popup.getMenu().add("VND");
+            popup.getMenu().add("USD");
+            popup.getMenu().add("EUR");
+            popup.setOnMenuItemClickListener(item -> {
+                tvCurrency.setText(item.getTitle());
+                // TODO: Xử lý thay đổi tỷ giá nếu cần thiết ở đây
+                return true;
+            });
+            popup.show();
         });
     }
 
