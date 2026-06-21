@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupSideMenuIcons(NavController navController) {
         setupSideMenuItem(R.id.btn_statistics, "gmd_insert_chart", "Thống kê", R.id.statisticsFragment, navController);
+        setupSideMenuItem(R.id.btn_goals, "gmd_star", getString(R.string.goal_title), R.id.goalFragment, navController);
         setupSideMenuItem(R.id.btn_categories, "gmd_category", "Hạng mục", R.id.categoryFragment, navController);
         setupSideMenuItem(R.id.btn_info, "gmd_info", "Thông tin", R.id.informationFragment, navController);
         setupSideMenuItem(R.id.btn_settings, "gmd_settings", "Cài đặt", R.id.settingsFragment, navController);

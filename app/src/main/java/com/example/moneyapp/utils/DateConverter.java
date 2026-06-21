@@ -51,4 +51,18 @@ public class DateConverter {
         SimpleDateFormat format = new SimpleDateFormat(API_DATE_FORMAT, Locale.getDefault());
         return format.format(date);
     }
+
+    public static String formatToDisplay(String apiDateString) {
+        if (apiDateString == null || apiDateString.isEmpty()) return "";
+        try {
+            // Cắt bớt phần giờ nếu là yyyy-MM-dd
+            String dateOnly = apiDateString.split("T")[0];
+            SimpleDateFormat apiFmt = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date date = apiFmt.parse(dateOnly);
+            if (date == null) return apiDateString;
+            return new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(date);
+        } catch (Exception e) {
+            return apiDateString;
+        }
+    }
 }

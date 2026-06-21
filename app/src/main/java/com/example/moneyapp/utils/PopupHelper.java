@@ -114,6 +114,52 @@ public class PopupHelper {
         showPicker(context, false, "Chọn biểu tượng", listener);
     }
 
+    public static void showGoalIconPicker(Context context, OnResourceSelectedListener listener) {
+        showGoalPicker(context, "Chọn biểu tượng mục tiêu", listener);
+    }
+
+    private static void showGoalPicker(Context context, String title, OnResourceSelectedListener listener) {
+        BottomSheetDialog dialog = new BottomSheetDialog(context);
+        View view = createBaseSheetView(context, title);
+
+        RecyclerView rvList = view.findViewById(R.id.rv_items);
+        rvList.setLayoutManager(new GridLayoutManager(context, 4));
+
+        int startIdx = AppResourceManager.getGoalIconStart();
+        int count = AppResourceManager.getIconCount() - startIdx;
+
+        RecyclerView.Adapter<RecyclerView.ViewHolder> adapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            @Override
+            public int getItemCount() {
+                return count;
+            }
+
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View itemView = LayoutInflater.from(context).inflate(R.layout.item_selector_icon, parent, false);
+                return new RecyclerView.ViewHolder(itemView) {};
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+                int actualPos = startIdx + position;
+                IconicsImageView ivIcon = holder.itemView.findViewById(R.id.iv_icon);
+                ivIcon.setImageDrawable(AppResourceManager.getBlackIcon(context, actualPos));
+
+                holder.itemView.setOnClickListener(v -> {
+                    if (listener != null) listener.onSelected(actualPos);
+                    dialog.dismiss();
+                });
+            }
+        };
+
+        rvList.setAdapter(adapter);
+        dialog.setContentView(view);
+        setupBottomSheetBehavior(dialog, context);
+        dialog.show();
+    }
+
     private static void showPicker(Context context, boolean isColorPicker, String title, OnResourceSelectedListener listener) {
         BottomSheetDialog dialog = new BottomSheetDialog(context);
         View view = createBaseSheetView(context, title);

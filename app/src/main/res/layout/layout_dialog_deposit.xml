@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Số tiền nạp"
+        android:textColor="@color/colorOnSurface"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/et_deposit_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_edittext_outline"
+        android:hint="0"
+        android:inputType="numberDecimal"
+        android:padding="12dp"
+        android:textColor="@color/colorOnSurface"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Chọn nguồn tiền"
+        android:textColor="@color/colorOnSurface"
+        android:textStyle="bold" />
+
+    <com.example.moneyapp.view.components.AccountSelectorView
+        android:id="@+id/view_select_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>
