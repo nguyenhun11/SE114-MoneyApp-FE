@@ -48,6 +48,17 @@
                     layout="@layout/layout_amount_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tvConvertedAmount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="≈ 0 VND"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorOnSurfaceVariant"
+                    android:textSize="15sp"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
 
                 <TextView
                     style="@style/InputLabel"

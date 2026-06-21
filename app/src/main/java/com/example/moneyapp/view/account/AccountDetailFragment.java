@@ -7,14 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
@@ -25,7 +23,6 @@ import com.example.moneyapp.utils.CurrencyFormatter;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.AccountViewModel;
-import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.text.SimpleDateFormat;
@@ -43,11 +40,18 @@ public class AccountDetailFragment extends BaseFragment {
     private SwitchCompat switchExclude;
     private TextView tvCreatedAt;
 
+    // UI Tiền tệ
+    private View btnSelectCurrency;
+    private TextView tvCurrency;
+
     // State Variables
     private String currentAccountId = null;
     private int selectedIconId = 1;
     private int selectedColorId = 2;
     private boolean isDataPopulated = false;
+
+    // Biến lưu trữ tiền tệ hiện tại (Mặc định là VND)
+    private String currentCurrencyCode = "VND";
 
     @Override
     protected String getFabIcon() {
@@ -84,6 +88,10 @@ public class AccountDetailFragment extends BaseFragment {
         switchExclude = view.findViewById(R.id.switch_exclude_total);
         tvCreatedAt = view.findViewById(R.id.tv_created_at);
 
+        // Ánh xạ View chọn tiền tệ (Bạn nhớ thêm ID này vào fragment_account_detail.xml nhé)
+        btnSelectCurrency = view.findViewById(R.id.btnSelectCurrency);
+        tvCurrency = view.findViewById(R.id.tvCurrency);
+
         if (getArguments() != null) {
             currentAccountId = getArguments().getString("accountId", null);
         }
@@ -92,17 +100,52 @@ public class AccountDetailFragment extends BaseFragment {
         setupHeader(view, title, true);
 
         setupPickers(view);
+        setupCurrencyPicker();
         setupCurrencyFormatter();
         observeViewModel();
 
         if (currentAccountId != null) {
             tvCreatedAt.setVisibility(View.VISIBLE);
             viewModel.loadAccounts();
+
+            // Nếu là Edit (Sửa ví) -> KHÔNG cho phép đổi tiền tệ
+            if (btnSelectCurrency != null) {
+                btnSelectCurrency.setClickable(false);
+                btnSelectCurrency.setAlpha(0.6f); // Làm mờ đi để UX tốt hơn
+            }
         } else {
             updateIconUI(selectedIconId);
             updateColorUI(selectedColorId);
             tvCreatedAt.setVisibility(View.GONE);
+
+            if (tvCurrency != null) {
+                tvCurrency.setText(currentCurrencyCode);
+            }
         }
+    }
+
+    // Thiết lập Popup chọn tiền tệ
+    private void setupCurrencyPicker() {
+        if (btnSelectCurrency == null) return;
+
+        btnSelectCurrency.setOnClickListener(v -> {
+            if (currentAccountId != null) {
+                Toast.makeText(requireContext(), "Không thể đổi đơn vị tiền tệ của ví đã tạo", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            android.widget.PopupMenu popup = new android.widget.PopupMenu(requireContext(), v);
+            popup.getMenu().add("VND");
+            popup.getMenu().add("USD");
+            popup.getMenu().add("EUR");
+            popup.getMenu().add("JPY");
+            popup.setOnMenuItemClickListener(item -> {
+                currentCurrencyCode = item.getTitle().toString();
+                tvCurrency.setText(currentCurrencyCode);
+                return true;
+            });
+            popup.show();
+        });
     }
 
     private void setupCurrencyFormatter() {
@@ -169,7 +212,6 @@ public class AccountDetailFragment extends BaseFragment {
 
     private void performSave() {
         String name = etName.getText().toString().trim();
-
         String balanceStr = etBalance.getText().toString().trim().replaceAll("[.,]", "");
         String description = etDescription.getText().toString().trim();
 
@@ -194,6 +236,7 @@ public class AccountDetailFragment extends BaseFragment {
                 currentAccountId,
                 name,
                 balance,
+                currentCurrencyCode,
                 selectedColorId,
                 selectedIconId,
                 description,
@@ -227,6 +270,11 @@ public class AccountDetailFragment extends BaseFragment {
                     selectedColorId = acc.getColor();
                     updateIconUI(selectedIconId);
                     updateColorUI(selectedColorId);
+
+                    currentCurrencyCode = acc.getCurrencyCode();
+                    if (tvCurrency != null && currentCurrencyCode != null) {
+                        tvCurrency.setText(currentCurrencyCode);
+                    }
 
                     if (acc.getCreatedAt() != null) {
                         SimpleDateFormat sdf = new SimpleDateFormat("'Tạo vào' HH:mm dd/M/yyyy", Locale.getDefault());

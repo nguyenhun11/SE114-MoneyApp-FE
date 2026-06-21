@@ -11,6 +11,7 @@ import com.example.moneyapp.data.repository.AccountRepository;
 import com.example.moneyapp.model.Account;
 
 import java.util.List;
+import java.util.Map;
 
 public class AccountViewModel extends AndroidViewModel {
     private final AccountRepository repository;
@@ -64,10 +65,22 @@ public class AccountViewModel extends AndroidViewModel {
     }
 
     public void loadTotalBalance() {
-        repository.getTotalBalance(new AccountRepository.AccountCallback<Double>() {
+        repository.getTotalBalance(new AccountRepository.AccountCallback<Map<String, Double>>() {
             @Override
-            public void onSuccess(Double result) {
-                totalBalanceLiveData.postValue(result);
+            public void onSuccess(Map<String, Double> result) {
+                double totalBaseAmount = 0.0;
+                String systemCurrency = "VND"; // Đơn vị hệ thống
+
+                if (result != null) {
+                    for (Map.Entry<String, Double> entry : result.entrySet()) {
+                        String currency = entry.getKey();
+                        double amount = entry.getValue();
+                        totalBaseAmount += amount * getMockExchangeRate(currency, systemCurrency);
+                    }
+                }
+
+                // Đẩy con số cuối cùng lên cho Giao diện
+                totalBalanceLiveData.postValue(totalBaseAmount);
             }
 
             @Override
@@ -118,5 +131,13 @@ public class AccountViewModel extends AndroidViewModel {
                 errorLiveData.postValue(message);
             }
         });
+    }
+
+    private double getMockExchangeRate(String fromCurrency, String toCurrency) {
+        if (fromCurrency.equals(toCurrency)) return 1.0;
+        if (fromCurrency.equals("USD") && toCurrency.equals("VND")) return 25000.0;
+        if (fromCurrency.equals("EUR") && toCurrency.equals("VND")) return 27000.0;
+        if (fromCurrency.equals("JPY") && toCurrency.equals("VND")) return 160.0;
+        return 1.0;
     }
 }
