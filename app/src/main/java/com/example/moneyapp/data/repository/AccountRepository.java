@@ -35,6 +35,7 @@ public class AccountRepository extends BaseRepository {
                 response.getId(),
                 response.getAccountName(),
                 response.getBalance(),
+                response.getCurrencyCode(),
                 response.getColorId(),
                 response.getIconId(),
                 response.getDescription(),
@@ -120,6 +121,7 @@ public class AccountRepository extends BaseRepository {
         AccountRequest request = new AccountRequest(
                 account.getAccountName(),
                 account.getBalance(),
+                account.getCurrencyCode(),
                 account.getColor(),
                 account.getIcon(),
                 account.getDescription(),
@@ -155,6 +157,7 @@ public class AccountRepository extends BaseRepository {
         AccountRequest request = new AccountRequest(
                 account.getAccountName(),
                 account.getBalance(),
+                account.getCurrencyCode(),
                 account.getColor(),
                 account.getIcon(),
                 account.getDescription(),

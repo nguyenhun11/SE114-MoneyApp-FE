@@ -245,7 +245,7 @@ public class TransferAddFragment extends BaseFragment {
                 loadedTransfer = transfer;
 
                 // 1. Phục hồi số tiền và ghi chú
-                etAmount.setText(String.valueOf(transfer.getAmount().longValue()));
+                etAmount.setText(String.valueOf(transfer.getSourceAmount().longValue()));
                 if (transfer.getDescription() != null) etDescription.setText(transfer.getDescription());
 
                 // 2. Phục hồi thời gian

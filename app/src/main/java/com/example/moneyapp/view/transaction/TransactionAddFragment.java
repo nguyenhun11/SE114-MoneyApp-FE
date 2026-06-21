@@ -204,7 +204,7 @@ public class TransactionAddFragment extends BaseFragment {
     private void observeViewModels() {
         transactionViewModel.getSelectedTransaction().observe(getViewLifecycleOwner(), t -> {
             if (t != null && editTransactionId != null) {
-                etAmount.setText(String.valueOf((long) Math.abs(t.getAmount())));
+                etAmount.setText(String.valueOf((long) Math.abs(t.getBaseAmount())));
                 if (t.getNote() != null) etDescription.setText(t.getNote());
 
                 box3Date = truncateTime(t.getDate());

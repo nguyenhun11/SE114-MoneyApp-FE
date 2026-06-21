@@ -12,7 +12,11 @@ public class Transaction {
     private String categoryId;
     private String categoryName;
     private CategoryType type;
-    private Double amount;
+    private Double originalAmount;
+    private String currencyCode;
+    private Double accountAmount;
+    private Double baseAmount;
+    private Double exchangeRate;
     private Date date;
     private String note;
     private int categoryColorId;
@@ -28,8 +32,8 @@ public class Transaction {
                        String accountName,
                        String categoryId,
                        String categoryName,
-                       CategoryType type,
-                       Double amount,
+                       CategoryType type, Double originalAmount, String currencyCode, Double accountAmount,
+                       Double baseAmount, Double exchangeRate,
                        Date date,
                        String note, int categoryColorId, int categoryIconId, int accountColorId, int accountIconId,
                        List<String> imageUrls, Date createdAt) {
@@ -39,7 +43,11 @@ public class Transaction {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.type = type;
-        this.amount = amount;
+        this.originalAmount = originalAmount;
+        this.currencyCode = currencyCode;
+        this.accountAmount = accountAmount;
+        this.baseAmount = baseAmount;
+        this.exchangeRate = exchangeRate;
         this.date = date;
         this.note = note;
         this.categoryColorId = categoryColorId;
@@ -68,8 +76,8 @@ public class Transaction {
     public CategoryType getType() { return type; }
     public void setType(CategoryType type) { this.type = type; }
 
-    public Double getAmount() { return amount; }
-    public void setAmount(Double amount) { this.amount = amount; }
+    public Double getBaseAmount() { return baseAmount; }
+    public void setBaseAmount(Double baseAmount) { this.baseAmount = baseAmount; }
 
     public Date getDate() { return date; }
     public void setDate(Date date) { this.date = date; }
@@ -82,8 +90,8 @@ public class Transaction {
 
     // Helpers cho View
     public String getFormattedAmount() {
-        if (amount == null) return "0";
-        return String.format(Locale.getDefault(), "%,.0f", Math.abs(amount)).replace(",", ".");
+        if (baseAmount == null) return "0";
+        return String.format(Locale.getDefault(), "%,.0f", Math.abs(baseAmount)).replace(",", ".");
     }
 
     public String getFormattedDate() {
@@ -146,5 +154,37 @@ public class Transaction {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Double getOriginalAmount() {
+        return originalAmount;
+    }
+
+    public void setOriginalAmount(Double originalAmount) {
+        this.originalAmount = originalAmount;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+    }
+
+    public Double getAccountAmount() {
+        return accountAmount;
+    }
+
+    public void setAccountAmount(Double accountAmount) {
+        this.accountAmount = accountAmount;
+    }
+
+    public Double getExchangeRate() {
+        return exchangeRate;
+    }
+
+    public void setExchangeRate(Double exchangeRate) {
+        this.exchangeRate = exchangeRate;
     }
 }

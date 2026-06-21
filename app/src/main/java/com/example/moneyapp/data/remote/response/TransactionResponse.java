@@ -9,7 +9,11 @@ public class TransactionResponse {
     private String categoryId;
     private String categoryName;
     private Integer type;
-    private Double amount;
+    private Double originalAmount;
+    private String currencyCode;
+    private Double accountAmount;
+    private Double baseAmount;
+    private Double exchangeRate;
     private String date;
     private String note;
     private int categoryColorId;
@@ -20,14 +24,18 @@ public class TransactionResponse {
     private String createdAt;
     private String lastUpdatedAt;
 
-    public TransactionResponse(String id, String accountId, String accountName, String categoryId, String categoryName, Integer type, Double amount, String date, String note, int categoryColorId, int categoryIconId, int accountColorId, int accountIconId, List<String> imageUrls, String createdAt, String lastUpdatedAt) {
+    public TransactionResponse(String id, String accountId, String accountName, String categoryId, String categoryName, Integer type, String currencyCode, Double accountAmount, Double baseAmount, Double originalAmount, Double exchangeRate, String date, String note, int categoryColorId, int categoryIconId, int accountColorId, int accountIconId, List<String> imageUrls, String createdAt, String lastUpdatedAt) {
         this.id = id;
         this.accountId = accountId;
         this.accountName = accountName;
         this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.type = type;
-        this.amount = amount;
+        this.currencyCode = currencyCode;
+        this.accountAmount = accountAmount;
+        this.originalAmount = originalAmount;
+        this.baseAmount = baseAmount;
+        this.exchangeRate = exchangeRate;
         this.date = date;
         this.note = note;
         this.categoryColorId = categoryColorId;
@@ -61,14 +69,6 @@ public class TransactionResponse {
 
     public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
-    }
-
-    public Double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Double amount) {
-        this.amount = amount;
     }
 
     public String getDate() {
@@ -165,5 +165,45 @@ public class TransactionResponse {
 
     public void setAccountIconId(int accountIconId) {
         this.accountIconId = accountIconId;
+    }
+
+    public Double getOriginalAmount() {
+        return originalAmount;
+    }
+
+    public void setOriginalAmount(Double originalAmount) {
+        this.originalAmount = originalAmount;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+    }
+
+    public Double getAccountAmount() {
+        return accountAmount;
+    }
+
+    public void setAccountAmount(Double accountAmount) {
+        this.accountAmount = accountAmount;
+    }
+
+    public Double getBaseAmount() {
+        return baseAmount;
+    }
+
+    public void setBaseAmount(Double baseAmount) {
+        this.baseAmount = baseAmount;
+    }
+
+    public Double getExchangeRate() {
+        return exchangeRate;
+    }
+
+    public void setExchangeRate(Double exchangeRate) {
+        this.exchangeRate = exchangeRate;
     }
 }

@@ -190,7 +190,18 @@ public class AccountDetailFragment extends BaseFragment {
 
         boolean includeInTotal = !switchExclude.isChecked();
 
-        Account accountToSave = new Account(currentAccountId, name, balance, selectedColorId, selectedIconId, description, includeInTotal, 0, new Date(), new Date());
+        Account accountToSave = new Account(
+                currentAccountId,
+                name,
+                balance,
+                selectedColorId,
+                selectedIconId,
+                description,
+                includeInTotal,
+                0,
+                new Date(),
+                new Date()
+        );
 
         if (currentAccountId == null) {
             viewModel.addAccount(accountToSave);

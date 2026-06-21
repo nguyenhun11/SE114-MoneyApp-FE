@@ -16,11 +16,9 @@ import com.example.moneyapp.R;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.utils.AppResourceManager;
-import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.List;
-import java.util.Locale;
 
 public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChildAdapter.ViewHolder> {
     private final List<Transaction> transactions;
@@ -78,7 +76,7 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
         }
 
         // XỬ LÝ TIỀN
-        if (t.getAmount() != null) {
+        if (t.getBaseAmount() != null) {
             CategoryType type = t.getType();
             if (type == CategoryType.EXPENSE) {
                 holder.tvAmount.setText("-" + t.getFormattedAmount() + "đ");

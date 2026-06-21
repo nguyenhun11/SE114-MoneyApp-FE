@@ -100,7 +100,7 @@ public class TransferChildAdapter extends RecyclerView.Adapter<TransferChildAdap
                 holder.tvNote.setVisibility(View.GONE);
             }
 
-            holder.tvAmount.setText(CurrencyFormatter.formatVND(t.getAmount()) + "đ");
+            holder.tvAmount.setText(CurrencyFormatter.formatVND(t.getSourceAmount()) + "đ");
             holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorInfo));
 
         } else if (item.getType() == HistoryItem.TYPE_ADJUST_BALANCE) {

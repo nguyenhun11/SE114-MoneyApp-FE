@@ -107,7 +107,7 @@ public class TransactionDetailFragment extends BaseFragment {
                         tvCreatedAt.setText("");
                     }
 
-                    if (t.getAmount() != null && t.getAmount() < 0) {
+                    if (t.getBaseAmount() != null && t.getBaseAmount() < 0) {
                         tvAmount.setText(String.format("%s đ", t.getFormattedAmount()));
                         tvAmount.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorDanger));
                     } else {

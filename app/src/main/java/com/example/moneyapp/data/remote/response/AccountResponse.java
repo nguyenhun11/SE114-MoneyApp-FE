@@ -6,18 +6,20 @@ public class AccountResponse {
     private int colorId;
     private int iconId;
     private double balance;
+    private String currencyCode;
     private String description;
     private boolean includeInTotalBalance;
     private int sortingOrder;
     private String createdAt;
     private String lastUpdatedAt;
 
-    public AccountResponse(String id, String accountName, int colorId, int iconId, double balance, String description, boolean includeInTotalBalance, int sortingOrder, String createdAt, String lastUpdatedAt) {
+    public AccountResponse(String id, String accountName, int colorId, int iconId, double balance, String currencyCode, String description, boolean includeInTotalBalance, int sortingOrder, String createdAt, String lastUpdatedAt) {
         this.id = id;
         this.accountName = accountName;
         this.colorId = colorId;
         this.iconId = iconId;
         this.balance = balance;
+        this.currencyCode = currencyCode;
         this.description = description;
         this.includeInTotalBalance = includeInTotalBalance;
         this.sortingOrder = sortingOrder;
@@ -103,5 +105,13 @@ public class AccountResponse {
 
     public void setLastUpdatedAt(String lastUpdatedAt) {
         this.lastUpdatedAt = lastUpdatedAt;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
     }
 }
