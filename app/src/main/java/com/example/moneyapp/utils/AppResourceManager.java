@@ -31,23 +31,37 @@ public class AppResourceManager {
 
     // Danh sách các Icon khả dụng (Format gmd-xxx cho Iconics)
     private static final String[] ICON_LIST = {
-            "gmd-receipt",          // 0: Giao dịch
-            "gmd-home",             // 1: Nhà
-            "gmd-account-balance",  // 2: Ngân hàng/Ví
-            "gmd-person",           // 3: Người dùng
-            "gmd-insert-chart",     // 4: Thống kê
-            "gmd-add",              // 5: Thêm
-            "gmd-more-vert",        // 6: Thêm nữa
-            "gmd-swap-horiz",       // 7: Chuyển khoản
-            "gmd-arrow-back",       // 8: Quay lại
-            "gmd-account-balance-wallet", // 9: Ví
-            "gmd-shopping-cart",    // 10: Mua sắm
-            "gmd-restaurant",       // 11: Ăn uống
-            "gmd-directions-car",   // 12: Di chuyển
-            "gmd-local-attraction", // 13: Giải trí
-            "gmd-work",             // 14: Lương/Công việc
-            "gmd-help-outline"      // 15: Khác
+            "gmd_receipt",          // 0: Giao dịch
+            "gmd_home",             // 1: Nhà
+            "gmd_account_balance",  // 2: Ngân hàng/Ví
+            "gmd_person",           // 3: Người dùng
+            "gmd_insert_chart",     // 4: Thống kê
+            "gmd_add",              // 5: Thêm
+            "gmd_more_vert",        // 6: Thêm nữa
+            "gmd_swap_horiz",       // 7: Chuyển khoản
+            "gmd_arrow_back",       // 8: Quay lại
+            "gmd_account_balance_wallet", // 9: Ví
+            "gmd_shopping_cart",    // 10: Mua sắm
+            "gmd_restaurant",       // 11: Ăn uống
+            "gmd_directions_car",   // 12: Di chuyển
+            "gmd_local_attraction", // 13: Giải trí
+            "gmd_work",             // 14: Lương/Công việc
+            "gmd_help_outline",     // 15: Khác
+            // Icon cho Mục tiêu (Bắt đầu từ index 16)
+            "gmd_star",             // 16
+            "gmd_account_balance_wallet", // 17 (Thay gmd_savings bị lỗi)
+            "gmd_directions_bike",  // 18
+            "gmd_flight",           // 19
+            "gmd_laptop",           // 20
+            "gmd_smartphone",       // 21
+            "gmd_favorite",         // 22
+            "gmd_home",             // 23
+            "gmd_directions_car"    // 24
     };
+
+    public static int getGoalIconStart() {
+        return 16;
+    }
 
     /**
      * Lấy mã màu từ Color ID (index)
@@ -66,7 +80,7 @@ public class AppResourceManager {
         if (iconId >= 0 && iconId < ICON_LIST.length) {
             return ICON_LIST[iconId];
         }
-        return "gmd-receipt"; // Mặc định
+        return "gmd_receipt"; // Mặc định
     }
 
     // =========================================================

@@ -3,6 +3,8 @@ package com.example.moneyapp.data.remote.api;
 import com.example.moneyapp.data.remote.request.AccountRequest;
 import com.example.moneyapp.data.remote.request.AdjustBalanceRequest;
 import com.example.moneyapp.data.remote.request.CategoryGroupRequest;
+import com.example.moneyapp.data.remote.request.DepositRequest;
+import com.example.moneyapp.data.remote.request.GoalRequest;
 import com.example.moneyapp.data.remote.request.TransferRequest;
 import com.example.moneyapp.data.remote.response.CategoryGroupResponse;
 import com.example.moneyapp.data.remote.request.CategoryRequest;
@@ -25,6 +27,7 @@ import com.example.moneyapp.data.remote.response.AuthResponse;
 import com.example.moneyapp.data.remote.response.CashFlowBarDto;
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
 import com.example.moneyapp.data.remote.response.CategoryResponse;
+import com.example.moneyapp.data.remote.response.GoalResponse;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
 import com.example.moneyapp.data.remote.response.TransactionResponse;
 import com.example.moneyapp.data.remote.response.TransferResponse;
@@ -221,5 +224,22 @@ public interface ApiService {
             @Query("groupBy") int groupBy,
             @Query("timeZoneOffset") int timeZoneOffset
     );
+    //endregion
+
+    //region Goals
+    @GET("api/Goals")
+    Call<List<GoalResponse>> getAllGoals();
+
+    @POST("api/Goals")
+    Call<GoalResponse> createGoal(@Body GoalRequest request);
+
+    @PUT("api/Goals/{id}")
+    Call<Void> updateGoal(@Path("id") int id, @Body GoalRequest request);
+
+    @DELETE("api/Goals/{id}")
+    Call<Void> deleteGoal(@Path("id") int id);
+
+    @POST("api/Goals/{id}/deposit")
+    Call<GoalResponse> depositToGoal(@Path("id") int id, @Body DepositRequest request);
     //endregion
 }

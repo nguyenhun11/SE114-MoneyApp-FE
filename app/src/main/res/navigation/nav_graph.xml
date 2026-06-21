@@ -133,4 +133,34 @@
         android:label="Thông tin"
         tools:layout="@layout/fragment_information" />
 
+    <!-- Saving Goals -->
+    <fragment
+        android:id="@+id/goalFragment"
+        android:name="com.example.moneyapp.view.goal.GoalFragment"
+        android:label="@string/goal_title"
+        tools:layout="@layout/fragment_goal">
+        <action
+            android:id="@+id/action_goalFragment_to_goalAddFragment"
+            app:destination="@id/goalAddFragment" />
+        <action
+            android:id="@+id/action_goalFragment_to_goalDetailFragment"
+            app:destination="@id/goalDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/goalAddFragment"
+        android:name="com.example.moneyapp.view.goal.GoalAddFragment"
+        android:label="@string/add_goal_title"
+        tools:layout="@layout/fragment_goal_add" />
+
+    <fragment
+        android:id="@+id/goalDetailFragment"
+        android:name="com.example.moneyapp.view.goal.GoalDetailFragment"
+        android:label="Chi tiết mục tiêu"
+        tools:layout="@layout/fragment_goal_detail">
+        <action
+            android:id="@+id/action_goalDetailFragment_to_goalAddFragment"
+            app:destination="@id/goalAddFragment" />
+    </fragment>
+
 </navigation>

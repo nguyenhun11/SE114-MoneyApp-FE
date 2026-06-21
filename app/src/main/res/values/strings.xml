@@ -104,6 +104,19 @@
     <string name="category_income_budget_label">Thu nhập dự kiến trong tháng</string>
     <string name="category_name_hint">Tên hạng mục</string>
     <string name="category_budget_hint">0</string>
+
+    <!-- Goals -->
+    <string name="goal_deadline_label">Hạn định: %s</string>
+    <string name="goal_title">Mục tiêu tiết kiệm</string>
+    <string name="add_goal_title">Thêm mục tiêu</string>
+    <string name="edit_goal_title">Sửa mục tiêu</string>
+    <string name="goal_name_hint">Tên mục tiêu (vd: Mua xe)</string>
+    <string name="goal_target_amount_hint">Số tiền mục tiêu</string>
+    <string name="goal_deadline_hint">Ngày kết thúc</string>
+    <string name="save_goal">Lưu mục tiêu</string>
+    <string name="deposit_goal">Nạp tiền</string>
+    <string name="deposit_amount_hint">Số tiền nạp</string>
+    <string name="confirm_delete_goal">Bạn có chắc chắn muốn xóa mục tiêu này?</string>
     <string name="category_save_success">Đã lưu hạng mục</string>
     <string name="category_error_empty_name">Vui lòng nhập tên</string>
     <string name="category_group_other">Khác</string>

@@ -28,8 +28,9 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation"
             android:layout_width="match_parent"
-            android:layout_height="90dp"
+            android:layout_height="wrap_content"
             android:background="@color/colorSurface"
+            android:fitsSystemWindows="true"
             app:elevation="0dp"
             app:itemIconTint="@color/nav_item_color"
             app:itemPaddingTop="10dp"
@@ -79,6 +80,15 @@
 
         <include
             android:id="@+id/btn_statistics"
+            layout="@layout/item_more_menu" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorBorder" />
+
+        <include
+            android:id="@+id/btn_goals"
             layout="@layout/item_more_menu" />
 
         <View
