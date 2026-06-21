@@ -20,6 +20,7 @@ import com.example.moneyapp.viewmodel.AccountViewModel;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Map;
 
 public class AccountFragment extends BaseFragment {
 
@@ -59,12 +60,15 @@ public class AccountFragment extends BaseFragment {
     }
     private void observeViewModel(View view) {
         accountViewModel.getTotalBalanceLiveData().observe(getViewLifecycleOwner(), balance -> {
-            String formattedBalance = String.format(Locale.getDefault(), "%,.0f", balance).replace(",", ".");
+            String displayBalance = "0";
+            if (balance != null) {
+                displayBalance = String.format(Locale.getDefault(), "%,.0f đ", balance).replace(",", ".");
+            }
 
             setupBalanceSelector(
                     view,
                     getString(R.string.total_balance),
-                    formattedBalance,
+                    displayBalance,
                     false,
                     "gmd_history",
                     v -> {

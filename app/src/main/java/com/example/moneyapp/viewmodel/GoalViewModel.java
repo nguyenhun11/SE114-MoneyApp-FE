@@ -232,7 +232,8 @@ public class GoalViewModel extends AndroidViewModel {
                         0, // accColor
                         0, // accIcon
                         null, // imageUrls
-                        null // createdAt
+                        0, // moodId
+                        new Date() // createdAt
                 );
 
                 transactionRepository.createTransaction(transaction, new TransactionRepository.TransactionCallback<Transaction>() {

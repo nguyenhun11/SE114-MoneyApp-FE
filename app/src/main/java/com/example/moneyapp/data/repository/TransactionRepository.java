@@ -60,6 +60,7 @@ public class TransactionRepository extends BaseRepository {
                 response.getAccountColorId(),
                 response.getAccountIconId(),
                 response.getImageUrls(),
+                response.getMoodId(),
                 DateConverter.convertStringToDate(response.getCreatedAt())
         );
     }
@@ -78,7 +79,8 @@ public class TransactionRepository extends BaseRepository {
                 transaction.getExchangeRate(),
                 dateStr,
                 transaction.getNote(),
-                transaction.getImageUrls()
+                transaction.getImageUrls(),
+                transaction.getMoodId()
         );
     }
 

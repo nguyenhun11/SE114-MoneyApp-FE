@@ -20,10 +20,12 @@ import com.example.moneyapp.data.remote.response.StackedBarChartDto;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.category.CategorySummaryAdapter;
+import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.view.components.CustomMarkerView;
 import com.example.moneyapp.view.components.StatisticTimeSelectorView;
 import com.example.moneyapp.view.home.PieChartItem;
 import com.example.moneyapp.viewmodel.StatisticViewModel;
+import com.example.moneyapp.viewmodel.TransactionViewModel;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
@@ -43,12 +45,14 @@ import java.util.List;
 public class StatisticFragment extends BaseFragment {
 
     private StatisticViewModel statisticViewModel;
-    private int currentTab = 0; // 0: Chung, 1: Chi, 2: Thu
+    private TransactionViewModel transactionViewModel;
+    private int currentTab = 0; // 0: Chung, 1: Chi, 2: Thu, 3: Tâm trạng
 
     private Date currentStartDate;
     private Date currentEndDate;
 
     private BarChart barChart;
+    private com.github.mikephil.charting.charts.PieChart pieChartMood;
     private StatisticTimeSelectorView timeSelector;
     private int currentGroupBy = 2; // Mặc định là 2 (Tháng)
     private RecyclerView rvStatisticDetails;
@@ -70,17 +74,20 @@ public class StatisticFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         statisticViewModel = new ViewModelProvider(this).get(StatisticViewModel.class);
+        transactionViewModel = new ViewModelProvider(this).get(TransactionViewModel.class);
 
         setupHeader(view, R.string.stats_screen_title, false);
 
         barChart = view.findViewById(R.id.barChartCashFlow);
+        pieChartMood = view.findViewById(R.id.pieChartMood);
         timeSelector = view.findViewById(R.id.time_selector_stat);
         rvStatisticDetails = view.findViewById(R.id.rv_statistic_details);
 
         setupRecyclerView();
         setupBarChartStyle();
+        setupPieChartStyle();
 
-        setupThreeTabs(view, index -> {
+        setupFourTabs(view, 0, index -> {
             currentTab = index;
             loadDataByTab();
         });
@@ -146,6 +153,22 @@ public class StatisticFragment extends BaseFragment {
         });
 
         barChart.animateY(1000);
+    }
+
+    private void setupPieChartStyle() {
+        pieChartMood.setUsePercentValues(true);
+        pieChartMood.getDescription().setEnabled(false);
+        pieChartMood.setExtraOffsets(5, 10, 5, 5);
+        pieChartMood.setDragDecelerationFrictionCoef(0.95f);
+        pieChartMood.setDrawHoleEnabled(true);
+        pieChartMood.setHoleColor(android.R.color.transparent);
+        pieChartMood.setTransparentCircleRadius(61f);
+        pieChartMood.setHoleRadius(58f);
+        pieChartMood.setDrawCenterText(true);
+        pieChartMood.setRotationAngle(0);
+        pieChartMood.setRotationEnabled(true);
+        pieChartMood.setHighlightPerTapEnabled(true);
+        pieChartMood.getLegend().setEnabled(false);
     }
 
     private void updateListFromChartSelection(int index, Highlight h) {
@@ -235,6 +258,25 @@ public class StatisticFragment extends BaseFragment {
             }
         });
 
+        statisticViewModel.getMoodSpendingData().observe(getViewLifecycleOwner(), data -> {
+            if (currentTab == 3) {
+                renderMoodPieChart(data);
+                adapter.updateData(data);
+            }
+        });
+        
+        transactionViewModel.getGroupedTransactions().observe(getViewLifecycleOwner(), groups -> {
+            if (currentTab == 3) {
+                List<Transaction> allTransactions = new ArrayList<>();
+                if (groups != null) {
+                    for (com.example.moneyapp.model.DailyTransactionGroup g : groups) {
+                        allTransactions.addAll(g.getTransactions());
+                    }
+                }
+                statisticViewModel.calculateMoodSpending(allTransactions);
+            }
+        });
+
         statisticViewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
             if (error != null) {
                 Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
@@ -245,23 +287,57 @@ public class StatisticFragment extends BaseFragment {
     private void loadDataByTab() {
         if (currentEndDate == null) return;
         adapter.updateData(new ArrayList<>());
+        
+        // Reset Visibility mặc định
+        barChart.setVisibility(View.VISIBLE);
+        pieChartMood.setVisibility(View.GONE);
+        timeSelector.setVisibility(View.VISIBLE);
 
         switch (currentTab) {
             case 0:
-                barChart.setVisibility(View.VISIBLE);
                 statisticViewModel.loadCashFlow(currentStartDate, currentEndDate, currentGroupBy);
                 statisticViewModel.loadExpenseStackedBar(currentStartDate, currentEndDate, currentGroupBy);
                 statisticViewModel.loadIncomeStackedBar(currentStartDate, currentEndDate, currentGroupBy);
                 break;
             case 1:
-                barChart.setVisibility(View.VISIBLE);
                 statisticViewModel.loadExpenseStackedBar(currentStartDate, currentEndDate, currentGroupBy);
                 break;
             case 2:
-                barChart.setVisibility(View.VISIBLE);
                 statisticViewModel.loadIncomeStackedBar(currentStartDate, currentEndDate, currentGroupBy);
                 break;
+            case 3:
+                barChart.setVisibility(View.GONE);
+                pieChartMood.setVisibility(View.VISIBLE);
+                transactionViewModel.loadTransactions(currentStartDate, currentEndDate, null, null, null);
+                break;
         }
+    }
+
+    private void renderMoodPieChart(List<PieChartItem> data) {
+        if (data == null || data.isEmpty()) {
+            pieChartMood.clear();
+            return;
+        }
+
+        ArrayList<com.github.mikephil.charting.data.PieEntry> entries = new ArrayList<>();
+        ArrayList<Integer> colors = new ArrayList<>();
+
+        for (PieChartItem item : data) {
+            entries.add(new com.github.mikephil.charting.data.PieEntry(item.getPercentage(), item.getName()));
+            colors.add(item.getColor());
+        }
+
+        com.github.mikephil.charting.data.PieDataSet dataSet = new com.github.mikephil.charting.data.PieDataSet(entries, "");
+        dataSet.setColors(colors);
+        dataSet.setSliceSpace(3f);
+        dataSet.setSelectionShift(5f);
+        dataSet.setDrawValues(false);
+
+        com.github.mikephil.charting.data.PieData pieData = new com.github.mikephil.charting.data.PieData(dataSet);
+        pieChartMood.setData(pieData);
+        pieChartMood.setCenterText("Chi tiêu\ntâm trạng");
+        pieChartMood.animateY(1000);
+        pieChartMood.invalidate();
     }
 
     private void renderGroupedBarChart(List<CashFlowBarDto> data) {

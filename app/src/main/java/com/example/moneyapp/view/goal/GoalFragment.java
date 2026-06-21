@@ -76,7 +76,7 @@ public class GoalFragment extends BaseFragment {
     
     @Override
     protected boolean shouldShowBottomNavigation() {
-        return false;
+        return true;
     }
 
     private void observeViewModel() {

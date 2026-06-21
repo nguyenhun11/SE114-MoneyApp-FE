@@ -21,10 +21,11 @@ public class TransactionResponse {
     private int accountColorId;
     private int accountIconId;
     private List<String> imageUrls;
+    private int moodId;
     private String createdAt;
     private String lastUpdatedAt;
 
-    public TransactionResponse(String id, String accountId, String accountName, String categoryId, String categoryName, Integer type, String currencyCode, Double accountAmount, Double baseAmount, Double originalAmount, Double exchangeRate, String date, String note, int categoryColorId, int categoryIconId, int accountColorId, int accountIconId, List<String> imageUrls, String createdAt, String lastUpdatedAt) {
+    public TransactionResponse(String id, String accountId, String accountName, String categoryId, String categoryName, Integer type, String currencyCode, Double accountAmount, Double baseAmount, Double originalAmount, Double exchangeRate, String date, String note, int categoryColorId, int categoryIconId, int accountColorId, int accountIconId, List<String> imageUrls, int moodId, String createdAt, String lastUpdatedAt) {
         this.id = id;
         this.accountId = accountId;
         this.accountName = accountName;
@@ -43,6 +44,7 @@ public class TransactionResponse {
         this.accountColorId = accountColorId;
         this.accountIconId = accountIconId;
         this.imageUrls = imageUrls;
+        this.moodId = moodId;
         this.createdAt = createdAt;
         this.lastUpdatedAt = lastUpdatedAt;
     }
@@ -93,6 +95,14 @@ public class TransactionResponse {
 
     public void setImageUrls(List<String> imageUrls) {
         this.imageUrls = imageUrls;
+    }
+
+    public int getMoodId() {
+        return moodId;
+    }
+
+    public void setMoodId(int moodId) {
+        this.moodId = moodId;
     }
 
     public String getCreatedAt() {
