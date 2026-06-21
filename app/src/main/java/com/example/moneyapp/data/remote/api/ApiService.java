@@ -25,6 +25,7 @@ import com.example.moneyapp.data.remote.response.AuthResponse;
 import com.example.moneyapp.data.remote.response.CashFlowBarDto;
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
 import com.example.moneyapp.data.remote.response.CategoryResponse;
+import com.example.moneyapp.data.remote.response.CheckInResponse;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
 import com.example.moneyapp.data.remote.response.TransactionResponse;
 import com.example.moneyapp.data.remote.response.TransferResponse;
@@ -65,7 +66,9 @@ public interface ApiService {
     @GET("api/User")
     Call<UserProfileResponse> getUserProfile(@Query("clientToday") String clientToday);
     @POST("api/User/checkin")
-    Call<Void> checkIn(@Body CheckInRequest request);
+    Call<CheckInResponse> checkIn(@Body CheckInRequest request);
+    @POST("api/User/restore-streak")
+    Call<CheckInResponse> restoreStreak(@Body CheckInRequest request);
     @PUT("api/User")
     Call<Void> updateUserProfile(@Body UserProfileRequest request);
     @DELETE("api/User")

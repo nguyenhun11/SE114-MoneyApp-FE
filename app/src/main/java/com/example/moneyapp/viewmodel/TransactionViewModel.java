@@ -1,16 +1,21 @@
 package com.example.moneyapp.viewmodel;
 
 import android.app.Application;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.moneyapp.data.remote.request.CheckInRequest;
+import com.example.moneyapp.data.remote.response.CheckInResponse;
 import com.example.moneyapp.data.repository.AccountRepository;
 import com.example.moneyapp.data.repository.TransactionRepository;
+import com.example.moneyapp.data.repository.UserRepository;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.DailyTransactionGroup;
 import com.example.moneyapp.model.Transaction;
+import com.example.moneyapp.utils.DateConverter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,6 +27,7 @@ import java.util.Map;
 public class TransactionViewModel extends AndroidViewModel {
     private final TransactionRepository repository;
     private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
     private final MutableLiveData<Double> totalBalance = new MutableLiveData<>();
     private final MutableLiveData<List<DailyTransactionGroup>> groupedTransactionsLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Transaction>> transactionsLiveData = new MutableLiveData<>();
@@ -29,6 +35,7 @@ public class TransactionViewModel extends AndroidViewModel {
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     private final MutableLiveData<Boolean> operationSuccess = new MutableLiveData<>();
+    private final MutableLiveData<String> checkInMessageLiveData = new MutableLiveData<>();
 
     private Date currentStartDate;
     private Date currentEndDate;
@@ -40,6 +47,7 @@ public class TransactionViewModel extends AndroidViewModel {
         super(application);
         repository = new TransactionRepository(application);
         accountRepository = new AccountRepository(application);
+        userRepository = new UserRepository(application);
     }
 
     public LiveData<Double> getTotalBalance() { return totalBalance; }
@@ -103,6 +111,21 @@ public class TransactionViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(Transaction result) {
                 operationSuccess.postValue(true);
+                String todayString = DateConverter.convertDateToString(new Date());
+                CheckInRequest request = new CheckInRequest(todayString);
+
+                userRepository.checkIn(request, new UserRepository.UserCallback<CheckInResponse>() {
+                    @Override
+                    public void onSuccess(CheckInResponse response) {
+                        if (response.isIncreased() && response.getMessage() != null) {
+                            checkInMessageLiveData.postValue(response.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                    }
+                });
             }
 
             @Override

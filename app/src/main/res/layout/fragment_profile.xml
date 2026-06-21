@@ -186,64 +186,86 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="@color/colorSurface"
-                app:cardCornerRadius="@dimen/card_radius"
+                app:cardCornerRadius="@dimen/button_radius"
                 app:strokeColor="@color/colorWarning"
                 app:strokeWidth="1.5dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:padding="16dp">
 
-                    <FrameLayout
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:background="@drawable/bg_circle"
-                        android:backgroundTint="#FFF3E0">
-
-                        <com.mikepenz.iconics.view.IconicsImageView
-                            android:id="@+id/iv_streak_icon"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:layout_gravity="center"
-                            app:iiv_color="@color/colorWarning"
-                            app:iiv_icon="gmd-local-fire-department" />
-                    </FrameLayout>
-
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                        <TextView
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="#FFF3E0">
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:id="@+id/iv_streak_icon"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_gravity="center"
+                                app:iiv_color="@color/colorWarning"
+                                app:iiv_icon="gmd-local-fire-department" />
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Chuỗi ngày tích lũy"
+                                android:textColor="@color/colorOnSurfaceVariant"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:id="@+id/tv_streak_count"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0 ngày"
+                                android:textColor="@color/colorWarning"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_checkin"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Chuỗi ngày tích lũy"
-                            android:textColor="@color/colorOnSurfaceVariant"
-                            android:textSize="13sp" />
+                            android:text="Check-in"
+                            android:textAllCaps="false"
+                            app:backgroundTint="@color/colorWarning"
+                            app:cornerRadius="@dimen/button_radius" />
 
-                        <TextView
-                            android:id="@+id/tv_streak_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0 ngày"
-                            android:textColor="@color/colorWarning"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
                     </LinearLayout>
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_checkin"
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/tv_restore_streak_hint"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Check-in"
-                        android:textAllCaps="false"
-                        app:backgroundTint="@color/colorWarning"
-                        app:cornerRadius="8dp" />
+                        android:layout_marginTop="12dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:text="Chia sẻ app để khôi phục chuỗi"
+                        android:textColor="@color/colorWarning"
+                        android:textSize="13sp"
+                        android:textStyle="bold|italic"
+                        android:visibility="visible" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -253,7 +275,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="32dp"
                 app:cardBackgroundColor="@color/colorSurface"
-                app:cardCornerRadius="@dimen/card_radius"
+                app:cardCornerRadius="@dimen/button_radius"
                 app:strokeColor="@color/colorBorder"
                 app:strokeWidth="1dp">
 

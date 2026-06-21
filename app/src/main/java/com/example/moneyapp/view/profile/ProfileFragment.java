@@ -1,6 +1,9 @@
 package com.example.moneyapp.view.profile;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +38,7 @@ import java.util.Locale;
 
 public class ProfileFragment extends BaseFragment {
     private ProfileViewModel profileViewModel;
+    private BroadcastReceiver shareReceiver;
 
     private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
@@ -95,6 +99,7 @@ public class ProfileFragment extends BaseFragment {
         TextView tvStreakCount = view.findViewById(R.id.tv_streak_count);
         MaterialButton btnCheckin = view.findViewById(R.id.btn_checkin);
         IconicsImageView ivStreakIcon = view.findViewById(R.id.iv_streak_icon);
+        TextView tvRestoreStreakHint = view.findViewById(R.id.tv_restore_streak_hint);
 
         View llChangePassword = view.findViewById(R.id.ll_change_password);
         SwitchCompat swSync = view.findViewById(R.id.sw_sync);
@@ -130,30 +135,79 @@ public class ProfileFragment extends BaseFragment {
                     tvCreatedAt.setText(getVietnameseDate(user.getCreatedAt()));
                 }
 
-                // STREAK
                 tvStreakCount.setText(user.getDailyStreak() + " ngày");
+
                 if (user.isTodayCheckedIn()) {
-                    btnCheckin.setText("Đã điểm danh");
-                    btnCheckin.setEnabled(false);
-                    btnCheckin.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.colorSuccess));
-                    btnCheckin.setIcon(new IconicsDrawable(requireContext(), "gmd-check"));
+                    // ĐÃ CHECK-IN
+                    btnCheckin.setVisibility(View.GONE);
                     ivStreakIcon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.colorDanger));
                 } else {
+                    btnCheckin.setVisibility(View.VISIBLE);
                     btnCheckin.setText("Check-in");
                     btnCheckin.setEnabled(true);
                     btnCheckin.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.colorWarning));
                     btnCheckin.setIcon(null);
+
                     ivStreakIcon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.colorOnSurfaceVariant));
                 }
+
+                if (user.getDailyStreak() == 0) {
+                    tvRestoreStreakHint.setVisibility(View.VISIBLE);
+                } else {
+                    tvRestoreStreakHint.setVisibility(View.GONE);
+                }
+
+                tvRestoreStreakHint.setOnClickListener(v -> {
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, "Hãy tải MoneyApp để quản lý tài chính thông minh nhé!");
+                    sendIntent.setType("text/plain");
+
+                    Intent broadcastIntent = new Intent("com.example.moneyapp.SHARE_SUCCESS");
+                    broadcastIntent.setPackage(requireContext().getPackageName());
+
+                    PendingIntent pi = PendingIntent.getBroadcast(
+                            requireContext(),
+                            0,
+                            broadcastIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+                    );
+
+                    // Bật menu chia sẻ và truyền cái PendingIntent vào
+                    Intent shareIntent = Intent.createChooser(sendIntent, "Khôi phục chuỗi qua...", pi.getIntentSender());
+                    startActivity(shareIntent);
+                });
             }
         });
 
+        shareReceiver = new android.content.BroadcastReceiver() {
+            @Override
+            public void onReceive(android.content.Context context, Intent intent) {
+                profileViewModel.restoreStreak();
+            }
+        };
+        ContextCompat.registerReceiver(
+                requireContext(),
+                shareReceiver,
+                new IntentFilter("com.example.moneyapp.SHARE_SUCCESS"),
+                ContextCompat.RECEIVER_NOT_EXPORTED
+        );
+
         profileViewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
             if (message == null) return;
+
             if (message.equals("SUCCESS_DELETE")) {
                 Toast.makeText(requireContext(), "Tài khoản đã được xóa thành công", Toast.LENGTH_SHORT).show();
                 performLogout();
-            } else if (!message.equals("SUCCESS")) {
+            } else if (message.equals("SUCCESS")) {
+                Toast.makeText(requireContext(), "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+            } else if (message.startsWith("SUCCESS_RESTORE:")) {
+                String msgText = message.replace("SUCCESS_RESTORE:", "");
+                Toast.makeText(requireContext(), msgText, Toast.LENGTH_LONG).show();
+            } else if (message.startsWith("CHECKIN_MSG:")) {
+                String msgText = message.replace("CHECKIN_MSG:", "");
+                Toast.makeText(requireContext(), msgText, Toast.LENGTH_LONG).show();
+            } else {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
@@ -180,7 +234,8 @@ public class ProfileFragment extends BaseFragment {
         collapsedContent.setOnClickListener(editNameListener); // Cho phép bấm vào tên lúc thu gọn để đổi
 
         btnCheckin.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Tính năng Check-in đang phát triển!", Toast.LENGTH_SHORT).show();
+            btnCheckin.setEnabled(false);
+            profileViewModel.checkInToday();
         });
 
         llChangePassword.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_changePasswordFragment));
@@ -289,5 +344,13 @@ public class ProfileFragment extends BaseFragment {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         requireActivity().finish();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (shareReceiver != null) {
+            requireContext().unregisterReceiver(shareReceiver);
+        }
     }
 }
