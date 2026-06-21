@@ -20,6 +20,7 @@ import androidx.navigation.Navigation;
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.model.CategoryType;
+import com.example.moneyapp.model.Mood;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.CurrencyFormatter;
 import com.example.moneyapp.view.BaseFragment;
@@ -94,10 +95,19 @@ public class TransactionDetailFragment extends BaseFragment {
                     TextView tvDate = view.findViewById(R.id.tvDetailDate);
                     TextView tvDescription = view.findViewById(R.id.tvDetailDescription);
                     TextView tvCreatedAt = view.findViewById(R.id.tvCreatedAt);
+                    TextView tvMood = view.findViewById(R.id.tvDetailMood);
+                    View moodContainer = view.findViewById(R.id.ll_mood_container);
 
                     tvCategory.setText(t.getCategoryName() != null ? t.getCategoryName() : "Hạng mục");
                     tvSource.setText(t.getAccountName() != null ? t.getAccountName() : "Ví");
                     tvDate.setText(t.getFormattedDate());
+
+                    if (t.getType() == CategoryType.EXPENSE) {
+                        moodContainer.setVisibility(View.VISIBLE);
+                        tvMood.setText(String.format("%s %s", Mood.getEmojiById(t.getMoodId()), Mood.getNameById(t.getMoodId())));
+                    } else {
+                        moodContainer.setVisibility(View.GONE);
+                    }
 
                     View noteRowContainer = (View) tvDescription.getParent();
                     if (t.getNote() != null && !t.getNote().trim().isEmpty()) {

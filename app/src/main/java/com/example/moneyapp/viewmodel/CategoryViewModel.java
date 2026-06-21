@@ -122,7 +122,7 @@ public class CategoryViewModel extends AndroidViewModel {
     }
 
     private void createDefaultCategories(CategoryType type) {
-        CategoryGroupRequest groupRequest = new CategoryGroupRequest(type == CategoryType.EXPENSE ? "Cơ bản" : "Thu nhập");
+        CategoryGroupRequest groupRequest = new CategoryGroupRequest(type == CategoryType.EXPENSE ? "Chi tiêu" : "Thu nhập");
         
         CategoryRepository.CategoryCallback<CategoryGroupResponse> groupCallback = new CategoryRepository.CategoryCallback<CategoryGroupResponse>() {
             @Override
@@ -146,7 +146,7 @@ public class CategoryViewModel extends AndroidViewModel {
     public void addCategory(Category category) {
         if (category.getGroupId() == null) {
             // Sử dụng tên nhóm mặc định duy nhất cho mỗi loại để tránh phân mảnh
-            String defaultGroupName = (category.getType() == CategoryType.EXPENSE ? "Danh mục chi tiêu" : "Danh mục thu nhập");
+            String defaultGroupName = (category.getType() == CategoryType.EXPENSE ? "Chi tiêu" : "Thu nhập");
             CategoryGroupRequest groupRequest = new CategoryGroupRequest(defaultGroupName);
             
             CategoryRepository.CategoryCallback<CategoryGroupResponse> groupCallback = new CategoryRepository.CategoryCallback<CategoryGroupResponse>() {

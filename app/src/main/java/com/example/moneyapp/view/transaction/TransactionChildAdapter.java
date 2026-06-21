@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.CategoryType;
+import com.example.moneyapp.model.Mood;
 import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.CurrencyFormatter;
@@ -40,7 +41,7 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
     public static class ViewHolder extends RecyclerView.ViewHolder {
         FrameLayout flIconContainer;
         IconicsImageView ivIcon;
-        TextView tvCategoryName, tvAccountName, tvNote, tvAmount, tvBaseAmount;
+        TextView tvCategoryName, tvAccountName, tvNote, tvAmount, tvBaseAmount, tvMoodEmoji;
         View divider;
 
         public ViewHolder(@NonNull View itemView) {
@@ -52,6 +53,7 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
             tvNote = itemView.findViewById(R.id.tvNote);
             tvAmount = itemView.findViewById(R.id.tvAmount);
             tvBaseAmount = itemView.findViewById(R.id.tvBaseAmount); // Ánh xạ view mới
+            tvMoodEmoji = itemView.findViewById(R.id.tvMoodEmoji);
             divider = itemView.findViewById(R.id.divider);
         }
     }
@@ -70,6 +72,15 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
         Transaction t = transactions.get(position);
 
         holder.tvCategoryName.setText(t.getCategoryName() != null ? t.getCategoryName() : "Giao dịch");
+
+        // Thêm Emoji tâm trạng
+        if (t.getType() == CategoryType.EXPENSE) {
+            holder.tvMoodEmoji.setVisibility(View.VISIBLE);
+            holder.tvMoodEmoji.setText(Mood.getEmojiById(t.getMoodId()));
+        } else {
+            holder.tvMoodEmoji.setVisibility(View.GONE);
+        }
+
         holder.tvAccountName.setText(t.getAccountName());
 
         // Xử lý ghi chú

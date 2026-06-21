@@ -32,6 +32,8 @@ import com.google.android.material.appbar.AppBarLayout;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class HomeFragment extends BaseFragment {
 
@@ -98,8 +100,11 @@ public class HomeFragment extends BaseFragment {
 
     private void observeViewModel() {
         homeViewModel.getTotalBalance().observe(getViewLifecycleOwner(), balance -> {
-            setupBalanceSelector(requireView(), getString(R.string.total_balance),
-                    String.format("%,.0f", balance).replace(",", "."));
+            String displayBalance = "0";
+            if (balance != null) {
+                displayBalance = String.format(Locale.getDefault(), "%,.0f đ", balance).replace(",", ".");
+            }
+            setupBalanceSelector(requireView(), getString(R.string.total_balance), displayBalance);
         });
 
         homeViewModel.getCategoryExpenses().observe(getViewLifecycleOwner(), items -> {

@@ -72,7 +72,7 @@ public class TransactionViewModel extends AndroidViewModel {
         if (currentStartDate == null || currentEndDate == null) return;
         loadTransactions(currentStartDate, currentEndDate, currentType, currentAccountId, currentCategoryId);
     }
-    private void loadTransactions(Date start, Date end, CategoryType type, String accountId, String categoryId) {
+    public void loadTransactions(Date start, Date end, CategoryType type, String accountId, String categoryId) {
         isLoading.setValue(true);
         repository.getFilteredTransactions(start, end, type, accountId, categoryId, new TransactionRepository.TransactionCallback<List<Transaction>>() {
             @Override

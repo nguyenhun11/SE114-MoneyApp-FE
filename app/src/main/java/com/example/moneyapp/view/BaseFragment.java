@@ -267,5 +267,52 @@ public abstract class BaseFragment extends Fragment {
     public interface ThreeTabSwitchListener {
         void onTabSwitched(int index);
     }
+
+    protected void setupFourTabs(View view, int preSelectedTab, FourTabSwitchListener listener) {
+        TextView tv1 = view.findViewById(R.id.tv_tab_1);
+        TextView tv2 = view.findViewById(R.id.tv_tab_2);
+        TextView tv3 = view.findViewById(R.id.tv_tab_3);
+        TextView tv4 = view.findViewById(R.id.tv_tab_4);
+        View animatedIndicator = view.findViewById(R.id.view_tab_indicator);
+
+        if (tv1 == null || tv2 == null || tv3 == null || tv4 == null || animatedIndicator == null) return;
+
+        tv1.setOnClickListener(v -> handleFourTabSwitch(0, tv1, tv2, tv3, tv4, animatedIndicator, listener));
+        tv2.setOnClickListener(v -> handleFourTabSwitch(1, tv1, tv2, tv3, tv4, animatedIndicator, listener));
+        tv3.setOnClickListener(v -> handleFourTabSwitch(2, tv1, tv2, tv3, tv4, animatedIndicator, listener));
+        tv4.setOnClickListener(v -> handleFourTabSwitch(3, tv1, tv2, tv3, tv4, animatedIndicator, listener));
+
+        view.post(() -> {
+            handleFourTabSwitch(preSelectedTab, tv1, tv2, tv3, tv4, animatedIndicator, null);
+            if (listener != null) listener.onTabSwitched(preSelectedTab);
+        });
+    }
+
+    private void handleFourTabSwitch(int index, TextView tv1, TextView tv2, TextView tv3, TextView tv4, View animatedIndicator, FourTabSwitchListener listener) {
+        int colorSelected = ContextCompat.getColor(requireContext(), R.color.tabSelectedColor);
+        int colorUnselected = ContextCompat.getColor(requireContext(), R.color.colorOnSurfaceVariant);
+
+        TextView[] tabs = {tv1, tv2, tv3, tv4};
+        for (int i = 0; i < tabs.length; i++) {
+            if (i == index) {
+                tabs[i].setTextColor(colorSelected);
+                tabs[i].setTypeface(null, Typeface.BOLD);
+            } else {
+                tabs[i].setTextColor(colorUnselected);
+                tabs[i].setTypeface(null, Typeface.NORMAL);
+            }
+        }
+
+        float translationX = tabs[index].getX() - tabs[0].getX();
+        animatedIndicator.animate().translationX(translationX).setDuration(250).start();
+
+        if (listener != null) {
+            listener.onTabSwitched(index);
+        }
+    }
+
+    public interface FourTabSwitchListener {
+        void onTabSwitched(int index);
+    }
     //endregion
 }

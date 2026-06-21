@@ -24,6 +24,7 @@ public class Transaction {
     private int accountColorId;
     private int accountIconId;
     private List<String> imageUrls;
+    private int moodId;
     private Date createdAt;
 
 
@@ -36,7 +37,7 @@ public class Transaction {
                        Double baseAmount, Double exchangeRate,
                        Date date,
                        String note, int categoryColorId, int categoryIconId, int accountColorId, int accountIconId,
-                       List<String> imageUrls, Date createdAt) {
+                       List<String> imageUrls, int moodId, Date createdAt) {
         this.transactionId = transactionId;
         this.accountId = accountId;
         this.accountName = accountName;
@@ -55,6 +56,7 @@ public class Transaction {
         this.accountColorId = accountColorId;
         this.accountIconId = accountIconId;
         this.imageUrls = imageUrls;
+        this.moodId = moodId;
         this.createdAt = createdAt;
     }
 
@@ -147,6 +149,9 @@ public class Transaction {
     public void setAccountIconId(int accountIconId) {
         this.accountIconId = accountIconId;
     }
+
+    public int getMoodId() { return moodId; }
+    public void setMoodId(int moodId) { this.moodId = moodId; }
 
     public Date getCreatedAt() {
         return createdAt;
