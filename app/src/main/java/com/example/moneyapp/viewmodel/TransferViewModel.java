@@ -6,13 +6,17 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.moneyapp.data.remote.request.CheckInRequest;
 import com.example.moneyapp.data.remote.request.TransferRequest;
+import com.example.moneyapp.data.remote.response.CheckInResponse;
 import com.example.moneyapp.data.repository.AdjustBalanceRepository;
 import com.example.moneyapp.data.repository.TransferRepository;
+import com.example.moneyapp.data.repository.UserRepository;
 import com.example.moneyapp.model.AdjustBalance;
 import com.example.moneyapp.model.DailyTransferGroup;
 import com.example.moneyapp.model.HistoryItem;
 import com.example.moneyapp.model.Transfer;
+import com.example.moneyapp.utils.DateConverter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,11 +29,14 @@ import java.util.Map;
 public class TransferViewModel extends AndroidViewModel {
     private final TransferRepository transferRepository;
     private final AdjustBalanceRepository adjustRepository;
+    private final UserRepository userRepository;
     private final MutableLiveData<List<DailyTransferGroup>> groupedTransfers = new MutableLiveData<>();
     private final MutableLiveData<Transfer> selectedTransfer = new MutableLiveData<>();
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> operationSuccess = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
+    private final MutableLiveData<String> checkInMessageLiveData = new MutableLiveData<>();
+
 
     private Date currentStartDate;
     private Date currentEndDate;
@@ -39,6 +46,7 @@ public class TransferViewModel extends AndroidViewModel {
         super(application);
         transferRepository = new TransferRepository(application);
         adjustRepository = new AdjustBalanceRepository(application);
+        userRepository = new UserRepository(application);
     }
 
     public LiveData<List<DailyTransferGroup>> getGroupedTransfers() {
@@ -216,6 +224,21 @@ public class TransferViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(Transfer result) {
                 operationSuccess.postValue(true);
+                String todayString = DateConverter.convertDateToString(new Date());
+                CheckInRequest request = new CheckInRequest(todayString);
+
+                userRepository.checkIn(request, new UserRepository.UserCallback<CheckInResponse>() {
+                    @Override
+                    public void onSuccess(CheckInResponse response) {
+                        if (response.isIncreased() && response.getMessage() != null) {
+                            checkInMessageLiveData.postValue(response.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                    }
+                });
             }
 
             @Override

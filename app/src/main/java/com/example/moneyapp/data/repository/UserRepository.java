@@ -2,7 +2,10 @@ package com.example.moneyapp.data.repository;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
+
+import com.example.moneyapp.data.remote.request.CheckInRequest;
 import com.example.moneyapp.data.remote.request.UserProfileRequest;
+import com.example.moneyapp.data.remote.response.CheckInResponse;
 import com.example.moneyapp.data.remote.response.UserProfileResponse;
 import com.example.moneyapp.data.local.PreferenceManager;
 
@@ -74,6 +77,42 @@ public class UserRepository extends BaseRepository {
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 callback.onError("Lỗi kết nối: " + t.getMessage());
+            }
+        });
+    }
+
+    public void checkIn(CheckInRequest request, UserCallback<CheckInResponse> callback) {
+        apiService.checkIn(request).enqueue(new Callback<CheckInResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CheckInResponse> call, @NonNull Response<CheckInResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Điểm danh thất bại: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CheckInResponse> call, @NonNull Throwable t) {
+                callback.onError("Lỗi mạng: " + t.getMessage());
+            }
+        });
+    }
+
+    public void restoreStreak(CheckInRequest request, UserCallback<CheckInResponse> callback) {
+        apiService.restoreStreak(request).enqueue(new Callback<CheckInResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CheckInResponse> call, @NonNull Response<CheckInResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Khôi phục thất bại: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CheckInResponse> call, @NonNull Throwable t) {
+                callback.onError("Lỗi mạng: " + t.getMessage());
             }
         });
     }

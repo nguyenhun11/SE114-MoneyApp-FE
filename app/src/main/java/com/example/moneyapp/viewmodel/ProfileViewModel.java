@@ -7,12 +7,16 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.moneyapp.data.remote.request.CheckInRequest;
+import com.example.moneyapp.data.remote.response.CheckInResponse;
 import com.example.moneyapp.model.User;
 import com.example.moneyapp.data.remote.request.UserProfileRequest;
 import com.example.moneyapp.data.remote.response.UserProfileResponse;
 import com.example.moneyapp.data.repository.AuthRepository;
 import com.example.moneyapp.data.repository.UserRepository;
 import com.example.moneyapp.utils.DateConverter;
+
+import java.util.Date;
 
 public class ProfileViewModel extends AndroidViewModel {
     private final AuthRepository authRepository;
@@ -139,6 +143,55 @@ public class ProfileViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(Void result) {
                 errorMessage.postValue("SUCCESS_DELETE");
+            }
+
+            @Override
+            public void onError(String message) {
+                errorMessage.postValue(message);
+            }
+        });
+    }
+
+    public void checkInToday() {
+        String todayString = DateConverter.convertDateToString(new Date());
+        CheckInRequest request = new CheckInRequest(todayString);
+
+        userRepository.checkIn(request, new UserRepository.UserCallback<CheckInResponse>() {
+            @Override
+            public void onSuccess(CheckInResponse response) {
+                User user = currentUser.getValue();
+                if (user != null) {
+                    user.setDailyStreak(response.getCurrentStreak());
+                    user.setTodayCheckedIn(true);
+                    currentUser.postValue(user);
+                    errorMessage.postValue("CHECKIN_MSG:" + response.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                errorMessage.postValue(message);
+            }
+        });
+    }
+
+    public void restoreStreak() {
+        String todayString = com.example.moneyapp.utils.DateConverter.convertDateToString(new java.util.Date());
+        com.example.moneyapp.data.remote.request.CheckInRequest request =
+                new com.example.moneyapp.data.remote.request.CheckInRequest(todayString);
+
+        userRepository.restoreStreak(request, new com.example.moneyapp.data.repository.UserRepository.UserCallback<com.example.moneyapp.data.remote.response.CheckInResponse>() {
+            @Override
+            public void onSuccess(com.example.moneyapp.data.remote.response.CheckInResponse response) {
+                User user = currentUser.getValue();
+                if (user != null) {
+                    user.setDailyStreak(response.getCurrentStreak());
+                    user.setTodayCheckedIn(true); // Cứu xong thì coi như hôm nay đã điểm danh
+                    currentUser.postValue(user);
+
+                    // Bắn tín hiệu sang Fragment để hiển thị thông báo
+                    errorMessage.postValue("SUCCESS_RESTORE:" + response.getMessage());
+                }
             }
 
             @Override

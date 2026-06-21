@@ -21,6 +21,7 @@ import androidx.navigation.Navigation;
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.utils.AppResourceManager;
+import com.example.moneyapp.utils.CurrencyFormatter;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.AccountViewModel;
@@ -50,7 +51,7 @@ public class AccountDetailFragment extends BaseFragment {
 
     @Override
     protected String getFabIcon() {
-        return "gmd_check";
+        return "gmd-check";
     }
 
     @Override
@@ -91,6 +92,7 @@ public class AccountDetailFragment extends BaseFragment {
         setupHeader(view, title, true);
 
         setupPickers(view);
+        setupCurrencyFormatter();
         observeViewModel();
 
         if (currentAccountId != null) {
@@ -101,6 +103,42 @@ public class AccountDetailFragment extends BaseFragment {
             updateColorUI(selectedColorId);
             tvCreatedAt.setVisibility(View.GONE);
         }
+    }
+
+    private void setupCurrencyFormatter() {
+        etBalance.addTextChangedListener(new android.text.TextWatcher() {
+            private String current = "";
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                if (!s.toString().equals(current)) {
+                    etBalance.removeTextChangedListener(this);
+
+                    String cleanString = s.toString().replaceAll("[.,]", "");
+
+                    if (!cleanString.isEmpty()) {
+                        try {
+                            double parsed = Double.parseDouble(cleanString);
+                            String formatted = CurrencyFormatter.formatVND(parsed);
+                            current = formatted;
+                            etBalance.setText(formatted);
+                            etBalance.setSelection(formatted.length());
+                        } catch (NumberFormatException e) { }
+                    } else {
+                        current = "";
+                        etBalance.setText("");
+                    }
+
+                    etBalance.addTextChangedListener(this);
+                }
+            }
+        });
     }
 
     private void setupPickers(View view) {
@@ -131,7 +169,8 @@ public class AccountDetailFragment extends BaseFragment {
 
     private void performSave() {
         String name = etName.getText().toString().trim();
-        String balanceStr = etBalance.getText().toString().trim();
+
+        String balanceStr = etBalance.getText().toString().trim().replaceAll("[.,]", "");
         String description = etDescription.getText().toString().trim();
 
         if (TextUtils.isEmpty(name)) {
@@ -141,7 +180,12 @@ public class AccountDetailFragment extends BaseFragment {
 
         double balance = 0.0;
         if (!TextUtils.isEmpty(balanceStr)) {
-            balance = Double.parseDouble(balanceStr);
+            try {
+                balance = Double.parseDouble(balanceStr);
+            } catch (NumberFormatException e) {
+                Toast.makeText(getContext(), "Số dư không hợp lệ", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
         boolean includeInTotal = !switchExclude.isChecked();
@@ -166,7 +210,6 @@ public class AccountDetailFragment extends BaseFragment {
                     etName.setText(acc.getAccountName());
                     etBalance.setText(String.format(Locale.US, "%.0f", acc.getBalance()));
                     etDescription.setText(acc.getDescription());
-
                     switchExclude.setChecked(!acc.isIncludeInTotal());
 
                     selectedIconId = acc.getIcon();
