@@ -6,6 +6,7 @@ public class Account {
     private String accountId;
     private String accountName;
     private Double balance;
+    private String currencyCode;
     private int icon;
     private int color;
     private String description;
@@ -16,7 +17,7 @@ public class Account {
 
     public Account(String accountId,
                    String accountName,
-                   Double balance,
+                   Double balance, String currencyCode,
                    int color,
                    int icon,
                    String description,
@@ -27,6 +28,7 @@ public class Account {
         this.accountId = accountId;
         this.accountName = accountName;
         this.balance = balance;
+        this.currencyCode = currencyCode;
         this.icon = icon;
         this.color = color;
         this.description = description;
@@ -114,5 +116,13 @@ public class Account {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
     }
 }

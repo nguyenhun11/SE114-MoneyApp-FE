@@ -63,11 +63,27 @@ public class HomeViewModel extends AndroidViewModel {
 
         isLoading.setValue(true);
 
-        accountRepository.getTotalBalance(new AccountRepository.AccountCallback<Double>() {
+        accountRepository.getTotalBalance(new AccountRepository.AccountCallback<java.util.Map<String, Double>>() {
             @Override
-            public void onSuccess(Double result) { totalBalance.postValue(result); }
+            public void onSuccess(java.util.Map<String, Double> result) {
+                double totalBaseAmount = 0.0;
+                String systemCurrency = "VND";
+
+                if (result != null) {
+                    for (java.util.Map.Entry<String, Double> entry : result.entrySet()) {
+                        String currency = entry.getKey();
+                        double amount = entry.getValue();
+
+                        totalBaseAmount += amount * getMockExchangeRate(currency, systemCurrency);
+                    }
+                }
+                totalBalance.postValue(totalBaseAmount);
+            }
+
             @Override
-            public void onError(String message) { error.postValue(message); }
+            public void onError(String message) {
+                error.postValue(message);
+            }
         });
 
         StatisticRepository.StatisticCallback<List<CategoryPieChartDto>> callback = new StatisticRepository.StatisticCallback<List<CategoryPieChartDto>>() {
@@ -107,5 +123,13 @@ public class HomeViewModel extends AndroidViewModel {
         } else {
             statisticRepository.getIncomePieChart(currentStartDate, currentEndDate, callback);
         }
+    }
+
+    private double getMockExchangeRate(String fromCurrency, String toCurrency) {
+        if (fromCurrency.equals(toCurrency)) return 1.0;
+        if (fromCurrency.equals("USD") && toCurrency.equals("VND")) return 25000.0;
+        if (fromCurrency.equals("EUR") && toCurrency.equals("VND")) return 27000.0;
+        if (fromCurrency.equals("JPY") && toCurrency.equals("VND")) return 160.0;
+        return 1.0;
     }
 }

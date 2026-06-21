@@ -47,11 +47,19 @@ public class TransferAddFragment extends BaseFragment {
     private String selectedSourceId = null;
     private String selectedDestId = null;
 
+    // Lưu trữ object Account để lấy thông tin CurrencyCode
+    private Account selectedSourceAccount = null;
+    private Account selectedDestAccount = null;
+
     // Views
     private EditText etAmount, etDescription;
     private View btnOpenCalculator, btnSelectCurrency;
     private TextView tvCurrency;
-    private AccountSelectorView viewSelectSource, viewSelectDest; // Chỉ dùng Component mới
+
+    // TEXTVIEW MỚI: Hiển thị số tiền thực nhận ở ví đích
+    private TextView tvConvertedAmount;
+
+    private AccountSelectorView viewSelectSource, viewSelectDest;
     private LinearLayout btnDateToday, btnDateYesterday, btnDateRecent, btnPickDate;
     private TextView tvTodayValue, tvYesterdayValue, tvRecentValue, tvRecentLabel;
     private Date box3Date;
@@ -97,9 +105,10 @@ public class TransferAddFragment extends BaseFragment {
         btnSelectCurrency = view.findViewById(R.id.btnSelectCurrency);
         tvCurrency = view.findViewById(R.id.tvCurrency);
 
+        tvConvertedAmount = view.findViewById(R.id.tvConvertedAmount);
+
         etDescription = view.findViewById(R.id.etDescription);
 
-        // Ánh xạ Component
         viewSelectSource = view.findViewById(R.id.viewSelectSource);
         viewSelectDest = view.findViewById(R.id.viewSelectDest);
         viewSelectSource.clear("Chọn tài khoản chuyển...");
@@ -137,10 +146,14 @@ public class TransferAddFragment extends BaseFragment {
                             current = formatted;
                             etAmount.setText(formatted);
                             etAmount.setSelection(formatted.length());
+
+                            // Tự động tính toán khi gõ
+                            updateConvertedAmountUI(parsed);
                         } catch (NumberFormatException e) { }
                     } else {
                         current = "";
                         etAmount.setText("");
+                        if (tvConvertedAmount != null) tvConvertedAmount.setVisibility(View.GONE);
                     }
                     etAmount.addTextChangedListener(this);
                 }
@@ -155,22 +168,55 @@ public class TransferAddFragment extends BaseFragment {
             });
         });
 
+        // LOGIC MỚI: Khóa nút chọn tiền tệ vì Chuyển khoản bắt buộc tính theo tiền của Ví nguồn
         btnSelectCurrency.setOnClickListener(v -> {
-            android.widget.PopupMenu popup = new android.widget.PopupMenu(requireContext(), v);
-            popup.getMenu().add("VND");
-            popup.getMenu().add("USD");
-            popup.getMenu().add("EUR");
-            popup.setOnMenuItemClickListener(item -> {
-                tvCurrency.setText(item.getTitle());
-                // TODO: Xử lý thay đổi tỷ giá nếu cần thiết ở đây
-                return true;
-            });
-            popup.show();
+            Toast.makeText(getContext(), "Đơn vị tiền tệ được xác định theo Ví nguồn", Toast.LENGTH_SHORT).show();
         });
     }
 
+    // Tỷ giá giả lập
+    private double getMockExchangeRate(String fromCurrency, String toCurrency) {
+        if (fromCurrency == null || toCurrency == null || fromCurrency.equals(toCurrency)) return 1.0;
+
+        if (fromCurrency.equals("USD") && toCurrency.equals("VND")) return 25000.0;
+        if (fromCurrency.equals("EUR") && toCurrency.equals("VND")) return 27000.0;
+        if (fromCurrency.equals("JPY") && toCurrency.equals("VND")) return 160.0;
+        if (fromCurrency.equals("VND") && toCurrency.equals("USD")) return 1.0 / 25000.0;
+
+        return 1.0;
+    }
+
+    private void updateConvertedAmountFromInput() {
+        String amountStr = etAmount.getText().toString().replaceAll("[.,]", "");
+        if (!amountStr.isEmpty()) {
+            try {
+                updateConvertedAmountUI(Double.parseDouble(amountStr));
+            } catch (NumberFormatException ignored) {}
+        }
+    }
+
+    private void updateConvertedAmountUI(double inputAmount) {
+        if (tvConvertedAmount == null || selectedSourceAccount == null) return;
+
+        String sourceCurr = selectedSourceAccount.getCurrencyCode() != null ? selectedSourceAccount.getCurrencyCode() : "VND";
+        tvCurrency.setText(sourceCurr);
+
+        if (selectedDestAccount != null) {
+            String destCurr = selectedDestAccount.getCurrencyCode() != null ? selectedDestAccount.getCurrencyCode() : "VND";
+            if (!sourceCurr.equals(destCurr)) {
+                tvConvertedAmount.setVisibility(View.VISIBLE);
+                double rate = getMockExchangeRate(sourceCurr, destCurr);
+                double converted = inputAmount * rate;
+
+                String formatted = CurrencyFormatter.formatVND(converted);
+                tvConvertedAmount.setText(String.format(Locale.US, "≈ %s %s (Ví nhận)", formatted, destCurr));
+            } else {
+                tvConvertedAmount.setVisibility(View.GONE);
+            }
+        }
+    }
+
     private void setupComboboxes() {
-        // Gắn sự kiện click trực tiếp lên Component
         viewSelectSource.setOnClickListener(v -> showSourceAccountPopup());
         viewSelectDest.setOnClickListener(v -> showDestAccountPopup());
     }
@@ -204,13 +250,17 @@ public class TransferAddFragment extends BaseFragment {
     }
 
     private void updateSelectedSource(Account account) {
+        this.selectedSourceAccount = account;
         this.selectedSourceId = account.getAccountId();
         viewSelectSource.setAccount(account, true);
+        updateConvertedAmountFromInput(); // Tính lại tỷ giá khi đổi ví
     }
 
     private void updateSelectedDest(Account account) {
+        this.selectedDestAccount = account;
         this.selectedDestId = account.getAccountId();
         viewSelectDest.setAccount(account, true);
+        updateConvertedAmountFromInput(); // Tính lại tỷ giá khi đổi ví
     }
 
     private void observeViewModels() {
@@ -219,8 +269,6 @@ public class TransferAddFragment extends BaseFragment {
                 accountList.clear();
                 accountList.addAll(accounts);
 
-                // Khi danh sách ví load xong, nếu đang ở chế độ Edit, ta gọi bind lại
-                // để nó nạp thêm Số dư (Balance) vào Component cho đầy đủ.
                 if (loadedTransfer != null) {
                     bindAccountsToUI(loadedTransfer);
                 }
@@ -244,14 +292,11 @@ public class TransferAddFragment extends BaseFragment {
             if (transfer != null && editTransferId != null) {
                 loadedTransfer = transfer;
 
-                // 1. Phục hồi số tiền và ghi chú
-                etAmount.setText(String.valueOf(transfer.getAmount().longValue()));
+                etAmount.setText(String.valueOf(transfer.getSourceAmount().longValue()));
                 if (transfer.getDescription() != null) etDescription.setText(transfer.getDescription());
 
-                // 2. Phục hồi thời gian
                 restoreDateToUI(transfer.getDate());
 
-                // 3. ĐẬP DỮ LIỆU TỪ BACKEND LÊN UI NGAY LẬP TỨC (Màu + Icon + Tên)
                 selectedSourceId = transfer.getSourceAccountId();
                 selectedDestId = transfer.getDestinationAccountId();
 
@@ -269,6 +314,7 @@ public class TransferAddFragment extends BaseFragment {
             }
         });
     }
+
     private void bindAccountsToUI(Transfer transfer) {
         if (accountList.isEmpty() || transfer == null) return;
 
@@ -305,6 +351,7 @@ public class TransferAddFragment extends BaseFragment {
     }
 
     private void setupDatePickers() {
+        // ... (Giữ nguyên như code cũ của bạn)
         Calendar cal = Calendar.getInstance();
         selectedDate = truncateTime(cal.getTime());
 
@@ -341,6 +388,7 @@ public class TransferAddFragment extends BaseFragment {
     }
 
     private void selectDateBox(int index) {
+        // ... (Giữ nguyên như code cũ của bạn)
         LinearLayout[] boxes = {btnDateToday, btnDateYesterday, btnDateRecent};
         for (int i = 0; i < boxes.length; i++) {
             boxes[i].setBackgroundResource(i == index ? R.drawable.bg_date_selected : R.drawable.bg_input_border);
@@ -370,22 +418,36 @@ public class TransferAddFragment extends BaseFragment {
         String amountStr = etAmount.getText().toString().trim().replaceAll("[.,]", "");
         String description = etDescription.getText().toString().trim();
 
-        if (amountStr.isEmpty() || selectedSourceId == null || selectedDestId == null) {
+        if (amountStr.isEmpty() || selectedSourceAccount == null || selectedDestAccount == null) {
             Toast.makeText(getContext(), "Vui lòng nhập số tiền và chọn đủ 2 tài khoản!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         try {
-            double amountValue = Double.parseDouble(amountStr);
-            if (amountValue <= 0) {
+            double sourceAmount = Double.parseDouble(amountStr);
+            if (sourceAmount <= 0) {
                 Toast.makeText(getContext(), "Số tiền chuyển phải lớn hơn 0", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            String sourceCurr = selectedSourceAccount.getCurrencyCode() != null ? selectedSourceAccount.getCurrencyCode() : "VND";
+            String destCurr = selectedDestAccount.getCurrencyCode() != null ? selectedDestAccount.getCurrencyCode() : "VND";
+            String systemCurr = "VND"; // Thay bằng cấu hình của User sau này
+
+            double destRate = getMockExchangeRate(sourceCurr, destCurr);
+            double destinationAmount = sourceAmount * destRate;
+
+            double baseRate = getMockExchangeRate(sourceCurr, systemCurr);
+            double baseAmount = sourceAmount * baseRate;
+
             TransferRequest request = new TransferRequest(
                     selectedSourceId,
                     selectedDestId,
-                    amountValue,
+                    sourceAmount,
+                    destinationAmount,
+                    baseAmount,
+                    1.0, // Vì mình lấy ví nguồn làm mốc chuẩn
+                    destRate,
                     DateConverter.convertDateToString(selectedDate),
                     description
             );

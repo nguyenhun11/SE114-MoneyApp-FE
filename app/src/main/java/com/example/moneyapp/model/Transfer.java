@@ -13,13 +13,17 @@ public class Transfer {
     private String destinationAccountName;
     private int destinationAccountIcon;
     private int destinationAccountColor;
-    private Double amount;
+    private Double sourceAmount;
+    private Double destinationAmount;
+    private Double baseAmount;
+    private Double sourceExchangeRate;
+    private Double destinationExchangeRate;
     private Date date;
     private String description;
     private Date createdAt;
     private Date updatedAt;
 
-    public Transfer(String id, String sourceAccountId, String sourceAccountName, int sourceAccountIcon, int sourceAccountColor, String destinationAccountId, String destinationAccountName, int destinationAccountIcon, int destinationAccountColor, Double amount, Date date, String description, Date createdAt, Date updatedAt) {
+    public Transfer(String id, String sourceAccountId, String sourceAccountName, int sourceAccountIcon, int sourceAccountColor, String destinationAccountId, String destinationAccountName, int destinationAccountIcon, int destinationAccountColor, Double sourceAmount, Double destinationAmount, Double baseAmount, Double sourceExchangeRate, Double destinationExchangeRate, Date date, String description, Date createdAt, Date updatedAt) {
         this.id = id;
         this.sourceAccountId = sourceAccountId;
         this.sourceAccountName = sourceAccountName;
@@ -29,7 +33,11 @@ public class Transfer {
         this.destinationAccountName = destinationAccountName;
         this.destinationAccountIcon = destinationAccountIcon;
         this.destinationAccountColor = destinationAccountColor;
-        this.amount = amount;
+        this.sourceAmount = sourceAmount;
+        this.destinationAmount = destinationAmount;
+        this.baseAmount = baseAmount;
+        this.sourceExchangeRate = sourceExchangeRate;
+        this.destinationExchangeRate = destinationExchangeRate;
         this.date = date;
         this.description = description;
         this.createdAt = createdAt;
@@ -76,12 +84,12 @@ public class Transfer {
         this.destinationAccountName = destinationAccountName;
     }
 
-    public Double getAmount() {
-        return amount;
+    public Double getSourceAmount() {
+        return sourceAmount;
     }
 
-    public void setAmount(Double amount) {
-        this.amount = amount;
+    public void setSourceAmount(Double sourceAmount) {
+        this.sourceAmount = sourceAmount;
     }
 
     public Date getDate() {
@@ -117,8 +125,8 @@ public class Transfer {
     }
 
     public String getFormattedAmount() {
-        if (amount == null) return "0";
-        return String.format(Locale.getDefault(), "%,.0f", Math.abs(amount)).replace(",", ".");
+        if (sourceAmount == null) return "0";
+        return String.format(Locale.getDefault(), "%,.0f", Math.abs(sourceAmount)).replace(",", ".");
     }
 
     public int getSourceAccountIcon() {
@@ -151,5 +159,37 @@ public class Transfer {
 
     public void setDestinationAccountColor(int destinationAccountColor) {
         this.destinationAccountColor = destinationAccountColor;
+    }
+
+    public Double getDestinationAmount() {
+        return destinationAmount;
+    }
+
+    public void setDestinationAmount(Double destinationAmount) {
+        this.destinationAmount = destinationAmount;
+    }
+
+    public Double getBaseAmount() {
+        return baseAmount;
+    }
+
+    public void setBaseAmount(Double baseAmount) {
+        this.baseAmount = baseAmount;
+    }
+
+    public Double getSourceExchangeRate() {
+        return sourceExchangeRate;
+    }
+
+    public void setSourceExchangeRate(Double sourceExchangeRate) {
+        this.sourceExchangeRate = sourceExchangeRate;
+    }
+
+    public Double getDestinationExchangeRate() {
+        return destinationExchangeRate;
+    }
+
+    public void setDestinationExchangeRate(Double destinationExchangeRate) {
+        this.destinationExchangeRate = destinationExchangeRate;
     }
 }

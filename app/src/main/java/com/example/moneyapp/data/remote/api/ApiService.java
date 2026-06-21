@@ -35,6 +35,7 @@ import com.example.moneyapp.data.remote.response.TransferResponse;
 import com.example.moneyapp.data.remote.response.UserProfileResponse;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -84,7 +85,7 @@ public interface ApiService {
     @GET("api/Account/{id}")
     Call<AccountResponse> getAccountById(@Path("id") String id);
     @GET("api/Account/total-balance")
-    Call<Double> getTotalBalance();
+    Call<Map<String, Double>> getTotalBalance();
     @POST("api/Account")
     Call<AccountResponse> createAccount(@Body AccountRequest request);
     @PUT("api/Account/{id}")

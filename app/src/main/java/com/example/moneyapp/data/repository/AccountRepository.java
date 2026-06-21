@@ -12,6 +12,7 @@ import com.example.moneyapp.utils.DateConverter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,6 +36,7 @@ public class AccountRepository extends BaseRepository {
                 response.getId(),
                 response.getAccountName(),
                 response.getBalance(),
+                response.getCurrencyCode(),
                 response.getColorId(),
                 response.getIconId(),
                 response.getDescription(),
@@ -69,22 +71,20 @@ public class AccountRepository extends BaseRepository {
         });
     }
 
-    public void getTotalBalance(AccountCallback<Double> callback) {
-        apiService.getTotalBalance().enqueue(new Callback<Double>() {
+    public void getTotalBalance(AccountCallback<Map<String, Double>> callback) {
+        apiService.getTotalBalance().enqueue(new Callback<Map<String, Double>>() {
             @Override
-            public void onResponse(@NonNull Call<Double> call, @NonNull Response<Double> response) {
+            public void onResponse(Call<Map<String, Double>> call, Response<Map<String, Double>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
-                    callback.onError("Không tải được tổng số dư: " + response.code());
+                    callback.onError("Lỗi khi lấy tổng số dư");
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<Double> call, @NonNull Throwable throwable) {
-                if (!call.isCanceled()) {
-                    callback.onError("Lỗi kết nối mạng: " + throwable.getMessage());
-                }
+            public void onFailure(Call<Map<String, Double>> call, Throwable t) {
+                callback.onError(t.getMessage());
             }
         });
     }
@@ -120,6 +120,7 @@ public class AccountRepository extends BaseRepository {
         AccountRequest request = new AccountRequest(
                 account.getAccountName(),
                 account.getBalance(),
+                account.getCurrencyCode(),
                 account.getColor(),
                 account.getIcon(),
                 account.getDescription(),
@@ -155,6 +156,7 @@ public class AccountRepository extends BaseRepository {
         AccountRequest request = new AccountRequest(
                 account.getAccountName(),
                 account.getBalance(),
+                account.getCurrencyCode(),
                 account.getColor(),
                 account.getIcon(),
                 account.getDescription(),

@@ -182,11 +182,11 @@ public class TransactionViewModel extends AndroidViewModel {
         for (Map.Entry<String, List<Transaction>> entry : groupedMap.entrySet()) {
             double totalDay = 0;
             for (Transaction t : entry.getValue()) {
-                if (t.getAmount() != null) {
+                if (t.getBaseAmount() != null) {
                     if (t.getType() == CategoryType.EXPENSE) {
-                        totalDay -= t.getAmount();
+                        totalDay -= t.getBaseAmount();
                     } else {
-                        totalDay += t.getAmount();
+                        totalDay += t.getBaseAmount();
                     }
                 }
             }

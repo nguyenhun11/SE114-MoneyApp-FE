@@ -6,15 +6,17 @@ public class AdjustBalanceResponse {
     private String accountId;
     private String accountName;
     private double amount;
+    private String currencyCode;
     private String createdAt;
 
-    public AdjustBalanceResponse(String id, String accountId, String accountName, double amount, String createdAt) {
+    public AdjustBalanceResponse(String id, String accountId, String accountName, double amount, String currencyCode, String createdAt) {
         this.id = id;
         this.accountId = accountId;
 
 
         this.accountName = accountName;
         this.amount = amount;
+        this.currencyCode = currencyCode;
         this.createdAt = createdAt;
     }
 
@@ -37,7 +39,6 @@ public class AdjustBalanceResponse {
     public String getAccountName() {
         return accountName;
     }
-
     public void setAccountName(String accountName) {
         this.accountName = accountName;
     }
@@ -56,5 +57,13 @@ public class AdjustBalanceResponse {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
     }
 }

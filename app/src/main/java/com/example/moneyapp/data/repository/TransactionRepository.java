@@ -48,7 +48,11 @@ public class TransactionRepository extends BaseRepository {
                 response.getCategoryId(),
                 response.getCategoryName(),
                 type, // Truyền type chuẩn xác vào đây
-                response.getAmount(),
+                response.getOriginalAmount(),
+                response.getCurrencyCode(),
+                response.getAccountAmount(),
+                response.getBaseAmount(),
+                response.getExchangeRate(),
                 DateConverter.convertStringToDate(response.getDate()),
                 response.getNote(),
                 response.getCategoryColorId(),
@@ -67,7 +71,11 @@ public class TransactionRepository extends BaseRepository {
         return new TransactionRequest(
                 transaction.getAccountId(),
                 transaction.getCategoryId(),
-                transaction.getAmount(),
+                transaction.getOriginalAmount(),
+                transaction.getCurrencyCode(),
+                transaction.getAccountAmount(),
+                transaction.getBaseAmount(),
+                transaction.getExchangeRate(),
                 dateStr,
                 transaction.getNote(),
                 transaction.getImageUrls()

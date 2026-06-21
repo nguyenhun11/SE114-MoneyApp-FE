@@ -10,7 +10,11 @@ public class TransferResponse {
     private String destinationAccountName;
     private int destinationAccountIconId;
     private int destinationAccountColorId;
-    private Double amount;
+    private Double sourceAmount;
+    private Double destinationAmount;
+    private Double baseAmount;
+    private Double sourceExchangeRate;
+    private Double destinationExchangeRate;
     private String transferDate;
     private String description;
     private String createdAt;
@@ -21,7 +25,7 @@ public class TransferResponse {
                             String sourceAccountName, int sourceAccountIconId, int sourceAccountColorId,
                             String destinationAccountId,
                             String destinationAccountName, int destinationAccountIconId, int destinationAccountColorId,
-                            Double amount, String transferDate,
+                            Double sourceAmount, Double destinationAmount, Double baseAmount, Double sourceExchangeRate, Double destinationExchangeRate, String transferDate,
                             String description,
                             String createdAt,
                             String lastUpdatedAt) {
@@ -34,7 +38,11 @@ public class TransferResponse {
         this.destinationAccountName = destinationAccountName;
         this.destinationAccountIconId = destinationAccountIconId;
         this.destinationAccountColorId = destinationAccountColorId;
-        this.amount = amount;
+        this.sourceAmount = sourceAmount;
+        this.destinationAmount = destinationAmount;
+        this.baseAmount = baseAmount;
+        this.sourceExchangeRate = sourceExchangeRate;
+        this.destinationExchangeRate = destinationExchangeRate;
         this.transferDate = transferDate;
         this.description = description;
         this.createdAt = createdAt;
@@ -81,12 +89,12 @@ public class TransferResponse {
         this.destinationAccountName = destinationAccountName;
     }
 
-    public Double getAmount() {
-        return amount;
+    public Double getSourceAmount() {
+        return sourceAmount;
     }
 
-    public void setAmount(Double amount) {
-        this.amount = amount;
+    public void setSourceAmount(Double sourceAmount) {
+        this.sourceAmount = sourceAmount;
     }
 
     public String getTransferDate() {
@@ -151,5 +159,37 @@ public class TransferResponse {
 
     public void setDestinationAccountColorId(int destinationAccountColorId) {
         this.destinationAccountColorId = destinationAccountColorId;
+    }
+
+    public Double getDestinationAmount() {
+        return destinationAmount;
+    }
+
+    public void setDestinationAmount(Double destinationAmount) {
+        this.destinationAmount = destinationAmount;
+    }
+
+    public Double getBaseAmount() {
+        return baseAmount;
+    }
+
+    public void setBaseAmount(Double baseAmount) {
+        this.baseAmount = baseAmount;
+    }
+
+    public Double getSourceExchangeRate() {
+        return sourceExchangeRate;
+    }
+
+    public void setSourceExchangeRate(Double sourceExchangeRate) {
+        this.sourceExchangeRate = sourceExchangeRate;
+    }
+
+    public Double getDestinationExchangeRate() {
+        return destinationExchangeRate;
+    }
+
+    public void setDestinationExchangeRate(Double destinationExchangeRate) {
+        this.destinationExchangeRate = destinationExchangeRate;
     }
 }

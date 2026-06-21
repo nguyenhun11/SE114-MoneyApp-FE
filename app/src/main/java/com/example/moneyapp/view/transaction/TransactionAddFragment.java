@@ -50,13 +50,17 @@ public class TransactionAddFragment extends BaseFragment {
     private Category selectedCategory = null;
     private Account selectedAccount = null;
 
+    // BIẾN LƯU TRỮ TIỀN TỆ HIỆN TẠI
+    private String currentCurrencyCode = "VND";
+
     // region Views
     private EditText etAmount, etDescription;
     private View btnOpenCalculator, btnSelectCurrency;
     private TextView tvCurrency;
+    private TextView tvConvertedAmount;
+
     private TextView tvSelectedCategory;
     private IconicsImageView ivCategoryIcon;
-
     private AccountSelectorView viewSelectSource;
 
     private LinearLayout btnDateToday, btnDateYesterday, btnDateRecent, btnPickDate;
@@ -120,6 +124,8 @@ public class TransactionAddFragment extends BaseFragment {
         btnSelectCurrency = view.findViewById(R.id.btnSelectCurrency);
         tvCurrency = view.findViewById(R.id.tvCurrency);
 
+        tvConvertedAmount = view.findViewById(R.id.tvConvertedAmount);
+
         etDescription = view.findViewById(R.id.etDescription);
 
         tvSelectedCategory = view.findViewById(R.id.tvSelectedCategory);
@@ -162,10 +168,13 @@ public class TransactionAddFragment extends BaseFragment {
                             current = formatted;
                             etAmount.setText(formatted);
                             etAmount.setSelection(formatted.length());
+
+                            updateConvertedAmountUI(parsed);
                         } catch (NumberFormatException e) { }
                     } else {
                         current = "";
                         etAmount.setText("");
+                        if (tvConvertedAmount != null) tvConvertedAmount.setVisibility(View.GONE);
                     }
                     etAmount.addTextChangedListener(this);
                 }
@@ -184,9 +193,15 @@ public class TransactionAddFragment extends BaseFragment {
             popup.getMenu().add("VND");
             popup.getMenu().add("USD");
             popup.getMenu().add("EUR");
+            popup.getMenu().add("JPY");
             popup.setOnMenuItemClickListener(item -> {
-                tvCurrency.setText(item.getTitle());
-                // TODO: Xử lý thay đổi tỷ giá nếu cần thiết ở đây
+                currentCurrencyCode = item.getTitle().toString();
+                tvCurrency.setText(currentCurrencyCode);
+
+                String amountStr = etAmount.getText().toString().replaceAll("[.,]", "");
+                if (!amountStr.isEmpty()) {
+                    updateConvertedAmountUI(Double.parseDouble(amountStr));
+                }
                 return true;
             });
             popup.show();
@@ -201,11 +216,46 @@ public class TransactionAddFragment extends BaseFragment {
         }
     }
 
+    private double getMockExchangeRate(String fromCurrency, String toCurrency) {
+        //TODO: lấy giá trị thật
+        if (fromCurrency.equals(toCurrency)) return 1.0;
+
+        if (fromCurrency.equals("USD") && toCurrency.equals("VND")) return 25000.0;
+        if (fromCurrency.equals("EUR") && toCurrency.equals("VND")) return 27000.0;
+        if (fromCurrency.equals("JPY") && toCurrency.equals("VND")) return 160.0;
+
+        if (fromCurrency.equals("VND") && toCurrency.equals("USD")) return 1.0 / 25000.0;
+
+        return 1.0;
+    }
+
+    private void updateConvertedAmountUI(double inputAmount) {
+        if (tvConvertedAmount == null || selectedAccount == null) return;
+
+        String accountCurrency = selectedAccount.getCurrencyCode();
+
+        if (currentCurrencyCode.equals(accountCurrency)) {
+            tvConvertedAmount.setVisibility(View.GONE);
+        } else {
+            tvConvertedAmount.setVisibility(View.VISIBLE);
+            double rate = getMockExchangeRate(currentCurrencyCode, accountCurrency);
+            double converted = inputAmount * rate;
+
+            String formattedConverted = com.example.moneyapp.utils.CurrencyFormatter.formatVND(converted);
+            tvConvertedAmount.setText(String.format(Locale.US, "≈ %s %s", formattedConverted, accountCurrency));
+        }
+    }
+
     private void observeViewModels() {
         transactionViewModel.getSelectedTransaction().observe(getViewLifecycleOwner(), t -> {
             if (t != null && editTransactionId != null) {
-                etAmount.setText(String.valueOf((long) Math.abs(t.getAmount())));
+                // SỬA: Hiển thị OriginalAmount (Số tiền người dùng nhập ban đầu)
+                etAmount.setText(String.valueOf((long) Math.abs(t.getOriginalAmount())));
                 if (t.getNote() != null) etDescription.setText(t.getNote());
+
+                // Nạp đơn vị tiền tệ cũ
+                currentCurrencyCode = t.getCurrencyCode() != null ? t.getCurrencyCode() : "VND";
+                tvCurrency.setText(currentCurrencyCode);
 
                 box3Date = truncateTime(t.getDate());
                 tvRecentValue.setText(shortDateFmt.format(box3Date));
@@ -213,8 +263,15 @@ public class TransactionAddFragment extends BaseFragment {
                 selectDateBox(2);
 
                 Account mockAccount = new Account(
-                        t.getAccountId(), t.getAccountName(), 0.0,
-                        t.getAccountColorId(), t.getAccountIconId(), "", true, 0, new Date(), new Date()
+                        t.getAccountId(),
+                        t.getAccountName(),
+                        0.0,
+                        "VND",
+                        t.getAccountColorId(),
+                        t.getAccountIconId(),
+                        "",
+                        true,
+                        0, new Date(), new Date()
                 );
                 updateSelectedAccount(mockAccount);
 
@@ -364,6 +421,17 @@ public class TransactionAddFragment extends BaseFragment {
     public void updateSelectedAccount(Account account) {
         this.selectedAccount = account;
         viewSelectSource.setAccount(account, false);
+
+        if (editTransactionId == null && account != null && account.getCurrencyCode() != null) {
+            currentCurrencyCode = account.getCurrencyCode();
+            if (tvCurrency != null) tvCurrency.setText(currentCurrencyCode);
+        }
+
+        String amountStr = etAmount.getText().toString().replaceAll("[.,]", "");
+        if (!amountStr.isEmpty()) {
+            updateConvertedAmountUI(Double.parseDouble(amountStr));
+        }
+
         requireView().clearFocus();
     }
 
@@ -377,23 +445,33 @@ public class TransactionAddFragment extends BaseFragment {
         }
 
         try {
-            double amountValue = Double.parseDouble(amountStr);
-            amountValue = Math.abs(amountValue);
+            double originalAmount = Math.abs(Double.parseDouble(amountStr));
+
+            String accountCurrency = selectedAccount.getCurrencyCode();
+            String systemCurrency = "VND"; // TODO: Thay bằng DefaultCurrency của User (lấy từ SharedPreferences)
+
+            double exchangeRateToAccount = getMockExchangeRate(currentCurrencyCode, accountCurrency);
+            double accountAmount = originalAmount * exchangeRateToAccount;
+
+            double exchangeRateToSystem = getMockExchangeRate(currentCurrencyCode, systemCurrency);
+            double baseAmount = originalAmount * exchangeRateToSystem;
 
             Transaction newTransaction = new Transaction(
                     editTransactionId != null ? editTransactionId : UUID.randomUUID().toString(),
                     selectedAccount.getAccountId(), selectedAccount.getAccountName(),
                     selectedCategory.getCategoryId(), selectedCategory.getCategoryName(),
-                    transactionType, amountValue, selectedDate, description,
+                    transactionType,
+                    originalAmount, currentCurrencyCode, accountAmount, baseAmount, exchangeRateToAccount, // Truyền đủ 5 tham số
+                    selectedDate, description,
                     selectedCategory.getColor(), selectedCategory.getIcon(),
                     selectedAccount.getColor(), selectedAccount.getIcon(),
                     new ArrayList<>(), new Date()
             );
 
-            if (editTransactionId != null) {
-                transactionViewModel.updateTransaction(newTransaction);
-            } else {
+            if (editTransactionId == null) {
                 transactionViewModel.addTransaction(newTransaction);
+            } else {
+                transactionViewModel.updateTransaction(newTransaction);
             }
         } catch (NumberFormatException e) {
             Toast.makeText(getContext(), "Số tiền không hợp lệ", Toast.LENGTH_SHORT).show();
