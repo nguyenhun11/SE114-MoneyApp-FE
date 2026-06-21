@@ -116,7 +116,7 @@ public class GoalViewModel extends AndroidViewModel {
 
     public void depositToGoal(Goal goal, double amount, String accountId) {
         isLoading.setValue(true);
-        
+
         // 1. Tìm hoặc tạo Hạng mục "Tiết kiệm"
         categoryRepository.getExpenseCategories(new CategoryRepository.CategoryCallback<List<Category>>() {
             @Override
@@ -128,7 +128,7 @@ public class GoalViewModel extends AndroidViewModel {
                         break;
                     }
                 }
-                
+
                 if (foundCategory != null) {
                     Category finalFoundCategory = foundCategory;
                     if (foundCategory.getIcon() != 17) {
@@ -155,7 +155,7 @@ public class GoalViewModel extends AndroidViewModel {
                         @Override
                         public void onSuccess(List<CategoryGroupResponse> groups) {
                             String groupId = (groups != null && !groups.isEmpty()) ? groups.get(0).getId() : null;
-                            
+
                             Category newCat = new Category(null, "Tiết kiệm", CategoryType.EXPENSE, groupId, null, 0.0, 0, 17, 0, null, null);
                             categoryRepository.createCategory(newCat, new CategoryRepository.CategoryCallback<Void>() {
                                 @Override
@@ -212,14 +212,29 @@ public class GoalViewModel extends AndroidViewModel {
         goalRepository.depositToGoal(goal.getId(), amount, new GoalRepository.GoalCallback<Goal>() {
             @Override
             public void onSuccess(Goal updatedGoal) {
-                // 3. Tạo Transaction chi tiêu
+                // ĐÃ SỬA: Dùng Constructor mới của Transaction (Đủ 5 biến tiền tệ)
                 Transaction transaction = new Transaction(
-                        null, accountId, null, categoryId, null,
-                        CategoryType.EXPENSE, amount, new Date(),
-                        "Nạp tiền mục tiêu: " + goal.getName(),
-                        0, 0, 0, 0, null, null
+                        null, // id
+                        accountId, // accountId
+                        null, // accountName
+                        categoryId, // categoryId
+                        null, // categoryName
+                        CategoryType.EXPENSE, // type
+                        amount, // originalAmount
+                        "VND", // currencyCode (Mặc định cho mục tiêu)
+                        amount, // accountAmount
+                        amount, // baseAmount
+                        1.0, // exchangeRate
+                        new Date(), // date
+                        "Nạp tiền mục tiêu: " + goal.getName(), // note
+                        0, // catColor
+                        0, // catIcon
+                        0, // accColor
+                        0, // accIcon
+                        null, // imageUrls
+                        null // createdAt
                 );
-                
+
                 transactionRepository.createTransaction(transaction, new TransactionRepository.TransactionCallback<Transaction>() {
                     @Override
                     public void onSuccess(Transaction result) {
@@ -230,10 +245,10 @@ public class GoalViewModel extends AndroidViewModel {
 
                     @Override
                     public void onError(String message) {
-                        // Vẫn đánh dấu thành công vì Goal đã được cập nhật, 
+                        // Vẫn đánh dấu thành công vì Goal đã được cập nhật,
                         // nhưng báo lỗi cho phần Transaction
                         error.setValue("Đã nạp tiền nhưng lỗi tạo giao dịch: " + message);
-                        isOperationSuccess.setValue(true); 
+                        isOperationSuccess.setValue(true);
                         isLoading.setValue(false);
                         fetchGoals();
                     }
