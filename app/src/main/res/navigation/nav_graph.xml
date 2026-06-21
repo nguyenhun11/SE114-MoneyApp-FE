@@ -76,6 +76,15 @@
         tools:layout="@layout/fragment_transfer_detail" />
 
     <fragment
+        android:id="@+id/adjustBalanceDetailFragment"
+        android:name="com.example.moneyapp.view.transfer.AdjustBalanceDetailFragment"
+        android:label="AdjustBalanceDetailFragment">
+        <argument
+            android:name="adjustId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.moneyapp.view.profile.ProfileFragment"
         android:label="Hồ sơ"

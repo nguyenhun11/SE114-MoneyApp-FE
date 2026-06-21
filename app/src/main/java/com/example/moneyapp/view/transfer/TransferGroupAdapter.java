@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.model.Account; // Import thêm model Account
 import com.example.moneyapp.model.DailyTransferGroup;
 
@@ -21,14 +22,12 @@ public class TransferGroupAdapter extends RecyclerView.Adapter<TransferGroupAdap
     private List<Account> accountList; // Thêm biến lưu danh sách tài khoản
     private final TransferChildAdapter.OnItemClickListener childListener;
 
-    // ĐÃ SỬA: Constructor nhận thêm accountList
     public TransferGroupAdapter(List<DailyTransferGroup> groups, List<Account> accountList, TransferChildAdapter.OnItemClickListener listener) {
         this.groups = groups;
         this.accountList = accountList;
         this.childListener = listener;
     }
 
-    // ĐÃ TỐI ƯU: Cập nhật hàm updateData để nhận cả 2 list mới nếu cần
     public void updateData(List<DailyTransferGroup> newGroups, List<Account> newAccountList) {
         this.groups = newGroups;
         this.accountList = newAccountList;
@@ -59,7 +58,10 @@ public class TransferGroupAdapter extends RecyclerView.Adapter<TransferGroupAdap
         DailyTransferGroup group = groups.get(position);
         holder.tvDateLabel.setText(group.getDateLabel());
 
-        TransferChildAdapter childAdapter = new TransferChildAdapter(group.getTransfers(), accountList, childListener);
+        TransferChildAdapter childAdapter = new TransferChildAdapter(group.getTransfers(),
+                accountList,
+                PreferenceManager.getInstance(holder.itemView.getContext()).getDefaultCurrency(),
+                childListener);
 
         holder.rvDailyTransactions.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
         holder.rvDailyTransactions.setAdapter(childAdapter);

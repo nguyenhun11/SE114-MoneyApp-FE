@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
+import com.example.moneyapp.model.HistoryItem;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.components.TimeSelectorView;
@@ -56,11 +57,25 @@ public class TransferFragment extends BaseFragment {
         RecyclerView rvTransfers = view.findViewById(R.id.rvTransfers);
         rvTransfers.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // ĐÃ SỬA: Truyền thêm accountList vào tham số thứ 2, và sửa getId() thành getTransferId()
-        adapter = new TransferGroupAdapter(new ArrayList<>(), accountList, transfer -> {
-            Bundle args = new Bundle();
-            args.putString("transferId", transfer.getId());
-            Navigation.findNavController(view).navigate(R.id.action_transferFragment_to_transferDetailFragment, args);
+        adapter = new TransferGroupAdapter(new ArrayList<>(), accountList, (HistoryItem item) -> {
+            if (item.getType() == HistoryItem.TYPE_TRANSFER) {
+                Bundle args = new Bundle();
+                args.putString("transferId", item.getTransfer().getId());
+                Navigation.findNavController(view).navigate(R.id.transferDetailFragment, args);
+            }
+            else if (item.getType() == HistoryItem.TYPE_ADJUST_BALANCE) {
+                Bundle args = new Bundle();
+                args.putString("adjustId", item.getAdjustBalance().getId());
+                args.putDouble("amount", item.getAdjustBalance().getAmount());
+                args.putString("accountId", item.getAdjustBalance().getAccountId());
+                args.putString("accountName", item.getAdjustBalance().getAccountName());
+                if (item.getAdjustBalance().getCreatedAt() != null) {
+                    args.putLong("createdAt", item.getAdjustBalance().getCreatedAt().getTime());
+                }
+
+                Navigation.findNavController(view).navigate(R.id.adjustBalanceDetailFragment, args);
+            }
+
         });
         rvTransfers.setAdapter(adapter);
 
@@ -75,7 +90,6 @@ public class TransferFragment extends BaseFragment {
     }
 
     private void observeViewModels() {
-        // ĐÃ SỬA: Dùng hàm updateData và truyền kèm cả accountList để đồng bộ hiển thị icon/màu
         transferViewModel.getGroupedTransfers().observe(getViewLifecycleOwner(), groups -> {
             if (groups != null) {
                 adapter.updateData(groups, accountList);
@@ -94,7 +108,6 @@ public class TransferFragment extends BaseFragment {
                 accountList.addAll(accounts);
 
                 // Khi danh sách ví cập nhật, ép adapter update lại
-                // phòng trường hợp dữ liệu lịch sử tải về trước danh sách ví
                 if (transferViewModel.getGroupedTransfers().getValue() != null) {
                     adapter.updateData(transferViewModel.getGroupedTransfers().getValue(), accountList);
                 }

@@ -27,21 +27,24 @@ import java.util.List;
 public class TransferChildAdapter extends RecyclerView.Adapter<TransferChildAdapter.ViewHolder> {
     private final List<HistoryItem> items;
     private final List<Account> accountList;
+    private final String systemCurrency; // Thêm biến lưu hệ tiền tệ mặc định
     private final OnItemClickListener listener;
 
     public interface OnItemClickListener {
-        void onItemClick(Transfer t);
+        void onItemClick(HistoryItem t);
     }
 
-    public TransferChildAdapter(List<HistoryItem> items, List<Account> accountList, OnItemClickListener listener) {
+    // Cập nhật Constructor
+    public TransferChildAdapter(List<HistoryItem> items, List<Account> accountList, String systemCurrency, OnItemClickListener listener) {
         this.items = items;
         this.accountList = accountList;
+        this.systemCurrency = systemCurrency != null ? systemCurrency : "VND";
         this.listener = listener;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         FrameLayout flIconContainer;
-        TextView tvSourceAccount, tvDestAccount, tvNote, tvAmount;
+        TextView tvSourceAccount, tvDestAccount, tvNote, tvAmount, tvBaseAmount;
         View divider;
         IconicsImageView ivIcon;
 
@@ -52,6 +55,7 @@ public class TransferChildAdapter extends RecyclerView.Adapter<TransferChildAdap
             tvDestAccount = itemView.findViewById(R.id.tvDestAccount);
             tvNote = itemView.findViewById(R.id.tvNote);
             tvAmount = itemView.findViewById(R.id.tvAmount);
+            tvBaseAmount = itemView.findViewById(R.id.tvBaseAmount); // Ánh xạ View mới
             divider = itemView.findViewById(R.id.divider);
             ivIcon = itemView.findViewById(R.id.iv_icon);
         }
@@ -77,9 +81,7 @@ public class TransferChildAdapter extends RecyclerView.Adapter<TransferChildAdap
             Transfer t = item.getTransfer();
 
             if (holder.ivIcon != null) {
-                // Đổi icon swap mới
                 holder.ivIcon.setIcon(new IconicsDrawable(context, "gmd-swap-horiz"));
-                // ÉP CẢ Ô VIEW NHUỘM MÀU TRẮNG HỆ THỐNG ĐỂ CHỐNG MÀU ĐEN MẶC ĐỊNH
                 holder.ivIcon.setColorFilter(Color.WHITE);
             }
             if (holder.flIconContainer != null) {
@@ -100,26 +102,36 @@ public class TransferChildAdapter extends RecyclerView.Adapter<TransferChildAdap
                 holder.tvNote.setVisibility(View.GONE);
             }
 
-            holder.tvAmount.setText(CurrencyFormatter.formatVND(t.getSourceAmount()) + "đ");
+            // XỬ LÝ TIỀN TỆ KÉP (TRANSFER)
+            Account srcAcc = findAccountById(t.getSourceAccountId());
+            String srcCurrency = (srcAcc != null && srcAcc.getCurrencyCode() != null) ? srcAcc.getCurrencyCode() : "VND";
+
+            holder.tvAmount.setText(String.format("%s %s", CurrencyFormatter.formatVND(t.getSourceAmount()), srcCurrency));
             holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorInfo));
 
+            if (!srcCurrency.equalsIgnoreCase(systemCurrency)) {
+                holder.tvBaseAmount.setVisibility(View.VISIBLE);
+                holder.tvBaseAmount.setText(String.format("≈ %s %s", CurrencyFormatter.formatVND(t.getBaseAmount()), systemCurrency));
+            } else {
+                holder.tvBaseAmount.setVisibility(View.GONE);
+            }
+
         } else if (item.getType() == HistoryItem.TYPE_ADJUST_BALANCE) {
-            // ==========================================
-            // 2. THỂ HIỆN DÒNG ĐIỀU CHỈNH SỐ DƯ (ADJUST)
-            // ==========================================
             var adjust = item.getAdjustBalance();
 
             Account acc = findAccountById(adjust.getAccountId());
+            String accCurrency = "VND";
+
             if (acc != null) {
+                accCurrency = acc.getCurrencyCode() != null ? acc.getCurrencyCode() : "VND";
                 int actualColor = AppResourceManager.getColor(acc.getColor());
                 holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(actualColor));
-                // SỬ DỤNG MINH CHỨNG WHITE ICON THÀNH CÔNG CỦA BẠN
                 holder.ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, acc.getIcon()));
             } else {
                 holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorWarning)));
                 if (holder.ivIcon != null) {
                     holder.ivIcon.setIcon(new IconicsDrawable(context, "gmd-edit"));
-                    holder.ivIcon.setColorFilter(Color.WHITE); // Ép trắng cho fallback
+                    holder.ivIcon.setColorFilter(Color.WHITE);
                 }
             }
 
@@ -132,20 +144,28 @@ public class TransferChildAdapter extends RecyclerView.Adapter<TransferChildAdap
 
             holder.tvNote.setVisibility(View.GONE);
 
-            if (adjust.getAmount() >= 0) {
-                holder.tvAmount.setText("+" + CurrencyFormatter.formatVND(adjust.getAmount()) + "đ");
-                holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorSuccess));
+            String sign = adjust.getAmount() >= 0 ? "+" : "-";
+            double absAmount = Math.abs(adjust.getAmount());
+            int colorRes = adjust.getAmount() >= 0 ? R.color.colorSuccess : R.color.colorDanger;
+
+            holder.tvAmount.setText(String.format("%s %s %s", sign, CurrencyFormatter.formatVND(absAmount), accCurrency));
+            holder.tvAmount.setTextColor(ContextCompat.getColor(context, colorRes));
+
+            if (!accCurrency.equalsIgnoreCase(systemCurrency)) {
+                holder.tvBaseAmount.setVisibility(View.VISIBLE);
+                double rate = getMockExchangeRate(accCurrency, systemCurrency);
+                double baseAmount = absAmount * rate;
+                holder.tvBaseAmount.setText(String.format("≈ %s %s %s", sign, CurrencyFormatter.formatVND(baseAmount), systemCurrency));
             } else {
-                holder.tvAmount.setText(CurrencyFormatter.formatVND(adjust.getAmount()) + "đ");
-                holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorDanger));
+                holder.tvBaseAmount.setVisibility(View.GONE);
             }
         }
 
         holder.divider.setVisibility(position == items.size() - 1 ? View.GONE : View.VISIBLE);
 
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null && item.getType() == HistoryItem.TYPE_TRANSFER) {
-                listener.onItemClick(item.getTransfer());
+            if (listener != null) {
+                listener.onItemClick(item);
             }
         });
     }
@@ -158,6 +178,15 @@ public class TransferChildAdapter extends RecyclerView.Adapter<TransferChildAdap
             }
         }
         return null;
+    }
+
+    private double getMockExchangeRate(String fromCurrency, String toCurrency) {
+        if (fromCurrency.equals(toCurrency)) return 1.0;
+        if (fromCurrency.equals("USD") && toCurrency.equals("VND")) return 25000.0;
+        if (fromCurrency.equals("EUR") && toCurrency.equals("VND")) return 27000.0;
+        if (fromCurrency.equals("JPY") && toCurrency.equals("VND")) return 160.0;
+        if (fromCurrency.equals("VND") && toCurrency.equals("USD")) return 1.0 / 25000.0;
+        return 1.0;
     }
 
     @Override
