@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.AccountViewModel;
 
@@ -40,7 +41,7 @@ public class AccountFragment extends BaseFragment {
         RecyclerView rvAccounts = view.findViewById(R.id.rv_accounts);
         rvAccounts.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new AccountAdapter(new ArrayList<>(), account -> {
+        adapter = new AccountAdapter(new ArrayList<>(), PreferenceManager.getInstance(requireContext()).getDefaultCurrency(), account -> {
             Bundle args = new Bundle();
             args.putString("accountId", account.getAccountId());
             Navigation.findNavController(view).navigate(R.id.accountDetailFragment, args);

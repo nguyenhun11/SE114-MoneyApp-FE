@@ -17,10 +17,13 @@ import java.util.List;
 public class TransactionGroupAdapter extends RecyclerView.Adapter<TransactionGroupAdapter.ViewHolder> {
 
     private List<DailyTransactionGroup> groups;
+    private final String systemCurrency; // Thêm biến lưu đơn vị tiền tệ hệ thống
     private final TransactionChildAdapter.OnItemClickListener childListener;
 
-    public TransactionGroupAdapter(List<DailyTransactionGroup> groups, TransactionChildAdapter.OnItemClickListener listener) {
+    // Cập nhật Constructor: Nhận thêm String systemCurrency
+    public TransactionGroupAdapter(List<DailyTransactionGroup> groups, String systemCurrency, TransactionChildAdapter.OnItemClickListener listener) {
         this.groups = groups;
+        this.systemCurrency = systemCurrency != null ? systemCurrency : "VND";
         this.childListener = listener;
     }
 
@@ -52,7 +55,12 @@ public class TransactionGroupAdapter extends RecyclerView.Adapter<TransactionGro
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         DailyTransactionGroup group = groups.get(position);
         holder.tvDateLabel.setText(group.getDateLabel());
-        TransactionChildAdapter childAdapter = new TransactionChildAdapter(group.getTransactions(), childListener);
+
+        TransactionChildAdapter childAdapter = new TransactionChildAdapter(
+                group.getTransactions(),
+                systemCurrency,
+                childListener
+        );
 
         holder.rvDailyTransactions.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
         holder.rvDailyTransactions.setAdapter(childAdapter);

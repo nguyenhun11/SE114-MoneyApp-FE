@@ -1,5 +1,7 @@
 package com.example.moneyapp.view.transaction;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
@@ -72,11 +75,11 @@ public class TransactionFragment extends BaseFragment {
             preSelectedTab = getArguments().getInt("tabType", 0);
 
             String categoryId = getArguments().getString("categoryId");
-            String categoryName = getArguments().getString("categoryName"); // Truyền thêm biến này từ Home
+            String categoryName = getArguments().getString("categoryName");
             if (categoryId != null) {
                 transactionViewModel.setCategoryFilterAndReload(categoryId);
                 if (categoryName != null && tvCategoryFilter != null) {
-                    tvCategoryFilter.setText(categoryName); // Ép UI đổi tên
+                    tvCategoryFilter.setText(categoryName);
                 }
             }
 
@@ -87,13 +90,10 @@ public class TransactionFragment extends BaseFragment {
                 Date endDate = new Date(endDateLong);
                 transactionViewModel.setTimeRangeAndReload(startDate, endDate);
 
-                // Ép UI của TimeSelectorView hiển thị đúng thời gian
                 timeSelector.setPredefinedDateRange(startDate, endDate);
             }
         }
 
-        // --- CẬP NHẬT HÀM SETUP TABS ---
-        // Bạn cần sửa hàm setupThreeTabs trong BaseFragment để nhận thêm tham số preSelectedTab
         setupThreeTabs(view, preSelectedTab, index -> {
             CategoryType type = null;
             if (index == 1) {
@@ -126,11 +126,19 @@ public class TransactionFragment extends BaseFragment {
         RecyclerView recyclerView = view.findViewById(R.id.rvTransactions);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new TransactionGroupAdapter(new ArrayList<>(), transaction -> {
+        String systemCurrency = PreferenceManager.getInstance(requireContext()).getDefaultCurrency();
+        adapter = new TransactionGroupAdapter(new ArrayList<>(), systemCurrency, transaction -> {
             Bundle args = new Bundle();
             args.putString("transactionId", transaction.getTransactionId());
             Navigation.findNavController(view).navigate(R.id.transactionDetailFragment, args);
         });
+
+        adapter = new TransactionGroupAdapter(new ArrayList<>(), systemCurrency, transaction -> {
+            Bundle args = new Bundle();
+            args.putString("transactionId", transaction.getTransactionId());
+            Navigation.findNavController(view).navigate(R.id.transactionDetailFragment, args);
+        });
+
         recyclerView.setAdapter(adapter);
 
         timeSelector.setOnTimeRangeChangeListener((startDate, endDate) -> {
@@ -140,6 +148,7 @@ public class TransactionFragment extends BaseFragment {
         observeViewModels();
         accountViewModel.loadAccounts();
     }
+
     private void observeViewModels() {
         transactionViewModel.getGroupedTransactions().observe(getViewLifecycleOwner(), items -> {
             adapter.updateList(items);

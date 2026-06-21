@@ -12,6 +12,7 @@ public class PreferenceManager {
     private static final String KEY_TOKEN = "authToken";
     private static final String KEY_REFRESH_TOKEN = "refreshToken";
     private static final String KEY_USER_EMAIL = "userEmail";
+    private static final String KEY_DEFAULT_CURRENCY = "defaultCurrency";
 
 
     private static SharedPreferences sharedPreferences;
@@ -68,7 +69,13 @@ public class PreferenceManager {
     public String getUserEmail() {
         return sharedPreferences.getString(KEY_USER_EMAIL, null);
     }
+    public void setDefaultCurrency(String currencyCode) {
+        sharedPreferences.edit().putString(KEY_DEFAULT_CURRENCY, currencyCode).apply();
+    }
 
+    public String getDefaultCurrency() {
+        return sharedPreferences.getString(KEY_DEFAULT_CURRENCY, "VND");
+    }
 
 
 }

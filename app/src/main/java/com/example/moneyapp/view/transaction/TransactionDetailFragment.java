@@ -18,7 +18,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.data.local.PreferenceManager;
+import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.utils.AppResourceManager;
+import com.example.moneyapp.utils.CurrencyFormatter;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.TransactionViewModel;
 import com.mikepenz.iconics.view.IconicsImageView;
@@ -84,6 +87,10 @@ public class TransactionDetailFragment extends BaseFragment {
                     TextView tvCategory = view.findViewById(R.id.tvDetailCategoryLabel);
                     TextView tvSource = view.findViewById(R.id.tvDetailSource);
                     TextView tvAmount = view.findViewById(R.id.tvDetailAmount);
+
+                    // Bạn nên ánh xạ thêm 1 TextView phụ trong xml để hiện tiền quy đổi nếu có ngoại tệ
+                    TextView tvBaseAmountDetail = view.findViewById(R.id.tvBaseAmountDetail);
+
                     TextView tvDate = view.findViewById(R.id.tvDetailDate);
                     TextView tvDescription = view.findViewById(R.id.tvDetailDescription);
                     TextView tvCreatedAt = view.findViewById(R.id.tvCreatedAt);
@@ -107,12 +114,29 @@ public class TransactionDetailFragment extends BaseFragment {
                         tvCreatedAt.setText("");
                     }
 
-                    if (t.getBaseAmount() != null && t.getBaseAmount() < 0) {
-                        tvAmount.setText(String.format("%s đ", t.getFormattedAmount()));
-                        tvAmount.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorDanger));
-                    } else {
-                        tvAmount.setText(String.format("+%s đ", t.getFormattedAmount()));
-                        tvAmount.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorSuccess));
+                    // ==========================================
+                    // LOGIC XỬ LÝ ĐƠN VỊ VÀ MÀU SẮC TIỀN TỆ MỚI
+                    // ==========================================
+                    String transactionCurrency = t.getCurrencyCode() != null ? t.getCurrencyCode() : "VND";
+                    String systemCurrency = PreferenceManager.getInstance(requireContext()).getDefaultCurrency();
+
+                    String sign = (t.getType() == CategoryType.EXPENSE) ? "-" : "+";
+                    int colorRes = (t.getType() == CategoryType.EXPENSE) ? R.color.colorDanger : R.color.colorSuccess;
+
+                    // 1. Hiển thị dòng tiền chính gốc (Số tiền nhập vào)
+                    String formattedOriginal = CurrencyFormatter.formatVND(t.getOriginalAmount());
+                    tvAmount.setText(String.format("%s %s %s", sign, formattedOriginal, transactionCurrency));
+                    tvAmount.setTextColor(ContextCompat.getColor(requireContext(), colorRes));
+
+                    // 2. Hiển thị dòng tiền quy đổi hệ thống phụ (nếu dùng ngoại tệ khác hệ thống)
+                    if (tvBaseAmountDetail != null) {
+                        if (!transactionCurrency.equalsIgnoreCase(systemCurrency)) {
+                            tvBaseAmountDetail.setVisibility(View.VISIBLE);
+                            String formattedBase = CurrencyFormatter.formatVND(t.getBaseAmount());
+                            tvBaseAmountDetail.setText(String.format("≈ %s %s %s", sign, formattedBase, systemCurrency));
+                        } else {
+                            tvBaseAmountDetail.setVisibility(View.GONE);
+                        }
                     }
 
                     Context context = view.getContext();
@@ -124,7 +148,6 @@ public class TransactionDetailFragment extends BaseFragment {
 
                     flCategoryIcon.setBackgroundTintList(ColorStateList.valueOf(categoryColor));
                     flAccountIcon.setBackgroundTintList(ColorStateList.valueOf(accountColor));
-
                 });
 
         transactionViewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
@@ -149,12 +172,11 @@ public class TransactionDetailFragment extends BaseFragment {
         return "gmd_edit";
     }
 
-    // --- XỬ LÝ CHUYỂN SANG MÀN HÌNH SỬA ---
     @Override
     protected void onFabClick() {
         if (currentTransactionId != null) {
             Bundle args = new Bundle();
-            args.putString("transactionId", currentTransactionId); // Truyền ID sang AddFragment
+            args.putString("transactionId", currentTransactionId);
             Navigation.findNavController(requireView()).navigate(R.id.addTransactionFragment, args);
         }
     }

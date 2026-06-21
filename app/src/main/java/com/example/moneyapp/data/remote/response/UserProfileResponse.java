@@ -8,6 +8,7 @@ public class UserProfileResponse {
     private String phoneNumber;
     private int dailyStreak;
     private boolean todayCheckedIn;
+    private String defaultCurrency;
     private String createdAt;
     private String lastUpdatedAt;
 
@@ -29,4 +30,12 @@ public class UserProfileResponse {
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
     public String getLastUpdatedAt() { return lastUpdatedAt; }
     public void setLastUpdatedAt(String lastUpdatedAt) { this.lastUpdatedAt = lastUpdatedAt; }
+
+    public String getDefaultCurrency() {
+        return defaultCurrency;
+    }
+
+    public void setDefaultCurrency(String defaultCurrency) {
+        this.defaultCurrency = defaultCurrency;
+    }
 }
