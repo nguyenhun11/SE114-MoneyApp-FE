@@ -17,9 +17,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.Transfer;
 import com.example.moneyapp.utils.AppResourceManager;
+import com.example.moneyapp.utils.CurrencyFormatter;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.AccountViewModel;
 import com.example.moneyapp.viewmodel.TransferViewModel;
@@ -120,6 +122,8 @@ public class TransferDetailFragment extends BaseFragment {
         if (currentTransfer == null) return;
 
         TextView tvAmount = view.findViewById(R.id.tvDetailAmount);
+        TextView tvBaseAmountDetail = view.findViewById(R.id.tvBaseAmountDetail);
+
         TextView tvSource = view.findViewById(R.id.tvDetailSource);
         TextView tvDest = view.findViewById(R.id.tvDetailDest);
         TextView tvDate = view.findViewById(R.id.tvDetailDate);
@@ -131,7 +135,6 @@ public class TransferDetailFragment extends BaseFragment {
         FrameLayout flDestIcon = view.findViewById(R.id.fl_dest_icon);
         IconicsImageView ivDestIcon = view.findViewById(R.id.iv_dest_icon);
 
-        tvAmount.setText(String.format("%sđ", currentTransfer.getFormattedAmount()));
         tvSource.setText(currentTransfer.getSourceAccountName() != null ? currentTransfer.getSourceAccountName() : "N/A");
         tvDest.setText(currentTransfer.getDestinationAccountName() != null ? currentTransfer.getDestinationAccountName() : "N/A");
 
@@ -160,6 +163,22 @@ public class TransferDetailFragment extends BaseFragment {
         Context context = requireContext();
         Account srcAcc = findAccountById(currentTransfer.getSourceAccountId());
         Account destAcc = findAccountById(currentTransfer.getDestinationAccountId());
+
+        String systemCurrency = PreferenceManager.getInstance(requireContext()).getDefaultCurrency();
+        String srcCurrency = (srcAcc != null && srcAcc.getCurrencyCode() != null) ? srcAcc.getCurrencyCode() : "VND";
+
+        String formattedSourceAmount = CurrencyFormatter.formatVND(currentTransfer.getSourceAmount());
+        tvAmount.setText(String.format("%s %s", formattedSourceAmount, srcCurrency));
+
+        if (tvBaseAmountDetail != null) {
+            if (!srcCurrency.equalsIgnoreCase(systemCurrency)) {
+                tvBaseAmountDetail.setVisibility(View.VISIBLE);
+                String formattedBaseAmount = CurrencyFormatter.formatVND(currentTransfer.getBaseAmount());
+                tvBaseAmountDetail.setText(String.format("≈ %s %s", formattedBaseAmount, systemCurrency));
+            } else {
+                tvBaseAmountDetail.setVisibility(View.GONE);
+            }
+        }
 
         if (srcAcc != null) {
             int actualColor = AppResourceManager.getColor(srcAcc.getColor());

@@ -63,17 +63,37 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvAmount"
+        <LinearLayout
+            android:id="@+id/ll_amount_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorInfo"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:gravity="end"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="@+id/fl_icon_container"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/fl_icon_container"
-            tools:text="2.000.000đ" />
+            app:layout_constraintTop_toTopOf="@+id/fl_icon_container">
+
+            <TextView
+                android:id="@+id/tvAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorInfo"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="100 USD" />
+
+            <TextView
+                android:id="@+id/tvBaseAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/colorOnSurfaceVariant"
+                android:textSize="12sp"
+                android:textStyle="italic"
+                android:visibility="gone"
+                tools:text="≈ 2.500.000 VND"
+                tools:visibility="visible" />
+        </LinearLayout>
 
         <!-- Ghi chú được đưa xuống dưới cùng, hiển thị in nghiêng giống trang Giao dịch -->
         <TextView

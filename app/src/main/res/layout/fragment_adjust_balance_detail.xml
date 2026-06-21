@@ -45,28 +45,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="24dp"
-                android:textColor="@color/colorInfo"
-                android:textSize="36sp"
+                android:textSize="32sp"
                 android:textStyle="bold"
-                tools:text="2.000.000đ" />
+                android:textColor="@color/colorSuccess"
+                tools:text="+500.000đ" />
 
             <TextView
                 android:id="@+id/tvBaseAmountDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="24dp"
                 android:textAlignment="center"
                 android:textColor="@color/colorOnSurfaceVariant"
                 android:textSize="14sp"
                 android:textStyle="italic"
                 android:visibility="gone"
-                tools:text="≈ 25.000.000 VND"
+                tools:text="≈ +1.250.000 VND"
                 tools:visibility="visible" />
 
-            <!-- Nguồn tiền -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="56dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -74,7 +74,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Tài khoản chuyển"
+                    android:text="Tài khoản"
                     android:textColor="@color/colorOnSurfaceVariant"
                     android:textSize="15sp" />
 
@@ -85,7 +85,7 @@
                     android:orientation="horizontal">
 
                     <FrameLayout
-                        android:id="@+id/fl_source_icon"
+                        android:id="@+id/fl_account_icon"
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:layout_marginEnd="10dp"
@@ -93,7 +93,7 @@
                         android:backgroundTint="@color/colorInfo">
 
                         <com.mikepenz.iconics.view.IconicsImageView
-                            android:id="@+id/iv_source_icon"
+                            android:id="@+id/iv_account_icon"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_gravity="center"
@@ -102,20 +102,24 @@
                     </FrameLayout>
 
                     <TextView
-                        android:id="@+id/tvDetailSource"
+                        android:id="@+id/tvDetailAccountName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorOnSurface"
                         android:textSize="15sp"
                         android:textStyle="bold"
-                        tools:text="Tiền mặt" />
+                        tools:text="Ví MoMo" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Tài khoản nhận -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBorder" />
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="56dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -123,96 +127,17 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Tài khoản nhận"
-                    android:textColor="@color/colorOnSurfaceVariant"
-                    android:textSize="15sp" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <FrameLayout
-                        android:id="@+id/fl_dest_icon"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:layout_marginEnd="10dp"
-                        android:background="@drawable/bg_circle"
-                        android:backgroundTint="@color/colorSuccess">
-
-                        <com.mikepenz.iconics.view.IconicsImageView
-                            android:id="@+id/iv_dest_icon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
-                            app:iiv_color="@color/white"
-                            app:iiv_icon="gmd-account-balance-wallet" />
-                    </FrameLayout>
-
-                    <TextView
-                        android:id="@+id/tvDetailDest"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/colorOnSurface"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        tools:text="BIDV" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Ngày -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Ngày"
+                    android:text="Phương thức"
                     android:textColor="@color/colorOnSurfaceVariant"
                     android:textSize="15sp" />
 
                 <TextView
-                    android:id="@+id/tvDetailDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorOnSurface"
                     android:textSize="15sp"
                     android:textStyle="bold"
-                    tools:text="08/06/2026" />
-            </LinearLayout>
-
-            <!-- Ghi chú -->
-            <LinearLayout
-                android:id="@+id/ll_description_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Ghi chú"
-                    android:textColor="@color/colorOnSurfaceVariant"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:id="@+id/tvDetailDescription"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:gravity="end"
-                    android:textColor="@color/colorOnSurface"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    tools:text="Chuyển tiền tiêu vặt" />
+                    android:text="Điều chỉnh số dư" />
             </LinearLayout>
 
         </LinearLayout>
@@ -229,6 +154,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/card_detail"
-        tools:text="Tạo lúc: 08/06/2026" />
+        tools:text="Thực hiện lúc: 23:44 - 21/06/2026" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
