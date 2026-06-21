@@ -205,6 +205,7 @@ public class AuthViewModel extends AndroidViewModel {
                 response.getImageUrl(),
                 response.getDailyStreak(),
                 response.isTodayCheckedIn(),
+                response.getDefaultCurrency(),
                 DateConverter.convertStringToDate(response.getCreatedAt()),
                 DateConverter.convertStringToDate(response.getLastUpdatedAt())
         );

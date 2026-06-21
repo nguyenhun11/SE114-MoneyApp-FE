@@ -10,10 +10,11 @@ public class User {
     private String profileImageUrl;
     private int dailyStreak;
     private boolean todayCheckedIn;
+    private String defaultCurrency;
     private Date createdAt;
     private Date updatedAt;
 
-    public User(int userId, String name, String email, String phoneNumber, String profileImageUrl, int dailyStreak, boolean todayCheckedIn, Date createdAt, Date updatedAt) {
+    public User(int userId, String name, String email, String phoneNumber, String profileImageUrl, int dailyStreak, boolean todayCheckedIn, String defaultCurrency, Date createdAt, Date updatedAt) {
         this.userId = userId;
         this.name = name;
         this.email = email;
@@ -21,6 +22,7 @@ public class User {
         this.profileImageUrl = profileImageUrl;
         this.dailyStreak = dailyStreak;
         this.todayCheckedIn = todayCheckedIn;
+        this.defaultCurrency = defaultCurrency;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -95,5 +97,13 @@ public class User {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getDefaultCurrency() {
+        return defaultCurrency;
+    }
+
+    public void setDefaultCurrency(String defaultCurrency) {
+        this.defaultCurrency = defaultCurrency;
     }
 }

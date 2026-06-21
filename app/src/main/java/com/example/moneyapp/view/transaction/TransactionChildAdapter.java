@@ -16,27 +16,31 @@ import com.example.moneyapp.R;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.utils.AppResourceManager;
+import com.example.moneyapp.utils.CurrencyFormatter;
 import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.List;
 
 public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChildAdapter.ViewHolder> {
     private final List<Transaction> transactions;
+    private final String systemCurrency; // Thêm biến lưu đơn vị mặc định hệ thống
     private final OnItemClickListener listener;
 
     public interface OnItemClickListener {
         void onItemClick(Transaction t);
     }
 
-    public TransactionChildAdapter(List<Transaction> transactions, OnItemClickListener listener) {
+    // SỬA CONSTRUCTOR: Nhận thêm systemCurrency
+    public TransactionChildAdapter(List<Transaction> transactions, String systemCurrency, OnItemClickListener listener) {
         this.transactions = transactions;
+        this.systemCurrency = systemCurrency != null ? systemCurrency : "VND";
         this.listener = listener;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         FrameLayout flIconContainer;
         IconicsImageView ivIcon;
-        TextView tvCategoryName, tvAccountName, tvNote, tvAmount;
+        TextView tvCategoryName, tvAccountName, tvNote, tvAmount, tvBaseAmount;
         View divider;
 
         public ViewHolder(@NonNull View itemView) {
@@ -47,6 +51,7 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
             tvAccountName = itemView.findViewById(R.id.tvAccountName);
             tvNote = itemView.findViewById(R.id.tvNote);
             tvAmount = itemView.findViewById(R.id.tvAmount);
+            tvBaseAmount = itemView.findViewById(R.id.tvBaseAmount); // Ánh xạ view mới
             divider = itemView.findViewById(R.id.divider);
         }
     }
@@ -75,18 +80,22 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
             holder.tvNote.setVisibility(View.GONE);
         }
 
-        // XỬ LÝ TIỀN
-        if (t.getBaseAmount() != null) {
-            CategoryType type = t.getType();
-            if (type == CategoryType.EXPENSE) {
-                holder.tvAmount.setText("-" + t.getFormattedAmount() + "đ");
-                holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorDanger));
-            } else {
-                holder.tvAmount.setText("+" + t.getFormattedAmount() + "đ");
-                holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorSuccess));
-            }
-        }
+        String transactionCurrency = t.getCurrencyCode() != null ? t.getCurrencyCode() : "VND";
+        String sign = (t.getType() == CategoryType.EXPENSE) ? "-" : "+";
+        int colorRes = (t.getType() == CategoryType.EXPENSE) ? R.color.colorDanger : R.color.colorSuccess;
 
+        String mainAmountFormatted = CurrencyFormatter.formatVND(t.getOriginalAmount());
+        holder.tvAmount.setText(sign + " " + mainAmountFormatted + " " + transactionCurrency);
+        holder.tvAmount.setTextColor(ContextCompat.getColor(context, colorRes));
+
+        if (!transactionCurrency.equalsIgnoreCase(systemCurrency)) {
+            holder.tvBaseAmount.setVisibility(View.VISIBLE);
+            String baseAmountFormatted = CurrencyFormatter.formatVND(t.getBaseAmount());
+            holder.tvBaseAmount.setText("≈ " + sign + " " + baseAmountFormatted + " " + systemCurrency);
+        } else {
+            holder.tvBaseAmount.setVisibility(View.GONE);
+        }
+        // Render Icon
         holder.ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, t.getCategoryIconId()));
         int actualColor = AppResourceManager.getColor(t.getCategoryColorId());
         holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(actualColor));

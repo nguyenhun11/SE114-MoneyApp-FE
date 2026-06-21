@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.data.remote.request.CheckInRequest;
 import com.example.moneyapp.data.remote.response.CheckInResponse;
 import com.example.moneyapp.model.User;
@@ -24,7 +25,6 @@ public class ProfileViewModel extends AndroidViewModel {
     public final MutableLiveData<User> currentUser = new MutableLiveData<>();
     public MutableLiveData<String> errorMessage = new MutableLiveData<>();
 
-
     public ProfileViewModel(@NonNull Application application) {
         super(application);
         Context context = application.getApplicationContext();
@@ -36,7 +36,9 @@ public class ProfileViewModel extends AndroidViewModel {
         userRepository.getUserProfile(new UserRepository.UserCallback<UserProfileResponse>() {
             @Override
             public void onSuccess(UserProfileResponse response) {
-                // Map API response to local User entity for UI compatibility
+                String defaultCurrency = response.getDefaultCurrency() != null ? response.getDefaultCurrency() : "VND";
+                PreferenceManager.getInstance(getApplication()).setDefaultCurrency(defaultCurrency);
+
                 User user = new User(
                         response.getId(),
                         response.getName(),
@@ -45,6 +47,7 @@ public class ProfileViewModel extends AndroidViewModel {
                         response.getImageUrl(),
                         response.getDailyStreak(),
                         response.isTodayCheckedIn(),
+                        defaultCurrency, // Thêm dòng này vào model User
                         DateConverter.convertStringToDate(response.getCreatedAt()),
                         DateConverter.convertStringToDate(response.getLastUpdatedAt())
                 );
@@ -88,11 +91,13 @@ public class ProfileViewModel extends AndroidViewModel {
     public void updateUserName(String newName) {
         User user = currentUser.getValue();
         if (user != null && !newName.isEmpty()) {
+            // Cập nhật Constructor của UserProfileRequest để gửi kèm DefaultCurrency
             UserProfileRequest request = new UserProfileRequest(
                     newName,
                     user.getEmail(),
                     user.getProfileImageUrl(),
-                    user.getPhoneNumber()
+                    user.getPhoneNumber(),
+                    user.getDefaultCurrency() // Gửi kèm để BE không bị đè null
             );
 
             userRepository.updateUserProfile(request, new UserRepository.UserCallback<Void>() {
@@ -118,7 +123,8 @@ public class ProfileViewModel extends AndroidViewModel {
                     user.getName(),
                     user.getEmail(),
                     imageUri,
-                    user.getPhoneNumber()
+                    user.getPhoneNumber(),
+                    user.getDefaultCurrency() // Gửi kèm
             );
 
             userRepository.updateUserProfile(request, new UserRepository.UserCallback<Void>() {
@@ -137,11 +143,45 @@ public class ProfileViewModel extends AndroidViewModel {
         }
     }
 
+    public void updateDefaultCurrency(String newCurrency) {
+        User user = currentUser.getValue();
+        if (user != null && !newCurrency.isEmpty()) {
+            UserProfileRequest request = new UserProfileRequest(
+                    user.getName(),
+                    user.getEmail(),
+                    user.getProfileImageUrl(),
+                    user.getPhoneNumber(),
+                    newCurrency
+            );
+
+            userRepository.updateUserProfile(request, new UserRepository.UserCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    // 1. Update biến trong Model
+                    user.setDefaultCurrency(newCurrency);
+                    currentUser.postValue(user);
+
+                    // 2. Lưu đè xuống SharedPreferences ngay lập tức
+                    PreferenceManager.getInstance(getApplication()).setDefaultCurrency(newCurrency);
+
+                    // 3. Báo ra UI
+                    errorMessage.postValue("SUCCESS_CURRENCY");
+                }
+
+                @Override
+                public void onError(String message) {
+                    errorMessage.postValue(message);
+                }
+            });
+        }
+    }
+
     public void deleteAccount() {
-        // Mode can be "permanent" or "soft" based on your API logic
         userRepository.deleteUser("permanent", new UserRepository.UserCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
+                // Tiện tay clear luôn cache tiền tệ khi xóa tài khoản cho sạch
+                PreferenceManager.getInstance(getApplication()).clear();
                 errorMessage.postValue("SUCCESS_DELETE");
             }
 
@@ -186,10 +226,8 @@ public class ProfileViewModel extends AndroidViewModel {
                 User user = currentUser.getValue();
                 if (user != null) {
                     user.setDailyStreak(response.getCurrentStreak());
-                    user.setTodayCheckedIn(true); // Cứu xong thì coi như hôm nay đã điểm danh
+                    user.setTodayCheckedIn(true);
                     currentUser.postValue(user);
-
-                    // Bắn tín hiệu sang Fragment để hiển thị thông báo
                     errorMessage.postValue("SUCCESS_RESTORE:" + response.getMessage());
                 }
             }
