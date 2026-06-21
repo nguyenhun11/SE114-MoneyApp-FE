@@ -52,6 +52,8 @@ public class TransactionAddFragment extends BaseFragment {
 
     // region Views
     private EditText etAmount, etDescription;
+    private View btnOpenCalculator, btnSelectCurrency;
+    private TextView tvCurrency;
     private TextView tvSelectedCategory;
     private IconicsImageView ivCategoryIcon;
 
@@ -114,6 +116,10 @@ public class TransactionAddFragment extends BaseFragment {
 
     private void initViews(View view) {
         etAmount = view.findViewById(R.id.etAmount);
+        btnOpenCalculator = view.findViewById(R.id.btnOpenCalculator);
+        btnSelectCurrency = view.findViewById(R.id.btnSelectCurrency);
+        tvCurrency = view.findViewById(R.id.tvCurrency);
+
         etDescription = view.findViewById(R.id.etDescription);
 
         tvSelectedCategory = view.findViewById(R.id.tvSelectedCategory);
@@ -164,6 +170,26 @@ public class TransactionAddFragment extends BaseFragment {
                     etAmount.addTextChangedListener(this);
                 }
             }
+        });
+
+        btnOpenCalculator.setOnClickListener(v -> {
+            String currentValue = etAmount.getText().toString();
+            PopupHelper.showCalculatorPopup(requireContext(), currentValue, result -> {
+                etAmount.setText(String.format(Locale.US, "%.0f", result));
+            });
+        });
+
+        btnSelectCurrency.setOnClickListener(v -> {
+            android.widget.PopupMenu popup = new android.widget.PopupMenu(requireContext(), v);
+            popup.getMenu().add("VND");
+            popup.getMenu().add("USD");
+            popup.getMenu().add("EUR");
+            popup.setOnMenuItemClickListener(item -> {
+                tvCurrency.setText(item.getTitle());
+                // TODO: Xử lý thay đổi tỷ giá nếu cần thiết ở đây
+                return true;
+            });
+            popup.show();
         });
     }
 
