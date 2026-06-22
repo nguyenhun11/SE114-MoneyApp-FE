@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.moneyapp.data.repository.AccountRepository;
 import com.example.moneyapp.model.Account;
+import com.example.moneyapp.utils.CurrencyFormatter;
 
 import java.util.List;
 import java.util.Map;
@@ -69,17 +70,16 @@ public class AccountViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(Map<String, Double> result) {
                 double totalBaseAmount = 0.0;
-                String systemCurrency = "VND"; // Đơn vị hệ thống
+                String systemCurrency = "VND"; // TODO: Lấy từ User Preferences sau
 
                 if (result != null) {
                     for (Map.Entry<String, Double> entry : result.entrySet()) {
                         String currency = entry.getKey();
                         double amount = entry.getValue();
-                        totalBaseAmount += amount * getMockExchangeRate(currency, systemCurrency);
+                        totalBaseAmount += CurrencyFormatter.previewConversion(amount, currency, systemCurrency);
                     }
                 }
 
-                // Đẩy con số cuối cùng lên cho Giao diện
                 totalBalanceLiveData.postValue(totalBaseAmount);
             }
 
@@ -123,7 +123,7 @@ public class AccountViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(Void result) {
                 saveSuccess.postValue(true);
-                loadAccounts(); // Refresh list after delete
+                loadAccounts();
             }
 
             @Override
@@ -131,13 +131,5 @@ public class AccountViewModel extends AndroidViewModel {
                 errorLiveData.postValue(message);
             }
         });
-    }
-
-    private double getMockExchangeRate(String fromCurrency, String toCurrency) {
-        if (fromCurrency.equals(toCurrency)) return 1.0;
-        if (fromCurrency.equals("USD") && toCurrency.equals("VND")) return 25000.0;
-        if (fromCurrency.equals("EUR") && toCurrency.equals("VND")) return 27000.0;
-        if (fromCurrency.equals("JPY") && toCurrency.equals("VND")) return 160.0;
-        return 1.0;
     }
 }

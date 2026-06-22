@@ -27,6 +27,7 @@ import com.example.moneyapp.data.remote.response.AuthResponse;
 import com.example.moneyapp.data.remote.response.CashFlowBarDto;
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
 import com.example.moneyapp.data.remote.response.CategoryResponse;
+import com.example.moneyapp.data.remote.response.ExchangeRateResponse;
 import com.example.moneyapp.data.remote.response.GoalResponse;
 import com.example.moneyapp.data.remote.response.CheckInResponse;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
@@ -245,5 +246,10 @@ public interface ApiService {
 
     @POST("api/Goals/{id}/deposit")
     Call<GoalResponse> depositToGoal(@Path("id") int id, @Body DepositRequest request);
+    //endregion
+
+    //region Currency
+    @GET("api/ExchangeRate")
+    Call<ExchangeRateResponse> getLatestExchangeRates();
     //endregion
 }

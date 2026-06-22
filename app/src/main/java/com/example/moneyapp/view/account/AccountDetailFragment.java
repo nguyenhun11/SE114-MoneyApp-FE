@@ -27,6 +27,7 @@ import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class AccountDetailFragment extends BaseFragment {
@@ -124,7 +125,6 @@ public class AccountDetailFragment extends BaseFragment {
         }
     }
 
-    // Thiết lập Popup chọn tiền tệ
     private void setupCurrencyPicker() {
         if (btnSelectCurrency == null) return;
 
@@ -134,17 +134,16 @@ public class AccountDetailFragment extends BaseFragment {
                 return;
             }
 
-            android.widget.PopupMenu popup = new android.widget.PopupMenu(requireContext(), v);
-            popup.getMenu().add("VND");
-            popup.getMenu().add("USD");
-            popup.getMenu().add("EUR");
-            popup.getMenu().add("JPY");
-            popup.setOnMenuItemClickListener(item -> {
-                currentCurrencyCode = item.getTitle().toString();
+
+            List<String> allCurrencies = CurrencyFormatter.getSupportedCurrencies();
+            if (allCurrencies == null || allCurrencies.isEmpty()) {
+                allCurrencies = new java.util.ArrayList<>(java.util.Arrays.asList("VND", "USD", "EUR", "JPY"));
+            }
+
+            PopupHelper.showCurrencyFilterPopup(requireContext(), allCurrencies, selectedCurrency -> {
+                currentCurrencyCode = selectedCurrency;
                 tvCurrency.setText(currentCurrencyCode);
-                return true;
             });
-            popup.show();
         });
     }
 

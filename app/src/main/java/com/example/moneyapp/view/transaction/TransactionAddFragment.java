@@ -1,12 +1,17 @@
 package com.example.moneyapp.view.transaction;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +28,7 @@ import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.Mood;
 import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.utils.AppResourceManager;
+import com.example.moneyapp.utils.CurrencyFormatter;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.components.AccountSelectorView;
@@ -34,6 +40,7 @@ import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -160,7 +167,7 @@ public class TransactionAddFragment extends BaseFragment {
 
         updateAmountColor(true);
 
-        etAmount.addTextChangedListener(new android.text.TextWatcher() {
+        etAmount.addTextChangedListener(new TextWatcher() {
             private String current = "";
 
             @Override
@@ -170,7 +177,7 @@ public class TransactionAddFragment extends BaseFragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
             @Override
-            public void afterTextChanged(android.text.Editable s) {
+            public void afterTextChanged(Editable s) {
                 if (!s.toString().equals(current)) {
                     etAmount.removeTextChangedListener(this);
                     String cleanString = s.toString().replaceAll("[.,]", "");
@@ -178,7 +185,7 @@ public class TransactionAddFragment extends BaseFragment {
                     if (!cleanString.isEmpty()) {
                         try {
                             double parsed = Double.parseDouble(cleanString);
-                            String formatted = com.example.moneyapp.utils.CurrencyFormatter.formatVND(parsed);
+                            String formatted = CurrencyFormatter.formatVND(parsed);
                             current = formatted;
                             etAmount.setText(formatted);
                             etAmount.setSelection(formatted.length());
@@ -203,22 +210,20 @@ public class TransactionAddFragment extends BaseFragment {
         });
 
         btnSelectCurrency.setOnClickListener(v -> {
-            android.widget.PopupMenu popup = new android.widget.PopupMenu(requireContext(), v);
-            popup.getMenu().add("VND");
-            popup.getMenu().add("USD");
-            popup.getMenu().add("EUR");
-            popup.getMenu().add("JPY");
-            popup.setOnMenuItemClickListener(item -> {
-                currentCurrencyCode = item.getTitle().toString();
+            List<String> allCurrencies = CurrencyFormatter.getSupportedCurrencies();
+            if (allCurrencies == null || allCurrencies.isEmpty()) {
+                allCurrencies = new ArrayList<>(Arrays.asList("VND", "USD", "EUR", "JPY"));
+            }
+
+            PopupHelper.showCurrencyFilterPopup(requireContext(), allCurrencies, selectedCurrency -> {
+                currentCurrencyCode = selectedCurrency;
                 tvCurrency.setText(currentCurrencyCode);
 
                 String amountStr = etAmount.getText().toString().replaceAll("[.,]", "");
                 if (!amountStr.isEmpty()) {
                     updateConvertedAmountUI(Double.parseDouble(amountStr));
                 }
-                return true;
             });
-            popup.show();
         });
     }
 
@@ -230,19 +235,6 @@ public class TransactionAddFragment extends BaseFragment {
         }
     }
 
-    private double getMockExchangeRate(String fromCurrency, String toCurrency) {
-        //TODO: lấy giá trị thật
-        if (fromCurrency.equals(toCurrency)) return 1.0;
-
-        if (fromCurrency.equals("USD") && toCurrency.equals("VND")) return 25000.0;
-        if (fromCurrency.equals("EUR") && toCurrency.equals("VND")) return 27000.0;
-        if (fromCurrency.equals("JPY") && toCurrency.equals("VND")) return 160.0;
-
-        if (fromCurrency.equals("VND") && toCurrency.equals("USD")) return 1.0 / 25000.0;
-
-        return 1.0;
-    }
-
     private void updateConvertedAmountUI(double inputAmount) {
         if (tvConvertedAmount == null || selectedAccount == null) return;
 
@@ -252,10 +244,11 @@ public class TransactionAddFragment extends BaseFragment {
             tvConvertedAmount.setVisibility(View.GONE);
         } else {
             tvConvertedAmount.setVisibility(View.VISIBLE);
-            double rate = getMockExchangeRate(currentCurrencyCode, accountCurrency);
-            double converted = inputAmount * rate;
 
-            String formattedConverted = com.example.moneyapp.utils.CurrencyFormatter.formatVND(converted);
+            // Backend trả về rates -> Utils tự tính toán Preview
+            double converted = CurrencyFormatter.previewConversion(inputAmount, currentCurrencyCode, accountCurrency);
+
+            String formattedConverted = CurrencyFormatter.formatVND(converted); // Có thể update hàm format theo accountCurrency nếu muốn
             tvConvertedAmount.setText(String.format(Locale.US, "≈ %s %s", formattedConverted, accountCurrency));
         }
     }
@@ -263,11 +256,9 @@ public class TransactionAddFragment extends BaseFragment {
     private void observeViewModels() {
         transactionViewModel.getSelectedTransaction().observe(getViewLifecycleOwner(), t -> {
             if (t != null && editTransactionId != null) {
-                // SỬA: Hiển thị OriginalAmount (Số tiền người dùng nhập ban đầu)
                 etAmount.setText(String.valueOf((long) Math.abs(t.getOriginalAmount())));
                 if (t.getNote() != null) etDescription.setText(t.getNote());
 
-                // Nạp đơn vị tiền tệ cũ
                 currentCurrencyCode = t.getCurrencyCode() != null ? t.getCurrencyCode() : "VND";
                 tvCurrency.setText(currentCurrencyCode);
 
@@ -449,6 +440,7 @@ public class TransactionAddFragment extends BaseFragment {
         requireView().clearFocus();
     }
 
+    // ĐÃ CẬP NHẬT: Giao hết gánh nặng tính toán tiền tệ lại cho Backend
     private void saveTransaction() {
         String amountStr = etAmount.getText().toString().trim().replaceAll("[.,]", "");
         String description = etDescription.getText().toString().trim();
@@ -461,21 +453,15 @@ public class TransactionAddFragment extends BaseFragment {
         try {
             double originalAmount = Math.abs(Double.parseDouble(amountStr));
 
-            String accountCurrency = selectedAccount.getCurrencyCode();
-            String systemCurrency = "VND"; // TODO: Thay bằng DefaultCurrency của User (lấy từ SharedPreferences)
-
-            double exchangeRateToAccount = getMockExchangeRate(currentCurrencyCode, accountCurrency);
-            double accountAmount = originalAmount * exchangeRateToAccount;
-
-            double exchangeRateToSystem = getMockExchangeRate(currentCurrencyCode, systemCurrency);
-            double baseAmount = originalAmount * exchangeRateToSystem;
-
+            // Chỉ cần đóng gói đúng các dữ liệu cơ sở gửi lên,
+            // Các thuộc tính accountAmount, baseAmount, exchangeRate truyền 0.0 vì DB/Backend tự lưu đè lại hết
             Transaction newTransaction = new Transaction(
                     editTransactionId != null ? editTransactionId : UUID.randomUUID().toString(),
                     selectedAccount.getAccountId(), selectedAccount.getAccountName(),
                     selectedCategory.getCategoryId(), selectedCategory.getCategoryName(),
                     transactionType,
-                    originalAmount, currentCurrencyCode, accountAmount, baseAmount, exchangeRateToAccount, // Truyền đủ 5 tham số
+                    originalAmount, currentCurrencyCode,
+                    0.0, 0.0, 1.0,
                     selectedDate, description,
                     selectedCategory.getColor(), selectedCategory.getIcon(),
                     selectedAccount.getColor(), selectedAccount.getIcon(),

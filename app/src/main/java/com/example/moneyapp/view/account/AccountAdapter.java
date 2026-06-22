@@ -23,14 +23,13 @@ import java.util.List;
 public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountViewHolder> {
 
     private List<Account> accountList;
-    private final String systemCurrency; // Thêm biến lưu đơn vị mặc định
+    private final String systemCurrency;
     private final OnItemClickListener listener;
 
     public interface OnItemClickListener {
         void onItemClick(Account account);
     }
 
-    // Cập nhật Constructor
     public AccountAdapter(List<Account> accountList, String systemCurrency, OnItemClickListener listener) {
         this.accountList = accountList;
         this.systemCurrency = systemCurrency != null ? systemCurrency : "VND";
@@ -56,36 +55,39 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
 
         holder.tvName.setText(account.getAccountName());
 
-        // Lấy đơn vị tiền của cái Ví này
         String accCurrency = account.getCurrencyCode() != null ? account.getCurrencyCode() : "VND";
+        double balance = account.getBalance();
 
-        // 1. Dòng chính: Số dư thực tế của ví
-        String formattedBalance = CurrencyFormatter.formatVND(account.getBalance());
+        String formattedBalance = CurrencyFormatter.formatVND(balance);
         holder.tvBalance.setText(String.format("%s %s", formattedBalance, accCurrency));
 
-        // 2. Dòng phụ: Nếu ngoại tệ khác hệ thống thì quy đổi
         if (!accCurrency.equalsIgnoreCase(systemCurrency)) {
             holder.tvBaseBalance.setVisibility(View.VISIBLE);
-            double rate = getMockExchangeRate(accCurrency, systemCurrency);
-            double baseBalance = account.getBalance() * rate;
+            double baseBalance = CurrencyFormatter.previewConversion(balance, accCurrency, systemCurrency);
             String formattedBase = CurrencyFormatter.formatVND(baseBalance);
             holder.tvBaseBalance.setText(String.format("≈ %s %s", formattedBase, systemCurrency));
         } else {
             holder.tvBaseBalance.setVisibility(View.GONE);
         }
 
-        // Xử lý ẩn/hiện tổng tài sản
-        int normalColor = ContextCompat.getColor(context, R.color.colorOnSurface);
-        int dimColor = ContextCompat.getColor(context, R.color.colorOnSurfaceVariant);
-
         if (account.isIncludeInTotal()) {
             holder.ivHiddenEye.setVisibility(View.GONE);
-            holder.tvBalance.setTextColor(normalColor);
         } else {
             holder.ivHiddenEye.setVisibility(View.VISIBLE);
-            holder.tvBalance.setTextColor(dimColor);
         }
 
+        // 4. Xử lý màu sắc số dư
+        if (balance < 0) {
+            // NẾU ÂM: Bắt buộc hiển thị màu Đỏ (Danger)
+            holder.tvBalance.setTextColor(ContextCompat.getColor(context, R.color.colorDanger));
+        } else {
+            // NẾU DƯƠNG HOẶC BẰNG 0: Đổi màu theo trạng thái Ẩn/Hiện của ví
+            int normalColor = ContextCompat.getColor(context, R.color.colorOnSurface);
+            int dimColor = ContextCompat.getColor(context, R.color.colorOnSurfaceVariant);
+            holder.tvBalance.setTextColor(account.isIncludeInTotal() ? normalColor : dimColor);
+        }
+
+        // 5. Hiển thị Icon và màu ví
         int actualColor = AppResourceManager.getColor(account.getColor());
         holder.ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, account.getIcon()));
         holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(actualColor));
@@ -100,16 +102,6 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
         return accountList != null ? accountList.size() : 0;
     }
 
-    // Hàm mock tỷ giá
-    private double getMockExchangeRate(String fromCurrency, String toCurrency) {
-        if (fromCurrency.equals(toCurrency)) return 1.0;
-        if (fromCurrency.equals("USD") && toCurrency.equals("VND")) return 25000.0;
-        if (fromCurrency.equals("EUR") && toCurrency.equals("VND")) return 27000.0;
-        if (fromCurrency.equals("JPY") && toCurrency.equals("VND")) return 160.0;
-        if (fromCurrency.equals("VND") && toCurrency.equals("USD")) return 1.0 / 25000.0;
-        return 1.0;
-    }
-
     public static class AccountViewHolder extends RecyclerView.ViewHolder {
         FrameLayout flIconContainer;
         IconicsImageView ivIcon, ivHiddenEye;
@@ -122,7 +114,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
             ivHiddenEye = itemView.findViewById(R.id.iv_hidden_eye);
             tvName = itemView.findViewById(R.id.tv_account_name);
             tvBalance = itemView.findViewById(R.id.tv_account_balance);
-            tvBaseBalance = itemView.findViewById(R.id.tv_account_base_balance); // Ánh xạ view mới
+            tvBaseBalance = itemView.findViewById(R.id.tv_account_base_balance);
         }
     }
 }

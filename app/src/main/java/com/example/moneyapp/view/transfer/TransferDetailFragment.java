@@ -173,8 +173,13 @@ public class TransferDetailFragment extends BaseFragment {
         if (tvBaseAmountDetail != null) {
             if (!srcCurrency.equalsIgnoreCase(systemCurrency)) {
                 tvBaseAmountDetail.setVisibility(View.VISIBLE);
-                String formattedBaseAmount = CurrencyFormatter.formatVND(currentTransfer.getBaseAmount());
-                tvBaseAmountDetail.setText(String.format("≈ %s %s", formattedBaseAmount, systemCurrency));
+
+                double baseAmt = (currentTransfer.getBaseAmount() != null && currentTransfer.getBaseAmount() > 0)
+                        ? currentTransfer.getBaseAmount()
+                        : CurrencyFormatter.previewConversion(currentTransfer.getSourceAmount(), srcCurrency, systemCurrency);
+
+                String formattedBaseAmount = CurrencyFormatter.formatVND(baseAmt);
+                tvBaseAmountDetail.setText(String.format("%s %s", formattedBaseAmount, systemCurrency));
             } else {
                 tvBaseAmountDetail.setVisibility(View.GONE);
             }
@@ -183,22 +188,20 @@ public class TransferDetailFragment extends BaseFragment {
         if (srcAcc != null) {
             int actualColor = AppResourceManager.getColor(srcAcc.getColor());
             flSourceIcon.setBackgroundTintList(ColorStateList.valueOf(actualColor));
-            String iconName = AppResourceManager.getIconName(srcAcc.getIcon());
-            ivSourceIcon.setIcon(new IconicsDrawable(context, iconName));
+            ivSourceIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, srcAcc.getIcon()));
         }
 
         if (destAcc != null) {
             int actualColor = AppResourceManager.getColor(destAcc.getColor());
             flDestIcon.setBackgroundTintList(ColorStateList.valueOf(actualColor));
-            String iconName = AppResourceManager.getIconName(destAcc.getIcon());
-            ivDestIcon.setIcon(new IconicsDrawable(context, iconName));
+            ivDestIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, destAcc.getIcon()));
         }
     }
 
     private Account findAccountById(String accountId) {
-        if (accountId == null) return null;
+        if (accountId == null || accountList == null || accountList.isEmpty()) return null;
         for (Account a : accountList) {
-            if (accountId.equals(a.getAccountId())) {
+            if (a.getAccountId() != null && accountId.equalsIgnoreCase(a.getAccountId())) {
                 return a;
             }
         }
