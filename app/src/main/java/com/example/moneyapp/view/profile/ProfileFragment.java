@@ -24,6 +24,7 @@ import androidx.navigation.Navigation;
 import com.bumptech.glide.Glide;
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.local.PreferenceManager;
+import com.example.moneyapp.utils.RewardHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.MainActivity;
 import com.example.moneyapp.view.SplashActivity;
@@ -109,8 +110,27 @@ public class ProfileFragment extends BaseFragment {
         View cvAvatarContainer = view.findViewById(R.id.cv_avatar_container);
         View collapsedContent = view.findViewById(R.id.collapsed_content);
 
+        TextView tvCityLevel = view.findViewById(R.id.tv_city_level_profile);
+        TextView tvProsperity = view.findViewById(R.id.tv_prosperity_profile);
+        TextView tvStability = view.findViewById(R.id.tv_stability_profile);
+        View cardCityStats = view.findViewById(R.id.card_city_stats);
+        View btnCityGuide = view.findViewById(R.id.btn_city_guide);
+
         // Fetch & Observe
         profileViewModel.fetchUserData();
+        if (btnCityGuide != null) {
+            btnCityGuide.setOnClickListener(v -> 
+                new com.example.moneyapp.view.city.CityGuideBottomSheet().show(getChildFragmentManager(), "CityGuide")
+            );
+        }
+        profileViewModel.cityData.observe(getViewLifecycleOwner(), city -> {
+            if (city != null) {
+                tvCityLevel.setText("Cấp " + city.getLevel());
+                tvProsperity.setText(String.valueOf(city.getProsperityPoints()));
+                tvStability.setText(String.valueOf(city.getStabilityPoints()));
+            }
+        });
+
         profileViewModel.currentUser.observe(getViewLifecycleOwner(), user -> {
             if (user != null) {
                 tvNameExpanded.setText(user.getName());
@@ -206,7 +226,7 @@ public class ProfileFragment extends BaseFragment {
                 Toast.makeText(requireContext(), msgText, Toast.LENGTH_LONG).show();
             } else if (message.startsWith("CHECKIN_MSG:")) {
                 String msgText = message.replace("CHECKIN_MSG:", "");
-                Toast.makeText(requireContext(), msgText, Toast.LENGTH_LONG).show();
+                RewardHelper.showBigReward(requireContext(), "+10 SP", msgText);
             } else {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
             }

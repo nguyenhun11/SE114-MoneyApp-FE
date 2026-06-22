@@ -26,6 +26,7 @@ import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.CurrencyFormatter;
 import com.example.moneyapp.utils.DateConverter;
 import com.example.moneyapp.utils.PopupHelper;
+import com.example.moneyapp.utils.RewardHelper;
 import com.example.moneyapp.view.MainActivity;
 import com.example.moneyapp.view.components.AccountSelectorView;
 import com.example.moneyapp.viewmodel.AccountViewModel;
@@ -207,6 +208,10 @@ public class GoalDetailFragment extends Fragment {
             // Cập nhật lại thông tin goal hiện tại từ danh sách mới
             for (Goal g : goals) {
                 if (g.getId() == goal.getId()) {
+                    if (g.getProgressPercent() >= 100 && goal.getProgressPercent() < 100) {
+                        RewardHelper.showBigReward(requireContext(), "+100 PP", 
+                                "Chúc mừng! Bạn đã hoàn thành mục tiêu '" + g.getName() + "'. Thành phố của bạn đang phát triển vượt bậc!");
+                    }
                     goal = g;
                     displayGoal();
                     break;

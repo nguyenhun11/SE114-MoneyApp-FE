@@ -2,10 +2,13 @@ package com.example.moneyapp.data.remote.api;
 
 import com.example.moneyapp.data.remote.request.AccountRequest;
 import com.example.moneyapp.data.remote.request.AdjustBalanceRequest;
+import com.example.moneyapp.data.remote.request.BudgetRequest;
+import com.example.moneyapp.data.remote.request.BuildRequest;
 import com.example.moneyapp.data.remote.request.CategoryGroupRequest;
 import com.example.moneyapp.data.remote.request.DepositRequest;
 import com.example.moneyapp.data.remote.request.GoalRequest;
 import com.example.moneyapp.data.remote.request.TransferRequest;
+import com.example.moneyapp.data.remote.response.BudgetResponse;
 import com.example.moneyapp.data.remote.response.CategoryGroupResponse;
 import com.example.moneyapp.data.remote.request.CategoryRequest;
 import com.example.moneyapp.data.remote.request.ChangePasswordRequest;
@@ -27,6 +30,7 @@ import com.example.moneyapp.data.remote.response.AuthResponse;
 import com.example.moneyapp.data.remote.response.CashFlowBarDto;
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
 import com.example.moneyapp.data.remote.response.CategoryResponse;
+import com.example.moneyapp.data.remote.response.CityResponse;
 import com.example.moneyapp.data.remote.response.GoalResponse;
 import com.example.moneyapp.data.remote.response.CheckInResponse;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
@@ -245,5 +249,25 @@ public interface ApiService {
 
     @POST("api/Goals/{id}/deposit")
     Call<GoalResponse> depositToGoal(@Path("id") int id, @Body DepositRequest request);
+    //endregion
+
+    //region Budget
+    @GET("api/Budget")
+    Call<List<BudgetResponse>> getAllBudgets();
+    @POST("api/Budget")
+    Call<BudgetResponse> createBudget(@Body BudgetRequest request);
+    @PUT("api/Budget/{id}")
+    Call<Void> updateBudget(@Path("id") int id, @Body BudgetRequest request);
+    @DELETE("api/Budget/{id}")
+    Call<Void> deleteBudget(@Path("id") int id);
+    //endregion
+
+    //region City
+    @GET("api/City")
+    Call<CityResponse> getCity();
+    @POST("api/City/build")
+    Call<Void> build(@Body BuildRequest request);
+    @POST("api/City/upgrade/{id}")
+    Call<Void> upgradeBuilding(@Path("id") int id);
     //endregion
 }

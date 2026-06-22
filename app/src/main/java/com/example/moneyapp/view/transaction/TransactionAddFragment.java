@@ -24,6 +24,7 @@ import com.example.moneyapp.model.Mood;
 import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.PopupHelper;
+import com.example.moneyapp.utils.RewardHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.components.AccountSelectorView;
 import com.example.moneyapp.viewmodel.AccountViewModel;
@@ -319,6 +320,9 @@ public class TransactionAddFragment extends BaseFragment {
 
         transactionViewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
             if (Boolean.TRUE.equals(success)) {
+                if (editTransactionId == null) {
+                    RewardHelper.showSmallReward(requireView(), "+1 SP - Thói quen tốt!");
+                }
                 String msg = (editTransactionId != null) ? "Cập nhật giao dịch thành công!" : "Thêm giao dịch thành công!";
                 Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
                 Navigation.findNavController(requireView()).navigateUp();

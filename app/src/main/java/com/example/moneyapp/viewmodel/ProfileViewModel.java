@@ -10,10 +10,12 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.data.remote.request.CheckInRequest;
 import com.example.moneyapp.data.remote.response.CheckInResponse;
+import com.example.moneyapp.data.remote.response.CityResponse;
 import com.example.moneyapp.model.User;
 import com.example.moneyapp.data.remote.request.UserProfileRequest;
 import com.example.moneyapp.data.remote.response.UserProfileResponse;
 import com.example.moneyapp.data.repository.AuthRepository;
+import com.example.moneyapp.data.repository.CityRepository;
 import com.example.moneyapp.data.repository.UserRepository;
 import com.example.moneyapp.utils.DateConverter;
 
@@ -22,7 +24,9 @@ import java.util.Date;
 public class ProfileViewModel extends AndroidViewModel {
     private final AuthRepository authRepository;
     private final UserRepository userRepository;
+    private final CityRepository cityRepository;
     public final MutableLiveData<User> currentUser = new MutableLiveData<>();
+    public final MutableLiveData<CityResponse> cityData = new MutableLiveData<>();
     public MutableLiveData<String> errorMessage = new MutableLiveData<>();
 
     public ProfileViewModel(@NonNull Application application) {
@@ -30,9 +34,11 @@ public class ProfileViewModel extends AndroidViewModel {
         Context context = application.getApplicationContext();
         authRepository = new AuthRepository(application);
         userRepository = new UserRepository(context);
+        cityRepository = new CityRepository(context);
     }
 
     public void fetchUserData() {
+        fetchCityData();
         userRepository.getUserProfile(new UserRepository.UserCallback<UserProfileResponse>() {
             @Override
             public void onSuccess(UserProfileResponse response) {
@@ -192,6 +198,22 @@ public class ProfileViewModel extends AndroidViewModel {
         });
     }
 
+    public void fetchCityData() {
+        cityRepository.getCity().enqueue(new retrofit2.Callback<CityResponse>() {
+            @Override
+            public void onResponse(retrofit2.Call<CityResponse> call, retrofit2.Response<CityResponse> response) {
+                if (response.isSuccessful()) {
+                    cityData.postValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<CityResponse> call, Throwable t) {
+                // Ignore error for simplicity or post error message
+            }
+        });
+    }
+
     public void checkInToday() {
         String todayString = DateConverter.convertDateToString(new Date());
         CheckInRequest request = new CheckInRequest(todayString);
@@ -205,6 +227,9 @@ public class ProfileViewModel extends AndroidViewModel {
                     user.setTodayCheckedIn(true);
                     currentUser.postValue(user);
                     errorMessage.postValue("CHECKIN_MSG:" + response.getMessage());
+                    
+                    // Cập nhật lại điểm thành phố sau khi check-in
+                    fetchCityData();
                 }
             }
 
@@ -229,6 +254,9 @@ public class ProfileViewModel extends AndroidViewModel {
                     user.setTodayCheckedIn(true);
                     currentUser.postValue(user);
                     errorMessage.postValue("SUCCESS_RESTORE:" + response.getMessage());
+                    
+                    // Cập nhật lại điểm thành phố sau khi khôi phục chuỗi
+                    fetchCityData();
                 }
             }
 
