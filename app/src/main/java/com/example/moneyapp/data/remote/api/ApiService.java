@@ -31,6 +31,7 @@ import com.example.moneyapp.data.remote.response.CashFlowBarDto;
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
 import com.example.moneyapp.data.remote.response.CategoryResponse;
 import com.example.moneyapp.data.remote.response.CityResponse;
+import com.example.moneyapp.data.remote.response.ExchangeRateResponse;
 import com.example.moneyapp.data.remote.response.GoalResponse;
 import com.example.moneyapp.data.remote.response.CheckInResponse;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
@@ -269,5 +270,8 @@ public interface ApiService {
     Call<Void> build(@Body BuildRequest request);
     @POST("api/City/upgrade/{id}")
     Call<Void> upgradeBuilding(@Path("id") int id);
+    //region Currency
+    @GET("api/ExchangeRate")
+    Call<ExchangeRateResponse> getLatestExchangeRates();
     //endregion
 }

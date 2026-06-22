@@ -89,7 +89,6 @@ public class TransactionDetailFragment extends BaseFragment {
                     TextView tvSource = view.findViewById(R.id.tvDetailSource);
                     TextView tvAmount = view.findViewById(R.id.tvDetailAmount);
 
-                    // Bạn nên ánh xạ thêm 1 TextView phụ trong xml để hiện tiền quy đổi nếu có ngoại tệ
                     TextView tvBaseAmountDetail = view.findViewById(R.id.tvBaseAmountDetail);
 
                     TextView tvDate = view.findViewById(R.id.tvDetailDate);
@@ -102,12 +101,9 @@ public class TransactionDetailFragment extends BaseFragment {
                     tvSource.setText(t.getAccountName() != null ? t.getAccountName() : "Ví");
                     tvDate.setText(t.getFormattedDate());
 
-                    if (t.getType() == CategoryType.EXPENSE) {
-                        moodContainer.setVisibility(View.VISIBLE);
-                        tvMood.setText(String.format("%s %s", Mood.getEmojiById(t.getMoodId()), Mood.getNameById(t.getMoodId())));
-                    } else {
-                        moodContainer.setVisibility(View.GONE);
-                    }
+                    // ĐÃ SỬA: Luôn luôn hiển thị cảm xúc không phân biệt Thu/Chi
+                    moodContainer.setVisibility(View.VISIBLE);
+                    tvMood.setText(String.format("%s %s", Mood.getEmojiById(t.getMoodId()), Mood.getNameById(t.getMoodId())));
 
                     View noteRowContainer = (View) tvDescription.getParent();
                     if (t.getNote() != null && !t.getNote().trim().isEmpty()) {
@@ -124,21 +120,16 @@ public class TransactionDetailFragment extends BaseFragment {
                         tvCreatedAt.setText("");
                     }
 
-                    // ==========================================
-                    // LOGIC XỬ LÝ ĐƠN VỊ VÀ MÀU SẮC TIỀN TỆ MỚI
-                    // ==========================================
                     String transactionCurrency = t.getCurrencyCode() != null ? t.getCurrencyCode() : "VND";
                     String systemCurrency = PreferenceManager.getInstance(requireContext()).getDefaultCurrency();
 
                     String sign = (t.getType() == CategoryType.EXPENSE) ? "-" : "+";
                     int colorRes = (t.getType() == CategoryType.EXPENSE) ? R.color.colorDanger : R.color.colorSuccess;
 
-                    // 1. Hiển thị dòng tiền chính gốc (Số tiền nhập vào)
                     String formattedOriginal = CurrencyFormatter.formatVND(t.getOriginalAmount());
                     tvAmount.setText(String.format("%s %s %s", sign, formattedOriginal, transactionCurrency));
                     tvAmount.setTextColor(ContextCompat.getColor(requireContext(), colorRes));
 
-                    // 2. Hiển thị dòng tiền quy đổi hệ thống phụ (nếu dùng ngoại tệ khác hệ thống)
                     if (tvBaseAmountDetail != null) {
                         if (!transactionCurrency.equalsIgnoreCase(systemCurrency)) {
                             tvBaseAmountDetail.setVisibility(View.VISIBLE);

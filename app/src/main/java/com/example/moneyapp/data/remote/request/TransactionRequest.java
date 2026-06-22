@@ -7,33 +7,26 @@ public class TransactionRequest {
     private String categoryId;
     private Double originalAmount;
     private String currencyCode;
-    private Double accountAmount;
-    private Double baseAmount;
-    private Double exchangeRate;
     private String date;
     private String note;
     private List<String> imageUrls;
     private int moodId;
 
-    public TransactionRequest(String accountId, String categoryId, Double originalAmount, String currencyCode, Double accountAmount, Double baseAmount, Double exchangeRate, String date, String note, List<String> imageUrls, int moodId) {
+    public TransactionRequest(String accountId,
+                              String categoryId,
+                              Double originalAmount,
+                              String currencyCode,
+                              String date,
+                              String note,
+                              List<String> imageUrls,
+                              int moodId) {
         this.accountId = accountId;
         this.categoryId = categoryId;
         this.originalAmount = originalAmount;
         this.currencyCode = currencyCode;
-        this.accountAmount = accountAmount;
-        this.baseAmount = baseAmount;
-        this.exchangeRate = exchangeRate;
         this.date = date;
         this.note = note;
         this.imageUrls = imageUrls;
-        this.moodId = moodId;
-    }
-
-    public int getMoodId() {
-        return moodId;
-    }
-
-    public void setMoodId(int moodId) {
         this.moodId = moodId;
     }
 }

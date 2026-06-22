@@ -1,15 +1,27 @@
 package com.example.moneyapp.data.remote.response;
 
+import com.google.gson.annotations.SerializedName;
+
 public class UserProfileResponse {
+    @SerializedName("id")
     private int id;
+    @SerializedName("name")
     private String name;
+    @SerializedName("email")
     private String email;
+    @SerializedName("imageUrl")
     private String imageUrl;
+    @SerializedName("phoneNumber")
     private String phoneNumber;
+    @SerializedName("dailyStreak")
     private int dailyStreak;
+    @SerializedName("todayCheckedIn")
     private boolean todayCheckedIn;
+    @SerializedName("defaultCurrency")
     private String defaultCurrency;
+    @SerializedName("createdAt")
     private String createdAt;
+    @SerializedName("lastUpdatedAt")
     private String lastUpdatedAt;
 
     public int getId() { return id; }
