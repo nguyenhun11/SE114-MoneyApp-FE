@@ -70,9 +70,8 @@ public class AccountFragment extends BaseFragment {
                     getString(R.string.total_balance),
                     displayBalance,
                     false,
-                    "gmd_history",
-                    v -> {
-                        Navigation.findNavController(view).navigate(R.id.action_accountFragment_to_transferFragment);                    },
+                    "",
+                    v -> { },
                     "gmd_add_circle_outline",
                     v -> {
                         Navigation.findNavController(view).navigate(R.id.accountDetailFragment);
