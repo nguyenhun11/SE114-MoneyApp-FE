@@ -27,14 +27,13 @@ import java.util.List;
 public class TransferChildAdapter extends RecyclerView.Adapter<TransferChildAdapter.ViewHolder> {
     private final List<HistoryItem> items;
     private final List<Account> accountList;
-    private final String systemCurrency; // Thêm biến lưu hệ tiền tệ mặc định
+    private final String systemCurrency;
     private final OnItemClickListener listener;
 
     public interface OnItemClickListener {
         void onItemClick(HistoryItem t);
     }
 
-    // Cập nhật Constructor
     public TransferChildAdapter(List<HistoryItem> items, List<Account> accountList, String systemCurrency, OnItemClickListener listener) {
         this.items = items;
         this.accountList = accountList;
@@ -54,8 +53,10 @@ public class TransferChildAdapter extends RecyclerView.Adapter<TransferChildAdap
             tvSourceAccount = itemView.findViewById(R.id.tvSourceAccount);
             tvDestAccount = itemView.findViewById(R.id.tvDestAccount);
             tvNote = itemView.findViewById(R.id.tvNote);
+
             tvAmount = itemView.findViewById(R.id.tvAmount);
-            tvBaseAmount = itemView.findViewById(R.id.tvBaseAmount); // Ánh xạ View mới
+            tvBaseAmount = itemView.findViewById(R.id.tvBaseAmount);
+
             divider = itemView.findViewById(R.id.divider);
             ivIcon = itemView.findViewById(R.id.iv_icon);
         }
@@ -75,9 +76,6 @@ public class TransferChildAdapter extends RecyclerView.Adapter<TransferChildAdap
         HistoryItem item = items.get(position);
 
         if (item.getType() == HistoryItem.TYPE_TRANSFER) {
-            // ==========================================
-            // 1. THỂ HIỆN DÒNG CHUYỂN KHOẢN (TRANSFER)
-            // ==========================================
             Transfer t = item.getTransfer();
 
             if (holder.ivIcon != null) {
@@ -102,28 +100,31 @@ public class TransferChildAdapter extends RecyclerView.Adapter<TransferChildAdap
                 holder.tvNote.setVisibility(View.GONE);
             }
 
-            // XỬ LÝ TIỀN TỆ KÉP (TRANSFER)
             Account srcAcc = findAccountById(t.getSourceAccountId());
             String srcCurrency = (srcAcc != null && srcAcc.getCurrencyCode() != null) ? srcAcc.getCurrencyCode() : "VND";
 
-            holder.tvAmount.setText(String.format("%s %s", CurrencyFormatter.formatVND(t.getSourceAmount()), srcCurrency));
+            String mainAmountFormatted = CurrencyFormatter.formatVND(t.getSourceAmount());
+            holder.tvAmount.setText(mainAmountFormatted + " " + srcCurrency);
             holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorInfo));
 
             if (!srcCurrency.equalsIgnoreCase(systemCurrency)) {
                 holder.tvBaseAmount.setVisibility(View.VISIBLE);
-                holder.tvBaseAmount.setText(String.format("≈ %s %s", CurrencyFormatter.formatVND(t.getBaseAmount()), systemCurrency));
+                double baseAmt = (t.getBaseAmount() != null && t.getBaseAmount() > 0)
+                        ? t.getBaseAmount()
+                        : CurrencyFormatter.previewConversion(t.getSourceAmount(), srcCurrency, systemCurrency);
+
+                holder.tvBaseAmount.setText("≈ " + CurrencyFormatter.formatVND(baseAmt) + " " + systemCurrency);
             } else {
-                holder.tvBaseAmount.setVisibility(View.GONE);
+                holder.tvBaseAmount.setVisibility(View.GONE); // Giấu đi nếu cùng đơn vị tiền
             }
 
         } else if (item.getType() == HistoryItem.TYPE_ADJUST_BALANCE) {
             var adjust = item.getAdjustBalance();
 
             Account acc = findAccountById(adjust.getAccountId());
-            String accCurrency = "VND";
+            String accCurrency = (acc != null && acc.getCurrencyCode() != null) ? acc.getCurrencyCode() : "VND";
 
             if (acc != null) {
-                accCurrency = acc.getCurrencyCode() != null ? acc.getCurrencyCode() : "VND";
                 int actualColor = AppResourceManager.getColor(acc.getColor());
                 holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(actualColor));
                 holder.ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, acc.getIcon()));
@@ -148,14 +149,13 @@ public class TransferChildAdapter extends RecyclerView.Adapter<TransferChildAdap
             double absAmount = Math.abs(adjust.getAmount());
             int colorRes = adjust.getAmount() >= 0 ? R.color.colorSuccess : R.color.colorDanger;
 
-            holder.tvAmount.setText(String.format("%s %s %s", sign, CurrencyFormatter.formatVND(absAmount), accCurrency));
+            holder.tvAmount.setText(sign + " " + CurrencyFormatter.formatVND(absAmount) + " " + accCurrency);
             holder.tvAmount.setTextColor(ContextCompat.getColor(context, colorRes));
 
             if (!accCurrency.equalsIgnoreCase(systemCurrency)) {
                 holder.tvBaseAmount.setVisibility(View.VISIBLE);
-                double rate = getMockExchangeRate(accCurrency, systemCurrency);
-                double baseAmount = absAmount * rate;
-                holder.tvBaseAmount.setText(String.format("≈ %s %s %s", sign, CurrencyFormatter.formatVND(baseAmount), systemCurrency));
+                double baseAmt = CurrencyFormatter.previewConversion(absAmount, accCurrency, systemCurrency);
+                holder.tvBaseAmount.setText("≈ " + sign + " " + CurrencyFormatter.formatVND(baseAmt) + " " + systemCurrency);
             } else {
                 holder.tvBaseAmount.setVisibility(View.GONE);
             }
@@ -171,22 +171,13 @@ public class TransferChildAdapter extends RecyclerView.Adapter<TransferChildAdap
     }
 
     private Account findAccountById(String accountId) {
-        if (accountId == null || accountList == null) return null;
+        if (accountId == null || accountList == null || accountList.isEmpty()) return null;
         for (Account a : accountList) {
-            if (accountId.equals(a.getAccountId())) {
+            if (a.getAccountId() != null && accountId.equalsIgnoreCase(a.getAccountId())) {
                 return a;
             }
         }
         return null;
-    }
-
-    private double getMockExchangeRate(String fromCurrency, String toCurrency) {
-        if (fromCurrency.equals(toCurrency)) return 1.0;
-        if (fromCurrency.equals("USD") && toCurrency.equals("VND")) return 25000.0;
-        if (fromCurrency.equals("EUR") && toCurrency.equals("VND")) return 27000.0;
-        if (fromCurrency.equals("JPY") && toCurrency.equals("VND")) return 160.0;
-        if (fromCurrency.equals("VND") && toCurrency.equals("USD")) return 1.0 / 25000.0;
-        return 1.0;
     }
 
     @Override

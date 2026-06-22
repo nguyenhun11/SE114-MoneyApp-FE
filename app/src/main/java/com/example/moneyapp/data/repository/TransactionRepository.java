@@ -73,9 +73,6 @@ public class TransactionRepository extends BaseRepository {
                 transaction.getCategoryId(),
                 transaction.getOriginalAmount(),
                 transaction.getCurrencyCode(),
-                transaction.getAccountAmount(),
-                transaction.getBaseAmount(),
-                transaction.getExchangeRate(),
                 dateStr,
                 transaction.getNote(),
                 transaction.getImageUrls()

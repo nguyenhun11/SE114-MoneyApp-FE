@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorOnSurface"
                 android:textSize="16sp"
-                android:textStyle="normal"
+                android:textStyle="bold"
                 tools:text="100 USD" />
 
             <TextView

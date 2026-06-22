@@ -1,11 +1,15 @@
 package com.example.moneyapp.data.remote.response;
 
+import com.google.gson.annotations.SerializedName;
+
 public class TransferResponse {
     private String id;
+    @SerializedName("sourceAccount")
     private String sourceAccountId;
     private String sourceAccountName;
     private int sourceAccountIconId;
     private int sourceAccountColorId;
+    @SerializedName("destinationAccount")
     private String destinationAccountId;
     private String destinationAccountName;
     private int destinationAccountIconId;

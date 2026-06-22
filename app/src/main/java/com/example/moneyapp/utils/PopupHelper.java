@@ -3,10 +3,13 @@ package com.example.moneyapp.utils;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,19 +29,52 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PopupHelper {
+    //region Interface
     public interface OnCalculatorResultListener {
         void onResult(double result);
     }
+
+    public interface OnCurrencySelectedListener {
+        void onSelected(String currencyCode);
+    }
+    public interface OnResourceSelectedListener {
+        void onSelected(int id);
+    }
+    //endregion
+
+    //region Base Sheet
     private static View createBaseSheetView(Context context, String title) {
         View view = LayoutInflater.from(context).inflate(R.layout.layout_selector_bottom_sheet, null);
         TextView tvTitle = view.findViewById(R.id.tv_sheet_title);
         tvTitle.setText(title);
         return view;
     }
+    private static void setupBottomSheetBehavior(BottomSheetDialog dialog, Context context) {
+        dialog.setOnShowListener(dialogInterface -> {
+            BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
+            View bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                ((View) bottomSheet.getParent()).setBackgroundColor(Color.TRANSPARENT);
+                bottomSheet.setBackgroundColor(Color.TRANSPARENT);
 
+                int screenHeight = context.getResources().getDisplayMetrics().heightPixels;
+                ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
+                layoutParams.height = (int) (screenHeight * 0.85);
+                bottomSheet.setLayoutParams(layoutParams);
+
+                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+                behavior.setPeekHeight((int) (screenHeight * 0.5));
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+    }
+    //endregion
+
+    //region Account
     public static void showAccountFilterPopup(Context context, List<Account> accountList,
                                               String currentAccountId,
                                               boolean showAllOption,
@@ -69,7 +105,9 @@ public class PopupHelper {
         setupBottomSheetBehavior(dialog, context);
         dialog.show();
     }
+    //endregion
 
+    //region Category
     public static void showCategoryFilterPopup(Context context,
                                                List<Category> categoryList,
                                                boolean showAllOption,
@@ -101,9 +139,7 @@ public class PopupHelper {
         setupBottomSheetBehavior(dialog, context);
         dialog.show();
     }
-    public interface OnResourceSelectedListener {
-        void onSelected(int id);
-    }
+    //endregion
 
     //region Color & Icon
     public static void showColorPicker(Context context, OnResourceSelectedListener listener) {
@@ -399,24 +435,88 @@ public class PopupHelper {
     }
     //endregion
 
-    private static void setupBottomSheetBehavior(BottomSheetDialog dialog, Context context) {
-        dialog.setOnShowListener(dialogInterface -> {
-            BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
-            View bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
-            if (bottomSheet != null) {
-                // FIX LỖI VIỀN TRẮNG CHO CÁC POPUP KHÁC (TÀI KHOẢN, HẠNG MỤC...)
-                ((View) bottomSheet.getParent()).setBackgroundColor(Color.TRANSPARENT);
-                bottomSheet.setBackgroundColor(Color.TRANSPARENT);
+    //region Currency
+    public static void showCurrencyFilterPopup(Context context,
+                                               List<String> currencyList,
+                                               OnCurrencySelectedListener listener) {
 
-                int screenHeight = context.getResources().getDisplayMetrics().heightPixels;
-                ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
-                layoutParams.height = (int) (screenHeight * 0.85);
-                bottomSheet.setLayoutParams(layoutParams);
+        BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
+        View view = LayoutInflater.from(context).inflate(R.layout.layout_selector_currency, null);
 
-                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
-                behavior.setPeekHeight((int) (screenHeight * 0.5));
-                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        EditText etSearch = view.findViewById(R.id.et_search_currency);
+        RecyclerView rvList = view.findViewById(R.id.rv_currency_items);
+        rvList.setLayoutManager(new LinearLayoutManager(context));
+
+        RecyclerView.Adapter<RecyclerView.ViewHolder> adapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            private List<String> filteredList = new ArrayList<>(currencyList);
+
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                TextView tv = new TextView(context);
+                tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                tv.setPadding(40, 40, 40, 40);
+                tv.setTextSize(16f);
+                tv.setTextColor(context.getResources().getColor(R.color.colorOnSurface, null));
+                return new RecyclerView.ViewHolder(tv) {};
             }
+
+            @Override
+            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+                String currency = filteredList.get(position);
+                TextView tv = (TextView) holder.itemView;
+                tv.setText(currency);
+
+                holder.itemView.setOnClickListener(v -> {
+                    if (listener != null) listener.onSelected(currency);
+                    dialog.dismiss();
+                });
+            }
+
+            @Override
+            public int getItemCount() {
+                return filteredList.size();
+            }
+
+            public void filter(String text) {
+                filteredList.clear();
+                if (text.isEmpty()) {
+                    filteredList.addAll(currencyList);
+                } else {
+                    text = text.toLowerCase();
+                    for (String item : currencyList) {
+                        if (item.toLowerCase().contains(text)) {
+                            filteredList.add(item);
+                        }
+                    }
+                }
+                notifyDataSetChanged();
+            }
+        };
+
+        rvList.setAdapter(adapter);
+
+        // Xử lý sự kiện tìm kiếm
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                try {
+                    adapter.getClass().getMethod("filter", String.class).invoke(adapter, s.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
+
+        dialog.setContentView(view);
+        setupBottomSheetBehavior(dialog, context);
+        dialog.show();
     }
+    //endregion
 }

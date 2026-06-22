@@ -23,14 +23,13 @@ import java.util.List;
 
 public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChildAdapter.ViewHolder> {
     private final List<Transaction> transactions;
-    private final String systemCurrency; // Thêm biến lưu đơn vị mặc định hệ thống
+    private final String systemCurrency;
     private final OnItemClickListener listener;
 
     public interface OnItemClickListener {
         void onItemClick(Transaction t);
     }
 
-    // SỬA CONSTRUCTOR: Nhận thêm systemCurrency
     public TransactionChildAdapter(List<Transaction> transactions, String systemCurrency, OnItemClickListener listener) {
         this.transactions = transactions;
         this.systemCurrency = systemCurrency != null ? systemCurrency : "VND";
@@ -72,7 +71,6 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
         holder.tvCategoryName.setText(t.getCategoryName() != null ? t.getCategoryName() : "Giao dịch");
         holder.tvAccountName.setText(t.getAccountName());
 
-        // Xử lý ghi chú
         if (t.getNote() != null && !t.getNote().trim().isEmpty()) {
             holder.tvNote.setVisibility(View.VISIBLE);
             holder.tvNote.setText(t.getNote());
@@ -95,12 +93,10 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
         } else {
             holder.tvBaseAmount.setVisibility(View.GONE);
         }
-        // Render Icon
         holder.ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, t.getCategoryIconId()));
         int actualColor = AppResourceManager.getColor(t.getCategoryColorId());
         holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(actualColor));
 
-        // Ẩn đường kẻ mờ ở phần tử cuối cùng
         if (position == transactions.size() - 1) {
             holder.divider.setVisibility(View.GONE);
         } else {
