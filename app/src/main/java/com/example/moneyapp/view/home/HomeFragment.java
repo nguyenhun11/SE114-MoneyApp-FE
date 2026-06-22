@@ -95,6 +95,7 @@ public class HomeFragment extends BaseFragment {
             int tabType = isExpense ? 0 : 1;
             homeViewModel.setTabTypeAndReload(tabType);
         });
+
         observeViewModel();
     }
 
@@ -104,7 +105,9 @@ public class HomeFragment extends BaseFragment {
             if (balance != null) {
                 displayBalance = String.format(Locale.getDefault(), "%,.0f đ", balance).replace(",", ".");
             }
-            setupBalanceSelector(requireView(), getString(R.string.total_balance), displayBalance);
+            setupBalanceSelector(requireView(), getString(R.string.total_balance), displayBalance, true,
+                    "gmd_account_balance_wallet", v -> Navigation.findNavController(v).navigate(R.id.budgetFragment),
+                    "gmd_location_city", v -> Navigation.findNavController(v).navigate(R.id.cityFragment));
         });
 
         homeViewModel.getCategoryExpenses().observe(getViewLifecycleOwner(), items -> {

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_card_bottom"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="32dp">
+
+    <com.mikepenz.iconics.view.IconicsImageView
+        android:id="@+id/iv_reward_icon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="16dp"
+        app:iiv_color="@color/colorWarning"
+        app:iiv_icon="gmd_stars" />
+
+    <TextView
+        android:id="@+id/tv_reward_points"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+10 SP"
+        android:textColor="@color/colorOnSurface"
+        android:textSize="32sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_reward_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Kỷ luật tạo nên sự thịnh vượng!"
+        android:textAlignment="center"
+        android:textColor="@color/colorOnSurfaceVariant"
+        android:textSize="16sp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_reward_close"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="24dp"
+        android:text="Tuyệt vời!"
+        android:textAllCaps="false"
+        app:backgroundTint="@color/colorPrimary"
+        app:cornerRadius="28dp" />
+
+</LinearLayout>
