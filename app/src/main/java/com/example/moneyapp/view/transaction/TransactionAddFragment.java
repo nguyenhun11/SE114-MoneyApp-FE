@@ -27,6 +27,7 @@ import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.CurrencyFormatter;
 import com.example.moneyapp.utils.PopupHelper;
+import com.example.moneyapp.utils.RewardHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.components.AccountSelectorView;
 import com.example.moneyapp.viewmodel.AccountViewModel;
@@ -71,7 +72,8 @@ public class TransactionAddFragment extends BaseFragment {
     private LinearLayout btnDateToday, btnDateYesterday, btnDateRecent, btnPickDate;
     private TextView tvTodayValue, tvYesterdayValue, tvRecentValue, tvRecentLabel;
     private Date box3Date;
-    
+
+    private View layoutMoodSelector;
     private MoodSelectorAdapter moodAdapter;
     private int selectedMoodId = 0;
     // endregion
@@ -112,6 +114,10 @@ public class TransactionAddFragment extends BaseFragment {
             transactionType = isExpense ? CategoryType.EXPENSE : CategoryType.INCOME;
             updateAmountColor(isExpense);
 
+            if (layoutMoodSelector != null) {
+                layoutMoodSelector.setVisibility(isExpense ? View.VISIBLE : View.GONE);
+            }
+
             if (editTransactionId == null || categoryList.isEmpty()) {
                 selectedCategory = null;
                 tvSelectedCategory.setText("Chọn hạng mục...");
@@ -150,6 +156,7 @@ public class TransactionAddFragment extends BaseFragment {
         viewSelectSource = view.findViewById(R.id.viewSelectSource);
         viewSelectSource.clear("Chọn nguồn tiền...");
 
+        layoutMoodSelector = view.findViewById(R.id.layoutMoodSelector);
         setupMoodSelector(view);
 
         btnDateToday = view.findViewById(R.id.btnDateToday);
@@ -307,6 +314,9 @@ public class TransactionAddFragment extends BaseFragment {
 
         transactionViewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
             if (Boolean.TRUE.equals(success)) {
+                if (editTransactionId == null) {
+                    RewardHelper.showSmallReward(requireView(), "+1 SP - Thói quen tốt!");
+                }
                 String msg = (editTransactionId != null) ? "Cập nhật giao dịch thành công!" : "Thêm giao dịch thành công!";
                 Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
                 Navigation.findNavController(requireView()).navigateUp();
@@ -462,7 +472,9 @@ public class TransactionAddFragment extends BaseFragment {
                     selectedDate, description,
                     selectedCategory.getColor(), selectedCategory.getIcon(),
                     selectedAccount.getColor(), selectedAccount.getIcon(),
-                    new ArrayList<>(), selectedMoodId, new Date()
+                    new ArrayList<>(), 
+                    (transactionType == CategoryType.EXPENSE) ? selectedMoodId : 0, 
+                    new Date()
             );
 
             if (editTransactionId == null) {

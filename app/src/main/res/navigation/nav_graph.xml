@@ -172,4 +172,26 @@
             app:destination="@id/goalAddFragment" />
     </fragment>
 
+    <fragment
+        android:id="@+id/budgetFragment"
+        android:name="com.example.moneyapp.view.budget.BudgetFragment"
+        android:label="Ngân sách"
+        tools:layout="@layout/fragment_budget">
+        <action
+            android:id="@+id/action_budgetFragment_to_budgetAddFragment"
+            app:destination="@id/budgetAddFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/budgetAddFragment"
+        android:name="com.example.moneyapp.view.budget.BudgetAddFragment"
+        android:label="Thêm ngân sách"
+        tools:layout="@layout/fragment_budget_add" />
+
+    <fragment
+        android:id="@+id/cityFragment"
+        android:name="com.example.moneyapp.view.city.CityFragment"
+        android:label="MoneyCity"
+        tools:layout="@layout/fragment_city" />
+
 </navigation>

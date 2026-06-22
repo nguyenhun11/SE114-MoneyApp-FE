@@ -9,6 +9,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.moneyapp.data.remote.request.CheckInRequest;
 import com.example.moneyapp.data.remote.response.CheckInResponse;
+import com.example.moneyapp.data.repository.AccountRepository;
+import com.example.moneyapp.data.repository.CityRepository;
 import com.example.moneyapp.data.repository.TransactionRepository;
 import com.example.moneyapp.data.repository.UserRepository;
 import com.example.moneyapp.model.Transaction;
@@ -61,6 +63,15 @@ public class TransactionViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(Transaction result) {
                 operationSuccess.postValue(true);
+
+                // Refresh City data to update Stability points
+                new CityRepository(getApplication()).getCity().enqueue(new retrofit2.Callback<com.example.moneyapp.data.remote.response.CityResponse>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<com.example.moneyapp.data.remote.response.CityResponse> call, retrofit2.Response<com.example.moneyapp.data.remote.response.CityResponse> response) {}
+                    @Override
+                    public void onFailure(retrofit2.Call<com.example.moneyapp.data.remote.response.CityResponse> call, Throwable t) {}
+                });
+
                 isLoading.postValue(false);
 
                 // Ghi nhận điểm danh (Streak)

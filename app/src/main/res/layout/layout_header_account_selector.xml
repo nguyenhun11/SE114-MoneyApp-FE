@@ -70,9 +70,9 @@
                 android:layout_marginStart="16dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="8dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:ico_color="@color/colorOnPrimary"
-                app:ico_icon="gmd_arrow_back" />
+                app:ico_icon="gmd_account_balance_wallet" />
 
             <com.mikepenz.iconics.view.IconicsImageView
                 android:id="@+id/btn_action_right"
@@ -83,9 +83,9 @@
                 android:layout_marginEnd="16dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="8dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:ico_color="@color/colorOnPrimary"
-                app:ico_icon="gmd_add" />
+                app:ico_icon="gmd_location_city" />
         </RelativeLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
