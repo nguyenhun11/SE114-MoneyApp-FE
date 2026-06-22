@@ -25,7 +25,7 @@ public class MainUIHandler {
 
     private final Set<Integer> mainFragments = new HashSet<>(Arrays.asList(
             R.id.homeFragment,
-            R.id.transactionFragment,
+            R.id.historyFragment,
             R.id.accountFragment,
             R.id.categoryFragment,
             R.id.goalFragment,

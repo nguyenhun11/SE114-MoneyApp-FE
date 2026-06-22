@@ -10,6 +10,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.moneyapp.data.remote.response.CashFlowBarDto;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
 import com.example.moneyapp.data.repository.StatisticRepository;
+import com.example.moneyapp.data.repository.TransactionRepository;
+import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.Mood;
 import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.view.home.PieChartItem;
@@ -24,6 +26,9 @@ public class StatisticViewModel extends AndroidViewModel {
 
     private final StatisticRepository repository;
 
+    // ĐÃ THÊM: Khai báo TransactionRepository để tự tải dữ liệu
+    private final TransactionRepository transactionRepository;
+
     // 1. LiveData chứa dữ liệu cho Tab "Chung" (Dòng tiền)
     private final MutableLiveData<List<CashFlowBarDto>> cashFlowData = new MutableLiveData<>();
 
@@ -35,12 +40,15 @@ public class StatisticViewModel extends AndroidViewModel {
 
     // 4. LiveData xử lý lỗi chung
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
-    
+
     private final MutableLiveData<List<PieChartItem>> moodSpendingData = new MutableLiveData<>();
 
     public StatisticViewModel(@NonNull Application application) {
         super(application);
         repository = new StatisticRepository(application);
+
+        // ĐÃ THÊM: Khởi tạo Repository
+        transactionRepository = new TransactionRepository(application);
     }
 
     // ==========================================
@@ -50,9 +58,11 @@ public class StatisticViewModel extends AndroidViewModel {
     public LiveData<List<StackedBarChartDto>> getExpenseStackedBarData() { return expenseStackedBarData; }
     public LiveData<List<StackedBarChartDto>> getIncomeStackedBarData() { return incomeStackedBarData; }
     public LiveData<String> getErrorLiveData() { return errorLiveData; }
-
     public LiveData<List<PieChartItem>> getMoodSpendingData() { return moodSpendingData; }
 
+    // ==========================================
+    // TÍNH TOÁN CẢM XÚC
+    // ==========================================
     public void calculateMoodSpending(List<Transaction> transactions) {
         if (transactions == null || transactions.isEmpty()) {
             moodSpendingData.postValue(new ArrayList<>());
@@ -63,7 +73,8 @@ public class StatisticViewModel extends AndroidViewModel {
         double totalAll = 0;
 
         for (Transaction t : transactions) {
-            if (t.getType() == com.example.moneyapp.model.CategoryType.EXPENSE) {
+            // Đảm bảo an toàn 2 lớp: Chỉ tính giao dịch Chi tiêu
+            if (t.getType() == CategoryType.EXPENSE) {
                 int moodId = t.getMoodId();
                 totals.put(moodId, totals.getOrDefault(moodId, 0.0) + t.getBaseAmount());
                 totalAll += t.getBaseAmount();
@@ -89,9 +100,25 @@ public class StatisticViewModel extends AndroidViewModel {
         moodSpendingData.postValue(items);
     }
 
-    // ==========================================
-    // CÁC HÀM GỌI API TỪ REPOSITORY
-    // ==========================================
+    public void loadMoodStatistics(Date startDate, Date endDate) {
+        // Tối ưu hóa: Thay vì tải NULL (tất cả), truyền hẳn CategoryType.EXPENSE để API chỉ trả về Chi tiêu cho nhẹ mạng
+        transactionRepository.getFilteredTransactions(startDate, endDate, CategoryType.EXPENSE, null, null,
+                new TransactionRepository.TransactionCallback<List<Transaction>>() {
+                    @Override
+                    public void onSuccess(List<Transaction> result) {
+                        if (result != null) {
+                            calculateMoodSpending(result);
+                        } else {
+                            calculateMoodSpending(new ArrayList<>());
+                        }
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        errorLiveData.postValue(message);
+                    }
+                });
+    }
 
     // Gọi API load Dòng tiền (Tab Chung)
     public void loadCashFlow(Date startDate, Date endDate, int groupBy) {

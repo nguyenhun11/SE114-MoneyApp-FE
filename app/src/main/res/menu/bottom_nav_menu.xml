@@ -5,9 +5,9 @@
         android:icon="@android:color/transparent"
         android:title="@string/home" />
     <item
-        android:id="@+id/transactionFragment"
+        android:id="@+id/historyFragment"
         android:icon="@android:color/transparent"
-        android:title="@string/transaction" />
+        android:title="@string/history" />
     <item
         android:id="@+id/placeholder"
         android:title=""

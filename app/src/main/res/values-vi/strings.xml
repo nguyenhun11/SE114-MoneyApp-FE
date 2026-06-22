@@ -75,8 +75,8 @@
     <string name="splash_continue">Tiếp tục</string>
 
     <!-- Others -->
-    <string name="info_screen_title">Màn hình Thông tin</string>
-    <string name="stats_screen_title">Màn hình Thống kê</string>
+    <string name="info_screen_title">Thông tin</string>
+    <string name="stats_screen_title">Thống kê</string>
     <string name="header_title_default">Tiêu đề</string>
     <string name="menu_item_default">Menu Item</string>
 </resources>

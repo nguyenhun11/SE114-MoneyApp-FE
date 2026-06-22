@@ -1,7 +1,5 @@
-package com.example.moneyapp.view.transaction;
+package com.example.moneyapp.view.history;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,21 +20,22 @@ import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
+import com.example.moneyapp.model.HistoryItem;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.components.TimeSelectorView;
 import com.example.moneyapp.viewmodel.AccountViewModel;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
-import com.example.moneyapp.viewmodel.TransactionViewModel;
+import com.example.moneyapp.viewmodel.HistoryViewModel;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class TransactionFragment extends BaseFragment {
+public class HistoryFragment extends BaseFragment {
 
-    private TransactionGroupAdapter adapter;
-    private TransactionViewModel transactionViewModel;
+    private HistoryGroupAdapter adapter;
+    private HistoryViewModel historyViewModel;
     private AccountViewModel accountViewModel;
     private CategoryViewModel categoryViewModel;
 
@@ -53,14 +52,14 @@ public class TransactionFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_transaction, container, false);
+        return inflater.inflate(R.layout.fragment_history, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        transactionViewModel = new ViewModelProvider(this).get(TransactionViewModel.class);
+        historyViewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
         accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
         categoryViewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
 
@@ -69,7 +68,6 @@ public class TransactionFragment extends BaseFragment {
 
         timeSelector = view.findViewById(R.id.time_selector);
 
-        // --- XỬ LÝ DỮ LIỆU TỪ MÀN HÌNH KHÁC TRUYỀN TỚI ---
         int preSelectedTab = 0; // Mặc định Tab 0
         if (getArguments() != null) {
             preSelectedTab = getArguments().getInt("tabType", 0);
@@ -77,7 +75,7 @@ public class TransactionFragment extends BaseFragment {
             String categoryId = getArguments().getString("categoryId");
             String categoryName = getArguments().getString("categoryName");
             if (categoryId != null) {
-                transactionViewModel.setCategoryFilterAndReload(categoryId);
+                historyViewModel.setCategoryFilterAndReload(categoryId);
                 if (categoryName != null && tvCategoryFilter != null) {
                     tvCategoryFilter.setText(categoryName);
                 }
@@ -88,13 +86,13 @@ public class TransactionFragment extends BaseFragment {
             if (startDateLong > 0 && endDateLong > 0) {
                 Date startDate = new Date(startDateLong);
                 Date endDate = new Date(endDateLong);
-                transactionViewModel.setTimeRangeAndReload(startDate, endDate);
+                historyViewModel.setTimeRangeAndReload(startDate, endDate);
 
                 timeSelector.setPredefinedDateRange(startDate, endDate);
             }
         }
 
-        setupThreeTabs(view, preSelectedTab, index -> {
+        setupThreeTabs(view, 0, index -> {
             CategoryType type = null;
             if (index == 1) {
                 type = CategoryType.EXPENSE;
@@ -103,46 +101,41 @@ public class TransactionFragment extends BaseFragment {
                 type = CategoryType.INCOME;
                 btnCategoryFilter.setVisibility(View.VISIBLE);
             } else {
-                btnCategoryFilter.setVisibility(View.GONE);
+                btnCategoryFilter.setVisibility(View.GONE); // Tab "Tất cả" ẩn lọc
             }
 
-            transactionViewModel.setTypeAndReload(type);
+            historyViewModel.setTypeAndReload(type);
 
             if (type != null) {
                 categoryViewModel.loadCategories(type);
             } else {
                 categoryViewModel.loadCategories(CategoryType.EXPENSE);
             }
-
-            if (getArguments() == null) {
-                if (tvCategoryFilter != null) {
-                    tvCategoryFilter.setText("Tất cả hạng mục");
-                    transactionViewModel.setCategoryFilterAndReload(null);
-                }
-            }
-            setArguments(null);
         });
 
         RecyclerView recyclerView = view.findViewById(R.id.rvTransactions);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         String systemCurrency = PreferenceManager.getInstance(requireContext()).getDefaultCurrency();
-        adapter = new TransactionGroupAdapter(new ArrayList<>(), systemCurrency, transaction -> {
-            Bundle args = new Bundle();
-            args.putString("transactionId", transaction.getTransactionId());
-            Navigation.findNavController(view).navigate(R.id.transactionDetailFragment, args);
-        });
 
-        adapter = new TransactionGroupAdapter(new ArrayList<>(), systemCurrency, transaction -> {
+        adapter = new HistoryGroupAdapter(new ArrayList<>(), accountList, systemCurrency, item -> {
             Bundle args = new Bundle();
-            args.putString("transactionId", transaction.getTransactionId());
-            Navigation.findNavController(view).navigate(R.id.transactionDetailFragment, args);
+            if (item.getType() == HistoryItem.TYPE_TRANSACTION) {
+                args.putString("transactionId", item.getTransaction().getTransactionId());
+                Navigation.findNavController(view).navigate(R.id.transactionDetailFragment, args);
+            } else if (item.getType() == HistoryItem.TYPE_TRANSFER) {
+                args.putString("transferId", item.getTransfer().getId());
+                Navigation.findNavController(view).navigate(R.id.transferDetailFragment, args);
+            } else if (item.getType() == HistoryItem.TYPE_ADJUST_BALANCE) {
+                // Điều chỉnh số dư thường không có trang chi tiết, chỉ cần toast nhẹ hoặc bỏ qua
+                Toast.makeText(getContext(), "Đây là bản ghi điều chỉnh số dư hệ thống", Toast.LENGTH_SHORT).show();
+            }
         });
 
         recyclerView.setAdapter(adapter);
 
         timeSelector.setOnTimeRangeChangeListener((startDate, endDate) -> {
-            transactionViewModel.setTimeRangeAndReload(startDate, endDate);
+            historyViewModel.setTimeRangeAndReload(startDate, endDate);
         });
 
         observeViewModels();
@@ -150,20 +143,17 @@ public class TransactionFragment extends BaseFragment {
     }
 
     private void observeViewModels() {
-        transactionViewModel.getGroupedTransactions().observe(getViewLifecycleOwner(), items -> {
-            adapter.updateList(items);
-        });
-
-        transactionViewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) {
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-            }
+        historyViewModel.getGroupedTransactions().observe(getViewLifecycleOwner(), items -> {
+            adapter.updateData(items, accountList);
         });
 
         accountViewModel.getAccountsLiveData().observe(getViewLifecycleOwner(), accounts -> {
             if (accounts != null) {
                 accountList.clear();
                 accountList.addAll(accounts);
+                if (adapter != null && historyViewModel.getGroupedTransactions().getValue() != null) {
+                    adapter.updateData(historyViewModel.getGroupedTransactions().getValue(), accountList);
+                }
             }
         });
 
@@ -178,7 +168,7 @@ public class TransactionFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        transactionViewModel.reloadTransactions();
+        historyViewModel.reloadTransactions();
     }
 
     private void setupFilters(View view) {
@@ -198,17 +188,17 @@ public class TransactionFragment extends BaseFragment {
             Toast.makeText(getContext(), "Không có dữ liệu tài khoản", Toast.LENGTH_SHORT).show();
             return;
         }
-        String currentAccountId = transactionViewModel.getCurrentAccountId();
+        String currentAccountId = historyViewModel.getCurrentAccountId();
         PopupHelper.showAccountFilterPopup(requireContext(), accountList,
                 currentAccountId,
                 true,
                 selectedAcc -> {
                     if (selectedAcc == null) {
                         if (tvAccountFilter != null) tvAccountFilter.setText("Tất cả tài khoản");
-                        transactionViewModel.setAccountFilterAndReload(null);
+                        historyViewModel.setAccountFilterAndReload(null);
                     } else {
                         if (tvAccountFilter != null) tvAccountFilter.setText(selectedAcc.getAccountName());
-                        transactionViewModel.setAccountFilterAndReload(selectedAcc.getAccountId());
+                        historyViewModel.setAccountFilterAndReload(selectedAcc.getAccountId());
                     }
                 });
     }
@@ -225,10 +215,10 @@ public class TransactionFragment extends BaseFragment {
                 selectedCat -> {
                     if (selectedCat == null) {
                         if (tvCategoryFilter != null) tvCategoryFilter.setText("Tất cả hạng mục");
-                        transactionViewModel.setCategoryFilterAndReload(null);
+                        historyViewModel.setCategoryFilterAndReload(null);
                     } else {
                         if (tvCategoryFilter != null) tvCategoryFilter.setText(selectedCat.getCategoryName());
-                        transactionViewModel.setCategoryFilterAndReload(selectedCat.getCategoryId());
+                        historyViewModel.setCategoryFilterAndReload(selectedCat.getCategoryId());
                     }
                 });
     }
