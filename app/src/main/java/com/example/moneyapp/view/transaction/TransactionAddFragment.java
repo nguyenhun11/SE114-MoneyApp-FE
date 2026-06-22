@@ -110,12 +110,17 @@ public class TransactionAddFragment extends BaseFragment {
         setupDatePickers();
         setupComboboxes(view);
 
-        setupIncomeExpenseTabs(view, isExpense -> {
-            transactionType = isExpense ? CategoryType.EXPENSE : CategoryType.INCOME;
-            updateAmountColor(isExpense);
-
+        String[] categoryTabs = {
+                "Chi tiêu",
+                "Thu nhập",
+        };
+        setupHeaderTabs(view, categoryTabs,0, index -> {
+            transactionType = (index == 0) ? CategoryType.EXPENSE : CategoryType.INCOME;
+            updateAmountColor(transactionType == CategoryType.EXPENSE);
             if (layoutMoodSelector != null) {
-                layoutMoodSelector.setVisibility(isExpense ? View.VISIBLE : View.GONE);
+                layoutMoodSelector.setVisibility(transactionType == CategoryType.EXPENSE
+                        ? View.VISIBLE
+                        : View.GONE);
             }
 
             if (editTransactionId == null || categoryList.isEmpty()) {

@@ -90,9 +90,12 @@ public class HomeFragment extends BaseFragment {
         setupPieChart();
         setupScrollBehavior();
 
-        setupIncomeExpenseTabs(view, true, isExpense -> {
-            isExpenseTab = isExpense;
-            int tabType = isExpense ? 0 : 1;
+        String[] homeTabs = {
+                "Chi tiêu",
+                "Thu nhập",
+        };
+        setupHeaderTabs(view, homeTabs,0, index -> {
+            int tabType = index;
             homeViewModel.setTabTypeAndReload(tabType);
         });
 

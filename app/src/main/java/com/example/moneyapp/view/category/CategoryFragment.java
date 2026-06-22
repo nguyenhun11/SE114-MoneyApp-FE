@@ -94,10 +94,14 @@ public class CategoryFragment extends BaseFragment {
 
         setupHeader(view, "Danh mục", false);
 
-        setupIncomeExpenseTabs(view, viewModel.getCurrentType() == CategoryType.EXPENSE, isExpense -> {
-            CategoryType newType = isExpense ? CategoryType.EXPENSE : CategoryType.INCOME;
-            viewModel.setCurrentType(newType);
-            viewModel.loadCategories(newType);
+        String[] categoryTabs = {
+                "Chi tiêu",
+                "Thu nhập",
+        };
+        setupHeaderTabs(view, categoryTabs,0, index -> {
+            CategoryType tabType = (index == 0) ? CategoryType.EXPENSE : CategoryType.INCOME;
+            viewModel.setCurrentType(tabType);
+            viewModel.loadCategories(tabType);
         });
 
         // 5. LẮNG NGHE DỮ LIỆU
@@ -113,8 +117,6 @@ public class CategoryFragment extends BaseFragment {
 
         viewModel.loadCategories(viewModel.getCurrentType());
     }
-
-    // --- LOGIC HOÁN ĐỔI ADAPTER ---
 
     private void enterEditMode() {
         // 1. Lấy dữ liệu dạng phẳng từ GroupAdapter chuyển sang FlatAdapter

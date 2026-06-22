@@ -64,6 +64,38 @@ public class HistoryFragment extends BaseFragment {
         categoryViewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
 
         setupHeader(view, "Lịch sử giao dịch", false);
+
+        String[] historyTabs = {
+                "Tất cả",
+                "Chi tiêu",
+                "Thu nhập",
+                "Chuyển khoản",
+                "Điều chỉnh số dư",
+                "Tiết kiệm"
+        };
+        setupHeaderTabs(view, historyTabs,0, index -> {
+            CategoryType type = null;
+
+            switch (index) {
+                case 0: // Tất cả
+                    type = null;
+                    break;
+                case 1: // Chi tiêu
+                    type = CategoryType.EXPENSE;
+                    break;
+                case 2: // Thu nhập
+                    type = CategoryType.INCOME;
+                    break;
+                case 3: // Chuyển khoản (Có thể lọc bằng logic bên ViewModel sau)
+                    break;
+                case 4: // Điều chỉnh số dư
+                    break;
+                case 5: // Tiết kiệm (Ăn gian vào chi tiêu)
+                    break;
+            }
+            historyViewModel.setTypeAndReload(type);
+        });
+
         setupFilters(view);
 
         timeSelector = view.findViewById(R.id.time_selector);
@@ -91,27 +123,6 @@ public class HistoryFragment extends BaseFragment {
                 timeSelector.setPredefinedDateRange(startDate, endDate);
             }
         }
-
-        setupThreeTabs(view, 0, index -> {
-            CategoryType type = null;
-            if (index == 1) {
-                type = CategoryType.EXPENSE;
-                btnCategoryFilter.setVisibility(View.VISIBLE);
-            } else if (index == 2) {
-                type = CategoryType.INCOME;
-                btnCategoryFilter.setVisibility(View.VISIBLE);
-            } else {
-                btnCategoryFilter.setVisibility(View.GONE); // Tab "Tất cả" ẩn lọc
-            }
-
-            historyViewModel.setTypeAndReload(type);
-
-            if (type != null) {
-                categoryViewModel.loadCategories(type);
-            } else {
-                categoryViewModel.loadCategories(CategoryType.EXPENSE);
-            }
-        });
 
         RecyclerView recyclerView = view.findViewById(R.id.rvTransactions);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

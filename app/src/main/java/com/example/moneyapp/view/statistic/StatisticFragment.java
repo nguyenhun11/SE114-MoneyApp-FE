@@ -17,6 +17,7 @@ import com.example.moneyapp.R;
 import com.example.moneyapp.data.remote.response.CashFlowBarDto;
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
+import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.category.CategorySummaryAdapter;
@@ -83,7 +84,13 @@ public class StatisticFragment extends BaseFragment {
         setupBarChartStyle();
         setupPieChartStyle();
 
-        setupFourTabs(view, 0, index -> {
+        String[] statsTabs = {
+                "Tổng quan",
+                "Chi tiêu",
+                "Thu nhập",
+                "Tâm trạng",
+        };
+        setupHeaderTabs(view, statsTabs, 0, index -> {
             currentTab = index;
             loadDataByTab();
         });
@@ -287,7 +294,6 @@ public class StatisticFragment extends BaseFragment {
                 barChart.setVisibility(View.GONE);
                 pieChartMood.setVisibility(View.VISIBLE);
 
-                // ĐÃ SỬA: Tự gọi hàm sạch sẽ từ chính StatisticViewModel
                 statisticViewModel.loadMoodStatistics(currentStartDate, currentEndDate);
                 break;
         }
