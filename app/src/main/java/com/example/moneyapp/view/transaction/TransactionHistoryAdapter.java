@@ -27,7 +27,7 @@ import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.List;
 
-public class TransactionChildAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class TransactionHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final List<HistoryItem> items;
     private final List<Account> accountList; // Cần cho giao dịch chuyển khoản
     private final String systemCurrency;
@@ -37,7 +37,7 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<RecyclerView.V
         void onItemClick(HistoryItem item);
     }
 
-    public TransactionChildAdapter(List<HistoryItem> items, List<Account> accountList, String systemCurrency, OnItemClickListener listener) {
+    public TransactionHistoryAdapter(List<HistoryItem> items, List<Account> accountList, String systemCurrency, OnItemClickListener listener) {
         this.items = items;
         this.accountList = accountList;
         this.systemCurrency = systemCurrency != null ? systemCurrency : "VND";

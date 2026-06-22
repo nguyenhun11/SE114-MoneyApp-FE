@@ -1,7 +1,5 @@
-package com.example.moneyapp.view.transaction;
+package com.example.moneyapp.view.history;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,16 +26,16 @@ import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.components.TimeSelectorView;
 import com.example.moneyapp.viewmodel.AccountViewModel;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
-import com.example.moneyapp.viewmodel.TransactionViewModel;
+import com.example.moneyapp.viewmodel.HistoryViewModel;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class TransactionFragment extends BaseFragment {
+public class HistoryFragment extends BaseFragment {
 
-    private TransactionGroupAdapter adapter;
-    private TransactionViewModel transactionViewModel;
+    private HistoryGroupAdapter adapter;
+    private HistoryViewModel historyViewModel;
     private AccountViewModel accountViewModel;
     private CategoryViewModel categoryViewModel;
 
@@ -54,14 +52,14 @@ public class TransactionFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_transaction, container, false);
+        return inflater.inflate(R.layout.fragment_history, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        transactionViewModel = new ViewModelProvider(this).get(TransactionViewModel.class);
+        historyViewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
         accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
         categoryViewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
 
@@ -70,7 +68,6 @@ public class TransactionFragment extends BaseFragment {
 
         timeSelector = view.findViewById(R.id.time_selector);
 
-        // --- XỬ LÝ DỮ LIỆU TỪ MÀN HÌNH KHÁC TRUYỀN TỚI ---
         int preSelectedTab = 0; // Mặc định Tab 0
         if (getArguments() != null) {
             preSelectedTab = getArguments().getInt("tabType", 0);
@@ -78,7 +75,7 @@ public class TransactionFragment extends BaseFragment {
             String categoryId = getArguments().getString("categoryId");
             String categoryName = getArguments().getString("categoryName");
             if (categoryId != null) {
-                transactionViewModel.setCategoryFilterAndReload(categoryId);
+                historyViewModel.setCategoryFilterAndReload(categoryId);
                 if (categoryName != null && tvCategoryFilter != null) {
                     tvCategoryFilter.setText(categoryName);
                 }
@@ -89,7 +86,7 @@ public class TransactionFragment extends BaseFragment {
             if (startDateLong > 0 && endDateLong > 0) {
                 Date startDate = new Date(startDateLong);
                 Date endDate = new Date(endDateLong);
-                transactionViewModel.setTimeRangeAndReload(startDate, endDate);
+                historyViewModel.setTimeRangeAndReload(startDate, endDate);
 
                 timeSelector.setPredefinedDateRange(startDate, endDate);
             }
@@ -107,7 +104,7 @@ public class TransactionFragment extends BaseFragment {
                 btnCategoryFilter.setVisibility(View.GONE); // Tab "Tất cả" ẩn lọc
             }
 
-            transactionViewModel.setTypeAndReload(type);
+            historyViewModel.setTypeAndReload(type);
 
             if (type != null) {
                 categoryViewModel.loadCategories(type);
@@ -121,8 +118,7 @@ public class TransactionFragment extends BaseFragment {
 
         String systemCurrency = PreferenceManager.getInstance(requireContext()).getDefaultCurrency();
 
-        // ĐÃ SỬA: Phân luồng điều hướng dựa trên Loại HistoryItem
-        adapter = new TransactionGroupAdapter(new ArrayList<>(), accountList, systemCurrency, item -> {
+        adapter = new HistoryGroupAdapter(new ArrayList<>(), accountList, systemCurrency, item -> {
             Bundle args = new Bundle();
             if (item.getType() == HistoryItem.TYPE_TRANSACTION) {
                 args.putString("transactionId", item.getTransaction().getTransactionId());
@@ -139,7 +135,7 @@ public class TransactionFragment extends BaseFragment {
         recyclerView.setAdapter(adapter);
 
         timeSelector.setOnTimeRangeChangeListener((startDate, endDate) -> {
-            transactionViewModel.setTimeRangeAndReload(startDate, endDate);
+            historyViewModel.setTimeRangeAndReload(startDate, endDate);
         });
 
         observeViewModels();
@@ -147,7 +143,7 @@ public class TransactionFragment extends BaseFragment {
     }
 
     private void observeViewModels() {
-        transactionViewModel.getGroupedTransactions().observe(getViewLifecycleOwner(), items -> {
+        historyViewModel.getGroupedTransactions().observe(getViewLifecycleOwner(), items -> {
             adapter.updateData(items, accountList);
         });
 
@@ -155,8 +151,8 @@ public class TransactionFragment extends BaseFragment {
             if (accounts != null) {
                 accountList.clear();
                 accountList.addAll(accounts);
-                if (adapter != null && transactionViewModel.getGroupedTransactions().getValue() != null) {
-                    adapter.updateData(transactionViewModel.getGroupedTransactions().getValue(), accountList);
+                if (adapter != null && historyViewModel.getGroupedTransactions().getValue() != null) {
+                    adapter.updateData(historyViewModel.getGroupedTransactions().getValue(), accountList);
                 }
             }
         });
@@ -172,7 +168,7 @@ public class TransactionFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        transactionViewModel.reloadTransactions();
+        historyViewModel.reloadTransactions();
     }
 
     private void setupFilters(View view) {
@@ -192,17 +188,17 @@ public class TransactionFragment extends BaseFragment {
             Toast.makeText(getContext(), "Không có dữ liệu tài khoản", Toast.LENGTH_SHORT).show();
             return;
         }
-        String currentAccountId = transactionViewModel.getCurrentAccountId();
+        String currentAccountId = historyViewModel.getCurrentAccountId();
         PopupHelper.showAccountFilterPopup(requireContext(), accountList,
                 currentAccountId,
                 true,
                 selectedAcc -> {
                     if (selectedAcc == null) {
                         if (tvAccountFilter != null) tvAccountFilter.setText("Tất cả tài khoản");
-                        transactionViewModel.setAccountFilterAndReload(null);
+                        historyViewModel.setAccountFilterAndReload(null);
                     } else {
                         if (tvAccountFilter != null) tvAccountFilter.setText(selectedAcc.getAccountName());
-                        transactionViewModel.setAccountFilterAndReload(selectedAcc.getAccountId());
+                        historyViewModel.setAccountFilterAndReload(selectedAcc.getAccountId());
                     }
                 });
     }
@@ -219,10 +215,10 @@ public class TransactionFragment extends BaseFragment {
                 selectedCat -> {
                     if (selectedCat == null) {
                         if (tvCategoryFilter != null) tvCategoryFilter.setText("Tất cả hạng mục");
-                        transactionViewModel.setCategoryFilterAndReload(null);
+                        historyViewModel.setCategoryFilterAndReload(null);
                     } else {
                         if (tvCategoryFilter != null) tvCategoryFilter.setText(selectedCat.getCategoryName());
-                        transactionViewModel.setCategoryFilterAndReload(selectedCat.getCategoryId());
+                        historyViewModel.setCategoryFilterAndReload(selectedCat.getCategoryId());
                     }
                 });
     }

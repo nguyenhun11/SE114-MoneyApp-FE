@@ -1,4 +1,4 @@
-package com.example.moneyapp.view.transaction;
+package com.example.moneyapp.view.category;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -14,17 +14,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Category;
 import com.example.moneyapp.utils.AppResourceManager;
-import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.List;
 
-public class CategoryQuickAdapter extends RecyclerView.Adapter<CategoryQuickAdapter.ViewHolder> {
+public class CategoryPopupAdapter extends RecyclerView.Adapter<CategoryPopupAdapter.ViewHolder> {
     private List<Category> list;
     private int selectedPosition = -1; // -1 là chưa chọn cái nào
     private OnCategoryClickListener listener;
 
-    public CategoryQuickAdapter(List<Category> list, OnCategoryClickListener listener) {
+    public CategoryPopupAdapter(List<Category> list, OnCategoryClickListener listener) {
         this.list = list;
         this.listener = listener;
     }

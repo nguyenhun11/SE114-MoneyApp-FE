@@ -70,10 +70,9 @@ public class StatisticFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // ĐÃ XÓA transactionViewModel, chỉ giữ lại của chính nó
         statisticViewModel = new ViewModelProvider(this).get(StatisticViewModel.class);
 
-        setupHeader(view, R.string.stats_screen_title, false);
+        setupHeader(view, R.string.stats_screen_title, true);
 
         barChart = view.findViewById(R.id.barChartCashFlow);
         pieChartMood = view.findViewById(R.id.pieChartMood);
@@ -256,8 +255,6 @@ public class StatisticFragment extends BaseFragment {
                 adapter.updateData(data);
             }
         });
-
-        // ĐÃ XÓA khối lệnh transactionViewModel.getGroupedTransactions().observe(...) lằng nhằng ở đây
 
         statisticViewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
             if (error != null) {
@@ -511,4 +508,7 @@ public class StatisticFragment extends BaseFragment {
     protected boolean shouldShowBottomNavigation() {
         return false;
     }
+
+    @Override
+    protected boolean shouldShowFAB() { return false; }
 }

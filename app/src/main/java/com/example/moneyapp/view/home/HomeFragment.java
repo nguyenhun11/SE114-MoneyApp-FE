@@ -266,7 +266,7 @@ public class HomeFragment extends BaseFragment {
             if (currentStartDate != null) bundle.putLong("startDate", currentStartDate.getTime());
             if (currentEndDate != null) bundle.putLong("endDate", currentEndDate.getTime());
 
-            Navigation.findNavController(requireView()).navigate(R.id.transactionFragment, bundle);
+            Navigation.findNavController(requireView()).navigate(R.id.historyFragment, bundle);
         });
         rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
         rvCategories.setAdapter(adapter);

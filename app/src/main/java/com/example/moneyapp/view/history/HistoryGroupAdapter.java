@@ -1,4 +1,4 @@
-package com.example.moneyapp.view.transaction;
+package com.example.moneyapp.view.history;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,17 +12,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.DailyTransactionGroup;
+import com.example.moneyapp.view.transaction.TransactionHistoryAdapter;
 
 import java.util.List;
 
-public class TransactionGroupAdapter extends RecyclerView.Adapter<TransactionGroupAdapter.ViewHolder> {
+public class HistoryGroupAdapter extends RecyclerView.Adapter<HistoryGroupAdapter.ViewHolder> {
 
     private List<DailyTransactionGroup> groups;
     private List<Account> accountList; // Thêm AccountList
     private final String systemCurrency;
-    private final TransactionChildAdapter.OnItemClickListener childListener;
+    private final TransactionHistoryAdapter.OnItemClickListener childListener;
 
-    public TransactionGroupAdapter(List<DailyTransactionGroup> groups, List<Account> accountList, String systemCurrency, TransactionChildAdapter.OnItemClickListener listener) {
+    public HistoryGroupAdapter(List<DailyTransactionGroup> groups, List<Account> accountList, String systemCurrency, TransactionHistoryAdapter.OnItemClickListener listener) {
         this.groups = groups;
         this.accountList = accountList;
         this.systemCurrency = systemCurrency != null ? systemCurrency : "VND";
@@ -60,7 +61,7 @@ public class TransactionGroupAdapter extends RecyclerView.Adapter<TransactionGro
         holder.tvDateLabel.setText(group.getDateLabel());
 
         // Khởi tạo Adapter con và truyền toàn bộ dữ liệu xuống
-        TransactionChildAdapter childAdapter = new TransactionChildAdapter(
+        TransactionHistoryAdapter childAdapter = new TransactionHistoryAdapter(
                 group.getItems(), // Lưu ý: Đổi tên getTransactions() thành getItems() trong Model
                 accountList,
                 systemCurrency,
