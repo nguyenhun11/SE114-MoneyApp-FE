@@ -25,6 +25,7 @@ import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
+import com.example.moneyapp.model.Mood;
 import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.CurrencyFormatter;
@@ -73,6 +74,9 @@ public class TransactionAddFragment extends BaseFragment {
     private LinearLayout btnDateToday, btnDateYesterday, btnDateRecent, btnPickDate;
     private TextView tvTodayValue, tvYesterdayValue, tvRecentValue, tvRecentLabel;
     private Date box3Date;
+    
+    private MoodSelectorAdapter moodAdapter;
+    private int selectedMoodId = 0;
     // endregion
 
     private AccountViewModel accountViewModel;
@@ -125,6 +129,14 @@ public class TransactionAddFragment extends BaseFragment {
         categoryViewModel.loadCategories(CategoryType.EXPENSE);
     }
 
+    private void setupMoodSelector(View view) {
+        androidx.recyclerview.widget.RecyclerView rvMood = view.findViewById(R.id.rvMoodSelector);
+        moodAdapter = new MoodSelectorAdapter(Mood.getAllMoods(), selectedMoodId, mood -> {
+            selectedMoodId = mood.getId();
+        });
+        rvMood.setAdapter(moodAdapter);
+    }
+
     private void initViews(View view) {
         etAmount = view.findViewById(R.id.etAmount);
         btnOpenCalculator = view.findViewById(R.id.btnOpenCalculator);
@@ -140,6 +152,8 @@ public class TransactionAddFragment extends BaseFragment {
 
         viewSelectSource = view.findViewById(R.id.viewSelectSource);
         viewSelectSource.clear("Chọn nguồn tiền...");
+
+        setupMoodSelector(view);
 
         btnDateToday = view.findViewById(R.id.btnDateToday);
         btnDateYesterday = view.findViewById(R.id.btnDateYesterday);
@@ -451,7 +465,7 @@ public class TransactionAddFragment extends BaseFragment {
                     selectedDate, description,
                     selectedCategory.getColor(), selectedCategory.getIcon(),
                     selectedAccount.getColor(), selectedAccount.getIcon(),
-                    new ArrayList<>(), new Date()
+                    new ArrayList<>(), selectedMoodId, new Date()
             );
 
             if (editTransactionId == null) {

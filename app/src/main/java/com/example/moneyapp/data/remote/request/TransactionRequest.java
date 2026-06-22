@@ -10,8 +10,16 @@ public class TransactionRequest {
     private String date;
     private String note;
     private List<String> imageUrls;
+    private int moodId;
 
-    public TransactionRequest(String accountId, String categoryId, Double originalAmount, String currencyCode, String date, String note, List<String> imageUrls) {
+    public TransactionRequest(String accountId,
+                              String categoryId,
+                              Double originalAmount,
+                              String currencyCode,
+                              String date,
+                              String note,
+                              List<String> imageUrls,
+                              int moodId) {
         this.accountId = accountId;
         this.categoryId = categoryId;
         this.originalAmount = originalAmount;
@@ -19,5 +27,6 @@ public class TransactionRequest {
         this.date = date;
         this.note = note;
         this.imageUrls = imageUrls;
+        this.moodId = moodId;
     }
 }

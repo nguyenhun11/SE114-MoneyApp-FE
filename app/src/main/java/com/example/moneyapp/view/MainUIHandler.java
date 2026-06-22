@@ -28,6 +28,7 @@ public class MainUIHandler {
             R.id.transactionFragment,
             R.id.accountFragment,
             R.id.categoryFragment,
+            R.id.goalFragment,
             R.id.profileFragment
     ));
 

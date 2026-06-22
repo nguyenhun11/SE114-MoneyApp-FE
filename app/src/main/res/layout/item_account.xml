@@ -55,12 +55,11 @@
             android:layout_height="20dp"
             android:layout_marginEnd="8dp"
             android:visibility="gone"
-            app:ico_icon="gmd_visibility_off"
-            app:ico_color="@color/colorOnSurfaceVariant"
+            app:iiv_icon="gmd_visibility_off"
+            app:iiv_color="@color/colorOnSurfaceVariant"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/ll_balance_container"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/ll_balance_container"

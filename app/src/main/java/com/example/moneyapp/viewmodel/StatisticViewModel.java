@@ -10,9 +10,15 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.moneyapp.data.remote.response.CashFlowBarDto;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
 import com.example.moneyapp.data.repository.StatisticRepository;
+import com.example.moneyapp.model.Mood;
+import com.example.moneyapp.model.Transaction;
+import com.example.moneyapp.view.home.PieChartItem;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StatisticViewModel extends AndroidViewModel {
 
@@ -29,6 +35,8 @@ public class StatisticViewModel extends AndroidViewModel {
 
     // 4. LiveData xử lý lỗi chung
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
+    
+    private final MutableLiveData<List<PieChartItem>> moodSpendingData = new MutableLiveData<>();
 
     public StatisticViewModel(@NonNull Application application) {
         super(application);
@@ -42,6 +50,44 @@ public class StatisticViewModel extends AndroidViewModel {
     public LiveData<List<StackedBarChartDto>> getExpenseStackedBarData() { return expenseStackedBarData; }
     public LiveData<List<StackedBarChartDto>> getIncomeStackedBarData() { return incomeStackedBarData; }
     public LiveData<String> getErrorLiveData() { return errorLiveData; }
+
+    public LiveData<List<PieChartItem>> getMoodSpendingData() { return moodSpendingData; }
+
+    public void calculateMoodSpending(List<Transaction> transactions) {
+        if (transactions == null || transactions.isEmpty()) {
+            moodSpendingData.postValue(new ArrayList<>());
+            return;
+        }
+
+        Map<Integer, Double> totals = new HashMap<>();
+        double totalAll = 0;
+
+        for (Transaction t : transactions) {
+            if (t.getType() == com.example.moneyapp.model.CategoryType.EXPENSE) {
+                int moodId = t.getMoodId();
+                totals.put(moodId, totals.getOrDefault(moodId, 0.0) + t.getBaseAmount());
+                totalAll += t.getBaseAmount();
+            }
+        }
+
+        List<PieChartItem> items = new ArrayList<>();
+        if (totalAll > 0) {
+            for (Mood mood : Mood.getAllMoods()) {
+                Double amount = totals.get(mood.getId());
+                if (amount != null && amount > 0) {
+                    float percent = (float) (amount / totalAll * 100);
+                    items.add(new PieChartItem(
+                            String.valueOf(mood.getId()),
+                            mood.getName() + " " + mood.getEmoji(),
+                            amount,
+                            percent,
+                            mood.getColor(),
+                            0));
+                }
+            }
+        }
+        moodSpendingData.postValue(items);
+    }
 
     // ==========================================
     // CÁC HÀM GỌI API TỪ REPOSITORY
