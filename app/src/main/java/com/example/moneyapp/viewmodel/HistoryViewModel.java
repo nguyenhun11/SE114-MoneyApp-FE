@@ -37,7 +37,7 @@ public class HistoryViewModel extends AndroidViewModel {
 
     private Date currentStartDate;
     private Date currentEndDate;
-    private CategoryType currentType = null;
+    private int currentFilterIndex = 0; // 0:All, 1:Expense, 2:Income, 3:Transfer, 4:Adjust, 5:Saving
     private String currentAccountId = null;
     private String currentCategoryId = null;
 
@@ -58,8 +58,9 @@ public class HistoryViewModel extends AndroidViewModel {
         reloadTransactions();
     }
 
-    public void setTypeAndReload(CategoryType type) {
-        this.currentType = type;
+    // ĐÃ SỬA: Thay vì CategoryType, ta nhận thẳng index của Tab
+    public void setFilterAndReload(int filterIndex) {
+        this.currentFilterIndex = filterIndex;
         reloadTransactions();
     }
 
@@ -75,14 +76,25 @@ public class HistoryViewModel extends AndroidViewModel {
 
     public void reloadTransactions() {
         if (currentStartDate == null || currentEndDate == null) return;
-        loadTransactions(currentStartDate, currentEndDate, currentType, currentAccountId, currentCategoryId);
+        loadTransactions(currentStartDate, currentEndDate, currentFilterIndex, currentAccountId, currentCategoryId);
     }
 
-    public void loadTransactions(Date start, Date end, CategoryType type, String accountId, String categoryId) {
+    public void loadTransactions(Date start, Date end, int filterIndex, String accountId, String categoryId) {
         isLoading.setValue(true);
 
         List<HistoryItem> mergedList = new ArrayList<>();
-        final int TOTAL_APIS_TO_CALL = 3;
+
+        // Cờ xác định xem cần tải API nào dựa trên Tab
+        boolean loadTransactions = (filterIndex == 0 || filterIndex == 1 || filterIndex == 2 || filterIndex == 5);
+        boolean loadTransfers = (filterIndex == 0 || filterIndex == 3);
+        boolean loadAdjusts = (filterIndex == 0 || filterIndex == 4);
+
+        int totalApis = 0;
+        if (loadTransactions) totalApis++;
+        if (loadTransfers) totalApis++;
+        if (loadAdjusts) totalApis++;
+
+        final int TOTAL_APIS_TO_CALL = totalApis;
         final int[] completedCalls = {0};
 
         Runnable checkAllDone = () -> {
@@ -100,22 +112,30 @@ public class HistoryViewModel extends AndroidViewModel {
             }
         };
 
-        transactionRepository.getFilteredTransactions(start, end, type, accountId, categoryId, new TransactionRepository.TransactionCallback<List<Transaction>>() {
-            @Override
-            public void onSuccess(List<Transaction> result) {
-                if (result != null) {
-                    for (Transaction t : result) mergedList.add(new HistoryItem(t));
-                }
-                checkAllDone.run();
-            }
-            @Override
-            public void onError(String message) {
-                errorLiveData.postValue(message);
-                checkAllDone.run();
-            }
-        });
+        // 1. GỌI API THU / CHI
+        if (loadTransactions) {
+            CategoryType type = null;
+            if (filterIndex == 1 || filterIndex == 5) type = CategoryType.EXPENSE; // Tiết kiệm tạm coi là Chi tiêu
+            if (filterIndex == 2) type = CategoryType.INCOME;
 
-        if (type == null) {
+            transactionRepository.getFilteredTransactions(start, end, type, accountId, categoryId, new TransactionRepository.TransactionCallback<List<Transaction>>() {
+                @Override
+                public void onSuccess(List<Transaction> result) {
+                    if (result != null) {
+                        for (Transaction t : result) mergedList.add(new HistoryItem(t));
+                    }
+                    checkAllDone.run();
+                }
+                @Override
+                public void onError(String message) {
+                    errorLiveData.postValue(message);
+                    checkAllDone.run();
+                }
+            });
+        }
+
+        // 2. GỌI API CHUYỂN KHOẢN
+        if (loadTransfers) {
             transferRepository.getTransfers(start, end, accountId, null, new TransferRepository.TransferCallback<List<Transfer>>() {
                 @Override
                 public void onSuccess(List<Transfer> result) {
@@ -124,13 +144,15 @@ public class HistoryViewModel extends AndroidViewModel {
                     }
                     checkAllDone.run();
                 }
-
                 @Override
                 public void onError(String message) {
                     checkAllDone.run();
                 }
             });
+        }
 
+        // 3. GỌI API ĐIỀU CHỈNH SỐ DƯ
+        if (loadAdjusts) {
             adjustBalanceRepository.getAdjustBalances(start, end, accountId, new AdjustBalanceRepository.AdjustBalanceCallback<List<AdjustBalance>>() {
                 @Override
                 public void onSuccess(List<AdjustBalance> result) {
@@ -139,16 +161,11 @@ public class HistoryViewModel extends AndroidViewModel {
                     }
                     checkAllDone.run();
                 }
-
                 @Override
                 public void onError(String message) {
                     checkAllDone.run();
                 }
             });
-        } else {
-            // Nếu đang lọc loại Thu hoặc Chi thì không tải Transfer và AdjustBalance
-            checkAllDone.run();
-            checkAllDone.run();
         }
     }
 

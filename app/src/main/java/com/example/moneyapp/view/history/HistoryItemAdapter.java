@@ -1,4 +1,4 @@
-package com.example.moneyapp.view.transaction;
+package com.example.moneyapp.view.history;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -27,9 +27,9 @@ import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.List;
 
-public class TransactionHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class HistoryItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final List<HistoryItem> items;
-    private final List<Account> accountList; // Cần cho giao dịch chuyển khoản
+    private final List<Account> accountList;
     private final String systemCurrency;
     private final OnItemClickListener listener;
 
@@ -37,7 +37,7 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<RecyclerView
         void onItemClick(HistoryItem item);
     }
 
-    public TransactionHistoryAdapter(List<HistoryItem> items, List<Account> accountList, String systemCurrency, OnItemClickListener listener) {
+    public HistoryItemAdapter(List<HistoryItem> items, List<Account> accountList, String systemCurrency, OnItemClickListener listener) {
         this.items = items;
         this.accountList = accountList;
         this.systemCurrency = systemCurrency != null ? systemCurrency : "VND";
@@ -52,7 +52,6 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<RecyclerView
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Phân nhánh giao diện XML dựa trên loại giao dịch
         if (viewType == HistoryItem.TYPE_TRANSACTION) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transaction_child, parent, false);
             return new TransactionViewHolder(view);
@@ -83,9 +82,6 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<RecyclerView
         return items != null ? items.size() : 0;
     }
 
-    // ==========================================
-    // 1. BIND DATA CHO THU / CHI
-    // ==========================================
     private void bindTransaction(TransactionViewHolder holder, Transaction t, boolean isLastItem) {
         Context context = holder.itemView.getContext();
 
@@ -112,7 +108,7 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<RecyclerView
         if (!transactionCurrency.equalsIgnoreCase(systemCurrency)) {
             holder.tvBaseAmount.setVisibility(View.VISIBLE);
             String baseAmountFormatted = CurrencyFormatter.formatVND(t.getBaseAmount());
-            holder.tvBaseAmount.setText("≈ " + sign + " " + baseAmountFormatted + " " + systemCurrency);
+            holder.tvBaseAmount.setText(sign + " " + baseAmountFormatted + " " + systemCurrency);
         } else {
             holder.tvBaseAmount.setVisibility(View.GONE);
         }
@@ -124,9 +120,6 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<RecyclerView
         holder.divider.setVisibility(isLastItem ? View.GONE : View.VISIBLE);
     }
 
-    // ==========================================
-    // 2. BIND DATA CHO CHUYỂN KHOẢN / ĐIỀU CHỈNH
-    // ==========================================
     private void bindTransferOrAdjust(TransferViewHolder holder, HistoryItem item, boolean isLastItem) {
         Context context = holder.itemView.getContext();
 
@@ -159,7 +152,7 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<RecyclerView
             if (!srcCurrency.equalsIgnoreCase(systemCurrency)) {
                 holder.tvBaseAmount.setVisibility(View.VISIBLE);
                 double baseAmt = (t.getBaseAmount() != null && t.getBaseAmount() > 0) ? t.getBaseAmount() : CurrencyFormatter.previewConversion(t.getSourceAmount(), srcCurrency, systemCurrency);
-                holder.tvBaseAmount.setText("≈ " + CurrencyFormatter.formatVND(baseAmt) + " " + systemCurrency);
+                holder.tvBaseAmount.setText(CurrencyFormatter.formatVND(baseAmt) + " " + systemCurrency);
             } else {
                 holder.tvBaseAmount.setVisibility(View.GONE);
             }
@@ -196,7 +189,7 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<RecyclerView
             if (!accCurrency.equalsIgnoreCase(systemCurrency)) {
                 holder.tvBaseAmount.setVisibility(View.VISIBLE);
                 double baseAmt = CurrencyFormatter.previewConversion(absAmount, accCurrency, systemCurrency);
-                holder.tvBaseAmount.setText("≈ " + sign + " " + CurrencyFormatter.formatVND(baseAmt) + " " + systemCurrency);
+                holder.tvBaseAmount.setText(sign + " " + CurrencyFormatter.formatVND(baseAmt) + " " + systemCurrency);
             } else {
                 holder.tvBaseAmount.setVisibility(View.GONE);
             }
@@ -212,9 +205,6 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<RecyclerView
         return null;
     }
 
-    // ==========================================
-    // 3. CÁC VIEW HOLDER
-    // ==========================================
     public static class TransactionViewHolder extends RecyclerView.ViewHolder {
         FrameLayout flIconContainer;
         IconicsImageView ivIcon;

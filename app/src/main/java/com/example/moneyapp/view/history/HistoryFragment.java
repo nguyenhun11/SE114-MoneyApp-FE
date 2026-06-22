@@ -19,7 +19,6 @@ import com.example.moneyapp.R;
 import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.Category;
-import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.HistoryItem;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
@@ -64,6 +63,7 @@ public class HistoryFragment extends BaseFragment {
         categoryViewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
 
         setupHeader(view, "Lịch sử giao dịch", false);
+        setupFilters(view);
 
         String[] historyTabs = {
                 "Tất cả",
@@ -73,30 +73,15 @@ public class HistoryFragment extends BaseFragment {
                 "Điều chỉnh số dư",
                 "Tiết kiệm"
         };
-        setupHeaderTabs(view, historyTabs,0, index -> {
-            CategoryType type = null;
 
-            switch (index) {
-                case 0: // Tất cả
-                    type = null;
-                    break;
-                case 1: // Chi tiêu
-                    type = CategoryType.EXPENSE;
-                    break;
-                case 2: // Thu nhập
-                    type = CategoryType.INCOME;
-                    break;
-                case 3: // Chuyển khoản (Có thể lọc bằng logic bên ViewModel sau)
-                    break;
-                case 4: // Điều chỉnh số dư
-                    break;
-                case 5: // Tiết kiệm (Ăn gian vào chi tiêu)
-                    break;
+        setupHeaderTabs(view, historyTabs, 0, index -> {
+            if (index == 3 || index == 4) {
+                btnCategoryFilter.setVisibility(View.GONE);
+            } else {
+                btnCategoryFilter.setVisibility(View.VISIBLE);
             }
-            historyViewModel.setTypeAndReload(type);
+            historyViewModel.setFilterAndReload(index);
         });
-
-        setupFilters(view);
 
         timeSelector = view.findViewById(R.id.time_selector);
 
@@ -138,7 +123,6 @@ public class HistoryFragment extends BaseFragment {
                 args.putString("transferId", item.getTransfer().getId());
                 Navigation.findNavController(view).navigate(R.id.transferDetailFragment, args);
             } else if (item.getType() == HistoryItem.TYPE_ADJUST_BALANCE) {
-                // Điều chỉnh số dư thường không có trang chi tiết, chỉ cần toast nhẹ hoặc bỏ qua
                 Toast.makeText(getContext(), "Đây là bản ghi điều chỉnh số dư hệ thống", Toast.LENGTH_SHORT).show();
             }
         });
@@ -191,7 +175,8 @@ public class HistoryFragment extends BaseFragment {
 
         btnAccountFilter.setOnClickListener(v -> showAccountFilterPopup());
         btnCategoryFilter.setOnClickListener(v -> showCategoryFilterPopup());
-        btnCategoryFilter.setVisibility(View.GONE);
+
+        btnCategoryFilter.setVisibility(View.VISIBLE);
     }
 
     private void showAccountFilterPopup() {
