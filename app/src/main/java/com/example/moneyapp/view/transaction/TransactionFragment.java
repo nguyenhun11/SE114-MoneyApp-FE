@@ -22,6 +22,7 @@ import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
+import com.example.moneyapp.model.HistoryItem;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.components.TimeSelectorView;
@@ -94,7 +95,7 @@ public class TransactionFragment extends BaseFragment {
             }
         }
 
-        setupThreeTabs(view, preSelectedTab, index -> {
+        setupThreeTabs(view, 0, index -> {
             CategoryType type = null;
             if (index == 1) {
                 type = CategoryType.EXPENSE;
@@ -103,7 +104,7 @@ public class TransactionFragment extends BaseFragment {
                 type = CategoryType.INCOME;
                 btnCategoryFilter.setVisibility(View.VISIBLE);
             } else {
-                btnCategoryFilter.setVisibility(View.GONE);
+                btnCategoryFilter.setVisibility(View.GONE); // Tab "Tất cả" ẩn lọc
             }
 
             transactionViewModel.setTypeAndReload(type);
@@ -113,30 +114,26 @@ public class TransactionFragment extends BaseFragment {
             } else {
                 categoryViewModel.loadCategories(CategoryType.EXPENSE);
             }
-
-            if (getArguments() == null) {
-                if (tvCategoryFilter != null) {
-                    tvCategoryFilter.setText("Tất cả hạng mục");
-                    transactionViewModel.setCategoryFilterAndReload(null);
-                }
-            }
-            setArguments(null);
         });
 
         RecyclerView recyclerView = view.findViewById(R.id.rvTransactions);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         String systemCurrency = PreferenceManager.getInstance(requireContext()).getDefaultCurrency();
-        adapter = new TransactionGroupAdapter(new ArrayList<>(), systemCurrency, transaction -> {
-            Bundle args = new Bundle();
-            args.putString("transactionId", transaction.getTransactionId());
-            Navigation.findNavController(view).navigate(R.id.transactionDetailFragment, args);
-        });
 
-        adapter = new TransactionGroupAdapter(new ArrayList<>(), systemCurrency, transaction -> {
+        // ĐÃ SỬA: Phân luồng điều hướng dựa trên Loại HistoryItem
+        adapter = new TransactionGroupAdapter(new ArrayList<>(), accountList, systemCurrency, item -> {
             Bundle args = new Bundle();
-            args.putString("transactionId", transaction.getTransactionId());
-            Navigation.findNavController(view).navigate(R.id.transactionDetailFragment, args);
+            if (item.getType() == HistoryItem.TYPE_TRANSACTION) {
+                args.putString("transactionId", item.getTransaction().getTransactionId());
+                Navigation.findNavController(view).navigate(R.id.transactionDetailFragment, args);
+            } else if (item.getType() == HistoryItem.TYPE_TRANSFER) {
+                args.putString("transferId", item.getTransfer().getId());
+                Navigation.findNavController(view).navigate(R.id.transferDetailFragment, args);
+            } else if (item.getType() == HistoryItem.TYPE_ADJUST_BALANCE) {
+                // Điều chỉnh số dư thường không có trang chi tiết, chỉ cần toast nhẹ hoặc bỏ qua
+                Toast.makeText(getContext(), "Đây là bản ghi điều chỉnh số dư hệ thống", Toast.LENGTH_SHORT).show();
+            }
         });
 
         recyclerView.setAdapter(adapter);
@@ -151,19 +148,16 @@ public class TransactionFragment extends BaseFragment {
 
     private void observeViewModels() {
         transactionViewModel.getGroupedTransactions().observe(getViewLifecycleOwner(), items -> {
-            adapter.updateList(items);
-        });
-
-        transactionViewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) {
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-            }
+            adapter.updateData(items, accountList);
         });
 
         accountViewModel.getAccountsLiveData().observe(getViewLifecycleOwner(), accounts -> {
             if (accounts != null) {
                 accountList.clear();
                 accountList.addAll(accounts);
+                if (adapter != null && transactionViewModel.getGroupedTransactions().getValue() != null) {
+                    adapter.updateData(transactionViewModel.getGroupedTransactions().getValue(), accountList);
+                }
             }
         });
 

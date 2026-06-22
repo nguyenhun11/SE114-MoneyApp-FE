@@ -20,12 +20,10 @@ import com.example.moneyapp.data.remote.response.StackedBarChartDto;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.category.CategorySummaryAdapter;
-import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.view.components.CustomMarkerView;
 import com.example.moneyapp.view.components.StatisticTimeSelectorView;
 import com.example.moneyapp.view.home.PieChartItem;
 import com.example.moneyapp.viewmodel.StatisticViewModel;
-import com.example.moneyapp.viewmodel.TransactionViewModel;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
@@ -45,7 +43,6 @@ import java.util.List;
 public class StatisticFragment extends BaseFragment {
 
     private StatisticViewModel statisticViewModel;
-    private TransactionViewModel transactionViewModel;
     private int currentTab = 0; // 0: Chung, 1: Chi, 2: Thu, 3: Tâm trạng
 
     private Date currentStartDate;
@@ -73,8 +70,8 @@ public class StatisticFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // ĐÃ XÓA transactionViewModel, chỉ giữ lại của chính nó
         statisticViewModel = new ViewModelProvider(this).get(StatisticViewModel.class);
-        transactionViewModel = new ViewModelProvider(this).get(TransactionViewModel.class);
 
         setupHeader(view, R.string.stats_screen_title, false);
 
@@ -126,8 +123,6 @@ public class StatisticFragment extends BaseFragment {
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f);
 
-        // ĐÃ XÓA xAxis.setCenterAxisLabels(true) Ở ĐÂY - Sẽ set động trong từng hàm render
-
         barChart.setTouchEnabled(true);
         barChart.setDragEnabled(true);
         barChart.setScaleEnabled(false);
@@ -138,7 +133,6 @@ public class StatisticFragment extends BaseFragment {
         mv.setChartView(barChart);
         barChart.setMarker(mv);
 
-        // LẮNG NGHE SỰ KIỆN CLICK CỘT
         barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
@@ -175,10 +169,9 @@ public class StatisticFragment extends BaseFragment {
         List<PieChartItem> list = new ArrayList<>();
 
         if (currentTab == 0) {
-            // TAB CHUNG
             if (index < 0 || index >= currentCashFlowData.size()) return;
             String period = currentCashFlowData.get(index).getPeriod();
-            int clickedColumn = h.getDataSetIndex(); // 0: Thu, 1: Chi, 2: Cân bằng
+            int clickedColumn = h.getDataSetIndex();
 
             if (clickedColumn == 0) {
                 StackedBarChartDto periodData = findPeriodData(currentIncomeStackedData, period);
@@ -187,10 +180,9 @@ public class StatisticFragment extends BaseFragment {
                 StackedBarChartDto periodData = findPeriodData(currentExpenseStackedData, period);
                 if (periodData != null) list = convertToPieChartItems(periodData.getCategoryBreakdowns());
             } else {
-                list = new ArrayList<>(); // Click cột Cân bằng -> Không hiện gì cả
+                list = new ArrayList<>();
             }
         } else {
-            // TAB CHI HOẶC THU
             List<StackedBarChartDto> targetData = (currentTab == 1) ? currentExpenseStackedData : currentIncomeStackedData;
 
             if (index < 0 || index >= targetData.size()) return;
@@ -264,18 +256,8 @@ public class StatisticFragment extends BaseFragment {
                 adapter.updateData(data);
             }
         });
-        
-        transactionViewModel.getGroupedTransactions().observe(getViewLifecycleOwner(), groups -> {
-            if (currentTab == 3) {
-                List<Transaction> allTransactions = new ArrayList<>();
-                if (groups != null) {
-                    for (com.example.moneyapp.model.DailyTransactionGroup g : groups) {
-                        allTransactions.addAll(g.getTransactions());
-                    }
-                }
-                statisticViewModel.calculateMoodSpending(allTransactions);
-            }
-        });
+
+        // ĐÃ XÓA khối lệnh transactionViewModel.getGroupedTransactions().observe(...) lằng nhằng ở đây
 
         statisticViewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
             if (error != null) {
@@ -287,8 +269,7 @@ public class StatisticFragment extends BaseFragment {
     private void loadDataByTab() {
         if (currentEndDate == null) return;
         adapter.updateData(new ArrayList<>());
-        
-        // Reset Visibility mặc định
+
         barChart.setVisibility(View.VISIBLE);
         pieChartMood.setVisibility(View.GONE);
         timeSelector.setVisibility(View.VISIBLE);
@@ -308,7 +289,9 @@ public class StatisticFragment extends BaseFragment {
             case 3:
                 barChart.setVisibility(View.GONE);
                 pieChartMood.setVisibility(View.VISIBLE);
-                transactionViewModel.loadTransactions(currentStartDate, currentEndDate, null, null, null);
+
+                // ĐÃ SỬA: Tự gọi hàm sạch sẽ từ chính StatisticViewModel
+                statisticViewModel.loadMoodStatistics(currentStartDate, currentEndDate);
                 break;
         }
     }
@@ -388,7 +371,6 @@ public class StatisticFragment extends BaseFragment {
         BarData barData = new BarData(setIncome, setExpense, setBalance);
         barData.setDrawValues(false);
 
-        // TRẢ LẠI TỶ LỆ CHUẨN: (0.2 + 0.05) * 3 + 0.25 = 1.0f
         float groupSpace = 0.25f;
         float barSpace = 0.05f;
         float barWidth = 0.2f;
@@ -398,8 +380,6 @@ public class StatisticFragment extends BaseFragment {
 
         float groupWidth = barChart.getBarData().getGroupWidth(groupSpace, barSpace);
         barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xLabels));
-
-        // FIX LỆCH NHÃN: Ép CenterAxisLabels bật cho biểu đồ cụm
         barChart.getXAxis().setCenterAxisLabels(true);
         barChart.getXAxis().setAxisMinimum(0f);
 
@@ -426,7 +406,6 @@ public class StatisticFragment extends BaseFragment {
         barChart.groupBars(0f, groupSpace, barSpace);
         barChart.notifyDataSetChanged();
 
-        // KHÓA ZOOM ĐỂ CỘT KHÔNG BỊ PHÌNH
         barChart.setVisibleXRangeMaximum(visibleGroups);
         barChart.setVisibleXRangeMinimum(visibleGroups);
 
@@ -499,8 +478,6 @@ public class StatisticFragment extends BaseFragment {
         barChart.getBarData().setBarWidth(0.4f);
 
         barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xLabels));
-
-        // FIX LỆCH NHÃN: Ép CenterAxisLabels TẮT cho biểu đồ cột đơn
         barChart.getXAxis().setCenterAxisLabels(false);
         barChart.getXAxis().setAxisMinimum(-0.5f);
 
@@ -510,13 +487,12 @@ public class StatisticFragment extends BaseFragment {
 
         Legend legend = barChart.getLegend();
         legend.resetCustom();
-        legend.setXEntrySpace(15f); // Đảm bảo Legend tự động không bị dính chùm
+        legend.setXEntrySpace(15f);
         legend.setEnabled(true);
         legend.setWordWrapEnabled(true);
 
         barChart.notifyDataSetChanged();
 
-        // KHÓA ZOOM ĐỂ CỘT KHÔNG BỊ PHÌNH
         barChart.setVisibleXRangeMaximum(visibleGroups);
         barChart.setVisibleXRangeMinimum(visibleGroups);
 

@@ -10,14 +10,21 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.moneyapp.data.remote.request.CheckInRequest;
 import com.example.moneyapp.data.remote.response.CheckInResponse;
 import com.example.moneyapp.data.repository.AccountRepository;
+import com.example.moneyapp.data.repository.AdjustBalanceRepository;
 import com.example.moneyapp.data.repository.TransactionRepository;
+import com.example.moneyapp.data.repository.TransferRepository;
 import com.example.moneyapp.data.repository.UserRepository;
+import com.example.moneyapp.model.AdjustBalance;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.DailyTransactionGroup;
+import com.example.moneyapp.model.HistoryItem;
 import com.example.moneyapp.model.Transaction;
+import com.example.moneyapp.model.Transfer;
+import com.example.moneyapp.utils.CurrencyFormatter;
 import com.example.moneyapp.utils.DateConverter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,12 +32,16 @@ import java.util.Locale;
 import java.util.Map;
 
 public class TransactionViewModel extends AndroidViewModel {
-    private final TransactionRepository repository;
+    private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+
+    // ĐÃ THÊM: Repository của Transfer và AdjustBalance
+    private final TransferRepository transferRepository;
+    private final AdjustBalanceRepository adjustBalanceRepository;
+
     private final MutableLiveData<Double> totalBalance = new MutableLiveData<>();
     private final MutableLiveData<List<DailyTransactionGroup>> groupedTransactionsLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<Transaction>> transactionsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Transaction> selectedTransaction = new MutableLiveData<>();
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
@@ -45,9 +56,11 @@ public class TransactionViewModel extends AndroidViewModel {
 
     public TransactionViewModel(@NonNull Application application) {
         super(application);
-        repository = new TransactionRepository(application);
+        transactionRepository = new TransactionRepository(application);
         accountRepository = new AccountRepository(application);
         userRepository = new UserRepository(application);
+        transferRepository = new TransferRepository(application);
+        adjustBalanceRepository = new AdjustBalanceRepository(application);
     }
 
     public LiveData<Double> getTotalBalance() { return totalBalance; }
@@ -56,6 +69,7 @@ public class TransactionViewModel extends AndroidViewModel {
     public LiveData<String> getErrorLiveData() { return errorLiveData; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
     public LiveData<Boolean> getOperationSuccess() { return operationSuccess; }
+    public LiveData<String> getCheckInMessageLiveData() { return checkInMessageLiveData; }
 
     public void setTimeRangeAndReload(Date start, Date end) {
         this.currentStartDate = start;
@@ -74,24 +88,131 @@ public class TransactionViewModel extends AndroidViewModel {
     }
     public void loadTransactions(Date start, Date end, CategoryType type, String accountId, String categoryId) {
         isLoading.setValue(true);
-        repository.getFilteredTransactions(start, end, type, accountId, categoryId, new TransactionRepository.TransactionCallback<List<Transaction>>() {
+
+        List<HistoryItem> mergedList = new ArrayList<>();
+        final int TOTAL_APIS_TO_CALL = 3;
+        final int[] completedCalls = {0};
+
+        Runnable checkAllDone = () -> {
+            completedCalls[0]++;
+            if (completedCalls[0] == TOTAL_APIS_TO_CALL) {
+                Collections.sort(mergedList, (item1, item2) -> {
+                    Date d1 = item1.getDate();
+                    Date d2 = item2.getDate();
+                    if (d1 == null || d2 == null) return 0;
+                    return d2.compareTo(d1); // Descending
+                });
+
+                groupedTransactionsLiveData.postValue(groupTransactionsByDate(mergedList));
+                isLoading.postValue(false);
+            }
+        };
+
+        transactionRepository.getFilteredTransactions(start, end, type, accountId, categoryId, new TransactionRepository.TransactionCallback<List<Transaction>>() {
             @Override
             public void onSuccess(List<Transaction> result) {
-                transactionsLiveData.postValue(result);
-                groupedTransactionsLiveData.postValue(groupTransactionsByDate(result));
-                isLoading.postValue(false);
+                if (result != null) {
+                    for (Transaction t : result) mergedList.add(new HistoryItem(t));
+                }
+                checkAllDone.run();
             }
             @Override
             public void onError(String message) {
                 errorLiveData.postValue(message);
-                isLoading.postValue(false);
+                checkAllDone.run();
             }
         });
+
+        if (type == null) {
+            transferRepository.getTransfers(start, end, accountId, null, new TransferRepository.TransferCallback<List<Transfer>>() {
+                @Override
+                public void onSuccess(List<Transfer> result) {
+                    if (result != null) {
+                        for (Transfer t : result) mergedList.add(new HistoryItem(t));
+                    }
+                    checkAllDone.run();
+                }
+
+                @Override
+                public void onError(String message) {
+                    checkAllDone.run();
+                }
+            });
+        } else {
+            checkAllDone.run();
+        }
+
+        if (type == null) {
+            adjustBalanceRepository.getAdjustBalances(start, end, accountId, new AdjustBalanceRepository.AdjustBalanceCallback<List<AdjustBalance>>() {
+                @Override
+                public void onSuccess(List<AdjustBalance> result) {
+                    if (result != null) {
+                        for (AdjustBalance ab : result) mergedList.add(new HistoryItem(ab));
+                    }
+                    checkAllDone.run();
+                }
+
+                @Override
+                public void onError(String message) {
+                    checkAllDone.run();
+                }
+            });
+        } else {
+            checkAllDone.run();
+        }
+    }
+
+    private List<DailyTransactionGroup> groupTransactionsByDate(List<HistoryItem> historyItems) {
+        if (historyItems == null || historyItems.isEmpty()) return new ArrayList<>();
+
+        Map<String, List<HistoryItem>> groupedMap = new LinkedHashMap<>();
+        for (HistoryItem item : historyItems) {
+            String dateKey = formatToDisplayDate(item.getDate());
+            if (!groupedMap.containsKey(dateKey)) {
+                groupedMap.put(dateKey, new ArrayList<>());
+            }
+            groupedMap.get(dateKey).add(item);
+        }
+
+        List<DailyTransactionGroup> resultList = new ArrayList<>();
+
+        for (Map.Entry<String, List<HistoryItem>> entry : groupedMap.entrySet()) {
+            double totalDayBaseAmount = 0;
+
+            for (HistoryItem item : entry.getValue()) {
+                if (item.getType() == HistoryItem.TYPE_TRANSACTION && item.getTransaction() != null) {
+                    Transaction t = item.getTransaction();
+                    double amountToAdd = t.getBaseAmount() != null ? t.getBaseAmount() : 0.0;
+                    if (t.getType() == CategoryType.EXPENSE) {
+                        totalDayBaseAmount -= amountToAdd;
+                    } else {
+                        totalDayBaseAmount += amountToAdd;
+                    }
+                }
+                else if (item.getType() == HistoryItem.TYPE_ADJUST_BALANCE && item.getAdjustBalance() != null) {
+                    totalDayBaseAmount += item.getAdjustBalance().getAmount();
+                }
+            }
+
+            String sign = totalDayBaseAmount >= 0 ? "+" : "-";
+            String dateSummary = String.format("%s %s", sign, CurrencyFormatter.formatVND(Math.abs(totalDayBaseAmount)));
+
+            resultList.add(new DailyTransactionGroup(entry.getKey(), dateSummary, entry.getValue()));
+        }
+
+        return resultList;
+    }
+
+    private String formatToDisplayDate(Date date) {
+        if (date == null) return "Chưa xác định";
+        java.text.DateFormat formatter = java.text.DateFormat.getDateInstance(
+                java.text.DateFormat.LONG, Locale.getDefault());
+        return formatter.format(date);
     }
 
     public void loadTransactionById(String id) {
         isLoading.setValue(true);
-        repository.getTransactionById(id, new TransactionRepository.TransactionCallback<Transaction>() {
+        transactionRepository.getTransactionById(id, new TransactionRepository.TransactionCallback<Transaction>() {
             @Override
             public void onSuccess(Transaction result) {
                 selectedTransaction.postValue(result);
@@ -107,7 +228,7 @@ public class TransactionViewModel extends AndroidViewModel {
     }
 
     public void addTransaction(Transaction transaction) {
-        repository.createTransaction(transaction, new TransactionRepository.TransactionCallback<Transaction>() {
+        transactionRepository.createTransaction(transaction, new TransactionRepository.TransactionCallback<Transaction>() {
             @Override
             public void onSuccess(Transaction result) {
                 operationSuccess.postValue(true);
@@ -123,8 +244,7 @@ public class TransactionViewModel extends AndroidViewModel {
                     }
 
                     @Override
-                    public void onError(String message) {
-                    }
+                    public void onError(String message) { }
                 });
             }
 
@@ -136,7 +256,7 @@ public class TransactionViewModel extends AndroidViewModel {
     }
 
     public void deleteTransaction(String id) {
-        repository.deleteTransaction(id, new TransactionRepository.TransactionCallback<Void>() {
+        transactionRepository.deleteTransaction(id, new TransactionRepository.TransactionCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 operationSuccess.postValue(true);
@@ -151,7 +271,7 @@ public class TransactionViewModel extends AndroidViewModel {
 
     public void updateTransaction(Transaction transaction) {
         isLoading.setValue(true);
-        repository.updateTransaction(transaction, new TransactionRepository.TransactionCallback<Transaction>() {
+        transactionRepository.updateTransaction(transaction, new TransactionRepository.TransactionCallback<Transaction>() {
             @Override
             public void onSuccess(Transaction result) {
                 operationSuccess.postValue(true);
@@ -164,43 +284,6 @@ public class TransactionViewModel extends AndroidViewModel {
                 isLoading.postValue(false);
             }
         });
-    }
-
-    private List<DailyTransactionGroup> groupTransactionsByDate(List<Transaction> transactions) {
-        if (transactions == null || transactions.isEmpty()) return new ArrayList<>();
-
-        Map<String, List<Transaction>> groupedMap = new LinkedHashMap<>();
-        for (Transaction t : transactions) {
-            String dateKey = formatToDisplayDate(t.getDate());
-            if (!groupedMap.containsKey(dateKey)) {
-                groupedMap.put(dateKey, new ArrayList<>());
-            }
-            groupedMap.get(dateKey).add(t);
-        }
-
-        List<DailyTransactionGroup> resultList = new ArrayList<>();
-        for (Map.Entry<String, List<Transaction>> entry : groupedMap.entrySet()) {
-            double totalDay = 0;
-            for (Transaction t : entry.getValue()) {
-                if (t.getBaseAmount() != null) {
-                    if (t.getType() == CategoryType.EXPENSE) {
-                        totalDay -= t.getBaseAmount();
-                    } else {
-                        totalDay += t.getBaseAmount();
-                    }
-                }
-            }
-            String dateSummary = String.format(Locale.getDefault(), "%,.0f đ", totalDay);
-            resultList.add(new DailyTransactionGroup(entry.getKey(), dateSummary, entry.getValue()));
-        }
-        return resultList;
-    }
-
-    private String formatToDisplayDate(Date date) {
-        if (date == null) return "Chưa xác định";
-        java.text.DateFormat formatter = java.text.DateFormat.getDateInstance(
-                java.text.DateFormat.LONG, Locale.getDefault());
-        return formatter.format(date);
     }
 
     public void setAccountFilterAndReload(String accountId) {

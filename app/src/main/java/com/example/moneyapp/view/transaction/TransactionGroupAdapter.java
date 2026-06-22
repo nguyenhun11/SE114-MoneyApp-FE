@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.DailyTransactionGroup;
 
 import java.util.List;
@@ -17,18 +18,20 @@ import java.util.List;
 public class TransactionGroupAdapter extends RecyclerView.Adapter<TransactionGroupAdapter.ViewHolder> {
 
     private List<DailyTransactionGroup> groups;
-    private final String systemCurrency; // Thêm biến lưu đơn vị tiền tệ hệ thống
+    private List<Account> accountList; // Thêm AccountList
+    private final String systemCurrency;
     private final TransactionChildAdapter.OnItemClickListener childListener;
 
-    // Cập nhật Constructor: Nhận thêm String systemCurrency
-    public TransactionGroupAdapter(List<DailyTransactionGroup> groups, String systemCurrency, TransactionChildAdapter.OnItemClickListener listener) {
+    public TransactionGroupAdapter(List<DailyTransactionGroup> groups, List<Account> accountList, String systemCurrency, TransactionChildAdapter.OnItemClickListener listener) {
         this.groups = groups;
+        this.accountList = accountList;
         this.systemCurrency = systemCurrency != null ? systemCurrency : "VND";
         this.childListener = listener;
     }
 
-    public void updateList(List<DailyTransactionGroup> newGroups) {
+    public void updateData(List<DailyTransactionGroup> newGroups, List<Account> newAccounts) {
         this.groups = newGroups;
+        this.accountList = newAccounts;
         notifyDataSetChanged();
     }
 
@@ -56,15 +59,16 @@ public class TransactionGroupAdapter extends RecyclerView.Adapter<TransactionGro
         DailyTransactionGroup group = groups.get(position);
         holder.tvDateLabel.setText(group.getDateLabel());
 
+        // Khởi tạo Adapter con và truyền toàn bộ dữ liệu xuống
         TransactionChildAdapter childAdapter = new TransactionChildAdapter(
-                group.getTransactions(),
+                group.getItems(), // Lưu ý: Đổi tên getTransactions() thành getItems() trong Model
+                accountList,
                 systemCurrency,
                 childListener
         );
 
         holder.rvDailyTransactions.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
         holder.rvDailyTransactions.setAdapter(childAdapter);
-
         holder.rvDailyTransactions.setNestedScrollingEnabled(false);
     }
 
