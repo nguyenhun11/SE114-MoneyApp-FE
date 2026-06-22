@@ -47,7 +47,7 @@ public class ProfileViewModel extends AndroidViewModel {
                         response.getImageUrl(),
                         response.getDailyStreak(),
                         response.isTodayCheckedIn(),
-                        defaultCurrency, // Thêm dòng này vào model User
+                        defaultCurrency,
                         DateConverter.convertStringToDate(response.getCreatedAt()),
                         DateConverter.convertStringToDate(response.getLastUpdatedAt())
                 );
@@ -91,13 +91,12 @@ public class ProfileViewModel extends AndroidViewModel {
     public void updateUserName(String newName) {
         User user = currentUser.getValue();
         if (user != null && !newName.isEmpty()) {
-            // Cập nhật Constructor của UserProfileRequest để gửi kèm DefaultCurrency
             UserProfileRequest request = new UserProfileRequest(
                     newName,
                     user.getEmail(),
                     user.getProfileImageUrl(),
                     user.getPhoneNumber(),
-                    user.getDefaultCurrency() // Gửi kèm để BE không bị đè null
+                    user.getDefaultCurrency()
             );
 
             userRepository.updateUserProfile(request, new UserRepository.UserCallback<Void>() {
@@ -124,7 +123,7 @@ public class ProfileViewModel extends AndroidViewModel {
                     user.getEmail(),
                     imageUri,
                     user.getPhoneNumber(),
-                    user.getDefaultCurrency() // Gửi kèm
+                    user.getDefaultCurrency()
             );
 
             userRepository.updateUserProfile(request, new UserRepository.UserCallback<Void>() {
@@ -157,14 +156,9 @@ public class ProfileViewModel extends AndroidViewModel {
             userRepository.updateUserProfile(request, new UserRepository.UserCallback<Void>() {
                 @Override
                 public void onSuccess(Void result) {
-                    // 1. Update biến trong Model
                     user.setDefaultCurrency(newCurrency);
                     currentUser.postValue(user);
-
-                    // 2. Lưu đè xuống SharedPreferences ngay lập tức
                     PreferenceManager.getInstance(getApplication()).setDefaultCurrency(newCurrency);
-
-                    // 3. Báo ra UI
                     errorMessage.postValue("SUCCESS_CURRENCY");
                 }
 
@@ -180,7 +174,6 @@ public class ProfileViewModel extends AndroidViewModel {
         userRepository.deleteUser("permanent", new UserRepository.UserCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
-                // Tiện tay clear luôn cache tiền tệ khi xóa tài khoản cho sạch
                 PreferenceManager.getInstance(getApplication()).clear();
                 errorMessage.postValue("SUCCESS_DELETE");
             }

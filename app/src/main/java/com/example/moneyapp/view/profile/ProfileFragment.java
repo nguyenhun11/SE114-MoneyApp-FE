@@ -24,6 +24,8 @@ import androidx.navigation.Navigation;
 import com.bumptech.glide.Glide;
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.local.PreferenceManager;
+import com.example.moneyapp.utils.CurrencyFormatter;
+import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.MainActivity;
 import com.example.moneyapp.view.SplashActivity;
@@ -34,6 +36,9 @@ import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 public class ProfileFragment extends BaseFragment {
@@ -102,6 +107,9 @@ public class ProfileFragment extends BaseFragment {
         TextView tvRestoreStreakHint = view.findViewById(R.id.tv_restore_streak_hint);
 
         View llChangePassword = view.findViewById(R.id.ll_change_password);
+        View llChangeCurrency = view.findViewById(R.id.ll_change_currency);
+        TextView tvDefaultCurrency = view.findViewById(R.id.tv_default_currency);
+
         SwitchCompat swSync = view.findViewById(R.id.sw_sync);
         Button btnLogout = view.findViewById(R.id.btn_logout);
         Button btnDelete = view.findViewById(R.id.btn_delete_account);
@@ -133,6 +141,10 @@ public class ProfileFragment extends BaseFragment {
 
                 if (user.getCreatedAt() != null) {
                     tvCreatedAt.setText(getVietnameseDate(user.getCreatedAt()));
+                }
+
+                if (user.getDefaultCurrency() != null) {
+                    tvDefaultCurrency.setText(user.getDefaultCurrency());
                 }
 
                 tvStreakCount.setText(user.getDailyStreak() + " ngày");
@@ -201,6 +213,8 @@ public class ProfileFragment extends BaseFragment {
                 performLogout();
             } else if (message.equals("SUCCESS")) {
                 Toast.makeText(requireContext(), "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+            } else if (message.equals("SUCCESS_CURRENCY")) { // THÊM DÒNG NÀY
+                Toast.makeText(requireContext(), "Cập nhật đơn vị tiền tệ thành công", Toast.LENGTH_SHORT).show();
             } else if (message.startsWith("SUCCESS_RESTORE:")) {
                 String msgText = message.replace("SUCCESS_RESTORE:", "");
                 Toast.makeText(requireContext(), msgText, Toast.LENGTH_LONG).show();
@@ -247,6 +261,16 @@ public class ProfileFragment extends BaseFragment {
                     .setPositiveButton("Xóa", (dialog, which) -> profileViewModel.deleteAccount())
                     .setNegativeButton("Hủy", null)
                     .show();
+        });
+
+        llChangeCurrency.setOnClickListener(v -> {
+            List<String> allCurrencies = CurrencyFormatter.getSupportedCurrencies();
+            if (allCurrencies == null || allCurrencies.isEmpty()) {
+                allCurrencies = new ArrayList<>(Arrays.asList("VND", "USD", "EUR", "JPY"));
+            }
+            PopupHelper.showCurrencyFilterPopup(requireContext(), allCurrencies, selectedCurrency -> {
+                profileViewModel.updateDefaultCurrency(selectedCurrency);
+            });
         });
 
         cvAvatarContainer.setOnClickListener(v -> mGetContent.launch("image/*"));

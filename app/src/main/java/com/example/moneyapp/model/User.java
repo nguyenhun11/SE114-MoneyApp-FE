@@ -14,7 +14,8 @@ public class User {
     private Date createdAt;
     private Date updatedAt;
 
-    public User(int userId, String name, String email, String phoneNumber, String profileImageUrl, int dailyStreak, boolean todayCheckedIn, String defaultCurrency, Date createdAt, Date updatedAt) {
+    public User(int userId, String name, String email, String phoneNumber, String profileImageUrl,
+                int dailyStreak, boolean todayCheckedIn, String defaultCurrency, Date createdAt, Date updatedAt) {
         this.userId = userId;
         this.name = name;
         this.email = email;
