@@ -243,17 +243,24 @@
                     android:minLines="3"
                     android:layout_marginBottom="16dp" />
 
-                <TextView
-                    style="@style/InputLabel"
-                    android:text="Bạn cảm thấy thế nào?" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvMoodSelector"
+                <LinearLayout
+                    android:id="@+id/layoutMoodSelector"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:orientation="horizontal"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/InputLabel"
+                        android:text="Bạn cảm thấy thế nào?" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvMoodSelector"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:orientation="horizontal"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                </LinearLayout>
 
             </LinearLayout>
         </ScrollView>
