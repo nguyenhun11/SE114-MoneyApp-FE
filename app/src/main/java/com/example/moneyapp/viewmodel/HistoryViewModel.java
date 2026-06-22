@@ -12,7 +12,7 @@ import com.example.moneyapp.data.repository.TransactionRepository;
 import com.example.moneyapp.data.repository.TransferRepository;
 import com.example.moneyapp.model.AdjustBalance;
 import com.example.moneyapp.model.CategoryType;
-import com.example.moneyapp.model.DailyTransactionGroup;
+import com.example.moneyapp.model.DailyHistoryGroup;
 import com.example.moneyapp.model.HistoryItem;
 import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.model.Transfer;
@@ -31,7 +31,7 @@ public class HistoryViewModel extends AndroidViewModel {
     private final TransferRepository transferRepository;
     private final AdjustBalanceRepository adjustBalanceRepository;
 
-    private final MutableLiveData<List<DailyTransactionGroup>> groupedTransactionsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<DailyHistoryGroup>> groupedTransactionsLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
@@ -39,6 +39,7 @@ public class HistoryViewModel extends AndroidViewModel {
     private Date currentEndDate;
     private int currentFilterIndex = 0; // 0:All, 1:Expense, 2:Income, 3:Transfer, 4:Adjust, 5:Saving
     private String currentAccountId = null;
+    private String currentDestAccountId = null;
     private String currentCategoryId = null;
 
     public HistoryViewModel(@NonNull Application application) {
@@ -48,7 +49,7 @@ public class HistoryViewModel extends AndroidViewModel {
         adjustBalanceRepository = new AdjustBalanceRepository(application);
     }
 
-    public LiveData<List<DailyTransactionGroup>> getGroupedTransactions() { return groupedTransactionsLiveData; }
+    public LiveData<List<DailyHistoryGroup>> getGroupedTransactions() { return groupedTransactionsLiveData; }
     public LiveData<String> getErrorLiveData() { return errorLiveData; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
 
@@ -58,7 +59,6 @@ public class HistoryViewModel extends AndroidViewModel {
         reloadTransactions();
     }
 
-    // ĐÃ SỬA: Thay vì CategoryType, ta nhận thẳng index của Tab
     public void setFilterAndReload(int filterIndex) {
         this.currentFilterIndex = filterIndex;
         reloadTransactions();
@@ -74,12 +74,16 @@ public class HistoryViewModel extends AndroidViewModel {
         reloadTransactions();
     }
 
-    public void reloadTransactions() {
-        if (currentStartDate == null || currentEndDate == null) return;
-        loadTransactions(currentStartDate, currentEndDate, currentFilterIndex, currentAccountId, currentCategoryId);
+    public void setCategoryFilter(String categoryId) {
+        this.currentCategoryId = categoryId;
     }
 
-    public void loadTransactions(Date start, Date end, int filterIndex, String accountId, String categoryId) {
+    public void reloadTransactions() {
+        if (currentStartDate == null || currentEndDate == null) return;
+        loadTransactions(currentStartDate, currentEndDate, currentFilterIndex, currentAccountId, currentDestAccountId, currentCategoryId);
+    }
+
+    public void loadTransactions(Date start, Date end, int filterIndex, String accountId, String destAccountId, String categoryId) {
         isLoading.setValue(true);
 
         List<HistoryItem> mergedList = new ArrayList<>();
@@ -136,7 +140,7 @@ public class HistoryViewModel extends AndroidViewModel {
 
         // 2. GỌI API CHUYỂN KHOẢN
         if (loadTransfers) {
-            transferRepository.getTransfers(start, end, accountId, null, new TransferRepository.TransferCallback<List<Transfer>>() {
+            transferRepository.getTransfers(start, end, accountId, destAccountId, new TransferRepository.TransferCallback<List<Transfer>>() {
                 @Override
                 public void onSuccess(List<Transfer> result) {
                     if (result != null) {
@@ -169,7 +173,7 @@ public class HistoryViewModel extends AndroidViewModel {
         }
     }
 
-    private List<DailyTransactionGroup> groupTransactionsByDate(List<HistoryItem> historyItems) {
+    private List<DailyHistoryGroup> groupTransactionsByDate(List<HistoryItem> historyItems) {
         if (historyItems == null || historyItems.isEmpty()) return new ArrayList<>();
 
         Map<String, List<HistoryItem>> groupedMap = new LinkedHashMap<>();
@@ -181,7 +185,7 @@ public class HistoryViewModel extends AndroidViewModel {
             groupedMap.get(dateKey).add(item);
         }
 
-        List<DailyTransactionGroup> resultList = new ArrayList<>();
+        List<DailyHistoryGroup> resultList = new ArrayList<>();
 
         for (Map.Entry<String, List<HistoryItem>> entry : groupedMap.entrySet()) {
             double totalDayBaseAmount = 0;
@@ -204,7 +208,7 @@ public class HistoryViewModel extends AndroidViewModel {
             String sign = totalDayBaseAmount >= 0 ? "+" : "-";
             String dateSummary = String.format("%s %s", sign, CurrencyFormatter.formatVND(Math.abs(totalDayBaseAmount)));
 
-            resultList.add(new DailyTransactionGroup(entry.getKey(), dateSummary, entry.getValue()));
+            resultList.add(new DailyHistoryGroup(entry.getKey(), dateSummary, entry.getValue()));
         }
 
         return resultList;
@@ -219,4 +223,9 @@ public class HistoryViewModel extends AndroidViewModel {
 
     public String getCurrentAccountId() { return currentAccountId; }
     public String getCurrentCategoryId() { return currentCategoryId; }
+
+    public void setDestAccountFilter(String destAccountId) {
+        this.currentDestAccountId = destAccountId;
+    }
+    public String getCurrentDestAccountId() { return currentDestAccountId; }
 }

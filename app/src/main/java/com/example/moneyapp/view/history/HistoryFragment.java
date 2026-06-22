@@ -18,7 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.model.Account;
+import com.example.moneyapp.model.AdjustBalance;
 import com.example.moneyapp.model.Category;
+import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.HistoryItem;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
@@ -43,6 +45,8 @@ public class HistoryFragment extends BaseFragment {
     private final List<Account> accountList = new ArrayList<>();
     private final List<Category> categoryList = new ArrayList<>();
     private TextView tvAccountFilter;
+    private TextView tvDestAccountFilter;
+    private LinearLayout btnDestAccountFilter;
     private TextView tvCategoryFilter;
     private LinearLayout btnCategoryFilter;
     // endregion
@@ -75,11 +79,37 @@ public class HistoryFragment extends BaseFragment {
         };
 
         setupHeaderTabs(view, historyTabs, 0, index -> {
-            if (index == 3 || index == 4) {
+            if (index == 3) { // Tab Chuyển khoản
                 btnCategoryFilter.setVisibility(View.GONE);
+                btnDestAccountFilter.setVisibility(View.VISIBLE);
+
+                historyViewModel.setCategoryFilter(null);
+                if (tvCategoryFilter != null) tvCategoryFilter.setText("Tất cả hạng mục");
+
+            } else if (index == 4 || index == 0) {
+                btnCategoryFilter.setVisibility(View.GONE);
+                btnDestAccountFilter.setVisibility(View.GONE);
+
+                historyViewModel.setCategoryFilter(null);
+                historyViewModel.setDestAccountFilter(null);
+                if (tvCategoryFilter != null) tvCategoryFilter.setText("Tất cả hạng mục");
+                if (tvDestAccountFilter != null) tvDestAccountFilter.setText("Tài khoản đến");
+
             } else {
+                // Tab Thu/Chi/Tiết kiệm -> Hiện Hạng mục, Ẩn Tài khoản đến
                 btnCategoryFilter.setVisibility(View.VISIBLE);
+                btnDestAccountFilter.setVisibility(View.GONE);
+
+                historyViewModel.setDestAccountFilter(null);
+                if (tvDestAccountFilter != null) tvDestAccountFilter.setText("Tài khoản đến");
+
+                if (index == 1 || index == 5) {
+                    categoryViewModel.loadCategories(CategoryType.EXPENSE);
+                } else if (index == 2) {
+                    categoryViewModel.loadCategories(CategoryType.INCOME);
+                }
             }
+
             historyViewModel.setFilterAndReload(index);
         });
 
@@ -92,7 +122,7 @@ public class HistoryFragment extends BaseFragment {
             String categoryId = getArguments().getString("categoryId");
             String categoryName = getArguments().getString("categoryName");
             if (categoryId != null) {
-                historyViewModel.setCategoryFilterAndReload(categoryId);
+                historyViewModel.setCategoryFilter(categoryId);
                 if (categoryName != null && tvCategoryFilter != null) {
                     tvCategoryFilter.setText(categoryName);
                 }
@@ -103,8 +133,8 @@ public class HistoryFragment extends BaseFragment {
             if (startDateLong > 0 && endDateLong > 0) {
                 Date startDate = new Date(startDateLong);
                 Date endDate = new Date(endDateLong);
-                historyViewModel.setTimeRangeAndReload(startDate, endDate);
 
+                historyViewModel.setTimeRangeAndReload(startDate, endDate);
                 timeSelector.setPredefinedDateRange(startDate, endDate);
             }
         }
@@ -123,7 +153,18 @@ public class HistoryFragment extends BaseFragment {
                 args.putString("transferId", item.getTransfer().getId());
                 Navigation.findNavController(view).navigate(R.id.transferDetailFragment, args);
             } else if (item.getType() == HistoryItem.TYPE_ADJUST_BALANCE) {
-                Toast.makeText(getContext(), "Đây là bản ghi điều chỉnh số dư hệ thống", Toast.LENGTH_SHORT).show();
+                AdjustBalance adjust = item.getAdjustBalance();
+                if (adjust != null) {
+                    args.putString("adjustId", adjust.getId());
+                    args.putString("accountId", adjust.getAccountId());
+                    args.putString("accountName", adjust.getAccountName());
+                    args.putDouble("amount", adjust.getAmount());
+
+                    long timeInMillis = (adjust.getCreatedAt() != null) ? adjust.getCreatedAt().getTime() : 0;
+                    args.putLong("createdAt", timeInMillis);
+
+                    Navigation.findNavController(view).navigate(R.id.adjustBalanceDetailFragment, args);
+                }
             }
         });
 
@@ -169,14 +210,18 @@ public class HistoryFragment extends BaseFragment {
     private void setupFilters(View view) {
         LinearLayout btnAccountFilter = view.findViewById(R.id.btn_account_filter);
         btnCategoryFilter = view.findViewById(R.id.btn_category_filter);
+        btnDestAccountFilter = view.findViewById(R.id.btn_dest_account_filter);
 
         tvAccountFilter = view.findViewById(R.id.tv_selected_account);
         tvCategoryFilter = view.findViewById(R.id.tv_selected_category);
+        tvDestAccountFilter = view.findViewById(R.id.tv_selected_dest_account);
 
         btnAccountFilter.setOnClickListener(v -> showAccountFilterPopup());
         btnCategoryFilter.setOnClickListener(v -> showCategoryFilterPopup());
+        btnDestAccountFilter.setOnClickListener(v -> showDestAccountFilterPopup());
 
         btnCategoryFilter.setVisibility(View.VISIBLE);
+        btnDestAccountFilter.setVisibility(View.GONE);
     }
 
     private void showAccountFilterPopup() {
@@ -189,6 +234,14 @@ public class HistoryFragment extends BaseFragment {
                 currentAccountId,
                 true,
                 selectedAcc -> {
+                    if (selectedAcc != null) {
+                        String destAccountId = historyViewModel.getCurrentDestAccountId();
+                        if (destAccountId != null && destAccountId.equals(selectedAcc.getAccountId())) {
+                            Toast.makeText(getContext(), "Tài khoản nguồn không được trùng với tài khoản đến!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
                     if (selectedAcc == null) {
                         if (tvAccountFilter != null) tvAccountFilter.setText("Tất cả tài khoản");
                         historyViewModel.setAccountFilterAndReload(null);
@@ -196,6 +249,37 @@ public class HistoryFragment extends BaseFragment {
                         if (tvAccountFilter != null) tvAccountFilter.setText(selectedAcc.getAccountName());
                         historyViewModel.setAccountFilterAndReload(selectedAcc.getAccountId());
                     }
+                });
+    }
+
+    private void showDestAccountFilterPopup() {
+        if (accountList.isEmpty()) {
+            Toast.makeText(getContext(), "Không có dữ liệu tài khoản", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String currentDestAccountId = historyViewModel.getCurrentDestAccountId();
+        PopupHelper.showAccountFilterPopup(requireContext(), accountList,
+                currentDestAccountId,
+                true,
+                selectedAcc -> {
+                    if (selectedAcc != null) {
+                        String sourceAccountId = historyViewModel.getCurrentAccountId();
+                        if (sourceAccountId != null && sourceAccountId.equals(selectedAcc.getAccountId())) {
+                            Toast.makeText(getContext(), "Tài khoản đến không được trùng với tài khoản nguồn!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
+                    if (selectedAcc == null) {
+                        if (tvDestAccountFilter != null)
+                            tvDestAccountFilter.setText("Tất cả tài khoản đến");
+                        historyViewModel.setDestAccountFilter(null);
+                    } else {
+                        if (tvDestAccountFilter != null)
+                            tvDestAccountFilter.setText(selectedAcc.getAccountName());
+                        historyViewModel.setDestAccountFilter(selectedAcc.getAccountId());
+                    }
+                    historyViewModel.reloadTransactions();
                 });
     }
 

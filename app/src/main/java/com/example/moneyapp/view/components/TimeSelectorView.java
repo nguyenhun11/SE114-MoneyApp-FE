@@ -50,7 +50,7 @@ public class TimeSelectorView extends LinearLayout {
         LayoutInflater.from(context).inflate(R.layout.layout_time_selector, this, true);
         initViews();
         setupListeners();
-        setMode(TimeMode.MONTH); // Mặc định là Tháng cho đẹp
+        setMode(TimeMode.MONTH);
     }
 
     public void setOnTimeRangeChangeListener(OnTimeRangeChangeListener listener) {
@@ -83,13 +83,9 @@ public class TimeSelectorView extends LinearLayout {
             showCustomDateRangePicker();
         });
 
-        // BẮT SỰ KIỆN NÚT BẤM (CÓ HIỆU ỨNG TRƯỢT MƯỢT MÀ)
         btnPrev.setOnClickListener(v -> animateChangeAndShift(-1));
         btnNext.setOnClickListener(v -> animateChangeAndShift(1));
-        btnJumpToday.setOnClickListener(v -> {
-            // Khi nhảy về hiện tại, chữ sẽ lướt từ phải sang trái (tiến về tương lai)
-            animateChangeAndShiftToPresent();
-        });
+        btnJumpToday.setOnClickListener(v -> animateChangeAndShiftToPresent());
 
         GestureDetector gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -109,7 +105,6 @@ public class TimeSelectorView extends LinearLayout {
             }
         });
 
-        // ÁP DỤNG CẢM BIẾN (Fix cảnh báo Accessibility bằng cách gọi performClick)
         tvDateRange.setClickable(true);
         tvDateRange.setFocusable(true);
         tvDateRange.setOnTouchListener((v, event) -> {
@@ -139,7 +134,6 @@ public class TimeSelectorView extends LinearLayout {
                     isDragging = false;
                     float finalDeltaX = event.getRawX() - startX;
 
-                    // Xử lý vuốt chạm hoàn tất (gọi performClick để triệt tiêu cảnh báo)
                     v.performClick();
 
                     if (finalDeltaX > SWIPE_THRESHOLD) {
@@ -198,7 +192,7 @@ public class TimeSelectorView extends LinearLayout {
                             .translationX(0f)
                             .alpha(1f)
                             .setDuration(200)
-                            .withEndAction(this::notifyListener) // Chữ nằm im rồi mới báo API gọi data
+                            .withEndAction(this::notifyListener)
                             .start();
                 })
                 .start();
@@ -206,7 +200,7 @@ public class TimeSelectorView extends LinearLayout {
 
     private void animateChangeAndShiftToPresent() {
         tvDateRange.animate()
-                .translationX(-300f) // Trượt sang trái (tiến về tương lai)
+                .translationX(-300f)
                 .alpha(0f)
                 .setDuration(150)
                 .withEndAction(() -> {
@@ -260,8 +254,15 @@ public class TimeSelectorView extends LinearLayout {
                 }
                 break;
             case WEEK:
-                startCal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY); setStartOfDay(startCal);
-                endCal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY); setEndOfDay(endCal);
+                int currentDayUI = startCal.get(Calendar.DAY_OF_WEEK);
+                int shiftUI = (currentDayUI == Calendar.SUNDAY) ? -6 : (Calendar.MONDAY - currentDayUI);
+                startCal.add(Calendar.DAY_OF_YEAR, shiftUI);
+                setStartOfDay(startCal);
+
+                endCal = (Calendar) startCal.clone();
+                endCal.add(Calendar.DAY_OF_YEAR, 6);
+                setEndOfDay(endCal);
+
                 displayText = sdfWeek.format(startCal.getTime()) + " - " + sdfDay.format(endCal.getTime());
                 break;
             case MONTH:
@@ -309,7 +310,6 @@ public class TimeSelectorView extends LinearLayout {
         updateUIOnly();
     }
 
-    // Hàm báo cáo API
     private void notifyListener() {
         if (listener == null) return;
 
@@ -319,8 +319,15 @@ public class TimeSelectorView extends LinearLayout {
         switch (currentMode) {
             case DAY: setStartOfDay(startCal); setEndOfDay(endCal); break;
             case WEEK:
-                startCal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY); setStartOfDay(startCal);
-                endCal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY); setEndOfDay(endCal); break;
+                int currentDayAPI = startCal.get(Calendar.DAY_OF_WEEK);
+                int shiftAPI = (currentDayAPI == Calendar.SUNDAY) ? -6 : (Calendar.MONDAY - currentDayAPI);
+                startCal.add(Calendar.DAY_OF_YEAR, shiftAPI);
+                setStartOfDay(startCal);
+
+                endCal = (Calendar) startCal.clone();
+                endCal.add(Calendar.DAY_OF_YEAR, 6);
+                setEndOfDay(endCal);
+                break;
             case MONTH:
                 startCal.set(Calendar.DAY_OF_MONTH, 1); setStartOfDay(startCal);
                 endCal.set(Calendar.DAY_OF_MONTH, endCal.getActualMaximum(Calendar.DAY_OF_MONTH)); setEndOfDay(endCal); break;
@@ -333,14 +340,24 @@ public class TimeSelectorView extends LinearLayout {
         listener.onTimeRangeChanged(startCal.getTime(), endCal.getTime());
     }
 
-    // Giữ lại hàm cũ để gọi trực tiếp (Không animation)
     private void updateUIAndNotify() {
         updateUIOnly();
         notifyListener();
     }
 
-    private void setStartOfDay(Calendar cal) { cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 0); cal.set(Calendar.SECOND, 0); cal.set(Calendar.MILLISECOND, 0); }
-    private void setEndOfDay(Calendar cal) { cal.set(Calendar.HOUR_OF_DAY, 23); cal.set(Calendar.MINUTE, 59); cal.set(Calendar.SECOND, 59); cal.set(Calendar.MILLISECOND, 999); }
+    private void setStartOfDay(Calendar cal) {
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+    }
+
+    private void setEndOfDay(Calendar cal) {
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.MILLISECOND, 0);
+    }
 
     private void showCustomDateRangePicker() {
         new DatePickerDialog(getContext(), (view, year, month, dayOfMonth) -> {

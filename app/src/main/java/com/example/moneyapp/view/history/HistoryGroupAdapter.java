@@ -11,25 +11,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
-import com.example.moneyapp.model.DailyTransactionGroup;
+import com.example.moneyapp.model.DailyHistoryGroup;
 
 import java.util.List;
 
 public class HistoryGroupAdapter extends RecyclerView.Adapter<HistoryGroupAdapter.ViewHolder> {
 
-    private List<DailyTransactionGroup> groups;
-    private List<Account> accountList; // Thêm AccountList
+    private List<DailyHistoryGroup> groups;
+    private List<Account> accountList;
     private final String systemCurrency;
     private final HistoryItemAdapter.OnItemClickListener childListener;
 
-    public HistoryGroupAdapter(List<DailyTransactionGroup> groups, List<Account> accountList, String systemCurrency, HistoryItemAdapter.OnItemClickListener listener) {
+    public HistoryGroupAdapter(List<DailyHistoryGroup> groups, List<Account> accountList, String systemCurrency, HistoryItemAdapter.OnItemClickListener listener) {
         this.groups = groups;
         this.accountList = accountList;
         this.systemCurrency = systemCurrency != null ? systemCurrency : "VND";
         this.childListener = listener;
     }
 
-    public void updateData(List<DailyTransactionGroup> newGroups, List<Account> newAccounts) {
+    public void updateData(List<DailyHistoryGroup> newGroups, List<Account> newAccounts) {
         this.groups = newGroups;
         this.accountList = newAccounts;
         notifyDataSetChanged();
@@ -56,7 +56,7 @@ public class HistoryGroupAdapter extends RecyclerView.Adapter<HistoryGroupAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        DailyTransactionGroup group = groups.get(position);
+        DailyHistoryGroup group = groups.get(position);
         holder.tvDateLabel.setText(group.getDateLabel());
 
         // Khởi tạo Adapter con và truyền toàn bộ dữ liệu xuống
