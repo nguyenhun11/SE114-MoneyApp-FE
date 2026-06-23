@@ -20,6 +20,8 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.moneyapp.R;
@@ -30,6 +32,7 @@ import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.MainActivity;
 import com.example.moneyapp.view.SplashActivity;
+import com.example.moneyapp.viewmodel.BadgeViewModel;
 import com.example.moneyapp.viewmodel.ProfileViewModel;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.button.MaterialButton;
@@ -44,6 +47,7 @@ import java.util.Locale;
 
 public class ProfileFragment extends BaseFragment {
     private ProfileViewModel profileViewModel;
+    private BadgeViewModel badgeViewModel;
     private BroadcastReceiver shareReceiver;
 
     private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
@@ -86,6 +90,7 @@ public class ProfileFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+        badgeViewModel = new ViewModelProvider(this).get(BadgeViewModel.class);
 
         setupHeader(view, getString(R.string.profile_title), null, null, "gmd-menu", v -> {
             if (getActivity() instanceof MainActivity) {
@@ -94,6 +99,17 @@ public class ProfileFragment extends BaseFragment {
         });
 
         setupScrollBehavior(view);
+
+        // Badge Gallery setup
+        RecyclerView rvBadges = view.findViewById(R.id.rvBadges);
+        rvBadges.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        BadgeAdapter badgeAdapter = new BadgeAdapter(new ArrayList<>());
+        rvBadges.setAdapter(badgeAdapter);
+
+        badgeViewModel.getBadges().observe(getViewLifecycleOwner(), badges -> {
+            if (badges != null) badgeAdapter.updateData(badges);
+        });
+        badgeViewModel.fetchBadges();
 
         // Ánh xạ View Expanded & Collapsed
         TextView tvNameExpanded = view.findViewById(R.id.tv_profile_name_expanded);

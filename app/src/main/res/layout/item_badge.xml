@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="80dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="12dp"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <com.mikepenz.iconics.view.IconicsImageView
+        android:id="@+id/ivBadgeIcon"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/bg_circle"
+        android:backgroundTint="#F5F5F5"
+        android:padding="12dp"
+        app:iiv_color="#BDBDBD"
+        app:iiv_icon="gmd_stars" />
+
+    <TextView
+        android:id="@+id/tvBadgeName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="Badge"
+        android:textColor="@color/colorOnSurfaceVariant"
+        android:textSize="11sp" />
+
+</LinearLayout>
