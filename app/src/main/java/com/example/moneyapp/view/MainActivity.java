@@ -79,6 +79,11 @@ public class MainActivity extends AppCompatActivity {
         setupSideMenuItem(R.id.btn_statistics, "gmd_insert_chart", "Thống kê", R.id.statisticsFragment, navController);
         setupSideMenuItem(R.id.btn_goals, "gmd_star", getString(R.string.goal_title), R.id.goalFragment, navController);
         setupSideMenuItem(R.id.btn_categories, "gmd_category", "Hạng mục", R.id.categoryFragment, navController);
+        
+        // Thêm MoneyCity và Budget vào Side Menu
+        setupSideMenuItem(R.id.btn_city_menu, "gmd_location_city", "Thành phố MoneyCity", R.id.cityFragment, navController);
+        setupSideMenuItem(R.id.btn_budget_menu, "gmd_account_balance_wallet", "Quản lý Ngân sách", R.id.budgetFragment, navController);
+
         setupSideMenuItem(R.id.btn_info, "gmd_info", "Thông tin", R.id.informationFragment, navController);
         setupSideMenuItem(R.id.btn_settings, "gmd_settings", "Cài đặt", R.id.settingsFragment, navController);
     }

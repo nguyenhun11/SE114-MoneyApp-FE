@@ -72,9 +72,13 @@ public class TransactionChildAdapter extends RecyclerView.Adapter<TransactionChi
 
         holder.tvCategoryName.setText(t.getCategoryName() != null ? t.getCategoryName() : "Giao dịch");
 
-        // Thêm Emoji tâm trạng
-        holder.tvMoodEmoji.setVisibility(View.VISIBLE);
-        holder.tvMoodEmoji.setText(Mood.getEmojiById(t.getMoodId()));
+        // Thêm Emoji tâm trạng (Chỉ hiện cho khoản Chi tiêu)
+        if (t.getType() == CategoryType.EXPENSE) {
+            holder.tvMoodEmoji.setVisibility(View.VISIBLE);
+            holder.tvMoodEmoji.setText(Mood.getEmojiById(t.getMoodId()));
+        } else {
+            holder.tvMoodEmoji.setVisibility(View.GONE);
+        }
 
         holder.tvAccountName.setText(t.getAccountName());
 

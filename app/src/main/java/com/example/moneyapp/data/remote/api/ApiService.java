@@ -8,6 +8,7 @@ import com.example.moneyapp.data.remote.request.CategoryGroupRequest;
 import com.example.moneyapp.data.remote.request.DepositRequest;
 import com.example.moneyapp.data.remote.request.GoalRequest;
 import com.example.moneyapp.data.remote.request.TransferRequest;
+import com.example.moneyapp.data.remote.response.BadgeResponse;
 import com.example.moneyapp.data.remote.response.BudgetResponse;
 import com.example.moneyapp.data.remote.response.CategoryGroupResponse;
 import com.example.moneyapp.data.remote.request.CategoryRequest;
@@ -34,6 +35,7 @@ import com.example.moneyapp.data.remote.response.CityResponse;
 import com.example.moneyapp.data.remote.response.ExchangeRateResponse;
 import com.example.moneyapp.data.remote.response.GoalResponse;
 import com.example.moneyapp.data.remote.response.CheckInResponse;
+import com.example.moneyapp.data.remote.response.QuestResponse;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
 import com.example.moneyapp.data.remote.response.TransactionResponse;
 import com.example.moneyapp.data.remote.response.TransferResponse;
@@ -273,5 +275,17 @@ public interface ApiService {
     //region Currency
     @GET("api/ExchangeRate")
     Call<ExchangeRateResponse> getLatestExchangeRates();
+    //endregion
+
+    //region Quests
+    @GET("api/Quests")
+    Call<List<QuestResponse>> getDailyQuests();
+    @POST("api/Quests/claim/{id}")
+    Call<Void> claimQuestReward(@Path("id") String id);
+    //endregion
+
+    //region User Badges
+    @GET("api/User/badges")
+    Call<List<BadgeResponse>> getUserBadges();
     //endregion
 }

@@ -22,7 +22,9 @@ import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.category.CategorySummaryAdapter;
 import com.example.moneyapp.view.components.TimeSelectorView;
+import com.example.moneyapp.data.remote.response.QuestResponse;
 import com.example.moneyapp.viewmodel.HomeViewModel;
+import com.example.moneyapp.viewmodel.QuestViewModel;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -50,8 +52,10 @@ public class HomeFragment extends BaseFragment {
     private PieChart pieChart;
     private TextView tvTotalAmountPie;
     private TextView tvTotalAmountLinear;
+    private TextView tvQuestStatus;
 
     private HomeViewModel homeViewModel;
+    private QuestViewModel questViewModel;
 
     private boolean isExpenseTab = true;
     private Date currentStartDate;
@@ -67,6 +71,7 @@ public class HomeFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        questViewModel = new ViewModelProvider(this).get(QuestViewModel.class);
 
         rvCategories = view.findViewById(R.id.rv_categories);
         pieChartContainer = view.findViewById(R.id.pie_chart_container);
@@ -77,6 +82,21 @@ public class HomeFragment extends BaseFragment {
         pieChart = view.findViewById(R.id.main_pie_chart);
         tvTotalAmountPie = view.findViewById(R.id.tv_total_amount_pie);
         tvTotalAmountLinear = view.findViewById(R.id.tv_total_amount_linear);
+        tvQuestStatus = view.findViewById(R.id.tv_quest_status_home);
+
+        View btnCity = view.findViewById(R.id.card_home_city);
+        View btnBudget = view.findViewById(R.id.card_home_budget);
+        View btnQuests = view.findViewById(R.id.card_quest_summary);
+
+        if (btnCity != null) {
+            btnCity.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.cityFragment));
+        }
+        if (btnBudget != null) {
+            btnBudget.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.budgetFragment));
+        }
+        if (btnQuests != null) {
+            btnQuests.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.questFragment));
+        }
 
         TimeSelectorView timeSelector = view.findViewById(R.id.time_selector);
 
@@ -105,10 +125,19 @@ public class HomeFragment extends BaseFragment {
             if (balance != null) {
                 displayBalance = String.format(Locale.getDefault(), "%,.0f đ", balance).replace(",", ".");
             }
-            setupBalanceSelector(requireView(), getString(R.string.total_balance), displayBalance, true,
-                    "gmd_account_balance_wallet", v -> Navigation.findNavController(v).navigate(R.id.budgetFragment),
-                    "gmd_location_city", v -> Navigation.findNavController(v).navigate(R.id.cityFragment));
+            setupBalanceSelector(requireView(), getString(R.string.total_balance), displayBalance, false, null, null, null, null);
         });
+
+        questViewModel.getQuests().observe(getViewLifecycleOwner(), quests -> {
+            if (quests != null) {
+                int completedCount = 0;
+                for (QuestResponse q : quests) {
+                    if (q.isCompleted() && !q.isClaimed()) completedCount++;
+                }
+                tvQuestStatus.setText("Nhiệm vụ (" + completedCount + ")");
+            }
+        });
+        questViewModel.fetchQuests();
 
         homeViewModel.getCategoryExpenses().observe(getViewLifecycleOwner(), items -> {
             adapter.updateData(items);

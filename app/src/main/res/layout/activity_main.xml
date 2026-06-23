@@ -106,6 +106,24 @@
             android:background="@color/colorBorder" />
 
         <include
+            android:id="@+id/btn_city_menu"
+            layout="@layout/item_more_menu" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorBorder" />
+
+        <include
+            android:id="@+id/btn_budget_menu"
+            layout="@layout/item_more_menu" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorBorder" />
+
+        <include
             android:id="@+id/btn_info"
             layout="@layout/item_more_menu" />
 

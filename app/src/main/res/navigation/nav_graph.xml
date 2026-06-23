@@ -194,4 +194,10 @@
         android:label="MoneyCity"
         tools:layout="@layout/fragment_city" />
 
+    <fragment
+        android:id="@+id/questFragment"
+        android:name="com.example.moneyapp.view.quest.QuestFragment"
+        android:label="Nhiệm vụ"
+        tools:layout="@layout/fragment_quest" />
+
 </navigation>

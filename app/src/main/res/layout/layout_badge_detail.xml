@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_card_bottom"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="32dp">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp">
+
+        <View
+            android:id="@+id/view_badge_glow"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_circle"
+            android:backgroundTint="#FFF8E1"
+            android:alpha="0.6" />
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iv_badge_icon_detail"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            app:iiv_color="#FFC107"
+            app:iiv_icon="gmd_stars" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_badge_name_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tên Huy Hiệu"
+        android:textColor="@color/colorOnSurface"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_badge_desc_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:text="Mô tả chi tiết về cách đạt được huy hiệu này."
+        android:textColor="@color/colorOnSurfaceVariant"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_badge_status_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Đã đạt được vào 20/06/2024"
+        android:textColor="@color/colorSuccess"
+        android:textSize="14sp"
+        android:textStyle="italic" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_badge_close"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="32dp"
+        android:text="Đóng"
+        android:textAllCaps="false"
+        app:backgroundTint="@color/colorPrimary"
+        app:cornerRadius="28dp" />
+
+</LinearLayout>
