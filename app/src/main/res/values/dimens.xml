@@ -11,16 +11,19 @@
     <dimen name="spacing_large">24dp</dimen>
     <dimen name="spacing_extra_large">40dp</dimen>
 
-    <dimen name="header_margin_top">40dp</dimen>
-    <dimen name="header_title_height">100dp</dimen>
-    <dimen name="header_height_small">120dp</dimen>
-    <dimen name="header_height_large">200dp</dimen>
-    <dimen name="header_radius">45dp</dimen>
-    <dimen name="header_sub_line_height">20dp</dimen>
+    <dimen name="header_margin_top">32dp</dimen>
+    <dimen name="header_title_height">80dp</dimen>
+    <dimen name="header_height_small">100dp</dimen>
+    <dimen name="header_height_large">180dp</dimen>
+    <dimen name="header_radius">42dp</dimen>
+    <dimen name="header_sub_line_height">16dp</dimen>
+    <dimen name="header_action_button_horizontal_margin">24dp</dimen>
 
     <dimen name="button_radius">12dp</dimen>
 
-    <dimen name="card_bottom_margin">32dp</dimen>
+    <dimen name="card_bottom_margin">128dp</dimen>
     <dimen name="card_horizontal_margin">20dp</dimen>
-    <dimen name="card_radius">45dp</dimen>
+    <dimen name="card_radius">12dp</dimen>
+
+    <dimen name="main_top_margin_small">32dp</dimen>
 </resources>

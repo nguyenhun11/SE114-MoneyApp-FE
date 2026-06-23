@@ -217,6 +217,8 @@ public class CategoryFragment extends BaseFragment {
         bundle.putInt("type", viewModel.getCurrentType() == CategoryType.EXPENSE ? 0 : 1);
         Navigation.findNavController(requireView()).navigate(R.id.action_categoryFragment_to_addCategoryFragment, bundle);
     }
+    @Override
+    protected String getFabLabel() { return "Thêm hạng mục"; }
 
     @Override
     protected boolean shouldShowBottomNavigation() { return false; }

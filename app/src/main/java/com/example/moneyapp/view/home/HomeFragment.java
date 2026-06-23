@@ -296,6 +296,10 @@ public class HomeFragment extends BaseFragment {
     protected void onFabClick() {
         Navigation.findNavController(requireView()).navigate(R.id.addTransactionFragment);
     }
+    @Override
+    protected String getFabLabel() {
+        return "Thêm giao dịch";
+    }
 
     private int dpToPx(int dp) {
         float density = getResources().getDisplayMetrics().density;

@@ -98,6 +98,11 @@ public class AccountFragment extends BaseFragment {
     }
 
     @Override
+    protected String getFabLabel() {
+        return "Thêm chuyển khoản";
+    }
+
+    @Override
     protected void onFabClick() {
         Navigation.findNavController(requireView()).navigate(R.id.action_accountFragment_to_transferAddFragment);
     }

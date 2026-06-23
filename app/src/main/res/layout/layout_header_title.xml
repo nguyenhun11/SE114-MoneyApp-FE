@@ -28,7 +28,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp">
+            android:layout_height="32dp">
 
             <TextView
                 android:id="@+id/tv_header_title"
@@ -38,30 +38,30 @@
                 android:gravity="center"
                 android:text="@string/header_title_default"
                 android:textColor="@color/colorOnPrimary"
-                android:textSize="28sp"
+                android:textSize="24sp"
                 android:textStyle="bold" />
 
             <com.mikepenz.iconics.view.IconicsImageView
                 android:id="@+id/btn_action_left"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="@dimen/header_action_button_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="8dp"
+                android:padding="4dp"
                 app:ico_color="@color/colorOnPrimary"
                 app:ico_icon="gmd_arrow_back" />
 
             <com.mikepenz.iconics.view.IconicsImageView
                 android:id="@+id/btn_action_right"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="@dimen/header_action_button_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:visibility="gone"
                 app:ico_color="@color/colorOnPrimary"
                 app:ico_icon="gmd_add" />

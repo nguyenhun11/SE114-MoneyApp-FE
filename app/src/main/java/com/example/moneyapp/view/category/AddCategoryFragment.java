@@ -18,7 +18,7 @@ import com.example.moneyapp.R;
 import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.utils.AppResourceManager;
-import com.example.moneyapp.utils.PopupHelper; // <-- Nhớ import PopupHelper
+import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -134,6 +134,11 @@ public class AddCategoryFragment extends BaseFragment {
     @Override
     protected String getFabIcon() {
         return "gmd_check";
+    }
+
+    @Override
+    protected String getFabLabel() {
+        return "Lưu hạng mục";
     }
 
     @Override

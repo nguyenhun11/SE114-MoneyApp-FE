@@ -36,13 +36,20 @@ public abstract class BaseFragment extends Fragment {
                 uiHandler.setBottomNavigationVisibility(shouldShowBottomNavigation());
 
                 if (shouldShowFAB()) {
-                    uiHandler.updateFAB(getFabIcon(), v -> onFabClick());
+                    // ĐÃ SỬA: Truyền thêm getFabLabel() vào updateFAB
+                    uiHandler.updateFAB(getFabIcon(), getFabLabel(), v -> onFabClick());
                     uiHandler.setFABVisibility(true);
                 } else {
                     uiHandler.setFABVisibility(false);
                 }
             }
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        setFabEnabled(true);
     }
 
     //region Float Action Button and Bottom navigation
@@ -53,8 +60,19 @@ public abstract class BaseFragment extends Fragment {
     protected String getFabIcon() {
         return "gmd_add";
     }
-
+    protected String getFabLabel() {
+        return "Thêm giao dịch";
+    }
     protected void onFabClick() { }
+    protected void setFabEnabled(boolean isEnabled) {
+        if (getActivity() instanceof MainActivity) {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            MainUIHandler uiHandler = mainActivity.getUiHandler();
+            if (uiHandler != null) {
+                uiHandler.setFABEnabled(isEnabled);
+            }
+        }
+    }
     protected boolean shouldShowBottomNavigation() {
         return true;
     }

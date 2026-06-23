@@ -56,7 +56,6 @@ public class TransactionAddFragment extends BaseFragment {
     private Category selectedCategory = null;
     private Account selectedAccount = null;
 
-    // BIẾN LƯU TRỮ TIỀN TỆ HIỆN TẠI
     private String currentCurrencyCode = "VND";
 
     // region Views
@@ -130,11 +129,32 @@ public class TransactionAddFragment extends BaseFragment {
                 ivCategoryIcon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.colorOnSurface));
             }
             categoryViewModel.loadCategories(transactionType);
+
+            checkSaveConditions();
         });
 
         observeViewModels();
         accountViewModel.loadAccounts();
         categoryViewModel.loadCategories(CategoryType.EXPENSE);
+
+        view.post(this::checkSaveConditions);
+    }
+
+    private void checkSaveConditions() {
+        boolean isValid = true;
+        String amountStr = etAmount.getText().toString().trim().replaceAll("[.,]", "");
+        if (amountStr.isEmpty() || selectedCategory == null || selectedAccount == null) {
+            isValid = false;
+        } else {
+            try {
+                double parsed = Double.parseDouble(amountStr);
+                if (parsed <= 0) isValid = false;
+            } catch (NumberFormatException e) {
+                isValid = false;
+            }
+        }
+
+        setFabEnabled(isValid);
     }
 
     private void setupMoodSelector(View view) {
@@ -208,6 +228,7 @@ public class TransactionAddFragment extends BaseFragment {
                     }
                     etAmount.addTextChangedListener(this);
                 }
+                checkSaveConditions();
             }
         });
 
@@ -253,11 +274,8 @@ public class TransactionAddFragment extends BaseFragment {
             tvConvertedAmount.setVisibility(View.GONE);
         } else {
             tvConvertedAmount.setVisibility(View.VISIBLE);
-
-            // Backend trả về rates -> Utils tự tính toán Preview
             double converted = CurrencyFormatter.previewConversion(inputAmount, currentCurrencyCode, accountCurrency);
-
-            String formattedConverted = CurrencyFormatter.formatVND(converted); // Có thể update hàm format theo accountCurrency nếu muốn
+            String formattedConverted = CurrencyFormatter.formatVND(converted);
             tvConvertedAmount.setText(String.format(Locale.US, "≈ %s %s", formattedConverted, accountCurrency));
         }
     }
@@ -297,6 +315,8 @@ public class TransactionAddFragment extends BaseFragment {
 
                 transactionType = t.getType();
                 updateAmountColor(transactionType == CategoryType.EXPENSE);
+
+                checkSaveConditions();
             }
         });
 
@@ -433,6 +453,8 @@ public class TransactionAddFragment extends BaseFragment {
         ivCategoryIcon.setColorFilter(color);
 
         requireView().clearFocus();
+
+        checkSaveConditions();
     }
 
     public void updateSelectedAccount(Account account) {
@@ -450,9 +472,10 @@ public class TransactionAddFragment extends BaseFragment {
         }
 
         requireView().clearFocus();
+
+        checkSaveConditions();
     }
 
-    // ĐÃ CẬP NHẬT: Giao hết gánh nặng tính toán tiền tệ lại cho Backend
     private void saveTransaction() {
         String amountStr = etAmount.getText().toString().trim().replaceAll("[.,]", "");
         String description = etDescription.getText().toString().trim();
@@ -465,8 +488,6 @@ public class TransactionAddFragment extends BaseFragment {
         try {
             double originalAmount = Math.abs(Double.parseDouble(amountStr));
 
-            // Chỉ cần đóng gói đúng các dữ liệu cơ sở gửi lên,
-            // Các thuộc tính accountAmount, baseAmount, exchangeRate truyền 0.0 vì DB/Backend tự lưu đè lại hết
             Transaction newTransaction = new Transaction(
                     editTransactionId != null ? editTransactionId : UUID.randomUUID().toString(),
                     selectedAccount.getAccountId(), selectedAccount.getAccountName(),
@@ -477,8 +498,8 @@ public class TransactionAddFragment extends BaseFragment {
                     selectedDate, description,
                     selectedCategory.getColor(), selectedCategory.getIcon(),
                     selectedAccount.getColor(), selectedAccount.getIcon(),
-                    new ArrayList<>(), 
-                    (transactionType == CategoryType.EXPENSE) ? selectedMoodId : 0, 
+                    new ArrayList<>(),
+                    (transactionType == CategoryType.EXPENSE) ? selectedMoodId : 0,
                     new Date()
             );
 
@@ -501,5 +522,9 @@ public class TransactionAddFragment extends BaseFragment {
     @Override
     protected void onFabClick() {
         saveTransaction();
+    }
+    @Override
+    protected String getFabLabel() {
+        return "Lưu giao dịch";
     }
 }
