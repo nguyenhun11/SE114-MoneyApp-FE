@@ -6,12 +6,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
-import com.example.moneyapp.model.DailyHistoryGroup;
+import com.example.moneyapp.model.DailyHistoryGroup; // Hoặc DailyTransactionGroup tùy bạn đặt
 
 import java.util.List;
 
@@ -37,11 +38,13 @@ public class HistoryGroupAdapter extends RecyclerView.Adapter<HistoryGroupAdapte
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvDateLabel;
+        TextView tvDateSummary;
         RecyclerView rvDailyTransactions;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvDateLabel = itemView.findViewById(R.id.tvDateLabel);
+            tvDateSummary = itemView.findViewById(R.id.tvDateSummary);
             rvDailyTransactions = itemView.findViewById(R.id.rvDailyTransactions);
         }
     }
@@ -57,11 +60,15 @@ public class HistoryGroupAdapter extends RecyclerView.Adapter<HistoryGroupAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         DailyHistoryGroup group = groups.get(position);
-        holder.tvDateLabel.setText(group.getDateLabel());
 
-        // Khởi tạo Adapter con và truyền toàn bộ dữ liệu xuống
+        holder.tvDateLabel.setText(group.getDateLabel());
+        if (holder.tvDateSummary != null) {
+            String rawSummary = group.getDateSummary();
+            holder.tvDateSummary.setText(rawSummary + " " + systemCurrency);
+        }
+
         HistoryItemAdapter childAdapter = new HistoryItemAdapter(
-                group.getItems(), // Lưu ý: Đổi tên getTransactions() thành getItems() trong Model
+                group.getItems(),
                 accountList,
                 systemCurrency,
                 childListener

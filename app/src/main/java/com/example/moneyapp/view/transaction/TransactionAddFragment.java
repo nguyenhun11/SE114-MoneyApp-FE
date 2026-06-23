@@ -459,7 +459,7 @@ public class TransactionAddFragment extends BaseFragment {
 
     public void updateSelectedAccount(Account account) {
         this.selectedAccount = account;
-        viewSelectSource.setAccount(account, false);
+        viewSelectSource.setAccount(account, true);
 
         if (editTransactionId == null && account != null && account.getCurrencyCode() != null) {
             currentCurrencyCode = account.getCurrencyCode();
