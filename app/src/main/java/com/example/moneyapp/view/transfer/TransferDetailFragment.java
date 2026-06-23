@@ -228,7 +228,8 @@ public class TransferDetailFragment extends BaseFragment {
         if (currentTransferId != null) {
             Bundle args = new Bundle();
             args.putString("transferId", currentTransferId);
-            Navigation.findNavController(requireView()).navigate(R.id.transferAddFragment, args);
+            // ĐÃ SỬA: Chuyển hướng tới file gộp chung thay vì file cũ
+            Navigation.findNavController(requireView()).navigate(R.id.transactionEntryFragment, args);
         }
     }
 }

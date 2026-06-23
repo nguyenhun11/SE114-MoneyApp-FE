@@ -24,7 +24,7 @@
         layout="@layout/layout_header_tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="50dp"
+        android:layout_marginHorizontal="20dp"
         app:layout_constraintTop_toBottomOf="@id/header_layout" />
 
     <com.google.android.material.card.MaterialCardView
@@ -42,8 +42,8 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbarSize="0dp"
-            android:clipToPadding="false">
+            android:clipToPadding="false"
+            android:scrollbarSize="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -69,41 +69,49 @@
                     android:textStyle="italic"
                     android:visibility="gone" />
 
-                <TextView
-                    style="@style/InputLabel"
-                    android:text="Hạng mục" />
-
                 <LinearLayout
-                    android:id="@+id/btnSelectCategory"
-                    style="@style/InputSelectorContainer"
-                    android:layout_height="64dp"
-                    android:layout_marginBottom="16dp">
-
-                    <com.mikepenz.iconics.view.IconicsImageView
-                        android:id="@+id/ivCategoryIcon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="8dp"
-                        app:iiv_color="@color/colorOnSurface"
-                        app:iiv_icon="gmd_category" />
+                    android:id="@+id/layoutCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/tvSelectedCategory"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Chọn hạng mục..."
-                        android:textColor="@color/colorOnSurface"
-                        android:textSize="15sp" />
+                        style="@style/InputLabel"
+                        android:text="Hạng mục" />
 
-                    <com.mikepenz.iconics.view.IconicsImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        app:iiv_color="@color/colorOnSurfaceVariant"
-                        app:iiv_icon="gmd-keyboard-arrow-down" />
+                    <LinearLayout
+                        android:id="@+id/btnSelectCategory"
+                        style="@style/InputSelectorContainer"
+                        android:layout_height="64dp"
+                        android:layout_marginBottom="16dp">
+
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:id="@+id/ivCategoryIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="8dp"
+                            app:iiv_color="@color/colorOnSurface"
+                            app:iiv_icon="gmd_category" />
+
+                        <TextView
+                            android:id="@+id/tvSelectedCategory"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Chọn hạng mục..."
+                            android:textColor="@color/colorOnSurface"
+                            android:textSize="15sp" />
+
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            app:iiv_color="@color/colorOnSurfaceVariant"
+                            app:iiv_icon="gmd-keyboard-arrow-down" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/tvSourceAccountLabel"
                     style="@style/InputLabel"
                     android:text="Nguồn tiền" />
 
@@ -111,7 +119,25 @@
                     android:id="@+id/viewSelectSource"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp" />
+                    android:layout_marginBottom="16dp" />
+
+                <LinearLayout
+                    android:id="@+id/layoutDestAccount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        style="@style/InputLabel"
+                        android:text="Đến tài khoản" />
+
+                    <com.example.moneyapp.view.components.AccountSelectorView
+                        android:id="@+id/viewSelectDest"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp" />
+                </LinearLayout>
 
                 <TextView
                     style="@style/InputLabel"
@@ -137,7 +163,6 @@
                             android:id="@+id/tvTodayValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="14/06"
                             android:textColor="@color/colorOnSurface"
                             android:textSize="13sp"
                             android:textStyle="bold" />
@@ -165,7 +190,6 @@
                             android:id="@+id/tvYesterdayValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="13/06"
                             android:textColor="@color/colorOnSurface"
                             android:textSize="13sp"
                             android:textStyle="bold" />
@@ -192,7 +216,6 @@
                             android:id="@+id/tvRecentValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="11/06"
                             android:textColor="@color/colorOnSurface"
                             android:textSize="13sp"
                             android:textStyle="bold" />
@@ -229,7 +252,6 @@
                             android:textColor="@color/colorOnSurfaceVariant"
                             android:textSize="11sp" />
                     </LinearLayout>
-
                 </LinearLayout>
 
                 <TextView
@@ -239,10 +261,10 @@
                 <EditText
                     android:id="@+id/etDescription"
                     style="@style/InputField"
+                    android:layout_marginBottom="16dp"
                     android:gravity="top|start"
                     android:hint="Nhập ghi chú..."
-                    android:minLines="3"
-                    android:layout_marginBottom="16dp" />
+                    android:minLines="3" />
 
                 <LinearLayout
                     android:id="@+id/layoutMoodSelector"

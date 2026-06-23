@@ -41,10 +41,10 @@
         tools:layout="@layout/fragment_transaction_detail" />
 
     <fragment
-        android:id="@+id/addTransactionFragment"
-        android:name="com.example.moneyapp.view.transaction.TransactionAddFragment"
+        android:id="@+id/transactionEntryFragment"
+        android:name="com.example.moneyapp.view.transaction.TransactionEntryFragment"
         android:label="Giao dịch mới"
-        tools:layout="@layout/fragment_transaction_add" />
+        tools:layout="@layout/fragment_transaction_entry" />
 
     <fragment
         android:id="@+id/transferAddFragment"

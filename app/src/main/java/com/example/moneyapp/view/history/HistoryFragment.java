@@ -305,6 +305,6 @@ public class HistoryFragment extends BaseFragment {
 
     @Override
     protected void onFabClick() {
-        Navigation.findNavController(requireView()).navigate(R.id.addTransactionFragment);
+        Navigation.findNavController(requireView()).navigate(R.id.transactionEntryFragment);
     }
 }

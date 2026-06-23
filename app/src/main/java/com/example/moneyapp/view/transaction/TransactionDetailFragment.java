@@ -56,10 +56,19 @@ public class TransactionDetailFragment extends BaseFragment {
                     "gmd_delete_outline", v -> showDeleteConfirmDialog());
 
             observeViewModel(view);
-            transactionViewModel.loadTransactionById(currentTransactionId);
+            // Sẽ được gọi trong onResume()
         } else {
             Toast.makeText(getContext(), "Không tìm thấy mã giao dịch", Toast.LENGTH_SHORT).show();
             Navigation.findNavController(view).navigateUp();
+        }
+    }
+
+    // ĐÃ THÊM: Gọi tải lại dữ liệu mỗi khi quay về trang này (để thấy dữ liệu vừa sửa)
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (currentTransactionId != null) {
+            transactionViewModel.loadTransactionById(currentTransactionId);
         }
     }
 
@@ -101,7 +110,6 @@ public class TransactionDetailFragment extends BaseFragment {
                     tvSource.setText(t.getAccountName() != null ? t.getAccountName() : "Ví");
                     tvDate.setText(t.getFormattedDate());
 
-                    // ĐÃ SỬA: Luôn luôn hiển thị cảm xúc không phân biệt Thu/Chi
                     moodContainer.setVisibility(View.VISIBLE);
                     tvMood.setText(String.format("%s %s", Mood.getEmojiById(t.getMoodId()), Mood.getNameById(t.getMoodId())));
 
@@ -176,12 +184,14 @@ public class TransactionDetailFragment extends BaseFragment {
     protected String getFabLabel() {
         return "Chỉnh sửa giao dịch";
     }
+
     @Override
     protected void onFabClick() {
         if (currentTransactionId != null) {
             Bundle args = new Bundle();
             args.putString("transactionId", currentTransactionId);
-            Navigation.findNavController(requireView()).navigate(R.id.addTransactionFragment, args);
+            // ĐÃ SỬA: Chuyển hướng tới file gộp chung thay vì file cũ
+            Navigation.findNavController(requireView()).navigate(R.id.transactionEntryFragment, args);
         }
     }
 }

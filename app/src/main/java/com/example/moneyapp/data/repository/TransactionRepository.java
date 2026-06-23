@@ -176,13 +176,26 @@ public class TransactionRepository extends BaseRepository {
         apiService.deleteTransaction(id).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                if (response.isSuccessful()) callback.onSuccess(null);
-                else callback.onError("Xóa thất bại");
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null);
+                } else {
+                    String errorMessage = "Lỗi " + response.code();
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMessage += ": " + response.errorBody().string();
+                        } else {
+                            errorMessage = "Xóa thất bại (Mã lỗi " + response.code() + ")";
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    callback.onError(errorMessage);
+                }
             }
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                callback.onError("Lỗi kết nối");
+                callback.onError("Lỗi kết nối: " + t.getMessage());
             }
         });
     }
