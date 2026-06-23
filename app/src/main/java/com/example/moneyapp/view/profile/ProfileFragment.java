@@ -64,6 +64,8 @@ public class ProfileFragment extends BaseFragment {
 
     @Override
     protected String getFabIcon() { return "gmd-share"; }
+    @Override
+    protected String getFabLabel() { return "Chia sẻ ứng dụng"; }
 
     @Override
     protected void onFabClick() {

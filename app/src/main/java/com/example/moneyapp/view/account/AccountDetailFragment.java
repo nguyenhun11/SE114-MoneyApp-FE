@@ -2,7 +2,9 @@ package com.example.moneyapp.view.account;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,13 +52,16 @@ public class AccountDetailFragment extends BaseFragment {
     private int selectedIconId = 1;
     private int selectedColorId = 2;
     private boolean isDataPopulated = false;
-
-    // Biến lưu trữ tiền tệ hiện tại (Mặc định là VND)
     private String currentCurrencyCode = "VND";
 
     @Override
     protected String getFabIcon() {
         return "gmd-check";
+    }
+
+    @Override
+    protected String getFabLabel() {
+        return "Lưu tài khoản";
     }
 
     @Override
@@ -89,7 +94,6 @@ public class AccountDetailFragment extends BaseFragment {
         switchExclude = view.findViewById(R.id.switch_exclude_total);
         tvCreatedAt = view.findViewById(R.id.tv_created_at);
 
-        // Ánh xạ View chọn tiền tệ (Bạn nhớ thêm ID này vào fragment_account_detail.xml nhé)
         btnSelectCurrency = view.findViewById(R.id.btnSelectCurrency);
         tvCurrency = view.findViewById(R.id.tvCurrency);
 
@@ -105,14 +109,26 @@ public class AccountDetailFragment extends BaseFragment {
         setupCurrencyFormatter();
         observeViewModel();
 
+        etName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                checkSaveConditions();
+            }
+        });
+
         if (currentAccountId != null) {
             tvCreatedAt.setVisibility(View.VISIBLE);
             viewModel.loadAccounts();
 
-            // Nếu là Edit (Sửa ví) -> KHÔNG cho phép đổi tiền tệ
             if (btnSelectCurrency != null) {
                 btnSelectCurrency.setClickable(false);
-                btnSelectCurrency.setAlpha(0.6f); // Làm mờ đi để UX tốt hơn
+                btnSelectCurrency.setAlpha(0.6f);
             }
         } else {
             updateIconUI(selectedIconId);
@@ -123,6 +139,19 @@ public class AccountDetailFragment extends BaseFragment {
                 tvCurrency.setText(currentCurrencyCode);
             }
         }
+
+        view.post(this::checkSaveConditions);
+    }
+
+    private void checkSaveConditions() {
+        boolean isValid = true;
+        String nameStr = etName.getText().toString().trim();
+
+        if (nameStr.isEmpty()) {
+            isValid = false;
+        }
+
+        setFabEnabled(isValid);
     }
 
     private void setupCurrencyPicker() {
@@ -133,7 +162,6 @@ public class AccountDetailFragment extends BaseFragment {
                 Toast.makeText(requireContext(), "Không thể đổi đơn vị tiền tệ của ví đã tạo", Toast.LENGTH_SHORT).show();
                 return;
             }
-
 
             List<String> allCurrencies = CurrencyFormatter.getSupportedCurrencies();
             if (allCurrencies == null || allCurrencies.isEmpty()) {
@@ -148,7 +176,7 @@ public class AccountDetailFragment extends BaseFragment {
     }
 
     private void setupCurrencyFormatter() {
-        etBalance.addTextChangedListener(new android.text.TextWatcher() {
+        etBalance.addTextChangedListener(new TextWatcher() {
             private String current = "";
 
             @Override
@@ -158,7 +186,7 @@ public class AccountDetailFragment extends BaseFragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
             @Override
-            public void afterTextChanged(android.text.Editable s) {
+            public void afterTextChanged(Editable s) {
                 if (!s.toString().equals(current)) {
                     etBalance.removeTextChangedListener(this);
 
@@ -281,6 +309,9 @@ public class AccountDetailFragment extends BaseFragment {
                     }
 
                     isDataPopulated = true;
+
+                    checkSaveConditions();
+
                     break;
                 }
             }

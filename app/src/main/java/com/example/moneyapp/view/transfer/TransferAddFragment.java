@@ -95,6 +95,25 @@ public class TransferAddFragment extends BaseFragment {
         observeViewModels();
 
         accountViewModel.loadAccounts();
+
+        view.post(this::checkSaveConditions);
+    }
+
+    private void checkSaveConditions() {
+        boolean isValid = true;
+        String amountStr = etAmount.getText().toString().trim().replaceAll("[.,]", "");
+        if (amountStr.isEmpty() || selectedSourceAccount == null || selectedDestAccount == null) {
+            isValid = false;
+        } else {
+            try {
+                double parsed = Double.parseDouble(amountStr);
+                if (parsed <= 0) isValid = false; // Phải lớn hơn 0
+            } catch (NumberFormatException e) {
+                isValid = false;
+            }
+        }
+
+        setFabEnabled(isValid);
     }
 
     private void initViews(View view) {
@@ -152,6 +171,7 @@ public class TransferAddFragment extends BaseFragment {
                     }
                     etAmount.addTextChangedListener(this);
                 }
+                checkSaveConditions();
             }
         });
         etAmount.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorInfo));
@@ -237,6 +257,7 @@ public class TransferAddFragment extends BaseFragment {
             tvCurrency.setText(account.getCurrencyCode());
         }
         updateConvertedAmountFromInput();
+        checkSaveConditions();
     }
 
     private void updateSelectedDest(Account account) {
@@ -244,6 +265,7 @@ public class TransferAddFragment extends BaseFragment {
         this.selectedDestId = account.getAccountId();
         viewSelectDest.setAccount(account, true);
         updateConvertedAmountFromInput();
+        checkSaveConditions();
     }
 
     private void observeViewModels() {
@@ -296,6 +318,8 @@ public class TransferAddFragment extends BaseFragment {
                 );
 
                 bindAccountsToUI(transfer);
+
+                checkSaveConditions();
             }
         });
     }
@@ -437,6 +461,8 @@ public class TransferAddFragment extends BaseFragment {
 
     @Override
     protected String getFabIcon() { return "gmd_check"; }
+    @Override
+    protected String getFabLabel() { return "Lưu chuyển khoản"; }
 
     @Override
     protected void onFabClick() {

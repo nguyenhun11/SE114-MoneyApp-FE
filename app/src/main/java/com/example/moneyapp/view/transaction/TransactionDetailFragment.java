@@ -172,7 +172,10 @@ public class TransactionDetailFragment extends BaseFragment {
     protected String getFabIcon() {
         return "gmd_edit";
     }
-
+    @Override
+    protected String getFabLabel() {
+        return "Chỉnh sửa giao dịch";
+    }
     @Override
     protected void onFabClick() {
         if (currentTransactionId != null) {

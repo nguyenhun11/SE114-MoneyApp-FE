@@ -219,6 +219,11 @@ public class TransferDetailFragment extends BaseFragment {
     }
 
     @Override
+    protected String getFabLabel() {
+        return "Chỉnh sửa chuyển khoản";
+    }
+
+    @Override
     protected void onFabClick() {
         if (currentTransferId != null) {
             Bundle args = new Bundle();

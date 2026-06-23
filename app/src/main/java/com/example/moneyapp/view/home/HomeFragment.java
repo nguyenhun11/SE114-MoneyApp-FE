@@ -110,9 +110,12 @@ public class HomeFragment extends BaseFragment {
         setupPieChart();
         setupScrollBehavior();
 
-        setupIncomeExpenseTabs(view, true, isExpense -> {
-            isExpenseTab = isExpense;
-            int tabType = isExpense ? 0 : 1;
+        String[] homeTabs = {
+                "Chi tiêu",
+                "Thu nhập",
+        };
+        setupHeaderTabs(view, homeTabs,0, index -> {
+            int tabType = index;
             homeViewModel.setTabTypeAndReload(tabType);
         });
 
@@ -298,7 +301,7 @@ public class HomeFragment extends BaseFragment {
             if (currentStartDate != null) bundle.putLong("startDate", currentStartDate.getTime());
             if (currentEndDate != null) bundle.putLong("endDate", currentEndDate.getTime());
 
-            Navigation.findNavController(requireView()).navigate(R.id.transactionFragment, bundle);
+            Navigation.findNavController(requireView()).navigate(R.id.historyFragment, bundle);
         });
         rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
         rvCategories.setAdapter(adapter);
@@ -321,6 +324,10 @@ public class HomeFragment extends BaseFragment {
     @Override
     protected void onFabClick() {
         Navigation.findNavController(requireView()).navigate(R.id.addTransactionFragment);
+    }
+    @Override
+    protected String getFabLabel() {
+        return "Thêm giao dịch";
     }
 
     private int dpToPx(int dp) {

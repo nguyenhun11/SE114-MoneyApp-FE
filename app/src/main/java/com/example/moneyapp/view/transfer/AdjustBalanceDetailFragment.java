@@ -155,4 +155,6 @@ public class AdjustBalanceDetailFragment extends BaseFragment {
 
     @Override
     protected boolean shouldShowBottomNavigation() { return false; }
+    @Override
+    protected boolean shouldShowFAB() {return false; }
 }

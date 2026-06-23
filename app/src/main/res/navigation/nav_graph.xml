@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/transactionFragment"
-        android:name="com.example.moneyapp.view.transaction.TransactionFragment"
-        android:label="@string/transaction"
-        tools:layout="@layout/fragment_transaction" />
+        android:id="@+id/historyFragment"
+        android:name="com.example.moneyapp.view.history.HistoryFragment"
+        android:label="@string/history"
+        tools:layout="@layout/fragment_history" />
 
     <fragment
         android:id="@+id/accountFragment"
@@ -26,10 +26,6 @@
         <action
             android:id="@+id/action_accountFragment_to_transferAddFragment"
             app:destination="@id/transferAddFragment" />
-
-        <action
-            android:id="@+id/action_accountFragment_to_transferFragment"
-            app:destination="@id/transferFragment" />
     </fragment>
 
     <fragment
@@ -49,19 +45,6 @@
         android:name="com.example.moneyapp.view.transaction.TransactionAddFragment"
         android:label="Giao dịch mới"
         tools:layout="@layout/fragment_transaction_add" />
-
-    <fragment
-        android:id="@+id/transferFragment"
-        android:name="com.example.moneyapp.view.transfer.TransferFragment"
-        android:label="Lịch sử chuyển khoản"
-        tools:layout="@layout/fragment_transfer">
-        <action
-            android:id="@+id/action_transferFragment_to_transferAddFragment"
-            app:destination="@id/transferAddFragment" />
-        <action
-            android:id="@+id/action_transferFragment_to_transferDetailFragment"
-            app:destination="@id/transferDetailFragment" />
-    </fragment>
 
     <fragment
         android:id="@+id/transferAddFragment"

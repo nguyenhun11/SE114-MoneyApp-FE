@@ -50,8 +50,7 @@ public class CategoryViewModel extends AndroidViewModel {
 
     public void loadCategories(CategoryType type) {
         this.currentType = type;
-        
-        // Luôn xóa dữ liệu cũ trước khi tải mới để tránh UI bị lag hoặc hiển thị sai
+
         categoriesLiveData.setValue(new ArrayList<>());
 
         CategoryRepository.CategoryCallback<List<CategoryGroupResponse>> groupCallback = new CategoryRepository.CategoryCallback<List<CategoryGroupResponse>>() {
@@ -60,7 +59,6 @@ public class CategoryViewModel extends AndroidViewModel {
                 if (result == null || result.isEmpty()) {
                     createDefaultCategories(type);
                 } else {
-                    // Nếu đã có nhóm, thử lấy hạng mục
                     fetchCategories(type, result);
                 }
             }
@@ -83,7 +81,6 @@ public class CategoryViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(List<Category> result) {
                 if (result == null || result.isEmpty()) {
-                    // Nếu đã có nhóm nhưng chưa có hạng mục, dùng nhóm đầu tiên để tạo hạng mục mẫu
                     if (groups != null && !groups.isEmpty()) {
                         CategoryGroupResponse targetGroup = groups.get(0);
                         createDefaultCategoriesInGroup(type, targetGroup);

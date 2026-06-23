@@ -16,10 +16,15 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
+import com.google.android.material.tabs.TabLayout;
 import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.view.IconicsImageView;
 
 public abstract class BaseFragment extends Fragment {
 
+    public interface HeaderTabListener {
+        void onTabSwitched(int index);
+    }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -31,7 +36,8 @@ public abstract class BaseFragment extends Fragment {
                 uiHandler.setBottomNavigationVisibility(shouldShowBottomNavigation());
 
                 if (shouldShowFAB()) {
-                    uiHandler.updateFAB(getFabIcon(), v -> onFabClick());
+                    // ĐÃ SỬA: Truyền thêm getFabLabel() vào updateFAB
+                    uiHandler.updateFAB(getFabIcon(), getFabLabel(), v -> onFabClick());
                     uiHandler.setFABVisibility(true);
                 } else {
                     uiHandler.setFABVisibility(false);
@@ -40,6 +46,13 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        setFabEnabled(true);
+    }
+
+    //region Float Action Button and Bottom navigation
     protected boolean shouldShowFAB() {
         return true;
     }
@@ -47,13 +60,24 @@ public abstract class BaseFragment extends Fragment {
     protected String getFabIcon() {
         return "gmd_add";
     }
-
+    protected String getFabLabel() {
+        return "Thêm giao dịch";
+    }
+    protected void onFabClick() { }
+    protected void setFabEnabled(boolean isEnabled) {
+        if (getActivity() instanceof MainActivity) {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            MainUIHandler uiHandler = mainActivity.getUiHandler();
+            if (uiHandler != null) {
+                uiHandler.setFABEnabled(isEnabled);
+            }
+        }
+    }
     protected boolean shouldShowBottomNavigation() {
         return true;
     }
 
-    protected void onFabClick() {
-    }
+    //endregion
 
     //region Header Setup
     private Drawable getShrunkIcon(String iconName, int color) {
@@ -72,8 +96,8 @@ public abstract class BaseFragment extends Fragment {
                                     String leftIconName, View.OnClickListener leftListener,
                                     String rightIconName, View.OnClickListener rightListener) {
 
-        com.mikepenz.iconics.view.IconicsImageView btnLeft = view.findViewById(R.id.btn_action_left);
-        com.mikepenz.iconics.view.IconicsImageView btnRight = view.findViewById(R.id.btn_action_right);
+        IconicsImageView btnLeft = view.findViewById(R.id.btn_action_left);
+        IconicsImageView btnRight = view.findViewById(R.id.btn_action_right);
 
         int iconColor = ContextCompat.getColor(requireContext(), R.color.colorOnPrimary);
 
@@ -161,158 +185,63 @@ public abstract class BaseFragment extends Fragment {
     //endregion
 
     //region Tabs Setup
-    protected void setupIncomeExpenseTabs(View view, TabSwitchListener listener) {
-        setupIncomeExpenseTabs(view, true, listener);
-    }
+    protected void setupHeaderTabs(View view, String[] tabTitles, int preSelectedTab, HeaderTabListener listener) {
+        TabLayout tabLayout = view.findViewById(R.id.tab_layout_header);
+        if (tabLayout == null || tabTitles == null || tabTitles.length == 0) return;
+        tabLayout.removeAllTabs();
 
-    protected void setupIncomeExpenseTabs(View view, boolean initialIsExpense, TabSwitchListener listener) {
-        TextView tvTabExpense = view.findViewById(R.id.tv_tab_expense);
-        TextView tvTabIncome = view.findViewById(R.id.tv_tab_income);
-        View animatedIndicator = view.findViewById(R.id.view_tab_indicator);
-
-        if (tvTabExpense == null || tvTabIncome == null || animatedIndicator == null) return;
-
-        tvTabExpense.setOnClickListener(v -> handleTabSwitch(true, tvTabExpense, tvTabIncome, animatedIndicator, listener));
-        tvTabIncome.setOnClickListener(v -> handleTabSwitch(false, tvTabExpense, tvTabIncome, animatedIndicator, listener));
-
-        // Dùng view.post để đảm bảo Layout đã vẽ xong tọa độ X trước khi chạy Animation trượt
-        view.post(() -> {
-            handleTabSwitch(initialIsExpense, tvTabExpense, tvTabIncome, animatedIndicator, null);
-            // Kích hoạt listener lần đầu để load dữ liệu
-            if (listener != null) listener.onTabSwitched(initialIsExpense);
-        });
-    }
-
-    private void handleTabSwitch(boolean isExpense, TextView tvExpense, TextView tvIncome, View animatedIndicator, TabSwitchListener listener) {
-        int colorSelected = ContextCompat.getColor(requireContext(), R.color.tabSelectedColor);
-        int colorUnselected = ContextCompat.getColor(requireContext(), R.color.colorOnSurfaceVariant);
-
-        if (isExpense) {
-            tvExpense.setTextColor(colorSelected);
-            tvExpense.setTypeface(null, Typeface.BOLD);
-            tvIncome.setTextColor(colorUnselected);
-            tvIncome.setTypeface(null, Typeface.NORMAL);
-
-            animatedIndicator.animate().translationX(0).setDuration(250).start();
+        // Tự động phân giải chế độ hiển thị dựa trên số lượng Tab
+        if (tabTitles.length <= 3) {
+            tabLayout.setTabMode(TabLayout.MODE_FIXED);
+            tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         } else {
-            tvIncome.setTextColor(colorSelected);
-            tvIncome.setTypeface(null, Typeface.BOLD);
-            tvExpense.setTextColor(colorUnselected);
-            tvExpense.setTypeface(null, Typeface.NORMAL);
-
-            float distance = tvIncome.getX() - tvExpense.getX();
-            animatedIndicator.animate().translationX(distance).setDuration(250).start();
+            tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+            tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER); // hoặc GRAVITY_CENTER tùy ý
         }
 
-        if (listener != null) {
-            listener.onTabSwitched(isExpense);
+        for (String title : tabTitles) {
+            tabLayout.addTab(tabLayout.newTab().setText(title));
         }
-    }
 
-    protected void setupThreeTabs(View view, ThreeTabSwitchListener listener) {
-        setupThreeTabs(view, 0, listener);
-    }
+        TabLayout.Tab defaultTab = tabLayout.getTabAt(preSelectedTab);
+        if (defaultTab != null) {
+            defaultTab.select();
+            setTabTypeface(defaultTab, Typeface.BOLD);
+        }
 
-    protected void setupThreeTabs(View view, int preSelectedTab, ThreeTabSwitchListener listener) {
-        TextView tvGeneral = view.findViewById(R.id.tv_tab_general);
-        TextView tvExpense = view.findViewById(R.id.tv_tab_expense);
-        TextView tvIncome = view.findViewById(R.id.tv_tab_income);
-        View animatedIndicator = view.findViewById(R.id.view_tab_indicator);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                setTabTypeface(tab, Typeface.BOLD);
+                if (listener != null) {
+                    listener.onTabSwitched(tab.getPosition());
+                }
+            }
 
-        if (tvGeneral == null || tvExpense == null || tvIncome == null || animatedIndicator == null) return;
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                setTabTypeface(tab, Typeface.NORMAL);
+            }
 
-        tvGeneral.setOnClickListener(v -> handleThreeTabSwitch(0, tvGeneral, tvExpense, tvIncome, animatedIndicator, listener));
-        tvExpense.setOnClickListener(v -> handleThreeTabSwitch(1, tvGeneral, tvExpense, tvIncome, animatedIndicator, listener));
-        tvIncome.setOnClickListener(v -> handleThreeTabSwitch(2, tvGeneral, tvExpense, tvIncome, animatedIndicator, listener));
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) { }
+        });
 
-        // Tương tự, ép nó chạy lần đầu sau khi Layout đã vẽ xong tọa độ
+        // Chạy listener lần đầu
         view.post(() -> {
-            handleThreeTabSwitch(preSelectedTab, tvGeneral, tvExpense, tvIncome, animatedIndicator, null);
             if (listener != null) listener.onTabSwitched(preSelectedTab);
         });
     }
 
-    private void handleThreeTabSwitch(int index, TextView tv0, TextView tv1, TextView tv2, View animatedIndicator, ThreeTabSwitchListener listener) {
-        int colorSelected = ContextCompat.getColor(requireContext(), R.color.tabSelectedColor);
-        int colorUnselected = ContextCompat.getColor(requireContext(), R.color.colorOnSurfaceVariant);
-
-        TextView[] tabs = {tv0, tv1, tv2};
-        for (int i = 0; i < tabs.length; i++) {
-            if (i == index) {
-                tabs[i].setTextColor(colorSelected);
-                tabs[i].setTypeface(null, Typeface.BOLD);
-            } else {
-                tabs[i].setTextColor(colorUnselected);
-                tabs[i].setTypeface(null, Typeface.NORMAL);
+    // Can thiệp vào TabLayout để in đậm chữ
+    private void setTabTypeface(TabLayout.Tab tab, int style) {
+        if (tab == null || tab.view == null) return;
+        for (int i = 0; i < tab.view.getChildCount(); i++) {
+            View child = tab.view.getChildAt(i);
+            if (child instanceof TextView) {
+                ((TextView) child).setTypeface(null, style);
             }
         }
-
-        float translationX = 0;
-        if (index == 1) {
-            translationX = tv1.getX() - tv0.getX();
-        } else if (index == 2) {
-            translationX = tv2.getX() - tv0.getX();
-        }
-
-        animatedIndicator.animate().translationX(translationX).setDuration(250).start();
-
-        if (listener != null) {
-            listener.onTabSwitched(index);
-        }
-    }
-    public interface TabSwitchListener {
-        void onTabSwitched(boolean isExpense);
-    }
-
-    public interface ThreeTabSwitchListener {
-        void onTabSwitched(int index);
-    }
-
-    protected void setupFourTabs(View view, int preSelectedTab, FourTabSwitchListener listener) {
-        TextView tv1 = view.findViewById(R.id.tv_tab_1);
-        TextView tv2 = view.findViewById(R.id.tv_tab_2);
-        TextView tv3 = view.findViewById(R.id.tv_tab_3);
-        TextView tv4 = view.findViewById(R.id.tv_tab_4);
-        View animatedIndicator = view.findViewById(R.id.view_tab_indicator);
-
-        if (tv1 == null || tv2 == null || tv3 == null || tv4 == null || animatedIndicator == null) return;
-
-        tv1.setOnClickListener(v -> handleFourTabSwitch(0, tv1, tv2, tv3, tv4, animatedIndicator, listener));
-        tv2.setOnClickListener(v -> handleFourTabSwitch(1, tv1, tv2, tv3, tv4, animatedIndicator, listener));
-        tv3.setOnClickListener(v -> handleFourTabSwitch(2, tv1, tv2, tv3, tv4, animatedIndicator, listener));
-        tv4.setOnClickListener(v -> handleFourTabSwitch(3, tv1, tv2, tv3, tv4, animatedIndicator, listener));
-
-        view.post(() -> {
-            handleFourTabSwitch(preSelectedTab, tv1, tv2, tv3, tv4, animatedIndicator, null);
-            if (listener != null) listener.onTabSwitched(preSelectedTab);
-        });
-    }
-
-    private void handleFourTabSwitch(int index, TextView tv1, TextView tv2, TextView tv3, TextView tv4, View animatedIndicator, FourTabSwitchListener listener) {
-        int colorSelected = ContextCompat.getColor(requireContext(), R.color.tabSelectedColor);
-        int colorUnselected = ContextCompat.getColor(requireContext(), R.color.colorOnSurfaceVariant);
-
-        TextView[] tabs = {tv1, tv2, tv3, tv4};
-        for (int i = 0; i < tabs.length; i++) {
-            if (i == index) {
-                tabs[i].setTextColor(colorSelected);
-                tabs[i].setTypeface(null, Typeface.BOLD);
-            } else {
-                tabs[i].setTextColor(colorUnselected);
-                tabs[i].setTypeface(null, Typeface.NORMAL);
-            }
-        }
-
-        float translationX = tabs[index].getX() - tabs[0].getX();
-        animatedIndicator.animate().translationX(translationX).setDuration(250).start();
-
-        if (listener != null) {
-            listener.onTabSwitched(index);
-        }
-    }
-
-    public interface FourTabSwitchListener {
-        void onTabSwitched(int index);
     }
     //endregion
 }
