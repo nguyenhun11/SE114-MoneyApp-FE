@@ -20,12 +20,21 @@
     <fragment
         android:id="@+id/accountFragment"
         android:name="com.example.moneyapp.view.account.AccountFragment"
-        android:label="@string/account"
+        android:label="@string/category"
         tools:layout="@layout/fragment_account">
         <action
             android:id="@+id/action_accountFragment_to_accountDetailFragment"
             app:destination="@id/accountDetailFragment" />
+        <action
+            android:id="@+id/action_accountFragment_to_reorderCategoryFragment"
+            app:destination="@id/reorderCategoryFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/reorderCategoryFragment"
+        android:name="com.example.moneyapp.view.category.ReorderCategoryFragment"
+        android:label="Sắp xếp hạng mục"
+        tools:layout="@layout/fragment_reorder_category" />
 
     <fragment
         android:id="@+id/accountDetailFragment"

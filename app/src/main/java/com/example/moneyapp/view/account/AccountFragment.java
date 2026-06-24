@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -12,14 +11,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.local.PreferenceManager;
-import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.MainActivity;
@@ -28,28 +24,23 @@ import com.example.moneyapp.view.category.CategoryGroupAdapter;
 import com.example.moneyapp.viewmodel.AccountViewModel;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 public class AccountFragment extends BaseFragment {
 
     public enum TabMode { ACCOUNTS, EXPENSE_CATEGORIES, INCOME_CATEGORIES }
     private TabMode currentMode = TabMode.ACCOUNTS;
-    private boolean isEditMode = false;
 
     private RecyclerView rvMainList;
     private View tabLayoutHeader;
-    private ItemTouchHelper itemTouchHelper;
 
     private AccountViewModel accountViewModel;
     private CategoryViewModel categoryViewModel;
 
     private AccountAdapter accountAdapter;
     private CategoryGroupAdapter categoryGroupAdapter;
-    private CategoryAdapter categoryFlatAdapter;
 
     private String lastDisplayBalance = "0 đ";
 
@@ -73,8 +64,6 @@ public class AccountFragment extends BaseFragment {
 
         String[] tabs = {"Tài khoản", "Chi tiêu", "Thu nhập"};
         setupHeaderTabs(view, tabs, 0, index -> {
-            if (isEditMode) return;
-
             if (index == 0) currentMode = TabMode.ACCOUNTS;
             else if (index == 1) currentMode = TabMode.EXPENSE_CATEGORIES;
             else currentMode = TabMode.INCOME_CATEGORIES;
@@ -82,20 +71,18 @@ public class AccountFragment extends BaseFragment {
             updateUIByMode();
         });
 
-        observeViewModels(view);
+        observeViewModels();
         updateUIByMode();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (!isEditMode) {
-            accountViewModel.loadTotalBalance();
-            accountViewModel.loadAccounts();
+        accountViewModel.loadTotalBalance();
+        accountViewModel.loadAccounts();
 
-            if (currentMode != TabMode.ACCOUNTS) {
-                categoryViewModel.loadCategories(categoryViewModel.getCurrentType());
-            }
+        if (currentMode != TabMode.ACCOUNTS) {
+            categoryViewModel.loadCategories(categoryViewModel.getCurrentType());
         }
     }
 
@@ -124,17 +111,10 @@ public class AccountFragment extends BaseFragment {
             Navigation.findNavController(requireView()).navigate(R.id.addCategoryFragment, bundle);
         };
 
-        CategoryAdapter.OnCategoryLongClickListener catLongClickListener = (category, anchorView) -> {
-            if (!categoryFlatAdapter.isEditMode()) {
-                showCategoryContextMenu(category, anchorView);
-            }
-        };
+        CategoryAdapter.OnCategoryLongClickListener catLongClickListener = this::showCategoryContextMenu;
 
         categoryGroupAdapter = new CategoryGroupAdapter(catClickListener);
         categoryGroupAdapter.setOnCategoryLongClickListener(catLongClickListener);
-
-        categoryFlatAdapter = new CategoryAdapter(new ArrayList<>(), catClickListener);
-        categoryFlatAdapter.setOnCategoryLongClickListener(catLongClickListener);
     }
 
     private void updateUIByMode() {
@@ -160,8 +140,9 @@ public class AccountFragment extends BaseFragment {
             categoryViewModel.setCurrentType(targetType);
             categoryViewModel.loadCategories(targetType);
 
+            // ĐÃ SỬA: Bấm nút Edit thì chuyển hẳn sang trang Sắp Xếp chuyên nghiệp
             String modeTitle = (currentMode == TabMode.EXPENSE_CATEGORIES) ? "Hạng mục chi tiêu" : "Hạng mục thu nhập";
-            setupHeader(layoutHeaderTitle, modeTitle, null, null, "gmd_edit", v -> enterEditMode());
+            setupHeader(layoutHeaderTitle, modeTitle, null, null, "gmd_edit", v -> navigateToReorderScreen());
         }
 
         if (getActivity() instanceof MainActivity) {
@@ -172,94 +153,11 @@ public class AccountFragment extends BaseFragment {
         }
     }
 
-    private void enterEditMode() {
-        isEditMode = true;
-        setTabsEnabled(false); // Khóa thanh Tab lại
-
-        List<Category> allCategories = categoryGroupAdapter.getAllCategoriesFlattened();
-        categoryFlatAdapter.updateData(allCategories);
-        categoryFlatAdapter.setEditMode(true);
-
-        rvMainList.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        rvMainList.setAdapter(categoryFlatAdapter);
-
-        setupDragAndDrop();
-
-        View cardMainContent = requireView().findViewById(R.id.card_main_content);
-        if (cardMainContent != null) {
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) cardMainContent.getLayoutParams();
-            params.bottomMargin = getResources().getDimensionPixelSize(R.dimen.card_bottom_margin);
-            cardMainContent.setLayoutParams(params);
-        }
-
-        View layoutHeaderTitle = requireView().findViewById(R.id.layout_header);
-        setupHeader(layoutHeaderTitle, "Sắp xếp", "gmd_navigate_before", v -> exitEditMode(false), null, null);
-
-        if (getActivity() instanceof MainActivity) {
-            MainActivity mainActivity = (MainActivity) getActivity();
-            if (mainActivity.getUiHandler() != null) {
-                mainActivity.getUiHandler().setBottomNavigationVisibility(false);
-                mainActivity.getUiHandler().updateFAB("gmd_check", "Hoàn tất", v -> exitEditMode(true));
-            }
-        }
+    private void navigateToReorderScreen() {
+        Navigation.findNavController(requireView()).navigate(R.id.action_accountFragment_to_reorderCategoryFragment);
     }
 
-    private void exitEditMode(boolean saveChanges) {
-        isEditMode = false;
-        categoryFlatAdapter.setEditMode(false);
-        setTabsEnabled(true);
-
-        if (itemTouchHelper != null) {
-            itemTouchHelper.attachToRecyclerView(null);
-            itemTouchHelper = null;
-        }
-
-        // --- ĐÃ THÊM: Trả Card về lại vị trí cũ (32dp) ---
-        View cardMainContent = requireView().findViewById(R.id.card_main_content);
-        if (cardMainContent != null) {
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) cardMainContent.getLayoutParams();
-            params.bottomMargin = (int) (24 * getResources().getDisplayMetrics().density);
-            cardMainContent.setLayoutParams(params);
-        }
-        // ---------------------------------------------------------
-
-        if (saveChanges) {
-            List<Category> categories = categoryFlatAdapter.getCategories();
-            for (int i = 0; i < categories.size(); i++) {
-                categoryViewModel.reorderCategory(categories.get(i), i);
-            }
-            categoryGroupAdapter.setData(categories);
-        } else {
-            categoryFlatAdapter.restoreBackup();
-        }
-
-        if (getActivity() instanceof MainActivity) {
-            MainActivity mainActivity = (MainActivity) getActivity();
-            if (mainActivity.getUiHandler() != null) {
-                mainActivity.getUiHandler().setBottomNavigationVisibility(true);
-            }
-        }
-        updateUIByMode();
-    }
-
-    private void setupDragAndDrop() {
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
-                ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, 0) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                int fromPos = viewHolder.getBindingAdapterPosition();
-                int toPos = target.getBindingAdapterPosition();
-                categoryFlatAdapter.onItemMove(fromPos, toPos);
-                return true;
-            }
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {}
-        };
-        itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(rvMainList);
-    }
-
-    private void showCategoryContextMenu(Category category, View anchorView) {
+    private void showCategoryContextMenu(com.example.moneyapp.model.Category category, View anchorView) {
         PopupMenu popupMenu = new PopupMenu(requireContext(), anchorView);
         if (!"Khác".equals(category.getCategoryName())) {
             popupMenu.getMenu().add(0, 1, 0, "Xóa danh mục");
@@ -271,7 +169,7 @@ public class AccountFragment extends BaseFragment {
                 categoryViewModel.deleteCategory(category.getCategoryId(), "soft_delete", null);
                 return true;
             } else if (item.getItemId() == 2) {
-                enterEditMode();
+                navigateToReorderScreen(); // Chuyển sang trang Sắp xếp
                 return true;
             }
             return false;
@@ -279,7 +177,7 @@ public class AccountFragment extends BaseFragment {
         popupMenu.show();
     }
 
-    private void observeViewModels(View view) {
+    private void observeViewModels() {
         accountViewModel.getTotalBalanceLiveData().observe(getViewLifecycleOwner(), balance -> {
             if (balance != null) {
                 lastDisplayBalance = String.format(Locale.getDefault(), "%,.0f đ", balance).replace(",", ".");
@@ -297,7 +195,7 @@ public class AccountFragment extends BaseFragment {
         });
 
         categoryViewModel.getCategoriesLiveData().observe(getViewLifecycleOwner(), categories -> {
-            if (categories != null && currentMode != TabMode.ACCOUNTS && !isEditMode) {
+            if (categories != null && currentMode != TabMode.ACCOUNTS) {
                 categoryGroupAdapter.setData(categories);
             }
         });
