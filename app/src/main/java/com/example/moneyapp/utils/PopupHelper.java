@@ -46,14 +46,20 @@ public class PopupHelper {
     public interface OnResourceSelectedListener {
         void onSelected(int id);
     }
+    public interface OnGroupSelectedListener {
+        void onSelected(String groupName, boolean isNewGroup);
+    }
     //endregion
 
-    private static void clearFocusAndHideKeyboard(Context context) {
+    // ====================================================================
+    // HÀM NỘI BỘ (INTERNAL METHODS) - ĐÃ ĐƯỢC CHUẨN HÓA TÊN GỌI VÀ CHỨC NĂNG
+    // ====================================================================
+
+    private static void hideKeyboardSafely(Context context) {
         if (context instanceof Activity) {
             Activity activity = (Activity) context;
             View view = activity.getCurrentFocus();
             if (view != null) {
-                view.clearFocus(); // Lột quyền Focus để không tự mở bàn phím lại
                 InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (imm != null) {
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -62,24 +68,25 @@ public class PopupHelper {
         }
     }
 
-    private static void attachDismissListenerToHideKeyboard(BottomSheetDialog dialog, Context context) {
-        dialog.setOnDismissListener(d -> clearFocusAndHideKeyboard(context));
+    private static void attachKeyboardDismissListener(BottomSheetDialog dialog, Context context) {
+        dialog.setOnDismissListener(d -> hideKeyboardSafely(context));
     }
 
-
-    //region Base Sheet
-    private static View createBaseSheetView(Context context, String title) {
+    private static View createBottomSheetHeaderView(Context context, String title) {
         View view = LayoutInflater.from(context).inflate(R.layout.layout_selector_bottom_sheet, null);
         TextView tvTitle = view.findViewById(R.id.tv_sheet_title);
         tvTitle.setText(title);
         return view;
     }
 
-    private static void setupBottomSheetBehavior(BottomSheetDialog dialog, Context context) {
+    /**
+     * Dùng cho các Popup có danh sách dài cần cuộn (Danh mục, Tiền tệ, Nhóm...)
+     * Mở lên ở mốc 50% màn hình, cho phép kéo lên tối đa 85%.
+     */
+    private static void setupScrollableSheetBehavior(BottomSheetDialog dialog, Context context) {
         dialog.setOnShowListener(dialogInterface -> {
             BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
-
-            int bottomSheetId = context.getResources().getIdentifier("design_bottom_sheet", "id", "com.google.android.material");
+            int bottomSheetId = com.google.android.material.R.id.design_bottom_sheet;
             View bottomSheet = d.findViewById(bottomSheetId);
 
             if (bottomSheet != null) {
@@ -87,29 +94,54 @@ public class PopupHelper {
                 bottomSheet.setBackgroundColor(Color.TRANSPARENT);
 
                 int screenHeight = context.getResources().getDisplayMetrics().heightPixels;
+
                 ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
-                layoutParams.height = (int) (screenHeight * 0.85);
+                layoutParams.height = (int) (screenHeight * 0.85); // Tối đa 85%
                 bottomSheet.setLayoutParams(layoutParams);
 
                 BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
-                behavior.setPeekHeight((int) (screenHeight * 0.5));
+                behavior.setSkipCollapsed(false);
+                behavior.setPeekHeight((int) (screenHeight * 0.5)); // Mốc mặc định 50%
                 behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
 
-        attachDismissListenerToHideKeyboard(dialog, context);
+        attachKeyboardDismissListener(dialog, context);
     }
-    //endregion
+
+    /**
+     * Dùng cho Popup tĩnh, không cuộn được (Ví dụ: Máy tính).
+     * Bỏ qua trạng thái Peek (50%), mở bung toàn bộ kích thước của View (Expanded).
+     */
+    private static void setupFixedSheetBehavior(BottomSheetDialog dialog, Context context) {
+        dialog.setOnShowListener(dialogInterface -> {
+            BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
+            int bottomSheetId = com.google.android.material.R.id.design_bottom_sheet;
+            View bottomSheet = d.findViewById(bottomSheetId);
+
+            if (bottomSheet != null) {
+                ((View) bottomSheet.getParent()).setBackgroundColor(Color.TRANSPARENT);
+                bottomSheet.setBackgroundColor(Color.TRANSPARENT);
+
+                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+                behavior.setSkipCollapsed(true); // Bỏ qua mốc 50%
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED); // Mở kịch cỡ content
+            }
+        });
+
+        attachKeyboardDismissListener(dialog, context);
+    }
+    // ====================================================================
 
     //region Account
     public static void showAccountFilterPopup(Context context, List<Account> accountList,
                                               String currentAccountId,
                                               boolean showAllOption,
                                               AccountPopupAdapter.OnAccountClickListener listener) {
-        clearFocusAndHideKeyboard(context);
+        hideKeyboardSafely(context);
 
         BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
-        View view = createBaseSheetView(context, "Chọn tài khoản");
+        View view = createBottomSheetHeaderView(context, "Chọn tài khoản");
 
         TextView tvSelectAll = view.findViewById(R.id.tv_select_all);
         if (showAllOption) {
@@ -131,7 +163,7 @@ public class PopupHelper {
         rvList.setAdapter(adapter);
 
         dialog.setContentView(view);
-        setupBottomSheetBehavior(dialog, context);
+        setupScrollableSheetBehavior(dialog, context);
         dialog.show();
     }
     //endregion
@@ -141,10 +173,10 @@ public class PopupHelper {
                                                List<Category> categoryList,
                                                boolean showAllOption,
                                                CategoryAdapter.OnCategoryClickListener listener) {
-        clearFocusAndHideKeyboard(context);
+        hideKeyboardSafely(context);
 
         BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
-        View view = createBaseSheetView(context, "Chọn hạng mục");
+        View view = createBottomSheetHeaderView(context, "Chọn hạng mục");
 
         TextView tvSelectAll = view.findViewById(R.id.tv_select_all);
         if (showAllOption) {
@@ -167,7 +199,7 @@ public class PopupHelper {
 
         rvList.setAdapter(adapter);
         dialog.setContentView(view);
-        setupBottomSheetBehavior(dialog, context);
+        setupScrollableSheetBehavior(dialog, context);
         dialog.show();
     }
     //endregion
@@ -186,10 +218,10 @@ public class PopupHelper {
     }
 
     private static void showGoalPicker(Context context, String title, OnResourceSelectedListener listener) {
-        clearFocusAndHideKeyboard(context);
+        hideKeyboardSafely(context);
 
         BottomSheetDialog dialog = new BottomSheetDialog(context);
-        View view = createBaseSheetView(context, title);
+        View view = createBottomSheetHeaderView(context, title);
 
         RecyclerView rvList = view.findViewById(R.id.rv_items);
         rvList.setLayoutManager(new GridLayoutManager(context, 4));
@@ -225,15 +257,15 @@ public class PopupHelper {
 
         rvList.setAdapter(adapter);
         dialog.setContentView(view);
-        setupBottomSheetBehavior(dialog, context);
+        setupScrollableSheetBehavior(dialog, context);
         dialog.show();
     }
 
     private static void showPicker(Context context, boolean isColorPicker, String title, OnResourceSelectedListener listener) {
-        clearFocusAndHideKeyboard(context);
+        hideKeyboardSafely(context);
 
         BottomSheetDialog dialog = new BottomSheetDialog(context);
-        View view = createBaseSheetView(context, title);
+        View view = createBottomSheetHeaderView(context, title);
 
         RecyclerView rvList = view.findViewById(R.id.rv_items);
         rvList.setLayoutManager(new GridLayoutManager(context, 4));
@@ -274,14 +306,14 @@ public class PopupHelper {
 
         rvList.setAdapter(adapter);
         dialog.setContentView(view);
-        setupBottomSheetBehavior(dialog, context);
+        setupScrollableSheetBehavior(dialog, context);
         dialog.show();
     }
     //endregion
 
     //region Calculator
     public static void showCalculatorPopup(Context context, String initialValue, OnCalculatorResultListener listener) {
-        clearFocusAndHideKeyboard(context);
+        hideKeyboardSafely(context);
 
         BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
         View view = LayoutInflater.from(context).inflate(R.layout.layout_calculator_sheet, null);
@@ -360,21 +392,10 @@ public class PopupHelper {
         }
 
         dialog.setContentView(view);
-        dialog.setOnShowListener(dialogInterface -> {
-            BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
 
-            int bottomSheetId = context.getResources().getIdentifier("design_bottom_sheet", "id", "com.google.android.material");
-            View bottomSheet = d.findViewById(bottomSheetId);
-            if (bottomSheet != null) {
-                ((View) bottomSheet.getParent()).setBackgroundColor(android.graphics.Color.TRANSPARENT);
-                bottomSheet.setBackgroundColor(android.graphics.Color.TRANSPARENT);
-                com.google.android.material.bottomsheet.BottomSheetBehavior<View> behavior = com.google.android.material.bottomsheet.BottomSheetBehavior.from(bottomSheet);
-                behavior.setState(com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED);
-                behavior.setSkipCollapsed(true);
-            }
-        });
+        // ĐÃ SỬA: Máy tính dùng cấu hình tĩnh, không trượt 50-85%
+        setupFixedSheetBehavior(dialog, context);
 
-        attachDismissListenerToHideKeyboard(dialog, context);
         dialog.show();
     }
 
@@ -470,7 +491,7 @@ public class PopupHelper {
                                                List<String> currencyList,
                                                OnCurrencySelectedListener listener) {
 
-        clearFocusAndHideKeyboard(context);
+        hideKeyboardSafely(context);
 
         BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
         View view = LayoutInflater.from(context).inflate(R.layout.layout_selector_currency, null);
@@ -546,8 +567,66 @@ public class PopupHelper {
         });
 
         dialog.setContentView(view);
-        setupBottomSheetBehavior(dialog, context);
+        setupScrollableSheetBehavior(dialog, context);
 
+        dialog.show();
+    }
+    //endregion
+
+    //region Group Category
+    public static void showGroupSelectorPopup(Context context,
+                                              List<String> groupList,
+                                              OnGroupSelectedListener listener) {
+        hideKeyboardSafely(context);
+
+        BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
+        View view = createBottomSheetHeaderView(context, "Chọn nhóm hạng mục");
+
+        TextView tvAddNew = view.findViewById(R.id.tv_select_all);
+        tvAddNew.setVisibility(View.VISIBLE);
+        tvAddNew.setText("+ Thêm nhóm mới");
+        tvAddNew.setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.colorDanger));
+        tvAddNew.setOnClickListener(v -> {
+            if (listener != null) listener.onSelected("", true);
+            dialog.dismiss();
+        });
+
+        RecyclerView rvList = view.findViewById(R.id.rv_items);
+        rvList.setLayoutManager(new LinearLayoutManager(context));
+
+        RecyclerView.Adapter<RecyclerView.ViewHolder> adapter = new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                TextView tv = new TextView(context);
+                tv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                tv.setPadding(60, 40, 60, 40);
+                tv.setTextSize(16f);
+                tv.setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.colorOnSurface));
+                return new RecyclerView.ViewHolder(tv) {};
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+                String groupName = groupList.get(position);
+                TextView tv = (TextView) holder.itemView;
+                tv.setText(groupName);
+
+                holder.itemView.setOnClickListener(v -> {
+                    if (listener != null) listener.onSelected(groupName, false);
+                    dialog.dismiss();
+                });
+            }
+
+            @Override
+            public int getItemCount() {
+                return groupList.size();
+            }
+        };
+
+        rvList.setAdapter(adapter);
+        dialog.setContentView(view);
+        setupScrollableSheetBehavior(dialog, context);
         dialog.show();
     }
     //endregion

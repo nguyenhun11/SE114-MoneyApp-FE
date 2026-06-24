@@ -118,6 +118,7 @@ public class AccountFragment extends BaseFragment {
             bundle.putInt("colorId", category.getColor());
             bundle.putInt("iconId", category.getIcon());
             bundle.putString("groupId", category.getGroupId());
+            bundle.putString("groupName", category.getGroupName());
             bundle.putInt("type", category.getType() == CategoryType.EXPENSE ? 0 : 1);
 
             Navigation.findNavController(requireView()).navigate(R.id.addCategoryFragment, bundle);

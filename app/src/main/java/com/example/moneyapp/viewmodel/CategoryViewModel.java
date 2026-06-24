@@ -19,6 +19,10 @@ import java.util.List;
 public class CategoryViewModel extends AndroidViewModel {
     private final CategoryRepository repository;
     private final MutableLiveData<List<Category>> categoriesLiveData = new MutableLiveData<>();
+
+    // ĐÃ THÊM: LiveData chuyên biệt để chứa danh sách Nhóm xịn từ API
+    private final MutableLiveData<List<CategoryGroupResponse>> groupsLiveData = new MutableLiveData<>();
+
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> saveSuccess = new MutableLiveData<>();
     private CategoryType currentType = CategoryType.EXPENSE;
@@ -28,34 +32,24 @@ public class CategoryViewModel extends AndroidViewModel {
         repository = new CategoryRepository(application);
     }
 
-    public CategoryType getCurrentType() {
-        return currentType;
-    }
+    public CategoryType getCurrentType() { return currentType; }
+    public void setCurrentType(CategoryType type) { this.currentType = type; }
 
-    public void setCurrentType(CategoryType type) {
-        this.currentType = type;
-    }
-
-    public LiveData<List<Category>> getCategoriesLiveData() {
-        return categoriesLiveData;
-    }
-
-    public LiveData<String> getErrorLiveData() {
-        return errorLiveData;
-    }
-
-    public LiveData<Boolean> getSaveSuccess() {
-        return saveSuccess;
-    }
+    public LiveData<List<Category>> getCategoriesLiveData() { return categoriesLiveData; }
+    public LiveData<List<CategoryGroupResponse>> getGroupsLiveData() { return groupsLiveData; } // EXPOSE RA VIEW
+    public LiveData<String> getErrorLiveData() { return errorLiveData; }
+    public LiveData<Boolean> getSaveSuccess() { return saveSuccess; }
 
     public void loadCategories(CategoryType type) {
         this.currentType = type;
-
         categoriesLiveData.setValue(new ArrayList<>());
 
         CategoryRepository.CategoryCallback<List<CategoryGroupResponse>> groupCallback = new CategoryRepository.CategoryCallback<List<CategoryGroupResponse>>() {
             @Override
             public void onSuccess(List<CategoryGroupResponse> result) {
+                // ĐÃ THÊM: Hứng dữ liệu nhóm đẩy lên LiveData ngay khi API trả về
+                groupsLiveData.postValue(result != null ? result : new ArrayList<>());
+
                 if (result == null || result.isEmpty()) {
                     createDefaultCategories(type);
                 } else {
@@ -120,10 +114,16 @@ public class CategoryViewModel extends AndroidViewModel {
 
     private void createDefaultCategories(CategoryType type) {
         CategoryGroupRequest groupRequest = new CategoryGroupRequest(type == CategoryType.EXPENSE ? "Chi tiêu" : "Thu nhập");
-        
+
         CategoryRepository.CategoryCallback<CategoryGroupResponse> groupCallback = new CategoryRepository.CategoryCallback<CategoryGroupResponse>() {
             @Override
             public void onSuccess(CategoryGroupResponse group) {
+                // ĐÃ THÊM: Cập nhật LiveData khi tạo xong nhóm mặc định
+                List<CategoryGroupResponse> currentList = groupsLiveData.getValue();
+                if (currentList == null) currentList = new ArrayList<>();
+                currentList.add(group);
+                groupsLiveData.postValue(currentList);
+
                 createDefaultCategoriesInGroup(type, group);
             }
 
@@ -140,37 +140,48 @@ public class CategoryViewModel extends AndroidViewModel {
         }
     }
 
+    private interface OnGroupReadyAction {
+        void execute(Category category);
+    }
+
     public void addCategory(Category category) {
         if (category.getGroupId() == null) {
-            // Sử dụng tên nhóm mặc định duy nhất cho mỗi loại để tránh phân mảnh
-            String defaultGroupName = (category.getType() == CategoryType.EXPENSE ? "Chi tiêu" : "Thu nhập");
-            CategoryGroupRequest groupRequest = new CategoryGroupRequest(defaultGroupName);
-            
-            CategoryRepository.CategoryCallback<CategoryGroupResponse> groupCallback = new CategoryRepository.CategoryCallback<CategoryGroupResponse>() {
-                @Override
-                public void onSuccess(CategoryGroupResponse group) {
-                    category.setGroupId(group.getId());
-                    category.setGroupName(group.getGroupName());
-                    
-                    // Gọi repository để tạo hạng mục thật
-                    performActualCreate(category);
-                }
-
-                @Override
-                public void onError(String message) {
-                    errorLiveData.postValue("Lỗi tạo nhóm: " + message);
-                }
-            };
-
-            if (category.getType() == CategoryType.EXPENSE) {
-                repository.createExpenseCategoryGroup(groupRequest, groupCallback);
-            } else {
-                repository.createIncomeCategoryGroup(groupRequest, groupCallback);
-            }
-            return;
+            createGroupThenProceed(category, this::performActualCreate);
+        } else {
+            performActualCreate(category);
         }
+    }
 
-        performActualCreate(category);
+    public void updateCategory(Category category) {
+        if (category.getGroupId() == null) {
+            createGroupThenProceed(category, this::performActualUpdate);
+        } else {
+            performActualUpdate(category);
+        }
+    }
+
+    private void createGroupThenProceed(Category category, OnGroupReadyAction nextAction) {
+        CategoryGroupRequest groupRequest = new CategoryGroupRequest(category.getGroupName());
+
+        CategoryRepository.CategoryCallback<CategoryGroupResponse> groupCallback = new CategoryRepository.CategoryCallback<CategoryGroupResponse>() {
+            @Override
+            public void onSuccess(CategoryGroupResponse group) {
+                category.setGroupId(group.getId());
+                category.setGroupName(group.getGroupName());
+                nextAction.execute(category);
+            }
+
+            @Override
+            public void onError(String message) {
+                errorLiveData.postValue("Lỗi khởi tạo nhóm mới: " + message);
+            }
+        };
+
+        if (category.getType() == CategoryType.EXPENSE) {
+            repository.createExpenseCategoryGroup(groupRequest, groupCallback);
+        } else {
+            repository.createIncomeCategoryGroup(groupRequest, groupCallback);
+        }
     }
 
     private void performActualCreate(Category category) {
@@ -188,11 +199,12 @@ public class CategoryViewModel extends AndroidViewModel {
         });
     }
 
-    public void updateCategory(Category category) {
+    private void performActualUpdate(Category category) {
         repository.updateCategory(category, new CategoryRepository.CategoryCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 saveSuccess.postValue(true);
+                loadCategories(currentType);
             }
 
             @Override
