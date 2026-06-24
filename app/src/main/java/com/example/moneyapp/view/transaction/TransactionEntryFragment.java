@@ -1,14 +1,18 @@
 package com.example.moneyapp.view.transaction;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,9 +60,8 @@ public class TransactionEntryFragment extends BaseFragment {
     private String editTransactionId = null;
     private String editTransferId = null;
     private boolean isEditing = false;
-    private boolean isDataInitialized = false; // Chống lặp luồng nạp dữ liệu cũ
+    private boolean isDataInitialized = false;
 
-    // BỘ ĐỆM BẢO VỆ CHỐNG SPAM CLICK VÀ STICKY LIVEDATA
     private boolean isSaving = false;
     private int pendingOperations = 0;
 
@@ -132,10 +135,11 @@ public class TransactionEntryFragment extends BaseFragment {
             }
         }
 
-        // CHỈ KHỞI TẠO TABS NGAY LẦN ĐẦU NẾU LÀ TẠO MỚI (CHỐNG TRÙNG LẶP KHI EDIT)
+        // CHỈ KHỞI TẠO TABS NGAY LẦN ĐẦU NẾU LÀ TẠO MỚI
         if (!isEditing) {
             String[] tabs = {"Chi tiêu", "Thu nhập", "Chuyển khoản"};
             setupHeaderTabs(view, tabs, 0, index -> {
+                hideKeyboard(); // Trượt mất Focus khi đổi Tab
                 if (index == 0) currentMode = EntryMode.EXPENSE;
                 else if (index == 1) currentMode = EntryMode.INCOME;
                 else currentMode = EntryMode.TRANSFER;
@@ -146,7 +150,6 @@ public class TransactionEntryFragment extends BaseFragment {
             updateUIByMode();
         }
 
-        // Luôn luôn gọi tải danh sách tài khoản tổng quát trước
         accountViewModel.loadAccounts();
         view.post(this::checkSaveConditions);
     }
@@ -174,7 +177,6 @@ public class TransactionEntryFragment extends BaseFragment {
 
             layoutMoodSelector.setVisibility(View.VISIBLE);
 
-            // KHÔNG XÓA HẠNG MỤC OAN: Chỉ xóa hạng mục cũ nếu người dùng chủ động bấm đổi Tab Thu/Chi khác loại
             if (selectedCategory == null || selectedCategory.getType() != type) {
                 selectedCategory = null;
                 tvSelectedCategory.setText("Chọn hạng mục...");
@@ -226,12 +228,49 @@ public class TransactionEntryFragment extends BaseFragment {
     }
 
     private void initViews(View view) {
+        ScrollView mainScrollView = view.findViewById(R.id.main_scroll_view);
+
+        View scrollContent = mainScrollView.getChildAt(0);
+        if (scrollContent != null) {
+            scrollContent.setFocusable(true);
+            scrollContent.setFocusableInTouchMode(true);
+        }
+
+        etDescription = view.findViewById(R.id.etDescription);
+
+        view.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            view.getWindowVisibleDisplayFrame(r);
+            int screenHeight = view.getRootView().getHeight();
+            int keypadHeight = screenHeight - r.bottom;
+
+            if (keypadHeight > screenHeight * 0.15) {
+                int[] svLocation = new int[2];
+                mainScrollView.getLocationOnScreen(svLocation);
+                int svBottom = svLocation[1] + mainScrollView.getHeight();
+                int overlap = Math.max(0, svBottom - r.bottom);
+
+                mainScrollView.setPadding(0, 0, 0, overlap);
+
+                if (etDescription.hasFocus()) {
+                    mainScrollView.postDelayed(() -> {
+                        int dp24 = (int) (24 * getResources().getDisplayMetrics().density);
+                        int visibleHeight = mainScrollView.getHeight() - overlap;
+                        int targetY = etDescription.getBottom() + dp24 - visibleHeight;
+
+                        mainScrollView.smoothScrollTo(0, Math.max(0, targetY));
+                    }, 100);
+                }
+            } else {
+                mainScrollView.setPadding(0, 0, 0, 0);
+            }
+        });
+
         etAmount = view.findViewById(R.id.etAmount);
         btnOpenCalculator = view.findViewById(R.id.btnOpenCalculator);
         btnSelectCurrency = view.findViewById(R.id.btnSelectCurrency);
         tvCurrency = view.findViewById(R.id.tvCurrency);
         tvConvertedAmount = view.findViewById(R.id.tvConvertedAmount);
-        etDescription = view.findViewById(R.id.etDescription);
 
         layoutCategory = view.findViewById(R.id.layoutCategory);
         layoutDestAccount = view.findViewById(R.id.layoutDestAccount);
@@ -288,6 +327,7 @@ public class TransactionEntryFragment extends BaseFragment {
         });
 
         btnOpenCalculator.setOnClickListener(v -> {
+            hideKeyboard();
             String currentValue = etAmount.getText().toString();
             PopupHelper.showCalculatorPopup(requireContext(), currentValue, result -> {
                 etAmount.setText(String.format(Locale.US, "%.0f", result));
@@ -295,6 +335,7 @@ public class TransactionEntryFragment extends BaseFragment {
         });
 
         btnSelectCurrency.setOnClickListener(v -> {
+            hideKeyboard();
             List<String> allCurrencies = CurrencyFormatter.getSupportedCurrencies();
             if (allCurrencies == null || allCurrencies.isEmpty()) {
                 allCurrencies = new ArrayList<>(Arrays.asList("VND", "USD", "EUR", "JPY"));
@@ -310,6 +351,7 @@ public class TransactionEntryFragment extends BaseFragment {
     private void setupMoodSelector(View view) {
         androidx.recyclerview.widget.RecyclerView rvMood = view.findViewById(R.id.rvMoodSelector);
         moodAdapter = new MoodSelectorAdapter(Mood.getAllMoods(), selectedMoodId, mood -> {
+            hideKeyboard(); // CHẶN: Ép mất tiêu điểm khi bấm Cảm xúc
             selectedMoodId = mood.getId();
         });
         rvMood.setAdapter(moodAdapter);
@@ -352,9 +394,18 @@ public class TransactionEntryFragment extends BaseFragment {
     }
 
     private void setupComboboxes(View view) {
-        view.findViewById(R.id.btnSelectCategory).setOnClickListener(v -> showCategoryPopup());
-        viewSelectSource.setOnClickListener(v -> showAccountPopup(true));
-        viewSelectDest.setOnClickListener(v -> showAccountPopup(false));
+        view.findViewById(R.id.btnSelectCategory).setOnClickListener(v -> {
+            hideKeyboard();
+            showCategoryPopup();
+        });
+        viewSelectSource.setOnClickListener(v -> {
+            hideKeyboard();
+            showAccountPopup(true);
+        });
+        viewSelectDest.setOnClickListener(v -> {
+            hideKeyboard();
+            showAccountPopup(false);
+        });
     }
 
     private void showCategoryPopup() {
@@ -415,7 +466,6 @@ public class TransactionEntryFragment extends BaseFragment {
         checkSaveConditions();
     }
 
-    // NÂNG CẤP DỮ LIỆU THẬT: Tìm kiếm tài khoản và hạng mục chuẩn từ Server để show số dư
     private void upgradeMockAccountsAndCategories() {
         if (selectedSourceAccount != null && !accountList.isEmpty()) {
             for (Account acc : accountList) {
@@ -446,7 +496,7 @@ public class TransactionEntryFragment extends BaseFragment {
                 }
             }
         }
-        checkSaveConditions(); // Đảm bảo nút FAB sáng đèn ngay khi map được số dư thật
+        checkSaveConditions();
     }
 
     private void observeViewModels() {
@@ -454,7 +504,7 @@ public class TransactionEntryFragment extends BaseFragment {
             if (accounts != null) {
                 accountList.clear();
                 accountList.addAll(accounts);
-                upgradeMockAccountsAndCategories(); // Nạp số dư thật lên giao diện
+                upgradeMockAccountsAndCategories();
             }
         });
 
@@ -462,7 +512,7 @@ public class TransactionEntryFragment extends BaseFragment {
             if (categories != null) {
                 categoryList.clear();
                 categoryList.addAll(categories);
-                upgradeMockAccountsAndCategories(); // Đồng bộ dữ liệu hạng mục thật
+                upgradeMockAccountsAndCategories();
             }
         });
 
@@ -494,7 +544,6 @@ public class TransactionEntryFragment extends BaseFragment {
                 tvCurrency.setText(currentCurrencyCode);
                 restoreDateToUI(t.getDate());
 
-                // MOCK DATA: Giúp nút FAB mở khóa ngay lập tức không cần đợi luồng loadAccounts kết thúc
                 Account mockAccount = new Account(t.getAccountId(), t.getAccountName(), 0.0, "VND", t.getAccountColorId(), t.getAccountIconId(), "", true, 0, new Date(), new Date());
                 this.selectedSourceAccount = mockAccount;
                 viewSelectSource.setAccount(mockAccount, true);
@@ -506,10 +555,10 @@ public class TransactionEntryFragment extends BaseFragment {
                 ivCategoryIcon.setIcon(new IconicsDrawable(requireContext(), AppResourceManager.getIconName(mockCategory.getIcon())));
                 ivCategoryIcon.setColorFilter(AppResourceManager.getColor(mockCategory.getColor()));
 
-                // CHỈ SETUP TABS MỘT LẦN DUY NHẤT TẠI ĐÂY KHI CÓ DỮ LIỆU ĐÍCH THỰC
                 String[] tabs = {"Chi tiêu", "Thu nhập", "Chuyển khoản"};
                 int targetTab = (currentMode == EntryMode.EXPENSE) ? 0 : 1;
                 setupHeaderTabs(requireView(), tabs, targetTab, index -> {
+                    hideKeyboard();
                     if (index == 0) currentMode = EntryMode.EXPENSE;
                     else if (index == 1) currentMode = EntryMode.INCOME;
                     else currentMode = EntryMode.TRANSFER;
@@ -517,7 +566,7 @@ public class TransactionEntryFragment extends BaseFragment {
                 });
 
                 updateUIByMode();
-                upgradeMockAccountsAndCategories(); // Nâng cấp nếu luồng danh sách chạy song song đã về trước
+                upgradeMockAccountsAndCategories();
             }
         });
 
@@ -530,7 +579,6 @@ public class TransactionEntryFragment extends BaseFragment {
                 if (transfer.getDescription() != null) etDescription.setText(transfer.getDescription());
                 restoreDateToUI(transfer.getDate());
 
-                // MOCK DATA CHUYỂN KHOẢN: Mở khóa nút FAB cấp tốc
                 Account mockSrc = new Account(transfer.getSourceAccountId(), transfer.getSourceAccountName(), 0.0, "VND", transfer.getSourceAccountColor(), transfer.getSourceAccountIcon(), "", true, 0, new Date(), new Date());
                 this.selectedSourceAccount = mockSrc;
                 viewSelectSource.setAccount(mockSrc, true);
@@ -539,9 +587,9 @@ public class TransactionEntryFragment extends BaseFragment {
                 this.selectedDestAccount = mockDest;
                 viewSelectDest.setAccount(mockDest, true);
 
-                // CHỈ SETUP TABS MỘT LẦN DUY NHẤT TẠI ĐÂY KHI CHUYỂN KHOẢN SẴN SÀNG
                 String[] tabs = {"Chi tiêu", "Thu nhập", "Chuyển khoản"};
                 setupHeaderTabs(requireView(), tabs, 2, index -> {
+                    hideKeyboard();
                     if (index == 0) currentMode = EntryMode.EXPENSE;
                     else if (index == 1) currentMode = EntryMode.INCOME;
                     else currentMode = EntryMode.TRANSFER;
@@ -549,7 +597,7 @@ public class TransactionEntryFragment extends BaseFragment {
                 });
 
                 updateUIByMode();
-                upgradeMockAccountsAndCategories(); // Cập nhật số dư tài khoản lập tức
+                upgradeMockAccountsAndCategories();
             }
         });
     }
@@ -583,11 +631,12 @@ public class TransactionEntryFragment extends BaseFragment {
         tvRecentValue.setText(shortDateFmt.format(box3Date));
         tvRecentLabel.setText("Gần đây");
 
-        btnDateToday.setOnClickListener(v -> selectDateBox(0));
-        btnDateYesterday.setOnClickListener(v -> selectDateBox(1));
-        btnDateRecent.setOnClickListener(v -> selectDateBox(2));
+        btnDateToday.setOnClickListener(v -> { hideKeyboard(); selectDateBox(0); });
+        btnDateYesterday.setOnClickListener(v -> { hideKeyboard(); selectDateBox(1); });
+        btnDateRecent.setOnClickListener(v -> { hideKeyboard(); selectDateBox(2); });
 
         btnPickDate.setOnClickListener(v -> {
+            hideKeyboard();
             Calendar c = Calendar.getInstance(); c.setTime(selectedDate);
             new DatePickerDialog(requireContext(), (dp, y, m, d) -> {
                 Calendar n = Calendar.getInstance(); n.set(y, m, d);
@@ -706,6 +755,20 @@ public class TransactionEntryFragment extends BaseFragment {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    private void hideKeyboard() {
+        View view = requireActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+            ScrollView mainScrollView = requireView().findViewById(R.id.main_scroll_view);
+            if (mainScrollView != null && mainScrollView.getChildAt(0) != null) {
+                mainScrollView.getChildAt(0).requestFocus();
             }
         }
     }

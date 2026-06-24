@@ -1,5 +1,6 @@
 package com.example.moneyapp.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -8,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -46,6 +48,25 @@ public class PopupHelper {
     }
     //endregion
 
+    private static void clearFocusAndHideKeyboard(Context context) {
+        if (context instanceof Activity) {
+            Activity activity = (Activity) context;
+            View view = activity.getCurrentFocus();
+            if (view != null) {
+                view.clearFocus(); // Lột quyền Focus để không tự mở bàn phím lại
+                InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+            }
+        }
+    }
+
+    private static void attachDismissListenerToHideKeyboard(BottomSheetDialog dialog, Context context) {
+        dialog.setOnDismissListener(d -> clearFocusAndHideKeyboard(context));
+    }
+
+
     //region Base Sheet
     private static View createBaseSheetView(Context context, String title) {
         View view = LayoutInflater.from(context).inflate(R.layout.layout_selector_bottom_sheet, null);
@@ -53,10 +74,14 @@ public class PopupHelper {
         tvTitle.setText(title);
         return view;
     }
+
     private static void setupBottomSheetBehavior(BottomSheetDialog dialog, Context context) {
         dialog.setOnShowListener(dialogInterface -> {
             BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
-            View bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+
+            int bottomSheetId = context.getResources().getIdentifier("design_bottom_sheet", "id", "com.google.android.material");
+            View bottomSheet = d.findViewById(bottomSheetId);
+
             if (bottomSheet != null) {
                 ((View) bottomSheet.getParent()).setBackgroundColor(Color.TRANSPARENT);
                 bottomSheet.setBackgroundColor(Color.TRANSPARENT);
@@ -71,6 +96,8 @@ public class PopupHelper {
                 behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
+
+        attachDismissListenerToHideKeyboard(dialog, context);
     }
     //endregion
 
@@ -79,6 +106,8 @@ public class PopupHelper {
                                               String currentAccountId,
                                               boolean showAllOption,
                                               AccountPopupAdapter.OnAccountClickListener listener) {
+        clearFocusAndHideKeyboard(context);
+
         BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
         View view = createBaseSheetView(context, "Chọn tài khoản");
 
@@ -112,6 +141,8 @@ public class PopupHelper {
                                                List<Category> categoryList,
                                                boolean showAllOption,
                                                CategoryAdapter.OnCategoryClickListener listener) {
+        clearFocusAndHideKeyboard(context);
+
         BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
         View view = createBaseSheetView(context, "Chọn hạng mục");
 
@@ -155,6 +186,8 @@ public class PopupHelper {
     }
 
     private static void showGoalPicker(Context context, String title, OnResourceSelectedListener listener) {
+        clearFocusAndHideKeyboard(context);
+
         BottomSheetDialog dialog = new BottomSheetDialog(context);
         View view = createBaseSheetView(context, title);
 
@@ -197,6 +230,8 @@ public class PopupHelper {
     }
 
     private static void showPicker(Context context, boolean isColorPicker, String title, OnResourceSelectedListener listener) {
+        clearFocusAndHideKeyboard(context);
+
         BottomSheetDialog dialog = new BottomSheetDialog(context);
         View view = createBaseSheetView(context, title);
 
@@ -246,6 +281,8 @@ public class PopupHelper {
 
     //region Calculator
     public static void showCalculatorPopup(Context context, String initialValue, OnCalculatorResultListener listener) {
+        clearFocusAndHideKeyboard(context);
+
         BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
         View view = LayoutInflater.from(context).inflate(R.layout.layout_calculator_sheet, null);
 
@@ -254,7 +291,6 @@ public class PopupHelper {
 
         final String[] expr = {""};
 
-        // Xử lý nạp số tiền hiện tại từ ô nhập liệu vào máy tính
         if (initialValue != null) {
             String cleanVal = initialValue.replaceAll("[.,đ\\s]", "");
             if (!cleanVal.isEmpty() && !cleanVal.equals("0")) {
@@ -262,7 +298,6 @@ public class PopupHelper {
             }
         }
 
-        // Cập nhật UI ngay khi vừa nạp
         tvExpression.setText(expr[0].isEmpty() ? "0" : formatExpressionDisplay(expr[0]));
         if (expr[0].matches(".*[+\\-×÷].*")) btnAction.setText("=");
         else btnAction.setText("✔");
@@ -277,9 +312,7 @@ public class PopupHelper {
                 if (!expr[0].isEmpty()) expr[0] = expr[0].substring(0, expr[0].length() - 1);
             }
             else if (id == R.id.btn_action) {
-                // TỰ QUYẾT ĐỊNH HÀNH ĐỘNG DỰA VÀO BIỂU THỨC
                 if (expr[0].matches(".*[+\\-×÷].*")) {
-                    // Đang có phép tính -> Thực hiện tính toán (=)
                     try {
                         String mathStr = expr[0].replace("×", "*").replace("÷", "/");
                         double result = evalMath(mathStr);
@@ -292,7 +325,6 @@ public class PopupHelper {
                         Toast.makeText(context, "Phép tính lỗi", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    // Chỉ có số -> Trả kết quả về cho Fragment (✔)
                     if (listener != null) {
                         try {
                             listener.onResult(Double.parseDouble(expr[0]));
@@ -305,7 +337,6 @@ public class PopupHelper {
                 }
             }
             else if (v instanceof Button) {
-                // Xử lý các nút số và dấu phép tính
                 String val = ((Button) v).getText().toString();
                 if (expr[0].equals("0") && (!val.equals(".") && !val.equals("000"))) {
                     expr[0] = "";
@@ -313,10 +344,8 @@ public class PopupHelper {
                 expr[0] += val;
             }
 
-            // GỌI HÀM FORMAT HIỂN THỊ CÁCH 3 SỐ
             tvExpression.setText(expr[0].isEmpty() ? "0" : formatExpressionDisplay(expr[0]));
 
-            // Cập nhật giao diện của nút Action
             if (expr[0].matches(".*[+\\-×÷].*")) {
                 btnAction.setText("=");
             } else {
@@ -324,7 +353,6 @@ public class PopupHelper {
             }
         };
 
-        // Gắn sự kiện cho toàn bộ nút
         int[] btnIds = {R.id.btn_0, R.id.btn_1, R.id.btn_2, R.id.btn_3, R.id.btn_4, R.id.btn_5, R.id.btn_6, R.id.btn_7, R.id.btn_8, R.id.btn_9,
                 R.id.btn_000, R.id.btn_dot, R.id.btn_add, R.id.btn_sub, R.id.btn_mul, R.id.btn_div, R.id.btn_clear, R.id.btn_del, R.id.btn_action};
         for (int id : btnIds) {
@@ -334,7 +362,9 @@ public class PopupHelper {
         dialog.setContentView(view);
         dialog.setOnShowListener(dialogInterface -> {
             BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
-            View bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+
+            int bottomSheetId = context.getResources().getIdentifier("design_bottom_sheet", "id", "com.google.android.material");
+            View bottomSheet = d.findViewById(bottomSheetId);
             if (bottomSheet != null) {
                 ((View) bottomSheet.getParent()).setBackgroundColor(android.graphics.Color.TRANSPARENT);
                 bottomSheet.setBackgroundColor(android.graphics.Color.TRANSPARENT);
@@ -344,10 +374,10 @@ public class PopupHelper {
             }
         });
 
+        attachDismissListenerToHideKeyboard(dialog, context);
         dialog.show();
     }
 
-    // Thuật toán parse toán học mini
     private static double evalMath(final String str) {
         return new Object() {
             int pos = -1, ch;
@@ -402,14 +432,14 @@ public class PopupHelper {
 
         for (int i = 0; i < mathExpr.length(); i++) {
             char c = mathExpr.charAt(i);
-            if (Character.isDigit(c) || c == '.') { // Giữ nguyên dấu thập phân
+            if (Character.isDigit(c) || c == '.') {
                 currentNumber.append(c);
             } else {
                 if (currentNumber.length() > 0) {
                     result.append(formatNumberPart(currentNumber.toString()));
                     currentNumber.setLength(0);
                 }
-                result.append(" ").append(c).append(" "); // Thêm khoảng trắng quanh phép tính cho đẹp
+                result.append(" ").append(c).append(" ");
             }
         }
         if (currentNumber.length() > 0) {
@@ -424,13 +454,13 @@ public class PopupHelper {
                 String[] parts = numStr.split("\\.");
                 long intPart = Long.parseLong(parts[0].isEmpty() ? "0" : parts[0]);
                 String formattedInt = String.format(java.util.Locale.US, "%,d", intPart).replace(",", ".");
-                return formattedInt + "," + parts[1]; // VN dùng phẩy cho thập phân
+                return formattedInt + "," + parts[1];
             } else {
                 long intPart = Long.parseLong(numStr);
-                return String.format(java.util.Locale.US, "%,d", intPart).replace(",", "."); // Ngăn cách ngàn bằng chấm
+                return String.format(java.util.Locale.US, "%,d", intPart).replace(",", ".");
             }
         } catch (Exception e) {
-            return numStr; // Fallback
+            return numStr;
         }
     }
     //endregion
@@ -439,6 +469,8 @@ public class PopupHelper {
     public static void showCurrencyFilterPopup(Context context,
                                                List<String> currencyList,
                                                OnCurrencySelectedListener listener) {
+
+        clearFocusAndHideKeyboard(context);
 
         BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.TransparentBottomSheetDialog);
         View view = LayoutInflater.from(context).inflate(R.layout.layout_selector_currency, null);
@@ -496,7 +528,6 @@ public class PopupHelper {
 
         rvList.setAdapter(adapter);
 
-        // Xử lý sự kiện tìm kiếm
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -516,6 +547,7 @@ public class PopupHelper {
 
         dialog.setContentView(view);
         setupBottomSheetBehavior(dialog, context);
+
         dialog.show();
     }
     //endregion
