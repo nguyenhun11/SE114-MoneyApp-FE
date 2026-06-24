@@ -68,14 +68,7 @@ public class AccountFragment extends BaseFragment {
             setupBalanceSelector(
                     view,
                     getString(R.string.total_balance),
-                    displayBalance,
-                    false,
-                    "",
-                    v -> { },
-                    "gmd_add_circle_outline",
-                    v -> {
-                        Navigation.findNavController(view).navigate(R.id.accountDetailFragment);
-                    }
+                    displayBalance
             );
         });
 
@@ -91,19 +84,13 @@ public class AccountFragment extends BaseFragment {
             }
         });
     }
-
-    @Override
-    protected String getFabIcon() {
-        return "gmd_swap_horiz";
-    }
-
     @Override
     protected String getFabLabel() {
-        return "Thêm chuyển khoản";
+        return "Thêm tài khoản";
     }
 
     @Override
     protected void onFabClick() {
-        Navigation.findNavController(requireView()).navigate(R.id.action_accountFragment_to_transferAddFragment);
+        Navigation.findNavController(requireView()).navigate(R.id.action_accountFragment_to_accountDetailFragment);
     }
 }

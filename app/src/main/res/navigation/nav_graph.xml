@@ -22,10 +22,9 @@
         android:name="com.example.moneyapp.view.account.AccountFragment"
         android:label="@string/account"
         tools:layout="@layout/fragment_account">
-
         <action
-            android:id="@+id/action_accountFragment_to_transferAddFragment"
-            app:destination="@id/transferAddFragment" />
+            android:id="@+id/action_accountFragment_to_accountDetailFragment"
+            app:destination="@id/accountDetailFragment" />
     </fragment>
 
     <fragment
@@ -45,12 +44,6 @@
         android:name="com.example.moneyapp.view.transaction.TransactionEntryFragment"
         android:label="Giao dịch mới"
         tools:layout="@layout/fragment_transaction_entry" />
-
-    <fragment
-        android:id="@+id/transferAddFragment"
-        android:name="com.example.moneyapp.view.transfer.TransferAddFragment"
-        android:label="Thêm chuyển khoản"
-        tools:layout="@layout/fragment_transfer_add" />
 
     <fragment
         android:id="@+id/transferDetailFragment"

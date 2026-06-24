@@ -1,6 +1,7 @@
 package com.example.moneyapp.view.account;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -8,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
@@ -97,6 +100,35 @@ public class AccountDetailFragment extends BaseFragment {
         btnSelectCurrency = view.findViewById(R.id.btnSelectCurrency);
         tvCurrency = view.findViewById(R.id.tvCurrency);
 
+        NestedScrollView mainScrollView = view.findViewById(R.id.main_scroll_view);
+
+        view.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            view.getWindowVisibleDisplayFrame(r);
+            int screenHeight = view.getRootView().getHeight();
+            int keypadHeight = screenHeight - r.bottom;
+
+            if (keypadHeight > screenHeight * 0.15) {
+                int[] svLocation = new int[2];
+                mainScrollView.getLocationOnScreen(svLocation);
+                int svBottom = svLocation[1] + mainScrollView.getHeight();
+                int overlap = Math.max(0, svBottom - r.bottom);
+
+                mainScrollView.setPadding(0, 0, 0, overlap);
+
+                if (etDescription.hasFocus()) {
+                    mainScrollView.postDelayed(() -> {
+                        int dp24 = (int) (24 * getResources().getDisplayMetrics().density);
+                        int visibleHeight = mainScrollView.getHeight() - overlap;
+                        int targetY = etDescription.getBottom() + dp24 - visibleHeight;
+                        mainScrollView.smoothScrollTo(0, Math.max(0, targetY));
+                    }, 100);
+                }
+            } else {
+                mainScrollView.setPadding(0, 0, 0, 0);
+            }
+        });
+
         if (getArguments() != null) {
             currentAccountId = getArguments().getString("accountId", null);
         }
@@ -112,10 +144,8 @@ public class AccountDetailFragment extends BaseFragment {
         etName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
             @Override
             public void afterTextChanged(Editable s) {
                 checkSaveConditions();
@@ -158,6 +188,8 @@ public class AccountDetailFragment extends BaseFragment {
         if (btnSelectCurrency == null) return;
 
         btnSelectCurrency.setOnClickListener(v -> {
+            hideKeyboard();
+
             if (currentAccountId != null) {
                 Toast.makeText(requireContext(), "Không thể đổi đơn vị tiền tệ của ví đã tạo", Toast.LENGTH_SHORT).show();
                 return;
@@ -181,7 +213,6 @@ public class AccountDetailFragment extends BaseFragment {
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
@@ -213,6 +244,7 @@ public class AccountDetailFragment extends BaseFragment {
 
     private void setupPickers(View view) {
         view.findViewById(R.id.btn_pick_icon).setOnClickListener(v -> {
+            hideKeyboard();
             PopupHelper.showIconPicker(requireContext(), id -> {
                 selectedIconId = id;
                 updateIconUI(id);
@@ -220,6 +252,7 @@ public class AccountDetailFragment extends BaseFragment {
         });
 
         view.findViewById(R.id.btn_pick_color).setOnClickListener(v -> {
+            hideKeyboard();
             PopupHelper.showColorPicker(requireContext(), id -> {
                 selectedColorId = id;
                 updateColorUI(id);
@@ -329,5 +362,20 @@ public class AccountDetailFragment extends BaseFragment {
                 Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void hideKeyboard() {
+        View view = requireActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+
+            NestedScrollView mainScrollView = requireView().findViewById(R.id.main_scroll_view);
+            if (mainScrollView != null && mainScrollView.getChildAt(0) != null) {
+                mainScrollView.getChildAt(0).requestFocus();
+            }
+        }
     }
 }
