@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         Menu menu = bottomNav.getMenu();
         menu.findItem(R.id.homeFragment).setIcon(getShrunkIcon("gmd_home", 0));
         menu.findItem(R.id.historyFragment).setIcon(getShrunkIcon("gmd_history", 0));
-        menu.findItem(R.id.accountFragment).setIcon(getShrunkIcon("gmd_account_balance_wallet", 0));
+        menu.findItem(R.id.accountFragment).setIcon(getShrunkIcon("gmd_category", 0));
         menu.findItem(R.id.profileFragment).setIcon(getShrunkIcon("gmd_person", 0));
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
@@ -78,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
     private void setupSideMenuIcons(NavController navController) {
         setupSideMenuItem(R.id.btn_statistics, "gmd_insert_chart", "Thống kê", R.id.statisticsFragment, navController);
         setupSideMenuItem(R.id.btn_goals, "gmd_star", getString(R.string.goal_title), R.id.goalFragment, navController);
-        setupSideMenuItem(R.id.btn_categories, "gmd_category", "Hạng mục", R.id.categoryFragment, navController);
-        
         // Thêm MoneyCity và Budget vào Side Menu
         setupSideMenuItem(R.id.btn_city_menu, "gmd_location_city", "Thành phố MoneyCity", R.id.cityFragment, navController);
         setupSideMenuItem(R.id.btn_budget_menu, "gmd_account_balance_wallet", "Quản lý Ngân sách", R.id.budgetFragment, navController);

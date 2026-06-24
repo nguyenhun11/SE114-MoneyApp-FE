@@ -1,10 +1,14 @@
 package com.example.moneyapp.view;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -243,5 +247,31 @@ public abstract class BaseFragment extends Fragment {
             }
         }
     }
+
+    protected void setTabsEnabled(boolean enabled) {
+        TabLayout tabLayout = requireView().findViewById(R.id.tab_layout_header);
+        if (tabLayout != null) {
+            LinearLayout tabStrip = ((LinearLayout) tabLayout.getChildAt(0));
+            tabStrip.setEnabled(enabled);
+            for (int i = 0; i < tabStrip.getChildCount(); i++) {
+                tabStrip.getChildAt(i).setClickable(enabled);
+            }
+            tabLayout.setAlpha(enabled ? 1.0f : 0.5f);
+        }
+    }
     //endregion
+
+    protected void hideKeyboard() {
+        View view = requireActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+            ScrollView mainScrollView = requireView().findViewById(R.id.main_scroll_view);
+            if (mainScrollView != null && mainScrollView.getChildAt(0) != null) {
+                mainScrollView.getChildAt(0).requestFocus();
+            }
+        }
+    }
 }

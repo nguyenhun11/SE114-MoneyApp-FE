@@ -123,4 +123,5 @@
     <string name="category_group_other">Khác</string>
     <string name="category_group_income">Thu nhập</string>
     <string name="category_adjust_frequent">Điều chỉnh hạng mục thường dùng</string>
+    <string name="category">Hạng mục</string>
 </resources>

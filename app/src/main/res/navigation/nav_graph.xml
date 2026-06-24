@@ -86,16 +86,6 @@
         tools:layout="@layout/fragment_statistics" />
 
     <fragment
-        android:id="@+id/categoryFragment"
-        android:name="com.example.moneyapp.view.category.CategoryFragment"
-        android:label="Hạng mục"
-        tools:layout="@layout/fragment_category">
-        <action
-            android:id="@+id/action_categoryFragment_to_addCategoryFragment"
-            app:destination="@id/addCategoryFragment" />
-    </fragment>
-
-    <fragment
         android:id="@+id/addCategoryFragment"
         android:name="com.example.moneyapp.view.category.AddCategoryFragment"
         android:label="Thêm hạng mục"

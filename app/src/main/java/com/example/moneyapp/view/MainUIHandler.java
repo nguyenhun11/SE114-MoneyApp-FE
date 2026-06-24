@@ -32,7 +32,6 @@ public class MainUIHandler {
             R.id.homeFragment,
             R.id.historyFragment,
             R.id.accountFragment,
-            R.id.categoryFragment,
             R.id.goalFragment,
             R.id.profileFragment
     ));

@@ -363,19 +363,4 @@ public class AccountDetailFragment extends BaseFragment {
             }
         });
     }
-
-    private void hideKeyboard() {
-        View view = requireActivity().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null) {
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
-
-            NestedScrollView mainScrollView = requireView().findViewById(R.id.main_scroll_view);
-            if (mainScrollView != null && mainScrollView.getChildAt(0) != null) {
-                mainScrollView.getChildAt(0).requestFocus();
-            }
-        }
-    }
 }
