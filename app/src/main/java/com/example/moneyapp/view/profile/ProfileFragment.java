@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -26,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.local.PreferenceManager;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.utils.RewardHelper;
 import com.example.moneyapp.utils.CurrencyFormatter;
 import com.example.moneyapp.utils.PopupHelper;
@@ -247,20 +247,19 @@ public class ProfileFragment extends BaseFragment {
             if (message == null) return;
 
             if (message.equals("SUCCESS_DELETE")) {
-                Toast.makeText(requireContext(), "Tài khoản đã được xóa thành công", Toast.LENGTH_SHORT).show();
-                performLogout();
+                DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Tài khoản đã được xóa thành công", this::performLogout);
             } else if (message.equals("SUCCESS")) {
-                Toast.makeText(requireContext(), "Cập nhật thành công", Toast.LENGTH_SHORT).show();
-            } else if (message.equals("SUCCESS_CURRENCY")) { // THÊM DÒNG NÀY
-                Toast.makeText(requireContext(), "Cập nhật đơn vị tiền tệ thành công", Toast.LENGTH_SHORT).show();
+                DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Cập nhật thành công");
+            } else if (message.equals("SUCCESS_CURRENCY")) {
+                DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Cập nhật đơn vị tiền tệ thành công");
             } else if (message.startsWith("SUCCESS_RESTORE:")) {
                 String msgText = message.replace("SUCCESS_RESTORE:", "");
-                Toast.makeText(requireContext(), msgText, Toast.LENGTH_LONG).show();
+                DialogHelper.showSimpleDialog(requireContext(), "Thông báo", msgText);
             } else if (message.startsWith("CHECKIN_MSG:")) {
                 String msgText = message.replace("CHECKIN_MSG:", "");
                 RewardHelper.showBigReward(requireContext(), "+10 SP", msgText);
             } else {
-                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+                DialogHelper.showSimpleDialog(requireContext(), "Lỗi", message);
             }
         });
 
@@ -271,7 +270,7 @@ public class ProfileFragment extends BaseFragment {
             input.setPadding(50, 40, 50, 40);
             input.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(20)});
 
-            new android.app.AlertDialog.Builder(requireContext())
+            new androidx.appcompat.app.AlertDialog.Builder(requireContext())
                     .setTitle("Đổi tên người dùng")
                     .setView(input)
                     .setPositiveButton("Lưu", (dialog, which) -> {
@@ -291,14 +290,9 @@ public class ProfileFragment extends BaseFragment {
         });
 
         llChangePassword.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.action_profileFragment_to_changePasswordFragment));
-        btnLogout.setOnClickListener(v -> performLogout());
+        btnLogout.setOnClickListener(v -> DialogHelper.showConfirmDialog(requireContext(), "Đăng xuất", "Bạn có chắc chắn muốn đăng xuất?", this::performLogout, null));
         btnDelete.setOnClickListener(v -> {
-            new android.app.AlertDialog.Builder(requireContext())
-                    .setTitle("Xác nhận xóa tài khoản")
-                    .setMessage("Dữ liệu sẽ bị xóa vĩnh viễn. Tiếp tục?")
-                    .setPositiveButton("Xóa", (dialog, which) -> profileViewModel.deleteAccount())
-                    .setNegativeButton("Hủy", null)
-                    .show();
+            DialogHelper.showConfirmDialog(requireContext(), "Xác nhận xóa tài khoản", "Dữ liệu sẽ bị xóa vĩnh viễn. Tiếp tục?", () -> profileViewModel.deleteAccount(), null);
         });
 
         llChangeCurrency.setOnClickListener(v -> {
@@ -324,6 +318,7 @@ public class ProfileFragment extends BaseFragment {
         View collapsedContent = view.findViewById(R.id.collapsed_content);
 
         profileCardWrapper.post(() -> {
+            if (!isAdded()) return;
             int topHeight = topSlice.getHeight();
             int collapsedHeight = collapsedContent.getHeight();
             int wrapperMarginBottom = getResources().getDimensionPixelSize(R.dimen.card_horizontal_margin); // ~12-16dp

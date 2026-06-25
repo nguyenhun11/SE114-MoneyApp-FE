@@ -9,10 +9,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +23,7 @@ import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.CurrencyFormatter;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.AccountViewModel;
@@ -191,7 +190,7 @@ public class AccountDetailFragment extends BaseFragment {
             hideKeyboard();
 
             if (currentAccountId != null) {
-                Toast.makeText(requireContext(), "Không thể đổi đơn vị tiền tệ của ví đã tạo", Toast.LENGTH_SHORT).show();
+                DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Không thể đổi đơn vị tiền tệ của ví đã tạo");
                 return;
             }
 
@@ -285,7 +284,7 @@ public class AccountDetailFragment extends BaseFragment {
             try {
                 balance = Double.parseDouble(balanceStr);
             } catch (NumberFormatException e) {
-                Toast.makeText(getContext(), "Số dư không hợp lệ", Toast.LENGTH_SHORT).show();
+                DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Số dư không hợp lệ");
                 return;
             }
         }
@@ -352,14 +351,15 @@ public class AccountDetailFragment extends BaseFragment {
 
         viewModel.getSaveSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success) {
-                Toast.makeText(getContext(), "Lưu thông tin thành công!", Toast.LENGTH_SHORT).show();
-                Navigation.findNavController(requireView()).navigateUp();
+                DialogHelper.showSimpleDialog(requireContext(), "Thành công", "Lưu thông tin thành công!", () -> {
+                    Navigation.findNavController(requireView()).navigateUp();
+                });
             }
         });
 
         viewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
             if (error != null) {
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                DialogHelper.showSimpleDialog(requireContext(), "Lỗi", error);
             }
         });
     }

@@ -10,7 +10,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.utils.DialogHelper;
 import com.google.android.material.tabs.TabLayout;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
@@ -184,7 +184,7 @@ public abstract class BaseFragment extends Fragment {
     }
 
     private void showAccountPopup() {
-        Toast.makeText(getContext(), "Chọn nguồn tiền", Toast.LENGTH_SHORT).show();
+        DialogHelper.showSimpleDialog(getContext(), "Thông báo", "Chọn nguồn tiền");
     }
     //endregion
 

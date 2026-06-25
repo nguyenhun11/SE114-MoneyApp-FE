@@ -7,11 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
@@ -20,17 +18,16 @@ import com.example.moneyapp.data.remote.request.GoalRequest;
 import com.example.moneyapp.model.Goal;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.CurrencyFormatter;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.GoalViewModel;
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 public class GoalAddFragment extends BaseFragment {
@@ -194,7 +191,7 @@ public class GoalAddFragment extends BaseFragment {
         String targetStr = etTargetAmount.getText().toString().trim().replaceAll("[.,]", "");
 
         if (name.isEmpty() || targetStr.isEmpty() || selectedDeadline.isEmpty()) {
-            Toast.makeText(getContext(), "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Vui lòng nhập đầy đủ thông tin");
             return;
         }
 
@@ -210,35 +207,31 @@ public class GoalAddFragment extends BaseFragment {
 
     private void deleteGoal() {
         if (existingGoal != null) {
-            new MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Xác nhận xóa")
-                    .setMessage(R.string.confirm_delete_goal)
-                    .setPositiveButton("Xóa", (dialog, which) -> {
-                        viewModel.deleteGoal(existingGoal.getId());
-                    })
-                    .setNegativeButton("Hủy", null)
-                    .show();
+            DialogHelper.showConfirmDialog(requireContext(), "Xác nhận xóa", getString(R.string.confirm_delete_goal), () -> {
+                viewModel.deleteGoal(existingGoal.getId());
+            }, null);
         }
     }
 
     private void observeViewModel() {
         viewModel.getIsOperationSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success) {
-                Toast.makeText(getContext(), "Thành công", Toast.LENGTH_SHORT).show();
-                viewModel.resetOperationStatus();
-                
-                // Nếu đang ở màn hình Sửa (có existingGoal), cần quay lại màn hình Danh sách (về 2 cấp)
-                if (existingGoal != null) {
-                    Navigation.findNavController(requireView()).popBackStack(R.id.goalFragment, false);
-                } else {
-                    Navigation.findNavController(requireView()).navigateUp();
-                }
+                DialogHelper.showSimpleDialog(requireContext(), "Thành công", "Thao tác thành công", () -> {
+                    viewModel.resetOperationStatus();
+                    
+                    // Nếu đang ở màn hình Sửa (có existingGoal), cần quay lại màn hình Danh sách (về 2 cấp)
+                    if (existingGoal != null) {
+                        Navigation.findNavController(requireView()).popBackStack(R.id.goalFragment, false);
+                    } else {
+                        Navigation.findNavController(requireView()).navigateUp();
+                    }
+                });
             }
         });
 
         viewModel.getError().observe(getViewLifecycleOwner(), error -> {
             if (error != null) {
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                DialogHelper.showSimpleDialog(requireContext(), "Lỗi", error);
             }
         });
     }

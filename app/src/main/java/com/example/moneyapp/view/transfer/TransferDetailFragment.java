@@ -1,6 +1,5 @@
 package com.example.moneyapp.view.transfer;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +20,7 @@ import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.Transfer;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.CurrencyFormatter;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.AccountViewModel;
 import com.example.moneyapp.viewmodel.TransferViewModel;
@@ -65,8 +64,9 @@ public class TransferDetailFragment extends BaseFragment {
             observeViewModel(view);
             accountViewModel.loadAccounts();
         } else {
-            Toast.makeText(getContext(), "Không tìm thấy mã chuyển khoản", Toast.LENGTH_SHORT).show();
-            Navigation.findNavController(view).navigateUp();
+            DialogHelper.showSimpleDialog(requireContext(), "Lỗi", "Không tìm thấy mã chuyển khoản", () -> {
+                Navigation.findNavController(view).navigateUp();
+            });
         }
     }
 
@@ -79,14 +79,11 @@ public class TransferDetailFragment extends BaseFragment {
     }
 
     private void showDeleteConfirmDialog() {
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Xóa chuyển khoản")
-                .setMessage("Bạn có chắc chắn muốn xóa chuyển khoản này không? Hành động này không thể hoàn tác.")
-                .setPositiveButton("Xóa", (dialog, which) -> {
-                    transferViewModel.deleteTransfer(currentTransferId);
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+        DialogHelper.showConfirmDialog(requireContext(), 
+                "Xóa chuyển khoản", 
+                "Bạn có chắc chắn muốn xóa chuyển khoản này không? Hành động này không thể hoàn tác.",
+                () -> transferViewModel.deleteTransfer(currentTransferId),
+                null);
     }
 
     private void observeViewModel(View view) {
@@ -106,14 +103,15 @@ public class TransferDetailFragment extends BaseFragment {
 
         transferViewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
             if (Boolean.TRUE.equals(success)) {
-                Toast.makeText(getContext(), "Đã xóa chuyển khoản", Toast.LENGTH_SHORT).show();
-                Navigation.findNavController(requireView()).navigateUp();
+                DialogHelper.showSimpleDialog(requireContext(), "Thành công", "Đã xóa chuyển khoản thành công", () -> {
+                    Navigation.findNavController(requireView()).navigateUp();
+                });
             }
         });
 
         transferViewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
             if (error != null) {
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                DialogHelper.showSimpleDialog(requireContext(), "Lỗi", error);
             }
         });
     }

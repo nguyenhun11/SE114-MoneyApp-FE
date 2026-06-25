@@ -7,13 +7,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+
 import com.example.moneyapp.R;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.viewmodel.ProfileViewModel;
 
 public class ChangePasswordFragment extends Fragment {
@@ -57,12 +59,13 @@ public class ChangePasswordFragment extends Fragment {
         profileViewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
             if (message != null) {
                 if (message.equals("SUCCESS")) {
-                    Toast.makeText(requireContext(), "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
-                    Navigation.findNavController(requireView()).navigateUp();
+                    DialogHelper.showSimpleDialog(requireContext(), "Thành công", "Đổi mật khẩu thành công!", () -> {
+                        Navigation.findNavController(requireView()).navigateUp();
+                    });
                 } else {
-                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+                    DialogHelper.showSimpleDialog(requireContext(), "Thông báo", message);
                 }
-                // Reset message để không bị Toast lặp lại khi xoay màn hình
+                // Reset message để không bị Dialog lặp lại khi xoay màn hình
                 profileViewModel.errorMessage.setValue(null);
             }
         });

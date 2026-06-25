@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.CategoryType;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.category.CategorySummaryAdapter;
 import com.example.moneyapp.view.components.TimeSelectorView;
@@ -160,7 +160,7 @@ public class HomeFragment extends BaseFragment {
 
         homeViewModel.getError().observe(getViewLifecycleOwner(), error -> {
             if (error != null) {
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                DialogHelper.showSimpleDialog(requireContext(), "Lỗi", error);
             }
         });
     }

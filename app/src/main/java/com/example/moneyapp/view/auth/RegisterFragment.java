@@ -7,13 +7,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import com.example.moneyapp.R;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.viewmodel.AuthViewModel;
 
 public class RegisterFragment extends Fragment {
@@ -57,12 +57,13 @@ public class RegisterFragment extends Fragment {
 
         authViewModel.registerSuccess.observe(getViewLifecycleOwner(), success -> {
             if (success != null && success) {
-                Toast.makeText(requireContext(), "Đăng ký thành công! Vui lòng đăng nhập.", Toast.LENGTH_LONG).show();
-                Navigation.findNavController(view).navigateUp();
+                DialogHelper.showSimpleDialog(requireContext(), "Thành công", "Đăng ký thành công! Vui lòng đăng nhập.", () -> {
+                    Navigation.findNavController(view).navigateUp();
+                });
             }
         });
         authViewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
-            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", message);
         });
     }
 }

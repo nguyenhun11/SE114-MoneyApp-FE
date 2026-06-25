@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -22,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.view.MainActivity;
 import com.example.moneyapp.viewmodel.AuthViewModel;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -121,7 +121,6 @@ public class LoginFragment extends Fragment {
         }
 
         authViewModel.loginSuccess.observe(getViewLifecycleOwner(), user -> {
-            Toast.makeText(requireContext(), "Login successful", Toast.LENGTH_SHORT).show();
             SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
             prefs.edit().putBoolean("isLoggedIn", true).apply();
             startActivity(new Intent(requireActivity(), MainActivity.class));
@@ -129,7 +128,7 @@ public class LoginFragment extends Fragment {
         });
 
         authViewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
-            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", message);
         });
     }
 
@@ -140,10 +139,10 @@ public class LoginFragment extends Fragment {
             if (idToken != null) {
                 authViewModel.loginWithGoogle(idToken);
             } else {
-                Toast.makeText(requireContext(), "Google ID Token is null", Toast.LENGTH_SHORT).show();
+                DialogHelper.showSimpleDialog(requireContext(), "Lỗi", "Google ID Token is null");
             }
         } catch (ApiException e) {
-            Toast.makeText(requireContext(), "Google Sign-In failed: " + e.getStatusCode(), Toast.LENGTH_SHORT).show();
+            DialogHelper.showSimpleDialog(requireContext(), "Lỗi đăng nhập", "Google Sign-In failed: " + e.getStatusCode());
         }
     }
 }

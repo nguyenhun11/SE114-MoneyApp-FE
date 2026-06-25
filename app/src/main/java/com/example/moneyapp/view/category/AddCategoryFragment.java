@@ -13,7 +13,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +26,7 @@ import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.CurrencyFormatter;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
@@ -204,25 +204,25 @@ public class AddCategoryFragment extends BaseFragment {
 
         viewModel.getSaveSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success) {
-                Toast.makeText(getContext(), R.string.category_save_success, Toast.LENGTH_SHORT).show();
-                Navigation.findNavController(requireView()).navigateUp();
+                DialogHelper.showSimpleDialog(requireContext(), "Thành công", getString(R.string.category_save_success), () -> {
+                    Navigation.findNavController(requireView()).navigateUp();
+                });
             }
         });
 
         viewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
             if (error != null) {
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                DialogHelper.showSimpleDialog(requireContext(), "Lỗi", error);
             }
         });
     }
 
     private void showDeleteConfirmDialog() {
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Xóa hạng mục")
-                .setMessage("Bạn có chắc chắn muốn xóa hạng mục này không?")
-                .setPositiveButton("Xóa", (dialog, which) -> deleteCategory())
-                .setNegativeButton("Hủy", null)
-                .show();
+        DialogHelper.showConfirmDialog(requireContext(), 
+                "Xóa hạng mục", 
+                "Bạn có chắc chắn muốn xóa hạng mục này không?", 
+                this::deleteCategory, 
+                null);
     }
 
     private void setupGroupSelector(View view) {
@@ -330,7 +330,7 @@ public class AddCategoryFragment extends BaseFragment {
             return;
         }
         if (groupName.isEmpty()) {
-            Toast.makeText(getContext(), "Vui lòng chọn hoặc nhập tên nhóm", Toast.LENGTH_SHORT).show();
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Vui lòng chọn hoặc nhập tên nhóm");
             return;
         }
 

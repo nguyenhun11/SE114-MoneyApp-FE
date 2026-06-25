@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +19,7 @@ import com.example.moneyapp.R;
 import com.example.moneyapp.data.remote.response.CategoryGroupResponse;
 import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -89,7 +89,7 @@ public class ReorderCategoryFragment extends BaseFragment {
             if (success) {
                 if (isDragChanged) {
                     isDragChanged = false;
-                    Toast.makeText(getContext(), "Đã cập nhật thứ tự", Toast.LENGTH_SHORT).show();
+                    DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Đã cập nhật thứ tự hạng mục thành công.");
                 }
                 // Tự động tải lại dữ liệu sau khi Thêm/Xóa nhóm thành công
                 viewModel.loadCategories(viewModel.getCurrentType());
@@ -205,16 +205,11 @@ public class ReorderCategoryFragment extends BaseFragment {
     // =========================================================
 
     private void showDeleteGroupDialog(String groupId, String groupName) {
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Xóa nhóm trống")
-                .setMessage("Bạn có chắc muốn xóa nhóm '" + groupName + "' không?")
-                .setPositiveButton("Xóa", (dialog, which) -> {
-                    // YÊU CẦU: Cần thêm hàm deleteCategoryGroup(groupId) bên CategoryViewModel
-                    // viewModel.deleteCategoryGroup(groupId);
-                    Toast.makeText(getContext(), "Đang xóa nhóm...", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+        DialogHelper.showConfirmDialog(requireContext(), "Xóa nhóm", "Bạn có chắc muốn xóa nhóm '" + groupName + "' không?", () -> {
+            // YÊU CẦU: Cần thêm hàm deleteCategoryGroup(groupId) bên CategoryViewModel
+            // viewModel.deleteCategoryGroup(groupId);
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Đang xử lý xóa nhóm...");
+        }, null);
     }
 
     private void showAddGroupDialog() {
@@ -236,7 +231,7 @@ public class ReorderCategoryFragment extends BaseFragment {
                     if (!groupName.isEmpty()) {
                         // YÊU CẦU: Cần thêm hàm tạo Group bên CategoryViewModel
                         // viewModel.createCategoryGroup(groupName);
-                        Toast.makeText(getContext(), "Đang tạo nhóm...", Toast.LENGTH_SHORT).show();
+                        DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Đang xử lý tạo nhóm mới...");
                     }
                 })
                 .setNegativeButton("Hủy", null)

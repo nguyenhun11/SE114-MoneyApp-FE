@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +21,7 @@ import com.example.moneyapp.model.AdjustBalance;
 import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.HistoryItem;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.components.TimeSelectorView;
@@ -226,7 +226,7 @@ public class HistoryFragment extends BaseFragment {
 
     private void showAccountFilterPopup() {
         if (accountList.isEmpty()) {
-            Toast.makeText(getContext(), "Không có dữ liệu tài khoản", Toast.LENGTH_SHORT).show();
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Không có dữ liệu tài khoản");
             return;
         }
         String currentAccountId = historyViewModel.getCurrentAccountId();
@@ -237,7 +237,7 @@ public class HistoryFragment extends BaseFragment {
                     if (selectedAcc != null) {
                         String destAccountId = historyViewModel.getCurrentDestAccountId();
                         if (destAccountId != null && destAccountId.equals(selectedAcc.getAccountId())) {
-                            Toast.makeText(getContext(), "Tài khoản nguồn không được trùng với tài khoản đến!", Toast.LENGTH_SHORT).show();
+                            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Tài khoản nguồn không được trùng với tài khoản đến!");
                             return;
                         }
                     }
@@ -254,7 +254,7 @@ public class HistoryFragment extends BaseFragment {
 
     private void showDestAccountFilterPopup() {
         if (accountList.isEmpty()) {
-            Toast.makeText(getContext(), "Không có dữ liệu tài khoản", Toast.LENGTH_SHORT).show();
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Không có dữ liệu tài khoản");
             return;
         }
         String currentDestAccountId = historyViewModel.getCurrentDestAccountId();
@@ -265,7 +265,7 @@ public class HistoryFragment extends BaseFragment {
                     if (selectedAcc != null) {
                         String sourceAccountId = historyViewModel.getCurrentAccountId();
                         if (sourceAccountId != null && sourceAccountId.equals(selectedAcc.getAccountId())) {
-                            Toast.makeText(getContext(), "Tài khoản đến không được trùng với tài khoản nguồn!", Toast.LENGTH_SHORT).show();
+                            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Tài khoản đến không được trùng với tài khoản nguồn!");
                             return;
                         }
                     }
@@ -285,7 +285,7 @@ public class HistoryFragment extends BaseFragment {
 
     private void showCategoryFilterPopup() {
         if (categoryList.isEmpty()) {
-            Toast.makeText(getContext(), "Không có dữ liệu hạng mục", Toast.LENGTH_SHORT).show();
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Không có dữ liệu hạng mục");
             return;
         }
 

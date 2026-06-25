@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +21,7 @@ import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.AdjustBalance;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.CurrencyFormatter;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.AccountViewModel;
 import com.example.moneyapp.viewmodel.AdjustBalanceViewModel;
@@ -60,8 +60,9 @@ public class AdjustBalanceDetailFragment extends BaseFragment {
             observeViewModels(view);
             accountViewModel.loadAccounts(); // Nạp thông tin Ví để lấy Icon/Màu sắc và CurrencyCode
         } else {
-            Toast.makeText(getContext(), "Không tìm thấy thông tin bản ghi", Toast.LENGTH_SHORT).show();
-            Navigation.findNavController(view).navigateUp();
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Không tìm thấy thông tin bản ghi", () -> {
+                Navigation.findNavController(view).navigateUp();
+            });
         }
     }
 
@@ -133,7 +134,7 @@ public class AdjustBalanceDetailFragment extends BaseFragment {
         });
 
         adjustBalanceViewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            if (error != null) DialogHelper.showSimpleDialog(requireContext(), "Lỗi", error);
         });
     }
 

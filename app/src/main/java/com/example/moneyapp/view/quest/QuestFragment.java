@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.utils.RewardHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.QuestViewModel;
@@ -63,7 +63,7 @@ public class QuestFragment extends BaseFragment {
         });
 
         viewModel.getError().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            if (error != null) DialogHelper.showSimpleDialog(getContext(), "Lỗi", error);
         });
 
         viewModel.fetchQuests();
@@ -71,6 +71,5 @@ public class QuestFragment extends BaseFragment {
 
     @Override
     protected boolean shouldShowFAB() { return false; }
-    @Override
-    protected boolean shouldShowBottomNavigation() { return false; }
+    @Override protected boolean shouldShowBottomNavigation() { return false; }
 }

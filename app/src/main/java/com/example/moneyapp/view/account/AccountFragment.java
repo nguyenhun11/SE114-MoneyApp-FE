@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.model.CategoryType;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.MainActivity;
 import com.example.moneyapp.view.category.CategoryAdapter;
@@ -201,7 +201,9 @@ public class AccountFragment extends BaseFragment {
         });
 
         accountViewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            if (error != null) {
+                DialogHelper.showSimpleDialog(requireContext(), "Lỗi", error);
+            }
         });
     }
 

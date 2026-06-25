@@ -9,7 +9,6 @@ import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.remote.response.CityResponse;
 import com.example.moneyapp.utils.CityIconManager;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.CityViewModel;
 
@@ -51,13 +51,13 @@ public class CityFragment extends BaseFragment {
         viewModel.getCityData().observe(getViewLifecycleOwner(), this::updateUI);
 
         viewModel.getError().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            if (error != null) DialogHelper.showSimpleDialog(getContext(), "Lỗi", error);
         });
 
         viewModel.fetchCityData();
 
         view.findViewById(R.id.fabBuild).setOnClickListener(v -> 
-            Toast.makeText(getContext(), "Chọn một ô trống để bắt đầu xây dựng!", Toast.LENGTH_SHORT).show()
+            DialogHelper.showSimpleDialog(getContext(), "Hướng dẫn", "Chọn một ô trống để bắt đầu xây dựng!")
         );
     }
 
@@ -134,7 +134,7 @@ public class CityFragment extends BaseFragment {
         BuildMenuBottomSheet bottomSheet = new BuildMenuBottomSheet();
         bottomSheet.setOnBuildOptionSelectedListener(option -> {
             if (currentCity.getProsperityPoints() < option.getCost()) {
-                Toast.makeText(getContext(), "Không đủ điểm Prosperity!", Toast.LENGTH_SHORT).show();
+                DialogHelper.showSimpleDialog(getContext(), "Thông báo", "Không đủ điểm Prosperity!");
                 return;
             }
             

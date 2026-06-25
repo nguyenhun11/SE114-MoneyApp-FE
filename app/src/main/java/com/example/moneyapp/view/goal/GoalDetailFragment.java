@@ -1,7 +1,6 @@
 package com.example.moneyapp.view.goal;
 
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -10,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +23,7 @@ import com.example.moneyapp.model.Goal;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.CurrencyFormatter;
 import com.example.moneyapp.utils.DateConverter;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.utils.RewardHelper;
 import com.example.moneyapp.view.MainActivity;
@@ -196,7 +195,7 @@ public class GoalDetailFragment extends Fragment {
                         double amount = Double.parseDouble(amountStr);
                         viewModel.depositToGoal(goal, amount, accountSelector.getSelectedAccount().getAccountId());
                     } else {
-                        Toast.makeText(getContext(), "Vui lòng nhập tiền và chọn ví", Toast.LENGTH_SHORT).show();
+                        DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Vui lòng nhập tiền và chọn ví");
                     }
                 })
                 .setNegativeButton("Hủy", null)
@@ -221,7 +220,7 @@ public class GoalDetailFragment extends Fragment {
 
         viewModel.getError().observe(getViewLifecycleOwner(), error -> {
             if (error != null) {
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                DialogHelper.showSimpleDialog(requireContext(), "Lỗi", error);
             }
         });
     }

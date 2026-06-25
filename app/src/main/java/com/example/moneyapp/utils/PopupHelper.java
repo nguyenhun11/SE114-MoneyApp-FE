@@ -338,7 +338,12 @@ public class PopupHelper {
             int id = v.getId();
 
             if (id == R.id.btn_clear) {
-                expr[0] = "";
+                DialogHelper.showConfirmDialog(context, "Xóa biểu thức", "Bạn có chắc chắn muốn xóa toàn bộ phép tính hiện tại không?", () -> {
+                    expr[0] = "";
+                    tvExpression.setText("0");
+                    btnAction.setText("✔");
+                }, null);
+                return;
             }
             else if (id == R.id.btn_del) {
                 if (!expr[0].isEmpty()) expr[0] = expr[0].substring(0, expr[0].length() - 1);
@@ -354,7 +359,7 @@ public class PopupHelper {
                             expr[0] = String.format(java.util.Locale.US, "%s", result);
                         }
                     } catch (Exception e) {
-                        Toast.makeText(context, "Phép tính lỗi", Toast.LENGTH_SHORT).show();
+                        DialogHelper.showSimpleDialog(context, "Lỗi phép tính", "Cú pháp toán học không hợp lệ. Vui lòng kiểm tra lại.");
                     }
                 } else {
                     if (listener != null) {

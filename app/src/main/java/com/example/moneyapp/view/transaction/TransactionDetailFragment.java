@@ -1,6 +1,5 @@
 package com.example.moneyapp.view.transaction;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +21,7 @@ import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.Mood;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.CurrencyFormatter;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.TransactionViewModel;
 import com.mikepenz.iconics.view.IconicsImageView;
@@ -56,14 +55,13 @@ public class TransactionDetailFragment extends BaseFragment {
                     "gmd_delete_outline", v -> showDeleteConfirmDialog());
 
             observeViewModel(view);
-            // Sẽ được gọi trong onResume()
         } else {
-            Toast.makeText(getContext(), "Không tìm thấy mã giao dịch", Toast.LENGTH_SHORT).show();
-            Navigation.findNavController(view).navigateUp();
+            DialogHelper.showSimpleDialog(requireContext(), "Lỗi", "Không tìm thấy mã giao dịch", () -> {
+                Navigation.findNavController(view).navigateUp();
+            });
         }
     }
 
-    // ĐÃ THÊM: Gọi tải lại dữ liệu mỗi khi quay về trang này (để thấy dữ liệu vừa sửa)
     @Override
     public void onResume() {
         super.onResume();
@@ -73,14 +71,11 @@ public class TransactionDetailFragment extends BaseFragment {
     }
 
     private void showDeleteConfirmDialog() {
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Xóa giao dịch")
-                .setMessage("Bạn có chắc chắn muốn xóa giao dịch này không? Hành động này không thể hoàn tác.")
-                .setPositiveButton("Xóa", (dialog, which) -> {
-                    transactionViewModel.deleteTransaction(currentTransactionId);
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+        DialogHelper.showConfirmDialog(requireContext(),
+                "Xóa giao dịch",
+                "Bạn có chắc chắn muốn xóa giao dịch này không? Hành động này không thể hoàn tác.",
+                () -> transactionViewModel.deleteTransaction(currentTransactionId),
+                null);
     }
 
     private void observeViewModel(View view) {
@@ -161,13 +156,16 @@ public class TransactionDetailFragment extends BaseFragment {
 
         transactionViewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
             if (Boolean.TRUE.equals(success)) {
-                Toast.makeText(getContext(), "Đã xóa giao dịch", Toast.LENGTH_SHORT).show();
-                Navigation.findNavController(requireView()).navigateUp();
+                DialogHelper.showSimpleDialog(requireContext(), "Thành công", "Đã xóa giao dịch thành công", () -> {
+                    Navigation.findNavController(requireView()).navigateUp();
+                });
             }
         });
 
         transactionViewModel.getErrorLiveData().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            if (error != null) {
+                DialogHelper.showSimpleDialog(requireContext(), "Lỗi", error);
+            }
         });
     }
 
@@ -190,7 +188,6 @@ public class TransactionDetailFragment extends BaseFragment {
         if (currentTransactionId != null) {
             Bundle args = new Bundle();
             args.putString("transactionId", currentTransactionId);
-            // ĐÃ SỬA: Chuyển hướng tới file gộp chung thay vì file cũ
             Navigation.findNavController(requireView()).navigate(R.id.transactionEntryFragment, args);
         }
     }

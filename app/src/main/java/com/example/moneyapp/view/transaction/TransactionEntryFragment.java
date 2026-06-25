@@ -1,7 +1,6 @@
 package com.example.moneyapp.view.transaction;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,7 +12,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +29,7 @@ import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.CurrencyFormatter;
 import com.example.moneyapp.utils.DateConverter;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.utils.RewardHelper;
 import com.example.moneyapp.view.BaseFragment;
@@ -409,7 +408,7 @@ public class TransactionEntryFragment extends BaseFragment {
 
     private void showCategoryPopup() {
         if (categoryList.isEmpty()) {
-            Toast.makeText(getContext(), "Đang tải dữ liệu", Toast.LENGTH_SHORT).show();
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Đang tải dữ liệu hạng mục...");
             return;
         }
         PopupHelper.showCategoryFilterPopup(requireContext(), categoryList, false, this::updateSelectedCategory);
@@ -417,7 +416,7 @@ public class TransactionEntryFragment extends BaseFragment {
 
     private void showAccountPopup(boolean isSource) {
         if (accountList.isEmpty()) {
-            Toast.makeText(getContext(), "Đang tải nguồn tiền", Toast.LENGTH_SHORT).show();
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Đang tải danh sách tài khoản...");
             return;
         }
         String currentId = isSource ? (selectedSourceAccount != null ? selectedSourceAccount.getAccountId() : null)
@@ -426,11 +425,11 @@ public class TransactionEntryFragment extends BaseFragment {
         PopupHelper.showAccountFilterPopup(requireContext(), accountList, currentId, true, account -> {
             if (currentMode == EntryMode.TRANSFER) {
                 if (isSource && selectedDestAccount != null && selectedDestAccount.getAccountId().equals(account.getAccountId())) {
-                    Toast.makeText(getContext(), "Nguồn và đích không được trùng nhau!", Toast.LENGTH_SHORT).show();
+                    DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Nguồn và đích không được trùng nhau!");
                     return;
                 }
                 if (!isSource && selectedSourceAccount != null && selectedSourceAccount.getAccountId().equals(account.getAccountId())) {
-                    Toast.makeText(getContext(), "Nguồn và đích không được trùng nhau!", Toast.LENGTH_SHORT).show();
+                    DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Nguồn và đích không được trùng nhau!");
                     return;
                 }
             }
@@ -733,7 +732,7 @@ public class TransactionEntryFragment extends BaseFragment {
     private void handleOperationError(String error) {
         if (!isSaving) return;
         isSaving = false;
-        Toast.makeText(getContext(), "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+        DialogHelper.showSimpleDialog(requireContext(), "Lỗi", error);
         checkSaveConditions();
     }
 
@@ -748,19 +747,20 @@ public class TransactionEntryFragment extends BaseFragment {
             if (editTransactionId == null && editTransferId == null) {
                 RewardHelper.showSmallReward(requireView(), "+1 SP - Thói quen tốt!");
             }
-            Toast.makeText(getContext(), "Lưu thành công!", Toast.LENGTH_SHORT).show();
-
-            try {
-                Navigation.findNavController(requireView()).navigateUp();
-
-                boolean isCrossMutated = (editTransferId != null && currentMode != EntryMode.TRANSFER) ||
-                        (editTransactionId != null && currentMode == EntryMode.TRANSFER);
-                if (isCrossMutated) {
+            
+            DialogHelper.showSimpleDialog(requireContext(), "Thành công", "Lưu giao dịch thành công!", () -> {
+                try {
                     Navigation.findNavController(requireView()).navigateUp();
+
+                    boolean isCrossMutated = (editTransferId != null && currentMode != EntryMode.TRANSFER) ||
+                            (editTransactionId != null && currentMode == EntryMode.TRANSFER);
+                    if (isCrossMutated) {
+                        Navigation.findNavController(requireView()).navigateUp();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            });
         }
     }
 

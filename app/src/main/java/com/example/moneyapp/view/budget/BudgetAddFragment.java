@@ -9,11 +9,9 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
@@ -22,6 +20,7 @@ import com.example.moneyapp.data.remote.request.BudgetRequest;
 import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.utils.AppResourceManager;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.BudgetViewModel;
@@ -170,21 +169,22 @@ public class BudgetAddFragment extends BaseFragment {
 
         budgetViewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
             if (Boolean.TRUE.equals(success)) {
-                Toast.makeText(getContext(), "Lưu ngân sách thành công!", Toast.LENGTH_SHORT).show();
-                budgetViewModel.resetOperationSuccess();
-                Navigation.findNavController(requireView()).navigateUp();
+                DialogHelper.showSimpleDialog(requireContext(), "Thành công", "Lưu ngân sách thành công!", () -> {
+                    budgetViewModel.resetOperationSuccess();
+                    Navigation.findNavController(requireView()).navigateUp();
+                });
             }
         });
 
         budgetViewModel.getError().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            if (error != null) DialogHelper.showSimpleDialog(requireContext(), "Lỗi", error);
         });
     }
 
     private void saveBudget() {
         String amountStr = etAmount.getText().toString().replaceAll("[.,]", "");
         if (amountStr.isEmpty() || selectedCategory == null) {
-            Toast.makeText(getContext(), "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show();
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Vui lòng nhập đủ thông tin");
             return;
         }
 
