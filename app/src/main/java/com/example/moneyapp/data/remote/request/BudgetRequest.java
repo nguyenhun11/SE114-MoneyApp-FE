@@ -1,16 +1,22 @@
 package com.example.moneyapp.data.remote.request;
 
-public class BudgetRequest {
-    private String categoryId;
-    private double amount;
-    private int period; // 0: Weekly, 1: Monthly, 2: Yearly
-    private String startDate;
+import com.google.gson.annotations.SerializedName;
 
-    public BudgetRequest(String categoryId, double amount, int period, String startDate) {
+public class BudgetRequest {
+    @SerializedName("categoryId")
+    private String categoryId;
+    @SerializedName("categoryGroupId")
+    private String categoryGroupId;
+    @SerializedName("amount")
+    private double amount;
+    @SerializedName("period")
+    private int period; // 0: Weekly, 1: Monthly, 2: Yearly
+
+    public BudgetRequest(String categoryId, String categoryGroupId, double amount, int period) {
         this.categoryId = categoryId;
+        this.categoryGroupId = categoryGroupId;
         this.amount = amount;
         this.period = period;
-        this.startDate = startDate;
     }
 
     // Getters and Setters
@@ -20,6 +26,11 @@ public class BudgetRequest {
     public void setAmount(double amount) { this.amount = amount; }
     public int getPeriod() { return period; }
     public void setPeriod(int period) { this.period = period; }
-    public String getStartDate() { return startDate; }
-    public void setStartDate(String startDate) { this.startDate = startDate; }
+    public String getCategoryGroupId() {
+        return categoryGroupId;
+    }
+
+    public void setCategoryGroupId(String categoryGroupId) {
+        this.categoryGroupId = categoryGroupId;
+    }
 }

@@ -558,7 +558,7 @@ public class TransactionEntryFragment extends BaseFragment {
                 viewSelectSource.setAccount(mockAccount, true);
 
                 CategoryType intendedType = t.getType() == CategoryType.EXPENSE ? CategoryType.EXPENSE : CategoryType.INCOME;
-                Category mockCategory = new Category(t.getCategoryId(), t.getCategoryName(), intendedType, "", "", 0.0, t.getCategoryColorId(), t.getCategoryIconId(), 0, new Date(), new Date());
+                Category mockCategory = new Category(t.getCategoryId(), t.getCategoryName(), intendedType, "", "",0, t.getCategoryColorId(), t.getCategoryIconId(), new Date(), new Date());
                 this.selectedCategory = mockCategory;
                 tvSelectedCategory.setText(mockCategory.getCategoryName());
                 ivCategoryIcon.setIcon(new IconicsDrawable(requireContext(), AppResourceManager.getIconName(mockCategory.getIcon())));

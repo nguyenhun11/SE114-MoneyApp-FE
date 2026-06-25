@@ -31,19 +31,20 @@ public class CategoryRepository extends BaseRepository {
     }
 
     private Category mapToCategory(CategoryResponse response) {
-        return new Category(
+        Category category = new Category(
                 response.getId(),
                 response.getCategoryName(),
                 response.getType() == 1 ? CategoryType.INCOME : CategoryType.EXPENSE,
                 response.getCategoryGroupId(),
                 response.getGroupName(),
-                response.getMonthlyTarget(),
                 response.getColorId(),
                 response.getIconId(),
                 response.getSortingOrder(),
                 DateConverter.convertStringToDate(response.getCreatedAt()),
                 DateConverter.convertStringToDate(response.getLastUpdatedAt())
         );
+        category.setActiveBudgets(response.getActiveBudgets());
+        return category;
     }
 
     public void getExpenseCategories(CategoryCallback<List<Category>> callback) {
@@ -134,9 +135,9 @@ public class CategoryRepository extends BaseRepository {
         CategoryRequest request = new CategoryRequest(
                 category.getCategoryName(),
                 category.getGroupId(),
-                category.getMonthlyTarget(),
                 category.getColor(),
-                category.getIcon()
+                category.getIcon(),
+                null
         );
 
 
@@ -168,9 +169,9 @@ public class CategoryRepository extends BaseRepository {
         CategoryRequest request = new CategoryRequest(
                 category.getCategoryName(),
                 category.getGroupId(),
-                category.getMonthlyTarget(),
                 category.getColor(),
-                category.getIcon()
+                category.getIcon(),
+                null
         );
 
         Call<Void> call;

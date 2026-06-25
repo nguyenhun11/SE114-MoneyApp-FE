@@ -112,14 +112,14 @@ public class CategoryViewModel extends AndroidViewModel {
 
     private void createDefaultCategoriesInGroup(CategoryType type, CategoryGroupResponse group) {
         if (type == CategoryType.EXPENSE) {
-            addCategory(new Category(null, "Ăn uống", CategoryType.EXPENSE, group.getId(), group.getGroupName(), 0.0, 4, 11, 0, new Date(), new Date()));
-            addCategory(new Category(null, "Di chuyển", CategoryType.EXPENSE, group.getId(), group.getGroupName(), 0.0, 1, 12, 1, new Date(), new Date()));
-            addCategory(new Category(null, "Mua sắm", CategoryType.EXPENSE, group.getId(), group.getGroupName(), 0.0, 9, 10, 2, new Date(), new Date()));
-            addCategory(new Category(null, "Khác", CategoryType.EXPENSE, group.getId(), group.getGroupName(), 0.0, 5, 15, 3, new Date(), new Date()));
+            addCategory(new Category(null, "Ăn uống", CategoryType.EXPENSE, group.getId(), group.getGroupName(), 4, 11, 0, new Date(), new Date()));
+            addCategory(new Category(null, "Di chuyển", CategoryType.EXPENSE, group.getId(), group.getGroupName(),  1, 12, 1, new Date(), new Date()));
+            addCategory(new Category(null, "Mua sắm", CategoryType.EXPENSE, group.getId(), group.getGroupName(), 9, 10, 2, new Date(), new Date()));
+            addCategory(new Category(null, "Khác", CategoryType.EXPENSE, group.getId(), group.getGroupName(), 5, 15, 3, new Date(), new Date()));
         } else if (type == CategoryType.INCOME) {
-            addCategory(new Category(null, "Lương", CategoryType.INCOME, group.getId(), group.getGroupName(), 0.0, 2, 14, 0, new Date(), new Date()));
-            addCategory(new Category(null, "Thưởng", CategoryType.INCOME, group.getId(), group.getGroupName(), 0.0, 4, 5, 1, new Date(), new Date()));
-            addCategory(new Category(null, "Khác", CategoryType.INCOME, group.getId(), group.getGroupName(), 0.0, 5, 15, 2, new Date(), new Date()));
+            addCategory(new Category(null, "Lương", CategoryType.INCOME, group.getId(), group.getGroupName(),  2, 14, 0, new Date(), new Date()));
+            addCategory(new Category(null, "Thưởng", CategoryType.INCOME, group.getId(), group.getGroupName(),  4, 5, 1, new Date(), new Date()));
+            addCategory(new Category(null, "Khác", CategoryType.INCOME, group.getId(), group.getGroupName(),  5, 15, 2, new Date(), new Date()));
         }
     }
 

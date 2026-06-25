@@ -116,7 +116,6 @@ public class AccountFragment extends BaseFragment {
             Bundle bundle = new Bundle();
             bundle.putString("categoryId", category.getCategoryId());
             bundle.putString("categoryName", category.getCategoryName());
-            bundle.putDouble("monthlyTarget", category.getMonthlyTarget() != null ? category.getMonthlyTarget() : 0.0);
             bundle.putInt("colorId", category.getColor());
             bundle.putInt("iconId", category.getIcon());
             bundle.putString("groupId", category.getGroupId());

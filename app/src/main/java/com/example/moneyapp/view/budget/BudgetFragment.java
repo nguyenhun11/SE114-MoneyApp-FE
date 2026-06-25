@@ -36,7 +36,7 @@ public class BudgetFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupHeader(view, "Ngân sách", false);
+        setupHeader(view, "Ngân sách", true);
 
         rvBudgets = view.findViewById(R.id.rvBudgets);
         pbLoading = view.findViewById(R.id.pbLoading);
@@ -62,14 +62,21 @@ public class BudgetFragment extends BaseFragment {
         });
 
         viewModel.fetchBudgets();
-
-        view.findViewById(R.id.btnAddBudget).setOnClickListener(v -> 
-            Navigation.findNavController(v).navigate(R.id.action_budgetFragment_to_budgetAddFragment)
-        );
     }
 
     @Override
-    protected boolean shouldShowFAB() {
+    protected void onFabClick() {
+        Navigation.findNavController(requireView()).navigate(R.id.action_budgetFragment_to_budgetAddFragment);
+    }
+
+    @Override
+    protected String getFabLabel() {
+        return "Thêm ngân sách";
+    }
+
+    @Override
+    protected boolean shouldShowBottomNavigation() {
         return false;
     }
+
 }
