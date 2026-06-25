@@ -7,14 +7,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+
 import com.example.moneyapp.R;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.viewmodel.AuthViewModel;
 
 public class ForgotPasswordFragment extends Fragment {
@@ -55,33 +56,21 @@ public class ForgotPasswordFragment extends Fragment {
     private void observeViewModel() {
         authViewModel.resetPasswordSuccess.observe(getViewLifecycleOwner(), success -> {
             if (success) {
-                new AlertDialog.Builder(requireContext())
-                        .setTitle("Thành công")
-                        .setMessage("Yêu cầu đã được gửi! Vui lòng kiểm tra email của bạn để lấy mã xác nhận.")
-                        .setPositiveButton("Tiếp tục", (dialog, which) -> {
-                            Bundle bundle = new Bundle();
-                            bundle.putString("email", etEmail.getText().toString().trim());
-                            Navigation.findNavController(requireView()).navigate(R.id.action_forgotPasswordFragment_to_resetPasswordFragment, bundle);
-                        })
-                        .setCancelable(false)
-                        .show();
+                DialogHelper.showSimpleDialog(requireContext(), "Thành công", 
+                        "Yêu cầu đã được gửi! Vui lòng kiểm tra email của bạn để lấy mã xác nhận.", () -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("email", etEmail.getText().toString().trim());
+                    Navigation.findNavController(requireView()).navigate(R.id.action_forgotPasswordFragment_to_resetPasswordFragment, bundle);
+                });
             }
         });
 
         authViewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
             if (message != null) {
-                new AlertDialog.Builder(requireContext())
-                        .setTitle("Thông báo")
-                        .setMessage(message)
-                        .setPositiveButton("Đã hiểu", null)
-                        .show();
+                DialogHelper.showSimpleDialog(requireContext(), "Thông báo", message);
                 // Xóa message sau khi hiển thị để tránh hiện lại khi xoay màn hình
                 authViewModel.errorMessage.setValue(null);
             }
-        });
-
-        authViewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
-            // Bạn có thể thêm ProgressBar ở đây nếu muốn
         });
     }
 }
