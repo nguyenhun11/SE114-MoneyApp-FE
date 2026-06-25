@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         AppCompatImageButton fabAdd = findViewById(R.id.fab_add);
 

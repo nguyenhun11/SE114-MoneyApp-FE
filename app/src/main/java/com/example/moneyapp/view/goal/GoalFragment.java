@@ -49,6 +49,8 @@ public class GoalFragment extends BaseFragment {
             Navigation.findNavController(view).navigate(R.id.goalDetailFragment, bundle);
         });
 
+        setupHeader(view, "Mục tiêu tiết kiệm", true);
+
         rvGoals.setLayoutManager(new LinearLayoutManager(getContext()));
         rvGoals.setAdapter(adapter);
 
@@ -57,13 +59,8 @@ public class GoalFragment extends BaseFragment {
     }
 
     @Override
-    protected boolean shouldShowFAB() {
-        return true;
-    }
-
-    @Override
-    protected String getFabIcon() {
-        return "gmd_add";
+    protected String getFabLabel(){
+        return "Thêm mục tiêu";
     }
 
     @Override
@@ -75,7 +72,7 @@ public class GoalFragment extends BaseFragment {
     
     @Override
     protected boolean shouldShowBottomNavigation() {
-        return true;
+        return false;
     }
 
     private void observeViewModel() {

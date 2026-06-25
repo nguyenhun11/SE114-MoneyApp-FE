@@ -60,9 +60,6 @@ public class ProfileFragment extends BaseFragment {
     );
 
     @Override
-    protected boolean shouldShowFAB() { return true; }
-
-    @Override
     protected String getFabIcon() { return "gmd-share"; }
     @Override
     protected String getFabLabel() { return "Chia sẻ ứng dụng"; }
@@ -77,9 +74,6 @@ public class ProfileFragment extends BaseFragment {
         startActivity(shareIntent);
     }
 
-    @Override
-    protected boolean shouldShowBottomNavigation() { return true; }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -92,11 +86,7 @@ public class ProfileFragment extends BaseFragment {
         profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
         badgeViewModel = new ViewModelProvider(this).get(BadgeViewModel.class);
 
-        setupHeader(view, getString(R.string.profile_title), null, null, "gmd-menu", v -> {
-            if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).openRightSideMenu();
-            }
-        });
+        setupHeader(view, getString(R.string.profile_title), false);
 
         setupScrollBehavior(view);
 

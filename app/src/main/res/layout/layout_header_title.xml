@@ -30,17 +30,6 @@
             android:layout_width="match_parent"
             android:layout_height="32dp">
 
-            <TextView
-                android:id="@+id/tv_header_title"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:gravity="center"
-                android:text="@string/header_title_default"
-                android:textColor="@color/colorOnPrimary"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
             <com.mikepenz.iconics.view.IconicsImageView
                 android:id="@+id/btn_action_left"
                 android:layout_width="32dp"
@@ -50,11 +39,23 @@
                 android:layout_marginStart="@dimen/header_action_button_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="6dp"
+                android:visibility="visible"
                 app:ico_color="@color/colorOnPrimary"
-                app:ico_icon="gmd_arrow_back" />
+                app:ico_icon="gmd_account_balance_wallet" />
+
+            <TextView
+                android:id="@+id/tv_header_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="Tiêu đề"
+                android:textColor="@color/colorOnPrimary"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <com.mikepenz.iconics.view.IconicsImageView
-                android:id="@+id/btn_action_right"
+                android:id="@+id/btn_menu"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_alignParentEnd="true"
@@ -62,9 +63,21 @@
                 android:layout_marginEnd="@dimen/header_action_button_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="6dp"
+                app:iiv_color="@color/colorOnPrimary"
+                app:iiv_icon="gmd_menu" />
+
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:id="@+id/btn_action_right"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="4dp"
+                android:layout_toStartOf="@id/btn_menu"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="6dp"
                 android:visibility="gone"
-                app:ico_color="@color/colorOnPrimary"
-                app:ico_icon="gmd_add" />
+                app:iiv_icon="gmd_location_city"
+                app:iiv_color="@color/colorOnPrimary" />
         </RelativeLayout>
     </LinearLayout>
 

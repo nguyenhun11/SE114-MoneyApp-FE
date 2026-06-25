@@ -51,7 +51,7 @@ public class ReorderCategoryFragment extends BaseFragment {
         viewModel = new ViewModelProvider(requireActivity()).get(CategoryViewModel.class);
 
         setupHeader(view, "Sắp xếp hạng mục",
-                "gmd_navigate_before", v -> requireActivity().onBackPressed(),
+                "gmd_arrow_back", v -> requireActivity().onBackPressed(),
                 "gmd_check", v -> onSaveClicked());
 
         rvReorder = view.findViewById(R.id.rv_reorder_categories);

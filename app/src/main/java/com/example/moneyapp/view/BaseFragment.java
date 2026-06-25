@@ -29,6 +29,7 @@ public abstract class BaseFragment extends Fragment {
     public interface HeaderTabListener {
         void onTabSwitched(int index);
     }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -40,7 +41,6 @@ public abstract class BaseFragment extends Fragment {
                 uiHandler.setBottomNavigationVisibility(shouldShowBottomNavigation());
 
                 if (shouldShowFAB()) {
-                    // ĐÃ SỬA: Truyền thêm getFabLabel() vào updateFAB
                     uiHandler.updateFAB(getFabIcon(), getFabLabel(), v -> onFabClick());
                     uiHandler.setFABVisibility(true);
                 } else {
@@ -80,17 +80,15 @@ public abstract class BaseFragment extends Fragment {
     protected boolean shouldShowBottomNavigation() {
         return true;
     }
-
     //endregion
 
     //region Header Setup
     private Drawable getShrunkIcon(String iconName, int color) {
         IconicsDrawable drawable = new IconicsDrawable(requireContext(), iconName);
         drawable.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
-        int paddingDp = 1;
-        if ("gmd_navigate_before".equals(iconName)
-                || "gmd_arrow_back".equals(iconName)) {
-            paddingDp = 4;
+        int paddingDp = 2;
+        if ("gmd_navigate_before".equals(iconName) || "gmd_arrow_back".equals(iconName)) {
+            paddingDp = 0;
         }
         int paddingPx = (int) (paddingDp * getResources().getDisplayMetrics().density);
         return new InsetDrawable(drawable, paddingPx);
@@ -102,28 +100,28 @@ public abstract class BaseFragment extends Fragment {
 
         IconicsImageView btnLeft = view.findViewById(R.id.btn_action_left);
         IconicsImageView btnRight = view.findViewById(R.id.btn_action_right);
-
         int iconColor = ContextCompat.getColor(requireContext(), R.color.colorOnPrimary);
 
-        if (btnLeft != null) {
-            if (leftIconName != null && !leftIconName.isEmpty()) {
+        // ĐÃ SỬA: Nếu truyền NULL thì bỏ qua (giữ nguyên XML). Nếu truyền RỖNG ("") thì mới ẨN.
+        if (btnLeft != null && leftIconName != null) {
+            if (leftIconName.isEmpty()) {
+                btnLeft.setVisibility(View.GONE);
+                btnLeft.setOnClickListener(null);
+            } else {
                 btnLeft.setVisibility(View.VISIBLE);
                 btnLeft.setImageDrawable(getShrunkIcon(leftIconName, iconColor));
                 btnLeft.setOnClickListener(leftListener);
-            } else {
-                btnLeft.setVisibility(View.GONE);
-                btnLeft.setOnClickListener(null);
             }
         }
 
-        if (btnRight != null) {
-            if (rightIconName != null && !rightIconName.isEmpty()) {
+        if (btnRight != null && rightIconName != null) {
+            if (rightIconName.isEmpty()) {
+                btnRight.setVisibility(View.GONE);
+                btnRight.setOnClickListener(null);
+            } else {
                 btnRight.setVisibility(View.VISIBLE);
                 btnRight.setImageDrawable(getShrunkIcon(rightIconName, iconColor));
                 btnRight.setOnClickListener(rightListener);
-            } else {
-                btnRight.setVisibility(View.GONE);
-                btnRight.setOnClickListener(null);
             }
         }
     }
@@ -133,9 +131,9 @@ public abstract class BaseFragment extends Fragment {
     }
 
     protected void setupHeader(View view, String titleText, boolean showBackBtn) {
-        String leftIcon = showBackBtn ? "gmd_navigate_before" : null;
+        String leftIcon = showBackBtn ? "gmd_arrow_back" : "";
         View.OnClickListener leftListener = showBackBtn ? v -> Navigation.findNavController(v).navigateUp() : null;
-        setupHeader(view, titleText, leftIcon, leftListener, null, null);
+        setupHeader(view, titleText, leftIcon, leftListener, "", null);
     }
 
     protected void setupHeader(View view,  @StringRes int titleResId,
@@ -149,7 +147,18 @@ public abstract class BaseFragment extends Fragment {
                                String rightIconName, View.OnClickListener rightListener) {
         TextView tvTitle = view.findViewById(R.id.tv_header_title);
         if (tvTitle != null) tvTitle.setText(titleText);
+
         setupActionButtons(view, leftIconName, leftListener, rightIconName, rightListener);
+
+        // Luôn gán sự kiện cho nút Menu nếu XML có khai báo
+        View btnMenu = view.findViewById(R.id.btn_menu);
+        if (btnMenu != null) {
+            btnMenu.setOnClickListener(v -> {
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).openRightSideMenu();
+                }
+            });
+        }
     }
     //endregion
 
@@ -164,7 +173,6 @@ public abstract class BaseFragment extends Fragment {
         View selector = view.findViewById(R.id.btn_select_account);
         TextView tvAccount = view.findViewById(R.id.tv_account_name);
         TextView tvAmount = view.findViewById(R.id.tv_total_amount);
-
         View ivArrow = view.findViewById(R.id.iv_arrow_down);
 
         if (tvAccount != null) tvAccount.setText(accountName);
@@ -180,7 +188,17 @@ public abstract class BaseFragment extends Fragment {
                 if (ivArrow != null) ivArrow.setVisibility(View.GONE);
             }
         }
+
         setupActionButtons(view, leftIconName, leftListener, rightIconName, rightListener);
+
+        View btnMenu = view.findViewById(R.id.btn_menu);
+        if (btnMenu != null) {
+            btnMenu.setOnClickListener(v -> {
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).openRightSideMenu();
+                }
+            });
+        }
     }
 
     private void showAccountPopup() {
@@ -194,13 +212,12 @@ public abstract class BaseFragment extends Fragment {
         if (tabLayout == null || tabTitles == null || tabTitles.length == 0) return;
         tabLayout.removeAllTabs();
 
-        // Tự động phân giải chế độ hiển thị dựa trên số lượng Tab
         if (tabTitles.length <= 3) {
             tabLayout.setTabMode(TabLayout.MODE_FIXED);
             tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         } else {
             tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-            tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER); // hoặc GRAVITY_CENTER tùy ý
+            tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
         }
 
         for (String title : tabTitles) {
@@ -217,9 +234,7 @@ public abstract class BaseFragment extends Fragment {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 setTabTypeface(tab, Typeface.BOLD);
-                if (listener != null) {
-                    listener.onTabSwitched(tab.getPosition());
-                }
+                if (listener != null) listener.onTabSwitched(tab.getPosition());
             }
 
             @Override
@@ -231,13 +246,11 @@ public abstract class BaseFragment extends Fragment {
             public void onTabReselected(TabLayout.Tab tab) { }
         });
 
-        // Chạy listener lần đầu
         view.post(() -> {
             if (listener != null) listener.onTabSwitched(preSelectedTab);
         });
     }
 
-    // Can thiệp vào TabLayout để in đậm chữ
     private void setTabTypeface(TabLayout.Tab tab, int style) {
         if (tab == null || tab.view == null) return;
         for (int i = 0; i < tab.view.getChildCount(); i++) {
