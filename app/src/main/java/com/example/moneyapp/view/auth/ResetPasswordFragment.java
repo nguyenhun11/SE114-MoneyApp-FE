@@ -6,17 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.viewmodel.AuthViewModel;
 
 public class ResetPasswordFragment extends Fragment {
@@ -67,30 +66,18 @@ public class ResetPasswordFragment extends Fragment {
     private void observeViewModel() {
         authViewModel.resetCompleteSuccess.observe(getViewLifecycleOwner(), success -> {
             if (success) {
-                new AlertDialog.Builder(requireContext())
-                        .setTitle("Thành công")
-                        .setMessage(getString(R.string.reset_password_success))
-                        .setPositiveButton("Đăng nhập ngay", (dialog, which) -> {
-                            Navigation.findNavController(requireView()).popBackStack(R.id.loginFragment, false);
-                        })
-                        .setCancelable(false)
-                        .show();
+                DialogHelper.showSimpleDialog(requireContext(), "Thành công", 
+                        getString(R.string.reset_password_success), () -> {
+                    Navigation.findNavController(requireView()).popBackStack(R.id.loginFragment, false);
+                });
             }
         });
 
         authViewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
             if (message != null) {
-                new AlertDialog.Builder(requireContext())
-                        .setTitle("Lỗi")
-                        .setMessage(message)
-                        .setPositiveButton("Thử lại", null)
-                        .show();
+                DialogHelper.showSimpleDialog(requireContext(), "Lỗi", message);
                 authViewModel.errorMessage.setValue(null);
             }
-        });
-
-        authViewModel.isLoading.observe(getViewLifecycleOwner(), isLoading -> {
-            // Handle loading state
         });
     }
 }
