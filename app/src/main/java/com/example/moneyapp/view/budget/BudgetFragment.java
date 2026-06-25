@@ -36,13 +36,23 @@ public class BudgetFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupHeader(view, "Ngân sách", false);
+        setupHeader(view, "Ngân sách", true);
 
         rvBudgets = view.findViewById(R.id.rvBudgets);
         pbLoading = view.findViewById(R.id.pbLoading);
         
         rvBudgets.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new BudgetAdapter(new ArrayList<>());
+        adapter = new BudgetAdapter(new ArrayList<>(), budget -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("budgetId", budget.getId());
+            bundle.putDouble("amount", budget.getAmount());
+            bundle.putInt("period", budget.getPeriod());
+            bundle.putString("categoryId", budget.getCategoryId());
+            bundle.putString("categoryGroupId", budget.getCategoryGroupId());
+            bundle.putString("categoryName", budget.getCategoryName());
+
+            Navigation.findNavController(view).navigate(R.id.budgetAddFragment, bundle);
+        });
         rvBudgets.setAdapter(adapter);
 
         viewModel = new ViewModelProvider(this).get(BudgetViewModel.class);
@@ -62,14 +72,21 @@ public class BudgetFragment extends BaseFragment {
         });
 
         viewModel.fetchBudgets();
-
-        view.findViewById(R.id.btnAddBudget).setOnClickListener(v -> 
-            Navigation.findNavController(v).navigate(R.id.action_budgetFragment_to_budgetAddFragment)
-        );
     }
 
     @Override
-    protected boolean shouldShowFAB() {
+    protected void onFabClick() {
+        Navigation.findNavController(requireView()).navigate(R.id.action_budgetFragment_to_budgetAddFragment);
+    }
+
+    @Override
+    protected String getFabLabel() {
+        return "Thêm ngân sách";
+    }
+
+    @Override
+    protected boolean shouldShowBottomNavigation() {
         return false;
     }
+
 }

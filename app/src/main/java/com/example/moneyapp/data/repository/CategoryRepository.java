@@ -31,19 +31,20 @@ public class CategoryRepository extends BaseRepository {
     }
 
     private Category mapToCategory(CategoryResponse response) {
-        return new Category(
+        Category category = new Category(
                 response.getId(),
                 response.getCategoryName(),
                 response.getType() == 1 ? CategoryType.INCOME : CategoryType.EXPENSE,
                 response.getCategoryGroupId(),
                 response.getGroupName(),
-                response.getMonthlyTarget(),
                 response.getColorId(),
                 response.getIconId(),
                 response.getSortingOrder(),
                 DateConverter.convertStringToDate(response.getCreatedAt()),
                 DateConverter.convertStringToDate(response.getLastUpdatedAt())
         );
+        category.setActiveBudgets(response.getActiveBudgets());
+        return category;
     }
 
     public void getExpenseCategories(CategoryCallback<List<Category>> callback) {
@@ -90,13 +91,53 @@ public class CategoryRepository extends BaseRepository {
         });
     }
 
+    public void getCategoryById(String id, CategoryCallback<Category> callback) {
+        apiService.getCategoryById(id).enqueue(new Callback<CategoryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CategoryResponse> call, @NonNull Response<CategoryResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(mapToCategory(response.body()));
+                } else {
+                    callback.onError("Không lấy được thông tin danh mục: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CategoryResponse> call, @NonNull Throwable throwable) {
+                callback.onError("Lỗi kết nối: " + throwable.getMessage());
+            }
+        });
+    }
+
+    public void getCategoriesByGroupId(String groupId, CategoryCallback<List<Category>> callback) {
+        apiService.getCategoriesByGroupId(groupId).enqueue(new Callback<List<CategoryResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<CategoryResponse>> call, @NonNull Response<List<CategoryResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Category> categories = new ArrayList<>();
+                    for (CategoryResponse res : response.body()) {
+                        categories.add(mapToCategory(res));
+                    }
+                    callback.onSuccess(categories);
+                } else {
+                    callback.onError("Không tải được danh mục theo nhóm: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<CategoryResponse>> call, @NonNull Throwable throwable) {
+                callback.onError("Lỗi kết nối: " + throwable.getMessage());
+            }
+        });
+    }
+
     public void createCategory(Category category, CategoryCallback<Void> callback) {
         CategoryRequest request = new CategoryRequest(
                 category.getCategoryName(),
                 category.getGroupId(),
-                category.getMonthlyTarget(),
                 category.getColor(),
-                category.getIcon()
+                category.getIcon(),
+                null
         );
 
 
@@ -128,9 +169,9 @@ public class CategoryRepository extends BaseRepository {
         CategoryRequest request = new CategoryRequest(
                 category.getCategoryName(),
                 category.getGroupId(),
-                category.getMonthlyTarget(),
                 category.getColor(),
-                category.getIcon()
+                category.getIcon(),
+                null
         );
 
         Call<Void> call;
@@ -269,6 +310,61 @@ public class CategoryRepository extends BaseRepository {
             @Override
             public void onFailure(@NonNull Call<List<CategoryGroupResponse>> call, @NonNull Throwable t) {
                 callback.onError(t.getMessage());
+            }
+        });
+    }
+
+    public void updateCategoryGroup(String id, CategoryGroupRequest request, CategoryCallback<Void> callback) {
+        apiService.updateCategoryGroup(id, request).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onError("Cập nhật nhóm danh mục thất bại: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
+                callback.onError("Lỗi kết nối: " + throwable.getMessage());
+            }
+        });
+    }
+
+    public void reorderCategoryGroup(String id, int newOrder, CategoryCallback<Void> callback) {
+        ReorderCategoryRequest request = new ReorderCategoryRequest(newOrder);
+        apiService.reorderCategoryGroup(id, request).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onError("Đổi thứ tự nhóm danh mục thất bại: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
+                callback.onError("Lỗi kết nối: " + throwable.getMessage());
+            }
+        });
+    }
+
+    public void deleteCategoryGroup(String id, CategoryCallback<Void> callback) {
+        apiService.deleteCategoryGroup(id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null);
+                } else {
+                    callback.onError("Xóa nhóm danh mục thất bại: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
+                callback.onError("Lỗi kết nối: " + throwable.getMessage());
             }
         });
     }

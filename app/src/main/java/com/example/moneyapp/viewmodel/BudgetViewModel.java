@@ -65,14 +65,19 @@ public class BudgetViewModel extends AndroidViewModel {
                     operationSuccess.setValue(true);
                     fetchBudgets();
                 } else {
-                    error.setValue("Failed to create budget");
+                    try {
+                        String errorMsg = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                        error.setValue("Lỗi Server: " + response.code() + " - " + errorMsg);
+                    } catch (Exception e) {
+                        error.setValue("Lỗi không xác định khi tạo ngân sách");
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<BudgetResponse> call, Throwable t) {
                 loading.setValue(false);
-                error.setValue(t.getMessage());
+                error.setValue("Lỗi mạng: " + t.getMessage());
             }
         });
     }

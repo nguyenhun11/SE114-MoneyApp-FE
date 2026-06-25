@@ -1,6 +1,9 @@
 package com.example.moneyapp.model;
 
+import com.example.moneyapp.data.remote.response.BudgetResponse;
+
 import java.util.Date;
+import java.util.List;
 
 public class Category {
     private String categoryId;
@@ -8,20 +11,19 @@ public class Category {
     private CategoryType type;
     private String groupId;
     private String groupName;
-    private Double monthlyTarget;
     private int color;
     private int icon;
     private int order;
     private Date createdAt;
     private Date updatedAt;
+    private List<BudgetResponse> activeBudgets;
 
-    public Category(String categoryId, String categoryName, CategoryType type, String groupId, String groupName, Double monthlyTarget, int color, int icon, int order, Date createdAt, Date updatedAt) {
+    public Category(String categoryId, String categoryName, CategoryType type, String groupId, String groupName, int color, int icon, int order, Date createdAt, Date updatedAt) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.type = type;
         this.groupId = groupId;
         this.groupName = groupName;
-        this.monthlyTarget = monthlyTarget;
         this.color = color;
         this.icon = icon;
         this.order = order;
@@ -51,14 +53,6 @@ public class Category {
 
     public void setType(CategoryType type) {
         this.type = type;
-    }
-
-    public Double getMonthlyTarget() {
-        return monthlyTarget;
-    }
-
-    public void setMonthlyTarget(Double monthlyTarget) {
-        this.monthlyTarget = monthlyTarget;
     }
 
     public int getColor() {
@@ -116,5 +110,12 @@ public class Category {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public List<BudgetResponse> getActiveBudgets() {
+        return activeBudgets;
+    }
+    public void setActiveBudgets(List<BudgetResponse> activeBudgets) {
+        this.activeBudgets = activeBudgets;
     }
 }

@@ -13,6 +13,8 @@ public class PreferenceManager {
     private static final String KEY_REFRESH_TOKEN = "refreshToken";
     private static final String KEY_USER_EMAIL = "userEmail";
     private static final String KEY_DEFAULT_CURRENCY = "defaultCurrency";
+    private static final String KEY_LAST_TAB_TYPE = "lastTabType";
+    private static final String KEY_LAST_ACCOUNT_TAB = "lastAccountTab"; // Biến nhớ riêng cho category
 
 
     private static SharedPreferences sharedPreferences;
@@ -75,6 +77,18 @@ public class PreferenceManager {
 
     public String getDefaultCurrency() {
         return sharedPreferences.getString(KEY_DEFAULT_CURRENCY, "VND");
+    }
+    public void setLastTabType(int type) {
+        sharedPreferences.edit().putInt(KEY_LAST_TAB_TYPE, type).apply();
+    }
+    public int getLastTabType() {
+        return sharedPreferences.getInt(KEY_LAST_TAB_TYPE, 0);
+    }
+    public void setLastAccountTab(int tabIndex) {
+        sharedPreferences.edit().putInt(KEY_LAST_ACCOUNT_TAB, tabIndex).apply();
+    }
+    public int getLastAccountTab() {
+        return sharedPreferences.getInt(KEY_LAST_ACCOUNT_TAB, 0); // Mặc định là 0 (Tài khoản)
     }
 
 

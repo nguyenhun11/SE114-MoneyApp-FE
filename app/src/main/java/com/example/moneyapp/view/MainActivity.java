@@ -58,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
                         .setLaunchSingleTop(true)
                         .setRestoreState(false)
                         .setPopUpTo(navController.getGraph().getStartDestinationId(), false, false)
+                        .setEnterAnim(R.anim.fade_in)
+                        .setExitAnim(R.anim.fade_out)
+                        .setPopEnterAnim(R.anim.fade_in)
+                        .setPopExitAnim(R.anim.fade_out)
                         .build();
                 try {
                     navController.navigate(itemId, null, options);
@@ -96,7 +100,13 @@ public class MainActivity extends AppCompatActivity {
 
             menuItem.setOnClickListener(v -> {
                 drawerLayout.closeDrawer(GravityCompat.END);
-                navController.navigate(destinationId);
+                NavOptions options = new NavOptions.Builder()
+                        .setEnterAnim(R.anim.slide_in_right)
+                        .setExitAnim(R.anim.slide_out_left)
+                        .setPopEnterAnim(R.anim.slide_in_left)
+                        .setPopExitAnim(R.anim.slide_out_right)
+                        .build();
+                navController.navigate(destinationId, null, options);
             });
         }
     }

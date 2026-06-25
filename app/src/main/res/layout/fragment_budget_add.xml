@@ -8,7 +8,7 @@
     <View
         android:id="@+id/bg_header"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:layout_height="@dimen/header_height_small"
         android:background="@drawable/bg_header_gradient"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,8 +23,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginTop="@dimen/main_top_margin_small"
+        android:layout_marginBottom="@dimen/card_bottom_margin"
         app:cardBackgroundColor="@color/colorSurface"
         app:cardCornerRadius="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -56,36 +56,107 @@
                 <TextView
                     style="@style/InputLabel"
                     android:layout_marginTop="16dp"
-                    android:text="Hạng mục" />
+                    android:text="Phạm vi ngân sách" />
 
-                <LinearLayout
-                    android:id="@+id/btnSelectCategory"
-                    style="@style/InputSelectorContainer"
-                    android:layout_marginBottom="16dp">
-
-                    <com.mikepenz.iconics.view.IconicsImageView
-                        android:id="@+id/ivCategoryIcon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="8dp"
-                        app:iiv_color="@color/colorOnSurface"
-                        app:iiv_icon="gmd_category" />
-
-                    <TextView
-                        android:id="@+id/tvSelectedCategory"
+                <RadioGroup
+                    android:id="@+id/rgScope"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:orientation="horizontal">
+                    <RadioButton
+                        android:id="@+id/rbScopeTotal"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Chọn hạng mục..."
-                        android:textColor="@color/colorOnSurface"
-                        android:textSize="15sp" />
+                        android:text="Tổng" />
+                    <RadioButton
+                        android:id="@+id/rbScopeGroup"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Nhóm" />
+                    <RadioButton
+                        android:id="@+id/rbScopeCategory"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.2"
+                        android:checked="true"
+                        android:text="Hạng mục" />
+                </RadioGroup>
 
-                    <com.mikepenz.iconics.view.IconicsImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        app:iiv_color="@color/colorOnSurfaceVariant"
-                        app:iiv_icon="gmd_keyboard_arrow_down"
-                        app:iiv_padding="4dp" />
+                <LinearLayout
+                    android:id="@+id/layoutGroupSelector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+                    <TextView
+                        style="@style/InputLabel"
+                        android:text="Nhóm hạng mục" />
+
+                    <LinearLayout
+                        android:id="@+id/btnSelectGroup"
+                        style="@style/InputSelectorContainer"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:id="@+id/tvSelectedGroup"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Chọn nhóm..."
+                            android:textColor="@color/colorOnSurface"
+                            android:textSize="15sp" />
+
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            app:iiv_color="@color/colorOnSurfaceVariant"
+                            app:iiv_icon="gmd_keyboard_arrow_down"
+                            app:iiv_padding="4dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutCategorySelector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/InputLabel"
+                        android:text="Hạng mục" />
+
+                    <LinearLayout
+                        android:id="@+id/btnSelectCategory"
+                        style="@style/InputSelectorContainer"
+                        android:layout_marginBottom="16dp">
+
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:id="@+id/ivCategoryIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="8dp"
+                            app:iiv_color="@color/colorOnSurface"
+                            app:iiv_icon="gmd_category" />
+
+                        <TextView
+                            android:id="@+id/tvSelectedCategory"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Chọn hạng mục..."
+                            android:textColor="@color/colorOnSurface"
+                            android:textSize="15sp" />
+
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            app:iiv_color="@color/colorOnSurfaceVariant"
+                            app:iiv_icon="gmd_keyboard_arrow_down"
+                            app:iiv_padding="4dp" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <TextView
@@ -118,34 +189,6 @@
                         android:layout_weight="1"
                         android:text="Năm" />
                 </RadioGroup>
-
-                <TextView
-                    style="@style/InputLabel"
-                    android:text="Ngày bắt đầu" />
-
-                <LinearLayout
-                    android:id="@+id/btnPickStartDate"
-                    style="@style/InputSelectorContainer"
-                    android:layout_marginBottom="16dp">
-
-                    <com.mikepenz.iconics.view.IconicsImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="8dp"
-                        app:iiv_color="@color/colorOnSurface"
-                        app:iiv_icon="gmd_calendar_today" />
-
-                    <TextView
-                        android:id="@+id/tvStartDate"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Chọn ngày..."
-                        android:textColor="@color/colorOnSurface"
-                        android:textSize="15sp" />
-
-                </LinearLayout>
-
             </LinearLayout>
         </ScrollView>
     </com.google.android.material.card.MaterialCardView>

@@ -20,11 +20,15 @@
     <fragment
         android:id="@+id/accountFragment"
         android:name="com.example.moneyapp.view.account.AccountFragment"
-        android:label="@string/category"
+        android:label="@string/account"
         tools:layout="@layout/fragment_account">
         <action
             android:id="@+id/action_accountFragment_to_accountDetailFragment"
-            app:destination="@id/accountDetailFragment" />
+            app:destination="@id/accountDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_accountFragment_to_reorderCategoryFragment"
             app:destination="@id/reorderCategoryFragment" />

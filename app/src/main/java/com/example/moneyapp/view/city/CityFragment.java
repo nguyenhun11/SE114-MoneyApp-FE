@@ -9,6 +9,7 @@ import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -119,6 +120,15 @@ public class CityFragment extends BaseFragment {
     }
 
     private void showBuildingDetail(CityResponse.BuildingDto building) {
+        // Kiểm tra nếu là vật phẩm trang trí thì không cho mở Menu Nâng cấp
+        String type = building.getBuildingType().toLowerCase();
+        if (type.equals("road") || type.equals("tree") || type.equals("bench") ||
+            type.equals("street_light") || type.equals("flower_bed") ||
+            type.equals("fountain") || type.equals("statue")) {
+            Toast.makeText(getContext(), getBuildingDisplayName(type) + " (Vật phẩm trang trí)", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         CityResponse currentCity = viewModel.getCityData().getValue();
         int prosperity = (currentCity != null) ? currentCity.getProsperityPoints() : 0;
 
@@ -127,13 +137,30 @@ public class CityFragment extends BaseFragment {
         bottomSheet.show(getChildFragmentManager(), "BuildingDetail");
     }
 
+    private String getBuildingDisplayName(String type) {
+        switch (type.toLowerCase()) {
+            case "road": return "Đường phố";
+            case "tree": return "Cây xanh";
+            case "bench": return "Ghế đá";
+            case "street_light": return "Đèn đường";
+            case "flower_bed": return "Bồn hoa";
+            case "fountain": return "Đài phun nước";
+            case "statue": return "Tượng đài";
+            default: return "Cảnh quan";
+        }
+    }
+
     private void startBuildingAt(int r, int c) {
         CityResponse currentCity = viewModel.getCityData().getValue();
         if (currentCity == null) return;
 
         BuildMenuBottomSheet bottomSheet = new BuildMenuBottomSheet();
         bottomSheet.setOnBuildOptionSelectedListener(option -> {
-            if (currentCity.getProsperityPoints() < option.getCost()) {
+            int currentPoints = option.getCurrency().equals("PP") ?
+                    currentCity.getProsperityPoints() : currentCity.getStabilityPoints();
+
+            if (currentPoints < option.getCost()) {
+                String msg = "Không đủ điểm " + (option.getCurrency().equals("PP") ? "Prosperity" : "Stability") + "!";
                 DialogHelper.showSimpleDialog(getContext(), "Thông báo", "Không đủ điểm Prosperity!");
                 return;
             }

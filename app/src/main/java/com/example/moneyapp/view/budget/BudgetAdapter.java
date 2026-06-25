@@ -19,12 +19,16 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.ViewHolder> {
-
     private List<BudgetResponse> budgets;
     private final DecimalFormat formatter = new DecimalFormat("#,###");
+    private final OnItemClickListener listener;
+    public interface OnItemClickListener {
+        void onBudgetClick(BudgetResponse budget);
+    }
 
-    public BudgetAdapter(List<BudgetResponse> budgets) {
+    public BudgetAdapter(List<BudgetResponse> budgets, OnItemClickListener listener) {
         this.budgets = budgets;
+        this.listener = listener;
     }
 
     public void updateData(List<BudgetResponse> newBudgets) {
@@ -46,14 +50,33 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.ViewHolder
         Context context = holder.itemView.getContext();
 
         holder.tvCategoryName.setText(budget.getCategoryName());
-        holder.tvRemaining.setText("Còn lại: " + formatter.format(budget.getRemainingAmount()) + " đ");
-        holder.tvSpentSummary.setText(formatter.format(budget.getUsedAmount()) + " / " + formatter.format(budget.getAmount()));
-        
+        holder.tvSpentSummary.setText("Đã chi: " + formatter.format(budget.getUsedAmount()) + " / " + formatter.format(budget.getAmount()) + " đ");
+
+        // Xử lý thông tin Chu kỳ
+        String periodText = "Tháng";
+        if (budget.getPeriod() == 0) periodText = "Tuần";
+        else if (budget.getPeriod() == 2) periodText = "Năm";
+
+        holder.tvCycleInfo.setText(budget.getCycleName());
+        holder.tvCycleInfo.setTextColor(ContextCompat.getColor(context, R.color.colorInfo));
+
         int progress = (int) budget.getPercentageUsed();
         holder.pbBudget.setProgress(Math.min(progress, 100));
-        holder.tvPercentage.setText(progress + "%");
 
-        // Color coding for progress
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onBudgetClick(budget);
+            }
+        });
+
+        if (progress > 100) {
+            holder.tvPercentage.setText("Vượt mức " + progress + "%");
+            holder.tvPercentage.setTextColor(ContextCompat.getColor(context, R.color.colorDanger));
+        } else {
+            holder.tvPercentage.setText(progress + "%");
+            holder.tvPercentage.setTextColor(ContextCompat.getColor(context, R.color.colorOnSurfaceVariant));
+        }
+
         int color;
         if (progress < 70) {
             color = ContextCompat.getColor(context, R.color.colorSuccess);
@@ -71,15 +94,15 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.ViewHolder
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCategoryName, tvRemaining, tvSpentSummary, tvPercentage;
+        TextView tvCategoryName, tvSpentSummary, tvPercentage, tvCycleInfo;
         ProgressBar pbBudget;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvCategoryName = itemView.findViewById(R.id.tv_category_name);
-            tvRemaining = itemView.findViewById(R.id.tv_remaining);
             tvSpentSummary = itemView.findViewById(R.id.tv_spent_summary);
             tvPercentage = itemView.findViewById(R.id.tv_percentage);
+            tvCycleInfo = itemView.findViewById(R.id.tv_cycle_info);
             pbBudget = itemView.findViewById(R.id.pb_budget);
         }
     }

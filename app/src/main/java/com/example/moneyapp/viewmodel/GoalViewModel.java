@@ -156,7 +156,7 @@ public class GoalViewModel extends AndroidViewModel {
                         public void onSuccess(List<CategoryGroupResponse> groups) {
                             String groupId = (groups != null && !groups.isEmpty()) ? groups.get(0).getId() : null;
 
-                            Category newCat = new Category(null, "Tiết kiệm", CategoryType.EXPENSE, groupId, null, 0.0, 0, 17, 0, null, null);
+                            Category newCat = new Category(null, "Tiết kiệm", CategoryType.EXPENSE, groupId, null, 0, 17, 0, null, null);
                             categoryRepository.createCategory(newCat, new CategoryRepository.CategoryCallback<Void>() {
                                 @Override
                                 public void onSuccess(Void result) {
