@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,7 +34,7 @@ public class ChangePasswordFragment extends Fragment {
         profileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
 
         // UI Components
-        ImageButton btnBack = view.findViewById(R.id.btn_back);
+        com.mikepenz.iconics.view.IconicsImageView btnBack = view.findViewById(R.id.btn_back);
         Button btnUpdate = view.findViewById(R.id.btn_update_password);
         EditText etCurrentPass = view.findViewById(R.id.et_current_password);
         EditText etNewPass = view.findViewById(R.id.et_new_password);

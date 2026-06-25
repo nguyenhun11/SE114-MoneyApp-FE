@@ -144,7 +144,16 @@ public class AuthRepository {
                 if (response.isSuccessful()) {
                     callback.onSuccess(null);
                 } else {
-                    callback.onError("Đổi mật khẩu thất bại: Kiểm tra lại mật khẩu cũ.");
+                    String errorMessage = "Đổi mật khẩu thất bại";
+                    try {
+                        if (response.errorBody() != null) {
+                            JSONObject jObjError = new JSONObject(response.errorBody().string());
+                            errorMessage = jObjError.optString("message", errorMessage);
+                        }
+                    } catch (Exception e) {
+                        errorMessage += ": " + response.code();
+                    }
+                    callback.onError(errorMessage);
                 }
             }
 
