@@ -53,7 +53,15 @@ public class CityViewModel extends AndroidViewModel {
                 if (response.isSuccessful()) {
                     fetchCityData();
                 } else {
-                    error.setValue("Insufficient points or invalid request");
+                    try {
+                        String errorMsg = "Lỗi xây dựng: " + response.code();
+                        if (response.errorBody() != null) {
+                            errorMsg += " - " + response.errorBody().string();
+                        }
+                        error.setValue(errorMsg);
+                    } catch (Exception e) {
+                        error.setValue("Lỗi hệ thống khi xây dựng");
+                    }
                 }
             }
 

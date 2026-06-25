@@ -1,8 +1,15 @@
 package com.example.moneyapp.data.remote.request;
 
+import com.google.gson.annotations.SerializedName;
+
 public class BuildRequest {
+    @SerializedName("buildingType")
     private String buildingType;
+
+    @SerializedName("positionX")
     private int positionX;
+
+    @SerializedName("positionY")
     private int positionY;
 
     public BuildRequest(String buildingType, int positionX, int positionY) {
