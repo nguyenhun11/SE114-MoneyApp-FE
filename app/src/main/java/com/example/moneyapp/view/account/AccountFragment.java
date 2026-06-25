@@ -30,8 +30,8 @@ import java.util.Locale;
 
 public class AccountFragment extends BaseFragment {
 
-    public enum TabMode { ACCOUNTS, EXPENSE_CATEGORIES, INCOME_CATEGORIES }
-    private TabMode currentMode = TabMode.ACCOUNTS;
+    public enum TabMode {ACCOUNTS, EXPENSE_CATEGORIES, INCOME_CATEGORIES}
+    private TabMode currentMode;
 
     private RecyclerView rvMainList;
     private View tabLayoutHeader;
@@ -62,8 +62,23 @@ public class AccountFragment extends BaseFragment {
 
         initAdapters();
 
+        int initialTab = PreferenceManager.getInstance(requireContext()).getLastAccountTab();
+
+        if (initialTab == 0) currentMode = TabMode.ACCOUNTS;
+        else if (initialTab == 1) currentMode = TabMode.EXPENSE_CATEGORIES;
+        else currentMode = TabMode.INCOME_CATEGORIES;
+
         String[] tabs = {"Tài khoản", "Chi tiêu", "Thu nhập"};
-        setupHeaderTabs(view, tabs, 0, index -> {
+
+        setupHeaderTabs(view, tabs, initialTab, index -> {
+
+            PreferenceManager.getInstance(requireContext()).setLastAccountTab(index);
+
+            if (index == 1)
+                PreferenceManager.getInstance(requireContext()).setLastTabType(0); // Chi tiêu
+            if (index == 2)
+                PreferenceManager.getInstance(requireContext()).setLastTabType(1); // Thu nhập
+
             if (index == 0) currentMode = TabMode.ACCOUNTS;
             else if (index == 1) currentMode = TabMode.EXPENSE_CATEGORIES;
             else currentMode = TabMode.INCOME_CATEGORIES;
@@ -140,7 +155,6 @@ public class AccountFragment extends BaseFragment {
             categoryViewModel.setCurrentType(targetType);
             categoryViewModel.loadCategories(targetType);
 
-            // ĐÃ SỬA: Bấm nút Edit thì chuyển hẳn sang trang Sắp Xếp chuyên nghiệp
             String modeTitle = (currentMode == TabMode.EXPENSE_CATEGORIES) ? "Hạng mục chi tiêu" : "Hạng mục thu nhập";
             setupHeader(layoutHeaderTitle, modeTitle, null, null, "gmd_edit", v -> navigateToReorderScreen());
         }
@@ -169,7 +183,7 @@ public class AccountFragment extends BaseFragment {
                 categoryViewModel.deleteCategory(category.getCategoryId(), "soft_delete", null);
                 return true;
             } else if (item.getItemId() == 2) {
-                navigateToReorderScreen(); // Chuyển sang trang Sắp xếp
+                navigateToReorderScreen();
                 return true;
             }
             return false;
@@ -220,10 +234,5 @@ public class AccountFragment extends BaseFragment {
             bundle.putInt("type", currentMode == TabMode.EXPENSE_CATEGORIES ? 0 : 1);
             Navigation.findNavController(requireView()).navigate(R.id.addCategoryFragment, bundle);
         }
-    }
-
-    @Override
-    protected boolean shouldShowBottomNavigation() {
-        return true;
     }
 }

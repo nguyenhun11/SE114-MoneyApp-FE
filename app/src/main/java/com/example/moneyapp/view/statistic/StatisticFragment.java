@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.data.remote.response.CashFlowBarDto;
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
@@ -84,16 +85,20 @@ public class StatisticFragment extends BaseFragment {
         setupBarChartStyle();
         setupPieChartStyle();
 
-        String[] statsTabs = {
-                "Tổng quan",
-                "Chi tiêu",
-                "Thu nhập",
-                "Tâm trạng",
-        };
-        setupHeaderTabs(view, statsTabs, 0, index -> {
+        int globalType = PreferenceManager.getInstance(requireContext()).getLastTabType();
+        // Nếu là Chuyển khoản (2) thì lùi về Chi tiêu (1) vì Thống kê không có Chuyển khoản
+        int initialTab = (globalType == 1) ? 2 : 1;
+
+        String[] statsTabs = { "Tổng quan", "Chi tiêu", "Thu nhập", "Tâm trạng" };
+
+        setupHeaderTabs(view, statsTabs, initialTab, index -> {
+            if (index == 1) PreferenceManager.getInstance(requireContext()).setLastTabType(0);
+            if (index == 2) PreferenceManager.getInstance(requireContext()).setLastTabType(1);
+
             currentTab = index;
             loadDataByTab();
         });
+        currentTab = initialTab;
 
         timeSelector.setOnTimeRangeChangeListener((startDate, endDate, groupBy) -> {
             currentStartDate = startDate;
