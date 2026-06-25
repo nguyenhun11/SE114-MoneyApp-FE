@@ -125,6 +125,7 @@ public class LoginFragment extends Fragment {
             SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
             prefs.edit().putBoolean("isLoggedIn", true).apply();
             startActivity(new Intent(requireActivity(), MainActivity.class));
+            requireActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             requireActivity().finish();
         });
 

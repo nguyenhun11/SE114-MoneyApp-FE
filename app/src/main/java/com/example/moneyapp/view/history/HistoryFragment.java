@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -146,12 +147,18 @@ public class HistoryFragment extends BaseFragment {
 
         adapter = new HistoryGroupAdapter(new ArrayList<>(), accountList, systemCurrency, item -> {
             Bundle args = new Bundle();
+            NavOptions navOptions = new NavOptions.Builder()
+                    .setEnterAnim(R.anim.slide_in_right)
+                    .setExitAnim(R.anim.slide_out_left)
+                    .setPopEnterAnim(R.anim.slide_in_left)
+                    .setPopExitAnim(R.anim.slide_out_right)
+                    .build();
             if (item.getType() == HistoryItem.TYPE_TRANSACTION) {
                 args.putString("transactionId", item.getTransaction().getTransactionId());
-                Navigation.findNavController(view).navigate(R.id.transactionDetailFragment, args);
+                Navigation.findNavController(view).navigate(R.id.transactionDetailFragment, args, navOptions);
             } else if (item.getType() == HistoryItem.TYPE_TRANSFER) {
                 args.putString("transferId", item.getTransfer().getId());
-                Navigation.findNavController(view).navigate(R.id.transferDetailFragment, args);
+                Navigation.findNavController(view).navigate(R.id.transferDetailFragment, args, navOptions);
             } else if (item.getType() == HistoryItem.TYPE_ADJUST_BALANCE) {
                 AdjustBalance adjust = item.getAdjustBalance();
                 if (adjust != null) {
@@ -163,7 +170,7 @@ public class HistoryFragment extends BaseFragment {
                     long timeInMillis = (adjust.getCreatedAt() != null) ? adjust.getCreatedAt().getTime() : 0;
                     args.putLong("createdAt", timeInMillis);
 
-                    Navigation.findNavController(view).navigate(R.id.adjustBalanceDetailFragment, args);
+                    Navigation.findNavController(view).navigate(R.id.adjustBalanceDetailFragment, args, navOptions);
                 }
             }
         });
@@ -305,6 +312,12 @@ public class HistoryFragment extends BaseFragment {
 
     @Override
     protected void onFabClick() {
-        Navigation.findNavController(requireView()).navigate(R.id.transactionEntryFragment);
+        NavOptions navOptions = new NavOptions.Builder()
+                .setEnterAnim(R.anim.slide_in_right)
+                .setExitAnim(R.anim.slide_out_left)
+                .setPopEnterAnim(R.anim.slide_in_left)
+                .setPopExitAnim(R.anim.slide_out_right)
+                .build();
+        Navigation.findNavController(requireView()).navigate(R.id.transactionEntryFragment, null, navOptions);
     }
 }

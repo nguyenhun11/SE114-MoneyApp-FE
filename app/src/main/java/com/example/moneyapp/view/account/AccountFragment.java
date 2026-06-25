@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,7 +46,13 @@ public class AccountFragment extends BaseFragment {
         adapter = new AccountAdapter(new ArrayList<>(), PreferenceManager.getInstance(requireContext()).getDefaultCurrency(), account -> {
             Bundle args = new Bundle();
             args.putString("accountId", account.getAccountId());
-            Navigation.findNavController(view).navigate(R.id.accountDetailFragment, args);
+            NavOptions options = new NavOptions.Builder()
+                    .setEnterAnim(R.anim.slide_in_right)
+                    .setExitAnim(R.anim.slide_out_left)
+                    .setPopEnterAnim(R.anim.slide_in_left)
+                    .setPopExitAnim(R.anim.slide_out_right)
+                    .build();
+            Navigation.findNavController(view).navigate(R.id.accountDetailFragment, args, options);
         });
 
         rvAccounts.setAdapter(adapter);

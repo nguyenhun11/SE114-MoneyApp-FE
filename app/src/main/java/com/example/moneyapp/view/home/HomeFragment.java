@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -88,14 +89,20 @@ public class HomeFragment extends BaseFragment {
         View btnBudget = view.findViewById(R.id.card_home_budget);
         View btnQuests = view.findViewById(R.id.card_quest_summary);
 
+        NavOptions slideOptions = new NavOptions.Builder()
+                .setEnterAnim(R.anim.slide_in_right)
+                .setExitAnim(R.anim.slide_out_left)
+                .setPopEnterAnim(R.anim.slide_in_left)
+                .setPopExitAnim(R.anim.slide_out_right)
+                .build();
         if (btnCity != null) {
-            btnCity.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.cityFragment));
+            btnCity.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.cityFragment, null, slideOptions));
         }
         if (btnBudget != null) {
-            btnBudget.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.budgetFragment));
+            btnBudget.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.budgetFragment, null, slideOptions));
         }
         if (btnQuests != null) {
-            btnQuests.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.questFragment));
+            btnQuests.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.questFragment, null, slideOptions));
         }
 
         TimeSelectorView timeSelector = view.findViewById(R.id.time_selector);
@@ -301,7 +308,13 @@ public class HomeFragment extends BaseFragment {
             if (currentStartDate != null) bundle.putLong("startDate", currentStartDate.getTime());
             if (currentEndDate != null) bundle.putLong("endDate", currentEndDate.getTime());
 
-            Navigation.findNavController(requireView()).navigate(R.id.historyFragment, bundle);
+            NavOptions fadeOptions = new NavOptions.Builder()
+                    .setEnterAnim(R.anim.fade_in)
+                    .setExitAnim(R.anim.fade_out)
+                    .setPopEnterAnim(R.anim.fade_in)
+                    .setPopExitAnim(R.anim.fade_out)
+                    .build();
+            Navigation.findNavController(requireView()).navigate(R.id.historyFragment, bundle, fadeOptions);
         });
         rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
         rvCategories.setAdapter(adapter);
@@ -323,7 +336,13 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     protected void onFabClick() {
-        Navigation.findNavController(requireView()).navigate(R.id.transactionEntryFragment);
+        NavOptions navOptions = new NavOptions.Builder()
+                .setEnterAnim(R.anim.slide_in_right)
+                .setExitAnim(R.anim.slide_out_left)
+                .setPopEnterAnim(R.anim.slide_in_left)
+                .setPopExitAnim(R.anim.slide_out_right)
+                .build();
+        Navigation.findNavController(requireView()).navigate(R.id.transactionEntryFragment, null, navOptions);
     }
     @Override
     protected String getFabLabel() {
