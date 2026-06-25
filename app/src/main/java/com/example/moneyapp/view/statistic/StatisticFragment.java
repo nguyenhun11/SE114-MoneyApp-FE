@@ -57,7 +57,6 @@ public class StatisticFragment extends BaseFragment {
     private RecyclerView rvStatisticDetails;
     private CategorySummaryAdapter adapter;
 
-    // Bộ nhớ đệm lưu trữ dữ liệu từ API
     private List<CashFlowBarDto> currentCashFlowData = new ArrayList<>();
     private List<StackedBarChartDto> currentExpenseStackedData = new ArrayList<>();
     private List<StackedBarChartDto> currentIncomeStackedData = new ArrayList<>();
@@ -86,7 +85,6 @@ public class StatisticFragment extends BaseFragment {
         setupPieChartStyle();
 
         int globalType = PreferenceManager.getInstance(requireContext()).getLastTabType();
-        // Nếu là Chuyển khoản (2) thì lùi về Chi tiêu (1) vì Thống kê không có Chuyển khoản
         int initialTab = (globalType == 1) ? 2 : 1;
 
         String[] statsTabs = { "Tổng quan", "Chi tiêu", "Thu nhập", "Tâm trạng" };
@@ -173,7 +171,14 @@ public class StatisticFragment extends BaseFragment {
         pieChartMood.setRotationAngle(0);
         pieChartMood.setRotationEnabled(true);
         pieChartMood.setHighlightPerTapEnabled(true);
-        pieChartMood.getLegend().setEnabled(false);
+
+        Legend legend = pieChartMood.getLegend();
+        legend.setEnabled(true);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        legend.setWordWrapEnabled(true);
+        legend.setXEntrySpace(15f);
     }
 
     private void updateListFromChartSelection(int index, Highlight h) {
@@ -422,10 +427,8 @@ public class StatisticFragment extends BaseFragment {
 
         barChart.invalidate();
 
-        int lastIndex = data.size() - 1;
-        Highlight defaultHighlight = new Highlight(lastIndex, 0, 0);
-        barChart.highlightValue(defaultHighlight, false);
-        updateListFromChartSelection(lastIndex, defaultHighlight);
+        barChart.highlightValue(null);
+        adapter.updateData(new ArrayList<>());
     }
 
     private void renderStackedBarChart(List<StackedBarChartDto> data) {
@@ -498,6 +501,9 @@ public class StatisticFragment extends BaseFragment {
         legend.setXEntrySpace(15f);
         legend.setEnabled(true);
         legend.setWordWrapEnabled(true);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
 
         barChart.notifyDataSetChanged();
 
@@ -509,10 +515,8 @@ public class StatisticFragment extends BaseFragment {
 
         barChart.invalidate();
 
-        int lastIndex = data.size() - 1;
-        Highlight defaultHighlight = new Highlight(lastIndex, 0, -1);
-        barChart.highlightValue(defaultHighlight, false);
-        updateListFromChartSelection(lastIndex, defaultHighlight);
+        barChart.highlightValue(null);
+        adapter.updateData(new ArrayList<>());
     }
 
     @Override
