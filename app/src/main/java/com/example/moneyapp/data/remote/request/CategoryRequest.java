@@ -8,22 +8,19 @@ public class CategoryRequest {
 
     @SerializedName("categoryGroupId")
     private String categoryGroupId;
-
-    @SerializedName("monthlyTarget")
-    private double monthlyTarget;
-
     @SerializedName("colorId")
     private int colorId;
-
     @SerializedName("iconId")
     private int iconId;
+    @SerializedName("budgetSetup")
+    private BudgetRequest budgetSetup;
 
-    public CategoryRequest(String categoryName, String categoryGroupId, double monthlyTarget, int colorId, int iconId) {
+    public CategoryRequest(String categoryName, String categoryGroupId, int colorId, int iconId, BudgetRequest budgetSetup) {
         this.categoryName = categoryName;
         this.categoryGroupId = categoryGroupId;
-        this.monthlyTarget = monthlyTarget;
         this.colorId = colorId;
         this.iconId = iconId;
+        this.budgetSetup = budgetSetup;
     }
 
     public String getCategoryName() {
@@ -34,15 +31,19 @@ public class CategoryRequest {
         return categoryGroupId;
     }
 
-    public double getMonthlyTarget() {
-        return monthlyTarget;
-    }
-
     public int getColorId() {
         return colorId;
     }
 
     public int getIconId() {
         return iconId;
+    }
+
+    public BudgetRequest getBudgetSetup() {
+        return budgetSetup;
+    }
+
+    public void setBudgetSetup(BudgetRequest budgetSetup) {
+        this.budgetSetup = budgetSetup;
     }
 }

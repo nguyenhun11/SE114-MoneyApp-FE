@@ -19,150 +19,251 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- ĐÃ TRẢ LẠI NGUYÊN VẸN CARD GỐC CỦA BẠN: margin 20dp, bo góc, bottom margin -->
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_form"
+        android:id="@+id/card_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/card_horizontal_margin"
-        android:layout_marginTop="@dimen/header_margin_top"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="@dimen/main_top_margin_small"
+        android:layout_marginBottom="@dimen/card_bottom_margin"
         app:cardBackgroundColor="@color/colorSurface"
         app:cardCornerRadius="@dimen/card_radius"
         app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
         app:strokeColor="@color/colorBorder"
-        app:strokeWidth="1dp"
-        app:layout_constraintTop_toBottomOf="@id/header_layout">
+        app:strokeWidth="1dp">
 
-        <LinearLayout
+        <!-- CHỈ GIỮ LẠI CÁI NÀY ĐỂ FIX LỖI SCROLL -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/main_scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:scrollbarSize="0dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tên hạng mục"
-                android:textColor="@color/colorOnSurface"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/et_category_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_edittext_outline"
-                android:hint="Ăn uống"
-                android:padding="12dp"
-                android:textColor="@color/colorOnSurface"
-                android:textColorHint="@color/colorOnSurfaceVariant"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/tv_budget_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Kế hoạch chi tiêu trong tháng"
-                android:textColor="@color/colorOnSurface"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/et_monthly_target"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_edittext_outline"
-                android:hint="400.000"
-                android:inputType="numberDecimal"
-                android:padding="12dp"
-                android:textColor="@color/colorOnSurface"
-                android:textColorHint="@color/colorOnSurfaceVariant"
-                android:textSize="14sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Hiển thị"
-                android:textColor="@color/colorOnSurface"
-                android:textStyle="bold" />
-
+            <!-- TRẢ LẠI PADDING 24DP -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Tên hạng mục"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/et_category_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@drawable/bg_input_border"
+                    android:hint="Ví dụ: Ăn sáng"
+                    android:paddingHorizontal="16dp"
+                    android:singleLine="true"
+                    android:textColorHint="@color/colorOnSurfaceVariant"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Nhóm"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
-                    android:id="@+id/btn_select_icon"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_edittext_outline"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="12dp">
+                    android:id="@+id/btn_select_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@drawable/bg_input_border"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
+
+                    <EditText
+                        android:id="@+id/et_group_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:hint="Chọn hoặc nhập tên nhóm"
+                        android:singleLine="true"
+                        android:textColor="@color/colorOnSurface"
+                        android:textColorHint="@color/colorOnSurfaceVariant"
+                        android:textSize="16sp" />
 
                     <com.mikepenz.iconics.view.IconicsImageView
-                        android:id="@+id/iv_preview_icon"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="center"
-                        app:ico_color="@color/colorOnSurface"
-                        app:ico_icon="gmd_account_balance_wallet" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Biểu tượng"
-                        android:textColor="@color/colorOnSurface"
-                        android:textSize="12sp" />
+                        android:id="@+id/iv_group_arrow"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        app:iiv_icon="gmd-keyboard-arrow-down"
+                        app:tint="@color/colorOnSurfaceVariant" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="16dp"
-                    android:layout_height="1dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Hiển thị"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
-                    android:id="@+id/btn_select_color"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_edittext_outline"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="12dp">
+                    android:layout_marginBottom="16dp"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
 
-                    <View
-                        android:id="@+id/view_preview_color"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:background="@drawable/bg_circle"
-                        android:backgroundTint="@color/colorOnSurfaceVariant" />
+                    <LinearLayout
+                        android:id="@+id/btn_select_icon"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input_border"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Màu sắc"
-                        android:textColor="@color/colorOnSurface"
-                        android:textSize="12sp" />
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/colorEmpty">
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:id="@+id/iv_preview_icon"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                app:iiv_icon="gmd_category"
+                                app:tint="@color/colorOnSurface" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Biểu tượng"
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btn_select_color"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input_border"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <View
+                            android:id="@+id/view_preview_color"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/design_default_color_primary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Màu sắc"
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="14sp" />
+                    </LinearLayout>
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/layout_linked_budgets_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="8dp"
+                        android:background="@color/colorBorder"/>
+
+                    <LinearLayout
+                        android:id="@+id/btn_toggle_budgets"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Ngân sách"
+                            android:textColor="@color/colorOnSurface"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:id="@+id/iv_budget_toggle_arrow"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            app:iiv_icon="gmd_keyboard_arrow_down"
+                            app:tint="@color/colorOnSurfaceVariant" />
+                    </LinearLayout>
+
+                    <!-- CHỈ FIX CHIỀU CAO RECYCLER VIEW -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_linked_budgets"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:nestedScrollingEnabled="false"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tv_no_budgets"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Chưa có ngân sách nào"
+                        android:textColor="@color/colorOnSurfaceVariant"
+                        android:textSize="13sp"
+                        android:textStyle="italic"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/btn_delete_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:gravity="center"
+                    android:paddingVertical="12dp"
+                    android:text="Xóa hạng mục này"
+                    android:textColor="@color/colorDanger"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/btn_delete_category"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="XÓA"
-                android:textColor="@color/colorDanger"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
-        </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
     </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

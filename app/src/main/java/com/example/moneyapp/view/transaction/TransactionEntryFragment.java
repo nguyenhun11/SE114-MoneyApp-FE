@@ -9,7 +9,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -23,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.data.remote.request.TransferRequest;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.Category;
@@ -135,11 +135,20 @@ public class TransactionEntryFragment extends BaseFragment {
             }
         }
 
-        // CHỈ KHỞI TẠO TABS NGAY LẦN ĐẦU NẾU LÀ TẠO MỚI
         if (!isEditing) {
+            int initialTab = PreferenceManager.getInstance(requireContext()).getLastTabType();
+
+            if (initialTab == 0) currentMode = EntryMode.EXPENSE;
+            else if (initialTab == 1) currentMode = EntryMode.INCOME;
+            else currentMode = EntryMode.TRANSFER;
+
             String[] tabs = {"Chi tiêu", "Thu nhập", "Chuyển khoản"};
-            setupHeaderTabs(view, tabs, 0, index -> {
-                hideKeyboard(); // Trượt mất Focus khi đổi Tab
+
+            setupHeaderTabs(view, tabs, initialTab, index -> {
+                hideKeyboard();
+
+                PreferenceManager.getInstance(requireContext()).setLastTabType(index);
+
                 if (index == 0) currentMode = EntryMode.EXPENSE;
                 else if (index == 1) currentMode = EntryMode.INCOME;
                 else currentMode = EntryMode.TRANSFER;
@@ -351,7 +360,7 @@ public class TransactionEntryFragment extends BaseFragment {
     private void setupMoodSelector(View view) {
         androidx.recyclerview.widget.RecyclerView rvMood = view.findViewById(R.id.rvMoodSelector);
         moodAdapter = new MoodSelectorAdapter(Mood.getAllMoods(), selectedMoodId, mood -> {
-            hideKeyboard(); // CHẶN: Ép mất tiêu điểm khi bấm Cảm xúc
+            hideKeyboard();
             selectedMoodId = mood.getId();
         });
         rvMood.setAdapter(moodAdapter);
@@ -549,7 +558,7 @@ public class TransactionEntryFragment extends BaseFragment {
                 viewSelectSource.setAccount(mockAccount, true);
 
                 CategoryType intendedType = t.getType() == CategoryType.EXPENSE ? CategoryType.EXPENSE : CategoryType.INCOME;
-                Category mockCategory = new Category(t.getCategoryId(), t.getCategoryName(), intendedType, "", "", 0.0, t.getCategoryColorId(), t.getCategoryIconId(), 0, new Date(), new Date());
+                Category mockCategory = new Category(t.getCategoryId(), t.getCategoryName(), intendedType, "", "",0, t.getCategoryColorId(), t.getCategoryIconId(), new Date(), new Date());
                 this.selectedCategory = mockCategory;
                 tvSelectedCategory.setText(mockCategory.getCategoryName());
                 ivCategoryIcon.setIcon(new IconicsDrawable(requireContext(), AppResourceManager.getIconName(mockCategory.getIcon())));
@@ -559,11 +568,14 @@ public class TransactionEntryFragment extends BaseFragment {
                 int targetTab = (currentMode == EntryMode.EXPENSE) ? 0 : 1;
                 setupHeaderTabs(requireView(), tabs, targetTab, index -> {
                     hideKeyboard();
+                    if (isEditing) return; // ĐÃ THÊM: Chặn chuyển Tab khi đang Edit
                     if (index == 0) currentMode = EntryMode.EXPENSE;
                     else if (index == 1) currentMode = EntryMode.INCOME;
                     else currentMode = EntryMode.TRANSFER;
                     updateUIByMode();
                 });
+
+                setTabsEnabled(false); // ĐÃ THÊM: Tái sử dụng hàm vô hiệu hóa UI thanh Tab từ BaseFragment
 
                 updateUIByMode();
                 upgradeMockAccountsAndCategories();
@@ -590,11 +602,14 @@ public class TransactionEntryFragment extends BaseFragment {
                 String[] tabs = {"Chi tiêu", "Thu nhập", "Chuyển khoản"};
                 setupHeaderTabs(requireView(), tabs, 2, index -> {
                     hideKeyboard();
+                    if (isEditing) return; // ĐÃ THÊM: Chặn chuyển Tab khi đang Edit
                     if (index == 0) currentMode = EntryMode.EXPENSE;
                     else if (index == 1) currentMode = EntryMode.INCOME;
                     else currentMode = EntryMode.TRANSFER;
                     updateUIByMode();
                 });
+
+                setTabsEnabled(false); // ĐÃ THÊM: Tái sử dụng hàm vô hiệu hóa UI thanh Tab từ BaseFragment
 
                 updateUIByMode();
                 upgradeMockAccountsAndCategories();
@@ -755,20 +770,6 @@ public class TransactionEntryFragment extends BaseFragment {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-        }
-    }
-
-    private void hideKeyboard() {
-        View view = requireActivity().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null) {
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
-            ScrollView mainScrollView = requireView().findViewById(R.id.main_scroll_view);
-            if (mainScrollView != null && mainScrollView.getChildAt(0) != null) {
-                mainScrollView.getChildAt(0).requestFocus();
             }
         }
     }

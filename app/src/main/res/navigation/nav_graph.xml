@@ -29,7 +29,16 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_accountFragment_to_reorderCategoryFragment"
+            app:destination="@id/reorderCategoryFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/reorderCategoryFragment"
+        android:name="com.example.moneyapp.view.category.ReorderCategoryFragment"
+        android:label="Sắp xếp hạng mục"
+        tools:layout="@layout/fragment_reorder_category" />
 
     <fragment
         android:id="@+id/accountDetailFragment"
@@ -88,16 +97,6 @@
         android:name="com.example.moneyapp.view.statistic.StatisticFragment"
         android:label="Thống kê"
         tools:layout="@layout/fragment_statistics" />
-
-    <fragment
-        android:id="@+id/categoryFragment"
-        android:name="com.example.moneyapp.view.category.CategoryFragment"
-        android:label="Hạng mục"
-        tools:layout="@layout/fragment_category">
-        <action
-            android:id="@+id/action_categoryFragment_to_addCategoryFragment"
-            app:destination="@id/addCategoryFragment" />
-    </fragment>
 
     <fragment
         android:id="@+id/addCategoryFragment"

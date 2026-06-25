@@ -49,7 +49,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="@dimen/header_action_button_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="4dp"
+                android:padding="6dp"
                 app:ico_color="@color/colorOnPrimary"
                 app:ico_icon="gmd_arrow_back" />
 
@@ -61,7 +61,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/header_action_button_horizontal_margin"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="4dp"
+                android:padding="6dp"
                 android:visibility="gone"
                 app:ico_color="@color/colorOnPrimary"
                 app:ico_icon="gmd_add" />

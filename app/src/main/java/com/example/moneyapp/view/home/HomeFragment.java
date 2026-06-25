@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
+import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.category.CategorySummaryAdapter;
@@ -117,15 +118,16 @@ public class HomeFragment extends BaseFragment {
         setupPieChart();
         setupScrollBehavior();
 
-        String[] homeTabs = {
-                "Chi tiêu",
-                "Thu nhập",
-        };
-        setupHeaderTabs(view, homeTabs,0, index -> {
-            int tabType = index;
-            homeViewModel.setTabTypeAndReload(tabType);
+        int globalTabType = PreferenceManager.getInstance(requireContext()).getLastTabType();
+        int initialTab = (globalTabType == 1) ? 1 : 0;
+
+        String[] homeTabs = { "Chi tiêu", "Thu nhập" };
+        setupHeaderTabs(view, homeTabs, initialTab, index -> {
+            PreferenceManager.getInstance(requireContext()).setLastTabType(index);
+            homeViewModel.setTabTypeAndReload(index);
         });
 
+        homeViewModel.setTabTypeAndReload(initialTab);
         observeViewModel();
     }
 

@@ -70,16 +70,36 @@ public class HistoryFragment extends BaseFragment {
         setupHeader(view, "Lịch sử giao dịch", false);
         setupFilters(view);
 
-        String[] historyTabs = {
-                "Tất cả",
-                "Chi tiêu",
-                "Thu nhập",
-                "Chuyển khoản",
-                "Điều chỉnh số dư",
-                "Tiết kiệm"
-        };
+        // =========================================================
+        // BƯỚC 1: XÁC ĐỊNH TAB KHỞI ĐẦU (ĐỒNG BỘ SHAREDPREFS)
+        // =========================================================
+        int initialTab = 0; // Mặc định là Tab 0 (Tất cả)
 
-        setupHeaderTabs(view, historyTabs, 0, index -> {
+        if (getArguments() != null && getArguments().containsKey("tabType")) {
+            // Ưu tiên 1: Lấy từ lệnh điều hướng (VD: Bấm từ Home sang)
+            initialTab = getArguments().getInt("tabType", 0);
+        } else {
+            // Ưu tiên 2: Lấy bộ nhớ đệm toàn cục
+            int globalType = PreferenceManager.getInstance(requireContext()).getLastTabType();
+            // Dịch ngược từ Chuẩn chung (0: Chi, 1: Thu, 2: Chuyển khoản) sang Tab của History
+            if (globalType == 0) initialTab = 1;      // Chi tiêu
+            else if (globalType == 1) initialTab = 2; // Thu nhập
+            else if (globalType == 2) initialTab = 3; // Chuyển khoản
+        }
+
+        // =========================================================
+        // BƯỚC 2: CẤU HÌNH TABS VÀ XỬ LÝ SỰ KIỆN ĐỔI TAB
+        // =========================================================
+        String[] historyTabs = { "Tất cả", "Chi tiêu", "Thu nhập", "Chuyển khoản", "Điều chỉnh số dư", "Tiết kiệm" };
+
+        setupHeaderTabs(view, historyTabs, initialTab, index -> {
+            // CHỈ LƯU VÀO BỘ NHỚ NẾU LÀ THU/CHI/CHUYỂN KHOẢN (Để đồng bộ với Home/Entry)
+            if (index >= 1 && index <= 3) {
+                int globalTypeToSave = index - 1; // Dịch lại: 1->0, 2->1, 3->2
+                PreferenceManager.getInstance(requireContext()).setLastTabType(globalTypeToSave);
+            }
+
+            // Xử lý UI Filter theo Tab
             if (index == 3) { // Tab Chuyển khoản
                 btnCategoryFilter.setVisibility(View.GONE);
                 btnDestAccountFilter.setVisibility(View.VISIBLE);
@@ -87,7 +107,7 @@ public class HistoryFragment extends BaseFragment {
                 historyViewModel.setCategoryFilter(null);
                 if (tvCategoryFilter != null) tvCategoryFilter.setText("Tất cả hạng mục");
 
-            } else if (index == 4 || index == 0) {
+            } else if (index == 4 || index == 0) { // Điều chỉnh số dư hoặc Tất cả
                 btnCategoryFilter.setVisibility(View.GONE);
                 btnDestAccountFilter.setVisibility(View.GONE);
 
@@ -111,14 +131,17 @@ public class HistoryFragment extends BaseFragment {
                 }
             }
 
+            // Tải lại dữ liệu theo Tab
             historyViewModel.setFilterAndReload(index);
         });
 
+        // =========================================================
+        // BƯỚC 3: XỬ LÝ LỌC THỜI GIAN & HẠNG MỤC TỪ ARGUMENTS
+        // =========================================================
         timeSelector = view.findViewById(R.id.time_selector);
 
-        int preSelectedTab = 0; // Mặc định Tab 0
         if (getArguments() != null) {
-            preSelectedTab = getArguments().getInt("tabType", 0);
+            // ĐÃ XÓA BỎ BIẾN "preSelectedTab" THỪA THÃI Ở ĐÂY!
 
             String categoryId = getArguments().getString("categoryId");
             String categoryName = getArguments().getString("categoryName");
@@ -140,6 +163,9 @@ public class HistoryFragment extends BaseFragment {
             }
         }
 
+        // =========================================================
+        // BƯỚC 4: CẤU HÌNH RECYCLERVIEW
+        // =========================================================
         RecyclerView recyclerView = view.findViewById(R.id.rvTransactions);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -177,6 +203,9 @@ public class HistoryFragment extends BaseFragment {
 
         recyclerView.setAdapter(adapter);
 
+        // =========================================================
+        // BƯỚC 5: LẮNG NGHE SỰ KIỆN & LOAD DỮ LIỆU CHUNG
+        // =========================================================
         timeSelector.setOnTimeRangeChangeListener((startDate, endDate) -> {
             historyViewModel.setTimeRangeAndReload(startDate, endDate);
         });
