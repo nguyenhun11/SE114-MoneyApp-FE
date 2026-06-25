@@ -283,7 +283,6 @@ public class AddCategoryFragment extends BaseFragment {
     }
 
     private void setupGroupSelector(View view) {
-        // ĐÃ SỬA: Đổi ScrollView thành NestedScrollView
         NestedScrollView mainScrollView = view.findViewById(R.id.main_scroll_view);
 
         etGroupName.setFocusable(false);
@@ -293,6 +292,10 @@ public class AddCategoryFragment extends BaseFragment {
         View.OnClickListener groupClickListener = v -> {
             if (etGroupName.isFocusable()) return;
 
+            if (etName.hasFocus()) {
+                etName.clearFocus();
+            }
+
             hideKeyboard();
 
             List<String> displayList = new ArrayList<>();
@@ -301,33 +304,34 @@ public class AddCategoryFragment extends BaseFragment {
                     displayList.add(group.getGroupName());
                 }
             }
+            v.post(() -> {
+                PopupHelper.showGroupSelectorPopup(requireContext(), displayList, (groupName, isNewGroup) -> {
+                    if (isNewGroup) {
+                        etGroupName.setFocusable(true);
+                        etGroupName.setFocusableInTouchMode(true);
+                        etGroupName.setText("");
+                        etGroupName.requestFocus();
+                        currentGroupId = null;
 
-            PopupHelper.showGroupSelectorPopup(requireContext(), displayList, (groupName, isNewGroup) -> {
-                if (isNewGroup) {
-                    etGroupName.setFocusable(true);
-                    etGroupName.setFocusableInTouchMode(true);
-                    etGroupName.setText("");
-                    etGroupName.requestFocus();
-                    currentGroupId = null;
+                        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (imm != null) imm.showSoftInput(etGroupName, InputMethodManager.SHOW_IMPLICIT);
+                    } else {
+                        if (mainScrollView != null) {
+                            mainScrollView.requestFocus();
+                        }
 
-                    InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (imm != null) imm.showSoftInput(etGroupName, InputMethodManager.SHOW_IMPLICIT);
-                } else {
-                    if (mainScrollView != null) {
-                        mainScrollView.requestFocus();
-                    }
+                        etGroupName.setFocusable(false);
+                        etGroupName.setFocusableInTouchMode(false);
+                        etGroupName.setText(groupName);
 
-                    etGroupName.setFocusable(false);
-                    etGroupName.setFocusableInTouchMode(false);
-                    etGroupName.setText(groupName);
-
-                    for (CategoryGroupResponse group : cachedGroups) {
-                        if (groupName.equals(group.getGroupName())) {
-                            currentGroupId = group.getId();
-                            break;
+                        for (CategoryGroupResponse group : cachedGroups) {
+                            if (groupName.equals(group.getGroupName())) {
+                                currentGroupId = group.getId();
+                                break;
+                            }
                         }
                     }
-                }
+                });
             });
         };
 
