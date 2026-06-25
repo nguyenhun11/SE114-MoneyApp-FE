@@ -42,7 +42,17 @@ public class BudgetFragment extends BaseFragment {
         pbLoading = view.findViewById(R.id.pbLoading);
         
         rvBudgets.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new BudgetAdapter(new ArrayList<>());
+        adapter = new BudgetAdapter(new ArrayList<>(), budget -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("budgetId", budget.getId());
+            bundle.putDouble("amount", budget.getAmount());
+            bundle.putInt("period", budget.getPeriod());
+            bundle.putString("categoryId", budget.getCategoryId());
+            bundle.putString("categoryGroupId", budget.getCategoryGroupId());
+            bundle.putString("categoryName", budget.getCategoryName());
+
+            Navigation.findNavController(view).navigate(R.id.budgetAddFragment, bundle);
+        });
         rvBudgets.setAdapter(adapter);
 
         viewModel = new ViewModelProvider(this).get(BudgetViewModel.class);

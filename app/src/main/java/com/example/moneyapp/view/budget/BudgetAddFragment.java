@@ -1,6 +1,5 @@
 package com.example.moneyapp.view.budget;
 
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,13 +25,11 @@ import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.viewmodel.BudgetViewModel;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -54,15 +51,21 @@ public class BudgetAddFragment extends BaseFragment {
     private Category selectedCategory = null;
     private CategoryGroupResponse selectedGroup = null;
 
-    private Date selectedStartDate;
-    private final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    private final SimpleDateFormat displayDf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-
-    // Các hằng số quy định phạm vi
+    // Các biến phân luồng Sửa/Thêm
+    private Integer budgetId = null;
     private static final int SCOPE_TOTAL = 0;
     private static final int SCOPE_GROUP = 1;
     private static final int SCOPE_CATEGORY = 2;
     private int currentScope = SCOPE_CATEGORY;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Bắt dữ liệu nếu được chuyển sang từ danh sách (Chế độ SỬA)
+        if (getArguments() != null && getArguments().containsKey("budgetId")) {
+            budgetId = getArguments().getInt("budgetId");
+        }
+    }
 
     @Nullable
     @Override
@@ -73,7 +76,6 @@ public class BudgetAddFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupHeader(view, "Thêm ngân sách", true);
 
         budgetViewModel = new ViewModelProvider(this).get(BudgetViewModel.class);
         categoryViewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
@@ -81,9 +83,19 @@ public class BudgetAddFragment extends BaseFragment {
         initViews(view);
         observeViewModels();
 
-        // Load trước danh sách Nhóm và Hạng mục Chi tiêu
         categoryViewModel.loadCategories(CategoryType.EXPENSE);
-        setDefaultStartDate(1); // Mặc định là Tháng
+
+        // PHÂN NHÁNH: THÊM MỚI hoặc CHỈNH SỬA
+        if (budgetId != null) {
+            setupHeader(view, "Sửa ngân sách",
+                    "gmd_navigate_before", v -> Navigation.findNavController(v).navigateUp(),
+                    "gmd_delete_outline", v -> showDeleteConfirmDialog()); // Icon xóa
+
+            fillExistingData(getArguments());
+        } else {
+            setupHeader(view, "Thêm ngân sách", true);
+            rbMonthly.setChecked(true); // Mặc định là Tháng
+        }
     }
 
     private void initViews(View view) {
@@ -121,13 +133,6 @@ public class BudgetAddFragment extends BaseFragment {
             }
         });
 
-        // Xử lý sự kiện đổi Chu kỳ
-        rgPeriod.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.rbWeekly) setDefaultStartDate(0);
-            else if (checkedId == R.id.rbMonthly) setDefaultStartDate(1);
-            else if (checkedId == R.id.rbYearly) setDefaultStartDate(2);
-        });
-
         // Formatting cho EditText số tiền
         etAmount.addTextChangedListener(new android.text.TextWatcher() {
             private String current = "";
@@ -156,26 +161,56 @@ public class BudgetAddFragment extends BaseFragment {
         });
     }
 
-    private void setDefaultStartDate(int period) {
-        Calendar cal = Calendar.getInstance();
-        if (period == 0) { // Weekly
-            cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
-        } else if (period == 1) { // Monthly
-            cal.set(Calendar.DAY_OF_MONTH, 1);
-        } else if (period == 2) { // Yearly
-            cal.set(Calendar.DAY_OF_YEAR, 1);
+    // Đổ dữ liệu vào form khi ở chế độ Chỉnh Sửa
+    private void fillExistingData(Bundle args) {
+        double amount = args.getDouble("amount", 0);
+        etAmount.setText(String.format(Locale.US, "%.0f", amount));
+
+        int period = args.getInt("period", 1);
+        if (period == 0) rbWeekly.setChecked(true);
+        else if (period == 1) rbMonthly.setChecked(true);
+        else rbYearly.setChecked(true);
+
+        String catId = args.getString("categoryId");
+        String groupId = args.getString("categoryGroupId");
+        String name = args.getString("categoryName");
+
+        // Khóa không cho đổi Hạng mục/Nhóm khi đang sửa (Tránh nhầm lẫn logic)
+        for (int i = 0; i < rgScope.getChildCount(); i++) {
+            rgScope.getChildAt(i).setEnabled(false);
         }
-        selectedStartDate = cal.getTime();
+        getView().findViewById(R.id.btnSelectCategory).setEnabled(false);
+        getView().findViewById(R.id.btnSelectGroup).setEnabled(false);
+
+        if (catId != null) {
+            rgScope.check(R.id.rbScopeCategory);
+            currentScope = SCOPE_CATEGORY;
+            tvSelectedCategory.setText(name != null ? name : "Đang tải...");
+        } else if (groupId != null) {
+            rgScope.check(R.id.rbScopeGroup);
+            currentScope = SCOPE_GROUP;
+            tvSelectedGroup.setText(name != null ? name : "Đang tải...");
+            layoutGroupSelector.setVisibility(View.VISIBLE);
+            layoutCategorySelector.setVisibility(View.GONE);
+        } else {
+            rgScope.check(R.id.rbScopeTotal);
+            currentScope = SCOPE_TOTAL;
+            layoutGroupSelector.setVisibility(View.GONE);
+            layoutCategorySelector.setVisibility(View.GONE);
+        }
     }
 
-    private void showDatePicker() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(selectedStartDate);
-        new DatePickerDialog(requireContext(), (view, year, month, dayOfMonth) -> {
-            Calendar newCal = Calendar.getInstance();
-            newCal.set(year, month, dayOfMonth);
-            selectedStartDate = newCal.getTime();
-        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show();
+    private void showDeleteConfirmDialog() {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Xóa ngân sách")
+                .setMessage("Bạn có chắc chắn muốn xóa kế hoạch ngân sách này không?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    if (budgetId != null) {
+                        budgetViewModel.deleteBudget(budgetId);
+                    }
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     private void showCategoryPopup() {
@@ -197,7 +232,6 @@ public class BudgetAddFragment extends BaseFragment {
             return;
         }
 
-        // Chuyển List<Group> thành List<String> để dùng Popup cũ của bạn
         List<String> displayList = new ArrayList<>();
         for (CategoryGroupResponse group : groupList) {
             displayList.add(group.getGroupName());
@@ -233,7 +267,7 @@ public class BudgetAddFragment extends BaseFragment {
 
         budgetViewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
             if (Boolean.TRUE.equals(success)) {
-                Toast.makeText(getContext(), "Lưu ngân sách thành công!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Lưu thành công!", Toast.LENGTH_SHORT).show();
                 budgetViewModel.resetOperationSuccess();
                 Navigation.findNavController(requireView()).navigateUp();
             }
@@ -256,35 +290,34 @@ public class BudgetAddFragment extends BaseFragment {
         if (rbWeekly.isChecked()) period = 0;
         else if (rbYearly.isChecked()) period = 2;
 
-        BudgetRequest request = new BudgetRequest(
-                selectedCategory != null ? selectedCategory.getCategoryId() : null,
-                selectedGroup != null ? selectedGroup.getId() : null,
-                amount, period
-        );
+        BudgetRequest request = new BudgetRequest(null, null, amount, period);
 
-        // PHÂN LOẠI REQUEST GỬI LÊN DỰA VÀO SCOPE
         if (currentScope == SCOPE_TOTAL) {
             request.setCategoryGroupId(null);
             request.setCategoryId(null);
         }
         else if (currentScope == SCOPE_GROUP) {
-            if (selectedGroup == null) {
+            if (budgetId == null && selectedGroup == null) {
                 Toast.makeText(getContext(), "Vui lòng chọn nhóm hạng mục", Toast.LENGTH_SHORT).show();
                 return;
             }
-            request.setCategoryGroupId(selectedGroup.getId());
+            request.setCategoryGroupId(budgetId != null ? getArguments().getString("categoryGroupId") : selectedGroup.getId());
             request.setCategoryId(null);
         }
         else if (currentScope == SCOPE_CATEGORY) {
-            if (selectedCategory == null) {
+            if (budgetId == null && selectedCategory == null) {
                 Toast.makeText(getContext(), "Vui lòng chọn hạng mục", Toast.LENGTH_SHORT).show();
                 return;
             }
-            request.setCategoryGroupId(selectedCategory.getGroupId()); // Truyền thêm Group ID phòng hờ
-            request.setCategoryId(selectedCategory.getCategoryId());
+            request.setCategoryGroupId(budgetId != null ? getArguments().getString("categoryGroupId") : selectedCategory.getGroupId());
+            request.setCategoryId(budgetId != null ? getArguments().getString("categoryId") : selectedCategory.getCategoryId());
         }
 
-        budgetViewModel.createBudget(request);
+        if (budgetId != null) {
+            budgetViewModel.updateBudget(budgetId, request);
+        } else {
+            budgetViewModel.createBudget(request);
+        }
     }
 
     @Override protected String getFabIcon() { return "gmd_check"; }

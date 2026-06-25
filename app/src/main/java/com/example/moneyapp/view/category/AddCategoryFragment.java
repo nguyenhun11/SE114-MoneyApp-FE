@@ -173,7 +173,17 @@ public class AddCategoryFragment extends BaseFragment {
         rvLinkedBudgets.setLayoutManager(new LinearLayoutManager(getContext()));
         rvLinkedBudgets.setNestedScrollingEnabled(false);
 
-        budgetAdapter = new BudgetAdapter(new ArrayList<>());
+        budgetAdapter = new BudgetAdapter(new ArrayList<>(), budget -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("budgetId", budget.getId());
+            bundle.putDouble("amount", budget.getAmount());
+            bundle.putInt("period", budget.getPeriod());
+            bundle.putString("categoryId", budget.getCategoryId());
+            bundle.putString("categoryGroupId", budget.getCategoryGroupId());
+            bundle.putString("categoryName", budget.getCategoryName());
+
+            Navigation.findNavController(view).navigate(R.id.budgetAddFragment, bundle);
+        });
         rvLinkedBudgets.setAdapter(budgetAdapter);
 
         view.findViewById(R.id.btn_toggle_budgets).setOnClickListener(v -> {

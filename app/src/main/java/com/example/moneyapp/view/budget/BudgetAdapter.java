@@ -19,12 +19,16 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.ViewHolder> {
-
     private List<BudgetResponse> budgets;
     private final DecimalFormat formatter = new DecimalFormat("#,###");
+    private final OnItemClickListener listener;
+    public interface OnItemClickListener {
+        void onBudgetClick(BudgetResponse budget);
+    }
 
-    public BudgetAdapter(List<BudgetResponse> budgets) {
+    public BudgetAdapter(List<BudgetResponse> budgets, OnItemClickListener listener) {
         this.budgets = budgets;
+        this.listener = listener;
     }
 
     public void updateData(List<BudgetResponse> newBudgets) {
@@ -58,6 +62,12 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.ViewHolder
 
         int progress = (int) budget.getPercentageUsed();
         holder.pbBudget.setProgress(Math.min(progress, 100));
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onBudgetClick(budget);
+            }
+        });
 
         if (progress > 100) {
             holder.tvPercentage.setText("Vượt mức " + progress + "%");
