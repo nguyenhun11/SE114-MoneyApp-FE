@@ -77,6 +77,41 @@ public class CityIconManager {
                     color = Color.parseColor("#81C784"); // Xanh non
                 }
                 break;
+
+            case "road":
+                iconName = "gmd_alt_route"; // Biểu tượng đường
+                color = Color.parseColor("#78909C"); // Màu xám đường
+                break;
+
+            case "tree":
+                iconName = "gmd_nature"; // Biểu tượng cây
+                color = Color.parseColor("#43A047"); // Màu xanh lá cây
+                break;
+
+            case "fountain":
+                iconName = "gmd_bubble_chart";
+                color = Color.parseColor("#29B6F6");
+                break;
+
+            case "bench":
+                iconName = "gmd_event_seat"; // Icon ghế
+                color = Color.parseColor("#8D6E63"); // Màu nâu
+                break;
+
+            case "street_light":
+                iconName = "gmd_highlight"; // Icon đèn
+                color = Color.parseColor("#FBC02D"); // Màu vàng sáng
+                break;
+
+            case "flower_bed":
+                iconName = "gmd_filter_vintage"; // Icon hoa
+                color = Color.parseColor("#EC407A"); // Màu hồng hoa
+                break;
+
+            case "statue":
+                iconName = "gmd_emoji_events"; // Icon cúp/tượng
+                color = Color.parseColor("#FFD54F"); // Màu vàng gold
+                break;
         }
 
         return new CityIcon(iconName, color);
