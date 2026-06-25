@@ -17,6 +17,7 @@ import com.example.moneyapp.utils.AppResourceManager;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class ReorderCategoryAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public static class HeaderItem extends ListItem {
         public String groupId;
         public String groupName;
-        public boolean isEmpty; // Cờ kiểm tra nhóm trống
+        public boolean isEmpty;
 
         public HeaderItem(String groupId, String groupName, boolean isEmpty) {
             this.groupId = groupId;
@@ -101,16 +102,49 @@ public class ReorderCategoryAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     public void onItemMove(int fromPosition, int toPosition) {
-        if (fromPosition < toPosition) {
-            for (int i = fromPosition; i < toPosition; i++) {
-                Collections.swap(items, i, i + 1);
+        ListItem draggedItem = items.get(fromPosition);
+
+        if (draggedItem.getType() == ListItem.TYPE_ITEM) {
+            if (fromPosition < toPosition) {
+                for (int i = fromPosition; i < toPosition; i++) Collections.swap(items, i, i + 1);
+            } else {
+                for (int i = fromPosition; i > toPosition; i--) Collections.swap(items, i, i - 1);
             }
-        } else {
-            for (int i = fromPosition; i > toPosition; i--) {
-                Collections.swap(items, i, i - 1);
-            }
+            notifyItemMoved(fromPosition, toPosition);
         }
-        notifyItemMoved(fromPosition, toPosition);
+        else if (draggedItem.getType() == ListItem.TYPE_HEADER) {
+
+            List<ListItem> chunkToMove = new ArrayList<>();
+            chunkToMove.add(draggedItem);
+            int chunkSize = 1;
+
+            for (int i = fromPosition + 1; i < items.size(); i++) {
+                if (items.get(i).getType() == ListItem.TYPE_HEADER) break; // Đụng nhóm khác -> Dừng
+                chunkToMove.add(items.get(i));
+                chunkSize++;
+            }
+
+            int safeToPosition = toPosition;
+            if (items.get(toPosition).getType() == ListItem.TYPE_ITEM) {
+                while (safeToPosition >= 0 && items.get(safeToPosition).getType() == ListItem.TYPE_ITEM) {
+                    safeToPosition--;
+                }
+                if(safeToPosition < 0) safeToPosition = 0;
+            }
+
+            if (fromPosition == safeToPosition) return;
+
+            items.removeAll(chunkToMove);
+
+            int insertIndex = safeToPosition;
+            if (fromPosition < safeToPosition) {
+                insertIndex = safeToPosition - chunkSize + 1;
+            }
+
+            items.addAll(insertIndex, chunkToMove);
+
+            notifyDataSetChanged();
+        }
     }
 
     static class HeaderViewHolder extends RecyclerView.ViewHolder {

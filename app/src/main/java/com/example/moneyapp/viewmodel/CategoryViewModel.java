@@ -18,13 +18,16 @@ import java.util.List;
 
 public class CategoryViewModel extends AndroidViewModel {
     private final CategoryRepository repository;
-    private final MutableLiveData<List<Category>> categoriesLiveData = new MutableLiveData<>();
 
-    // ĐÃ THÊM: LiveData chuyên biệt để chứa danh sách Nhóm xịn từ API
+    // LiveData quan sát danh sách
+    private final MutableLiveData<List<Category>> categoriesLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<CategoryGroupResponse>> groupsLiveData = new MutableLiveData<>();
 
+    // LiveData quan sát trạng thái / chi tiết
+    private final MutableLiveData<Category> selectedCategoryLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> saveSuccess = new MutableLiveData<>();
+
     private CategoryType currentType = CategoryType.EXPENSE;
 
     public CategoryViewModel(@NonNull Application application) {
@@ -32,14 +35,23 @@ public class CategoryViewModel extends AndroidViewModel {
         repository = new CategoryRepository(application);
     }
 
+    // region Getters & Setters cho LiveData
     public CategoryType getCurrentType() { return currentType; }
     public void setCurrentType(CategoryType type) { this.currentType = type; }
 
     public LiveData<List<Category>> getCategoriesLiveData() { return categoriesLiveData; }
-    public LiveData<List<CategoryGroupResponse>> getGroupsLiveData() { return groupsLiveData; } // EXPOSE RA VIEW
+    public LiveData<List<CategoryGroupResponse>> getGroupsLiveData() { return groupsLiveData; }
+    public LiveData<Category> getSelectedCategoryLiveData() { return selectedCategoryLiveData; }
     public LiveData<String> getErrorLiveData() { return errorLiveData; }
     public LiveData<Boolean> getSaveSuccess() { return saveSuccess; }
 
+    /**
+     * Đặt lại trạng thái saveSuccess sau khi View đã tiêu thụ Event
+     */
+    public void resetSaveSuccess() { saveSuccess.setValue(false); }
+    // endregion
+
+    // region Tải Dữ Liệu Khởi Tạo (Fetch & Default Setup)
     public void loadCategories(CategoryType type) {
         this.currentType = type;
         categoriesLiveData.setValue(new ArrayList<>());
@@ -47,7 +59,6 @@ public class CategoryViewModel extends AndroidViewModel {
         CategoryRepository.CategoryCallback<List<CategoryGroupResponse>> groupCallback = new CategoryRepository.CategoryCallback<List<CategoryGroupResponse>>() {
             @Override
             public void onSuccess(List<CategoryGroupResponse> result) {
-                // ĐÃ THÊM: Hứng dữ liệu nhóm đẩy lên LiveData ngay khi API trả về
                 groupsLiveData.postValue(result != null ? result : new ArrayList<>());
 
                 if (result == null || result.isEmpty()) {
@@ -118,7 +129,6 @@ public class CategoryViewModel extends AndroidViewModel {
         CategoryRepository.CategoryCallback<CategoryGroupResponse> groupCallback = new CategoryRepository.CategoryCallback<CategoryGroupResponse>() {
             @Override
             public void onSuccess(CategoryGroupResponse group) {
-                // ĐÃ THÊM: Cập nhật LiveData khi tạo xong nhóm mặc định
                 List<CategoryGroupResponse> currentList = groupsLiveData.getValue();
                 if (currentList == null) currentList = new ArrayList<>();
                 currentList.add(group);
@@ -138,6 +148,36 @@ public class CategoryViewModel extends AndroidViewModel {
         } else {
             repository.createIncomeCategoryGroup(groupRequest, groupCallback);
         }
+    }
+    // endregion
+
+    // region API HẠNG MỤC (Category) - CRUD & Reorder
+    public void getCategoryById(String id) {
+        repository.getCategoryById(id, new CategoryRepository.CategoryCallback<Category>() {
+            @Override
+            public void onSuccess(Category result) {
+                selectedCategoryLiveData.postValue(result);
+            }
+
+            @Override
+            public void onError(String message) {
+                errorLiveData.postValue(message);
+            }
+        });
+    }
+
+    public void loadCategoriesByGroupId(String groupId) {
+        repository.getCategoriesByGroupId(groupId, new CategoryRepository.CategoryCallback<List<Category>>() {
+            @Override
+            public void onSuccess(List<Category> result) {
+                categoriesLiveData.postValue(result != null ? result : new ArrayList<>());
+            }
+
+            @Override
+            public void onError(String message) {
+                errorLiveData.postValue(message);
+            }
+        });
     }
 
     private interface OnGroupReadyAction {
@@ -177,10 +217,10 @@ public class CategoryViewModel extends AndroidViewModel {
             }
         };
 
-        if (category.getType() == CategoryType.EXPENSE) {
-            repository.createExpenseCategoryGroup(groupRequest, groupCallback);
-        } else {
+        if (category.getType() == CategoryType.INCOME) {
             repository.createIncomeCategoryGroup(groupRequest, groupCallback);
+        } else {
+            repository.createExpenseCategoryGroup(groupRequest, groupCallback);
         }
     }
 
@@ -204,7 +244,6 @@ public class CategoryViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(Void result) {
                 saveSuccess.postValue(true);
-                loadCategories(currentType);
             }
 
             @Override
@@ -242,4 +281,87 @@ public class CategoryViewModel extends AndroidViewModel {
             }
         });
     }
+    // endregion
+
+    // region BỔ SUNG: API NHÓM DANH MỤC (Category Group) - CRUD & Reorder
+
+    /**
+     * Tạo một Nhóm Danh Mục mới thủ công từ giao diện
+     */
+    public void createCategoryGroup(CategoryType type, String groupName) {
+        CategoryGroupRequest request = new CategoryGroupRequest(groupName);
+        CategoryRepository.CategoryCallback<CategoryGroupResponse> callback = new CategoryRepository.CategoryCallback<CategoryGroupResponse>() {
+            @Override
+            public void onSuccess(CategoryGroupResponse result) {
+                saveSuccess.postValue(true);
+            }
+
+            @Override
+            public void onError(String message) {
+                errorLiveData.postValue("Tạo nhóm thất bại: " + message);
+            }
+        };
+
+        if (type == CategoryType.INCOME) {
+            repository.createIncomeCategoryGroup(request, callback);
+        } else {
+            repository.createExpenseCategoryGroup(request, callback);
+        }
+    }
+
+    /**
+     * Cập nhật thông tin (Tên nhóm) của Nhóm danh mục
+     */
+    public void updateCategoryGroup(String id, String newGroupName) {
+        CategoryGroupRequest request = new CategoryGroupRequest(newGroupName);
+        repository.updateCategoryGroup(id, request, new CategoryRepository.CategoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                saveSuccess.postValue(true);
+                loadCategories(currentType);
+            }
+
+            @Override
+            public void onError(String message) {
+                errorLiveData.postValue("Sửa nhóm thất bại: " + message);
+            }
+        });
+    }
+
+    /**
+     * Xóa một Nhóm danh mục theo ID
+     */
+    public void deleteCategoryGroup(String id) {
+        repository.deleteCategoryGroup(id, new CategoryRepository.CategoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                saveSuccess.postValue(true);
+                loadCategories(currentType);
+            }
+
+            @Override
+            public void onError(String message) {
+                errorLiveData.postValue("Xóa nhóm thất bại: " + message);
+            }
+        });
+    }
+
+    /**
+     * Thay đổi thứ tự sắp xếp của Nhóm danh mục
+     */
+    public void reorderCategoryGroup(String id, int newOrder) {
+        repository.reorderCategoryGroup(id, newOrder, new CategoryRepository.CategoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                saveSuccess.postValue(true);
+                loadCategories(currentType);
+            }
+
+            @Override
+            public void onError(String message) {
+                errorLiveData.postValue("Đổi vị trí nhóm thất bại: " + message);
+            }
+        });
+    }
+    // endregion
 }

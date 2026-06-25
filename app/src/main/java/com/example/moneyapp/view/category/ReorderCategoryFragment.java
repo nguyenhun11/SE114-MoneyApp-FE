@@ -49,10 +49,9 @@ public class ReorderCategoryFragment extends BaseFragment {
 
         viewModel = new ViewModelProvider(requireActivity()).get(CategoryViewModel.class);
 
-        // ĐÃ SỬA: Chuyển nút Hoàn Tất lên Header (Dùng icon gmd_check)
         setupHeader(view, "Sắp xếp hạng mục",
                 "gmd_navigate_before", v -> requireActivity().onBackPressed(),
-                "gmd_check", v -> requireActivity().onBackPressed());
+                "gmd_check", v -> onSaveClicked());
 
         rvReorder = view.findViewById(R.id.rv_reorder_categories);
 
@@ -87,11 +86,6 @@ public class ReorderCategoryFragment extends BaseFragment {
 
         viewModel.getSaveSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success) {
-                if (isDragChanged) {
-                    isDragChanged = false;
-                    Toast.makeText(getContext(), "Đã cập nhật thứ tự", Toast.LENGTH_SHORT).show();
-                }
-                // Tự động tải lại dữ liệu sau khi Thêm/Xóa nhóm thành công
                 viewModel.loadCategories(viewModel.getCurrentType());
             }
         });
@@ -106,7 +100,6 @@ public class ReorderCategoryFragment extends BaseFragment {
             String groupName = (group.getGroupName() != null && !group.getGroupName().isEmpty())
                     ? group.getGroupName() : "Nhóm chưa đặt tên";
 
-            // ĐÃ SỬA: Thuật toán kiểm tra nhóm có trống hay không
             boolean isEmpty = true;
             for (Category cat : currentCategories) {
                 if (cat.getGroupId() != null && cat.getGroupId().equals(group.getId())) {
@@ -129,7 +122,9 @@ public class ReorderCategoryFragment extends BaseFragment {
             rvReorder.setAdapter(adapter);
             setupDragAndDrop();
         } else {
-            adapter.setItems(flattenedList);
+            if (!isDragChanged) {
+                adapter.setItems(flattenedList);
+            }
         }
     }
 
@@ -139,13 +134,12 @@ public class ReorderCategoryFragment extends BaseFragment {
 
             @Override
             public int getDragDirs(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-                if (viewHolder instanceof ReorderCategoryAdapter.HeaderViewHolder) return 0;
                 return super.getDragDirs(recyclerView, viewHolder);
             }
 
             @Override
             public boolean canDropOver(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder current, @NonNull RecyclerView.ViewHolder target) {
-                return target.getBindingAdapterPosition() != 0;
+                return true;
             }
 
             @Override
@@ -163,9 +157,7 @@ public class ReorderCategoryFragment extends BaseFragment {
             public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
                 super.clearView(recyclerView, viewHolder);
                 isDragChanged = true;
-                saveNewOrdersAndGroups();
-                // Buộc danh sách render lại ngay lập tức để cập nhật nút Xóa nếu kéo hết Hạng mục đi
-                buildFlattenedList();
+                updateLocalStateFromAdapter();
             }
         };
 
@@ -173,44 +165,79 @@ public class ReorderCategoryFragment extends BaseFragment {
         itemTouchHelper.attachToRecyclerView(rvReorder);
     }
 
+    private void updateLocalStateFromAdapter() {
+        List<ReorderCategoryAdapter.ListItem> items = adapter.getItems();
+        String currentHeaderId = null;
+
+        for (ReorderCategoryAdapter.ListItem item : items) {
+            if (item.getType() == ReorderCategoryAdapter.ListItem.TYPE_HEADER) {
+                ReorderCategoryAdapter.HeaderItem header = (ReorderCategoryAdapter.HeaderItem) item;
+                currentHeaderId = header.groupId;
+                header.isEmpty = true; // Mặc định cho là trống
+            } else if (item.getType() == ReorderCategoryAdapter.ListItem.TYPE_ITEM) {
+                for (ReorderCategoryAdapter.ListItem h : items) {
+                    if (h.getType() == ReorderCategoryAdapter.ListItem.TYPE_HEADER &&
+                            ((ReorderCategoryAdapter.HeaderItem) h).groupId.equals(currentHeaderId)) {
+                        ((ReorderCategoryAdapter.HeaderItem) h).isEmpty = false;
+                        break;
+                    }
+                }
+            }
+        }
+        adapter.notifyDataSetChanged();
+    }
+    private void onSaveClicked() {
+        if (!isDragChanged) {
+            requireActivity().onBackPressed();
+            return;
+        }
+
+        Toast.makeText(getContext(), "Đang lưu thay đổi...", Toast.LENGTH_SHORT).show();
+        saveNewOrdersAndGroups();
+
+        isDragChanged = false;
+        requireActivity().onBackPressed();
+    }
+
     private void saveNewOrdersAndGroups() {
         List<ReorderCategoryAdapter.ListItem> items = adapter.getItems();
         String currentGroupId = null;
         String currentGroupName = null;
-        int orderIndex = 0;
+        int categoryOrderIndex = 0;
+        int groupOrderIndex = 0;
 
         for (ReorderCategoryAdapter.ListItem item : items) {
             if (item.getType() == ReorderCategoryAdapter.ListItem.TYPE_HEADER) {
                 ReorderCategoryAdapter.HeaderItem header = (ReorderCategoryAdapter.HeaderItem) item;
                 currentGroupId = header.groupId;
                 currentGroupName = header.groupName;
-                orderIndex = 0;
+                categoryOrderIndex = 0;
+
+                viewModel.reorderCategoryGroup(currentGroupId, groupOrderIndex);
+                groupOrderIndex++;
+
             } else if (item.getType() == ReorderCategoryAdapter.ListItem.TYPE_ITEM) {
                 Category cat = ((ReorderCategoryAdapter.CategoryItem) item).category;
 
                 if (cat.getGroupId() == null || !cat.getGroupId().equals(currentGroupId)) {
                     cat.setGroupId(currentGroupId);
                     cat.setGroupName(currentGroupName);
+
                     viewModel.updateCategory(cat);
                 }
 
-                viewModel.reorderCategory(cat, orderIndex);
-                orderIndex++;
+                viewModel.reorderCategory(cat, categoryOrderIndex);
+                categoryOrderIndex++;
             }
         }
     }
-
-    // =========================================================
-    // LOGIC THÊM & XÓA NHÓM
-    // =========================================================
 
     private void showDeleteGroupDialog(String groupId, String groupName) {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Xóa nhóm trống")
                 .setMessage("Bạn có chắc muốn xóa nhóm '" + groupName + "' không?")
                 .setPositiveButton("Xóa", (dialog, which) -> {
-                    // YÊU CẦU: Cần thêm hàm deleteCategoryGroup(groupId) bên CategoryViewModel
-                    // viewModel.deleteCategoryGroup(groupId);
+                    viewModel.deleteCategoryGroup(groupId);
                     Toast.makeText(getContext(), "Đang xóa nhóm...", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Hủy", null)
@@ -234,8 +261,7 @@ public class ReorderCategoryFragment extends BaseFragment {
                 .setPositiveButton("Thêm", (dialog, which) -> {
                     String groupName = input.getText().toString().trim();
                     if (!groupName.isEmpty()) {
-                        // YÊU CẦU: Cần thêm hàm tạo Group bên CategoryViewModel
-                        // viewModel.createCategoryGroup(groupName);
+                        viewModel.updateCategoryGroup(null, groupName);
                         Toast.makeText(getContext(), "Đang tạo nhóm...", Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -243,7 +269,6 @@ public class ReorderCategoryFragment extends BaseFragment {
                 .show();
     }
 
-    // ĐÃ SỬA: Biến FAB thành nút Thêm Nhóm Mới
     @Override protected String getFabIcon() { return "gmd_add"; }
     @Override protected String getFabLabel() { return "Thêm nhóm mới"; }
     @Override protected void onFabClick() { showAddGroupDialog(); }
