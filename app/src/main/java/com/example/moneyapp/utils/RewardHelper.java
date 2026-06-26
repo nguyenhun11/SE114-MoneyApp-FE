@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat;
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.remote.response.BadgeResponse;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.snackbar.Snackbar;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
 
@@ -24,10 +23,8 @@ public class RewardHelper {
         
         vibrate(anchor.getContext(), 50); // Rung nhẹ 50ms
 
-        Snackbar snackbar = Snackbar.make(anchor, message, Snackbar.LENGTH_SHORT);
-        snackbar.setBackgroundTint(ContextCompat.getColor(anchor.getContext(), R.color.colorInfo));
-        snackbar.setTextColor(ContextCompat.getColor(anchor.getContext(), R.color.white));
-        snackbar.show();
+        // Đã chuyển từ Snackbar sang Dialog để thống nhất toàn bộ hệ thống thông báo
+        DialogHelper.showSimpleDialog(anchor.getContext(), "Phần thưởng", message);
     }
 
     public static void showBigReward(Context context, String points, String message) {
