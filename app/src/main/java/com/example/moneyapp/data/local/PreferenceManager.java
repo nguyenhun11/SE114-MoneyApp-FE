@@ -15,6 +15,7 @@ public class PreferenceManager {
     private static final String KEY_DEFAULT_CURRENCY = "defaultCurrency";
     private static final String KEY_LAST_TAB_TYPE = "lastTabType";
     private static final String KEY_LAST_ACCOUNT_TAB = "lastAccountTab"; // Biến nhớ riêng cho category
+    private static final String KEY_LAST_HOME_TAB = "lastHomeTab";
 
 
     private static SharedPreferences sharedPreferences;
@@ -89,6 +90,13 @@ public class PreferenceManager {
     }
     public int getLastAccountTab() {
         return sharedPreferences.getInt(KEY_LAST_ACCOUNT_TAB, 0); // Mặc định là 0 (Tài khoản)
+    }
+    public void setLastHomeTab(int tabIndex) {
+        sharedPreferences.edit().putInt(KEY_LAST_HOME_TAB, tabIndex).apply();
+    }
+
+    public int getLastHomeTab() {
+        return sharedPreferences.getInt(KEY_LAST_HOME_TAB, 0);
     }
 
 

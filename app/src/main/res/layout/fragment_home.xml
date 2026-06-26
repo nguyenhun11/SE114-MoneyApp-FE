@@ -28,9 +28,9 @@
 
                 <FrameLayout
                     android:id="@+id/pie_chart_container"
-                    android:layout_marginTop="-10dp"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="-10dp">
 
                     <com.github.mikephil.charting.charts.PieChart
                         android:id="@+id/main_pie_chart"
@@ -73,7 +73,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="horizontal" />
-
                     </androidx.cardview.widget.CardView>
 
                     <TextView
@@ -115,8 +114,7 @@
                         layout="@layout/layout_header_tabs"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="50dp"
-                        app:layout_constraintTop_toBottomOf="@id/header_layout" />
+                        android:layout_marginHorizontal="50dp" />
 
                     <LinearLayout
                         android:id="@+id/card_top_slice"
@@ -130,11 +128,9 @@
                             android:id="@+id/time_selector"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
-
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -147,103 +143,450 @@
         android:paddingBottom="100dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <!-- Feature Hub (Floating Discovery Cards) -->
-    <LinearLayout
-        android:id="@+id/layout_feature_hub"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_dashboard_overview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="24dp"
-        android:paddingHorizontal="16dp"
-        android:clipToPadding="false"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:elevation="10dp"
+        android:visibility="visible">
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_home_city"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            app:cardBackgroundColor="@color/colorSuccess"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp">
+            android:id="@+id/card_menu_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/card_horizontal_margin"
+            android:layout_marginTop="128dp"
+            app:cardBackgroundColor="@color/colorSurface"
+            app:cardCornerRadius="@dimen/card_radius"
+            app:cardElevation="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeColor="@color/colorBorder"
+            app:strokeWidth="1dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
-                <com.mikepenz.iconics.view.IconicsImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:iiv_icon="gmd_location_city"
-                    app:iiv_color="@color/white"/>
-                <TextView
-                    android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <GridLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="MoneyCity"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:textSize="12sp"/>
+                    android:alignmentMode="alignMargins"
+                    android:columnCount="3"
+                    android:rowCount="2">
+
+                    <LinearLayout
+                        android:id="@+id/btn_menu_statistics"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:paddingVertical="12dp">
+
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/colorInfoBgLight">
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                app:iiv_color="@color/colorInfo"
+                                app:iiv_icon="gmd_insert_chart" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Thống kê"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btn_menu_budget"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:paddingVertical="12dp">
+
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/colorSuccessBgLight">
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                app:iiv_color="@color/colorSuccess"
+                                app:iiv_icon="gmd_account_balance_wallet" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Ngân sách"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btn_menu_goals"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:paddingVertical="12dp">
+
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/colorWarningBgLight">
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                app:iiv_color="@color/colorWarning"
+                                app:iiv_icon="gmd_star" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Mục tiêu"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btn_menu_city"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:paddingVertical="12dp">
+
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/colorPrimaryBgLight">
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                app:iiv_color="@color/colorPrimary"
+                                app:iiv_icon="gmd_location_city" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="MoneyCity"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btn_menu_quests"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:paddingVertical="12dp">
+
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/colorDangerBgLight">
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                app:iiv_color="@color/colorDanger"
+                                app:iiv_icon="gmd_assignment" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:id="@+id/tv_menu_quests_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Nhiệm vụ"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btn_menu_settings"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:paddingVertical="12dp">
+
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="#ECEFF1">
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                app:iiv_color="@color/colorOnSurfaceVariant"
+                                app:iiv_icon="gmd_settings" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Cài đặt"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </GridLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_home_budget"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            app:cardBackgroundColor="@color/colorInfo"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
-                <com.mikepenz.iconics.view.IconicsImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:iiv_icon="gmd_account_balance_wallet"
-                    app:iiv_color="@color/white"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ngân sách"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:textSize="12sp"/>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingBottom="100dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/card_menu_grid">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_quest_summary"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_weight="1"
-            app:cardBackgroundColor="@color/colorWarning"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
-                <com.mikepenz.iconics.view.IconicsImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:iiv_icon="gmd_assignment"
-                    app:iiv_color="@color/white"/>
-                <TextView
-                    android:id="@+id/tv_quest_status_home"
-                    android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/card_horizontal_margin"
+                android:paddingTop="16dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Nhiệm vụ"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:textSize="12sp"/>
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/colorSurface"
+                    app:cardCornerRadius="@dimen/button_radius"
+                    app:strokeColor="@color/colorWarning"
+                    app:strokeWidth="1.5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <FrameLayout
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:background="@drawable/bg_circle"
+                                android:backgroundTint="#FFF3E0">
+
+                                <com.mikepenz.iconics.view.IconicsImageView
+                                    android:id="@+id/iv_streak_icon"
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    android:layout_gravity="center"
+                                    app:iiv_color="@color/colorWarning"
+                                    app:iiv_icon="gmd-local-fire-department" />
+                            </FrameLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Chuỗi ngày tích lũy"
+                                    android:textColor="@color/colorOnSurfaceVariant"
+                                    android:textSize="13sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_streak_count"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0 ngày"
+                                    android:textColor="@color/colorWarning"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_checkin"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Check-in"
+                                android:textAllCaps="false"
+                                app:backgroundTint="@color/colorWarning"
+                                app:cornerRadius="@dimen/button_radius" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tv_restore_streak_hint"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:gravity="center"
+                            android:text="Chia sẻ app để khôi phục chuỗi"
+                            android:textColor="@color/colorWarning"
+                            android:textSize="13sp"
+                            android:textStyle="bold|italic"
+                            android:visibility="visible" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_city_stats"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/colorSurface"
+                    app:cardCornerRadius="@dimen/button_radius"
+                    app:strokeColor="@color/colorInfo"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_city_level_home"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Cấp -"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Thành phố"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginHorizontal="8dp"
+                            android:background="@color/colorBorder" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_prosperity_home"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="-"
+                                android:textColor="@color/colorSuccess"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Thịnh vượng"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginHorizontal="8dp"
+                            android:background="@color/colorBorder" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_stability_home"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="-"
+                                android:textColor="@color/colorInfo"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ổn định"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,5 +1,7 @@
 package com.example.moneyapp.view.home;
 
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,45 +21,47 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.local.PreferenceManager;
-import com.example.moneyapp.model.CategoryType;
+import com.example.moneyapp.data.remote.response.QuestResponse;
 import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.category.CategorySummaryAdapter;
 import com.example.moneyapp.view.components.TimeSelectorView;
-import com.example.moneyapp.data.remote.response.QuestResponse;
 import com.example.moneyapp.viewmodel.HomeViewModel;
+import com.example.moneyapp.viewmodel.ProfileViewModel;
 import com.example.moneyapp.viewmodel.QuestViewModel;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.button.MaterialButton;
+import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class HomeFragment extends BaseFragment {
 
     private RecyclerView rvCategories;
     private CategorySummaryAdapter adapter;
     private View chartsWrapper;
+    private View layoutDashboardOverview;
 
-    // View Containers
     private View pieChartContainer;
     private View linearChartContainer;
     private AppBarLayout appBarLayout;
 
-    // Biểu đồ & Text
     private PieChart pieChart;
     private TextView tvTotalAmountPie;
     private TextView tvTotalAmountLinear;
-    private TextView tvQuestStatus;
+    private TextView tvMenuQuestStatus;
 
     private HomeViewModel homeViewModel;
     private QuestViewModel questViewModel;
+    private ProfileViewModel profileViewModel;
 
     private boolean isExpenseTab = true;
     private Date currentStartDate;
@@ -73,41 +77,40 @@ public class HomeFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-        questViewModel = new ViewModelProvider(this).get(QuestViewModel.class);
+        questViewModel = new ViewModelProvider(requireActivity()).get(QuestViewModel.class);
+        profileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
 
         rvCategories = view.findViewById(R.id.rv_categories);
         pieChartContainer = view.findViewById(R.id.pie_chart_container);
         linearChartContainer = view.findViewById(R.id.linear_chart_container);
         appBarLayout = view.findViewById(R.id.statistics);
         chartsWrapper = view.findViewById(R.id.charts_wrapper);
+        layoutDashboardOverview = view.findViewById(R.id.layout_dashboard_overview);
 
         pieChart = view.findViewById(R.id.main_pie_chart);
         tvTotalAmountPie = view.findViewById(R.id.tv_total_amount_pie);
         tvTotalAmountLinear = view.findViewById(R.id.tv_total_amount_linear);
-        tvQuestStatus = view.findViewById(R.id.tv_quest_status_home);
+        tvMenuQuestStatus = view.findViewById(R.id.tv_menu_quests_status);
 
-        View btnCity = view.findViewById(R.id.card_home_city);
-        View btnBudget = view.findViewById(R.id.card_home_budget);
-        View btnQuests = view.findViewById(R.id.card_quest_summary);
+        View btnMenuStat = view.findViewById(R.id.btn_menu_statistics);
+        View btnMenuBudget = view.findViewById(R.id.btn_menu_budget);
+        View btnMenuGoals = view.findViewById(R.id.btn_menu_goals);
+        View btnMenuCity = view.findViewById(R.id.btn_menu_city);
+        View btnMenuQuests = view.findViewById(R.id.btn_menu_quests);
+        View btnMenuSettings = view.findViewById(R.id.btn_menu_settings);
 
         NavOptions slideOptions = new NavOptions.Builder()
-                .setEnterAnim(R.anim.slide_in_right)
-                .setExitAnim(R.anim.slide_out_left)
-                .setPopEnterAnim(R.anim.slide_in_left)
-                .setPopExitAnim(R.anim.slide_out_right)
-                .build();
-        if (btnCity != null) {
-            btnCity.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.cityFragment, null, slideOptions));
-        }
-        if (btnBudget != null) {
-            btnBudget.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.budgetFragment, null, slideOptions));
-        }
-        if (btnQuests != null) {
-            btnQuests.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.questFragment, null, slideOptions));
-        }
+                .setEnterAnim(R.anim.slide_in_right).setExitAnim(R.anim.slide_out_left)
+                .setPopEnterAnim(R.anim.slide_in_left).setPopExitAnim(R.anim.slide_out_right).build();
+
+        if (btnMenuStat != null) btnMenuStat.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.statisticsFragment, null, slideOptions));
+        if (btnMenuBudget != null) btnMenuBudget.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.budgetFragment, null, slideOptions));
+        if (btnMenuGoals != null) btnMenuGoals.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.goalFragment, null, slideOptions));
+        if (btnMenuCity != null) btnMenuCity.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.cityFragment, null, slideOptions));
+        if (btnMenuQuests != null) btnMenuQuests.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.questFragment, null, slideOptions));
+        if (btnMenuSettings != null) btnMenuSettings.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.settingsFragment, null, slideOptions));
 
         TimeSelectorView timeSelector = view.findViewById(R.id.time_selector);
-
         timeSelector.setOnTimeRangeChangeListener((startDate, endDate) -> {
             currentStartDate = startDate;
             currentEndDate = endDate;
@@ -118,17 +121,55 @@ public class HomeFragment extends BaseFragment {
         setupPieChart();
         setupScrollBehavior();
 
-        int globalTabType = PreferenceManager.getInstance(requireContext()).getLastTabType();
-        int initialTab = (globalTabType == 1) ? 1 : 0;
+        int initialTab = PreferenceManager.getInstance(requireContext()).getLastHomeTab();
+        String[] homeTabs = {"Tổng quan", "Chi tiêu", "Thu nhập"};
 
-        String[] homeTabs = { "Chi tiêu", "Thu nhập" };
         setupHeaderTabs(view, homeTabs, initialTab, index -> {
-            PreferenceManager.getInstance(requireContext()).setLastTabType(index);
-            homeViewModel.setTabTypeAndReload(index);
+            handleTabSwitch(index);
         });
 
-        homeViewModel.setTabTypeAndReload(initialTab);
         observeViewModel();
+        observeDashboardData(view);
+    }
+
+    private void handleTabSwitch(int index) {
+        PreferenceManager.getInstance(requireContext()).setLastHomeTab(index);
+        CollapsingToolbarLayout collapsingToolbar = requireView().findViewById(R.id.collapsing_toolbar);
+
+        View cardTopSlice = requireView().findViewById(R.id.card_top_slice);
+
+        if (index == 0) {
+            layoutDashboardOverview.setVisibility(View.VISIBLE);
+            rvCategories.setVisibility(View.GONE);
+
+            chartsWrapper.setVisibility(View.GONE);
+
+            cardTopSlice.setVisibility(View.INVISIBLE);
+
+            appBarLayout.setExpanded(true, false);
+            AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbar.getLayoutParams();
+            params.setScrollFlags(0); // Khóa cuộn
+            collapsingToolbar.setLayoutParams(params);
+
+            homeViewModel.setTabTypeAndReload(0);
+
+        } else {
+            layoutDashboardOverview.setVisibility(View.GONE);
+            rvCategories.setVisibility(View.VISIBLE);
+
+            chartsWrapper.setVisibility(View.VISIBLE);
+
+            cardTopSlice.setVisibility(View.VISIBLE);
+
+            appBarLayout.setExpanded(true, true);
+            AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbar.getLayoutParams();
+            params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
+            collapsingToolbar.setLayoutParams(params);
+
+            int vmIndex = (index == 1) ? 0 : 1;
+            PreferenceManager.getInstance(requireContext()).setLastTabType(vmIndex);
+            homeViewModel.setTabTypeAndReload(vmIndex);
+        }
     }
 
     private void observeViewModel() {
@@ -141,12 +182,19 @@ public class HomeFragment extends BaseFragment {
         });
 
         questViewModel.getQuests().observe(getViewLifecycleOwner(), quests -> {
-            if (quests != null) {
+            if (quests != null && tvMenuQuestStatus != null) {
                 int completedCount = 0;
                 for (QuestResponse q : quests) {
                     if (q.isCompleted() && !q.isClaimed()) completedCount++;
                 }
-                tvQuestStatus.setText("Nhiệm vụ (" + completedCount + ")");
+
+                tvMenuQuestStatus.setText("Nhiệm vụ (" + completedCount + ")");
+
+                if(completedCount > 0) {
+                    tvMenuQuestStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorDanger));
+                } else {
+                    tvMenuQuestStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorOnSurface));
+                }
             }
         });
         questViewModel.fetchQuests();
@@ -168,16 +216,80 @@ public class HomeFragment extends BaseFragment {
         });
 
         homeViewModel.getError().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) {
-                DialogHelper.showSimpleDialog(requireContext(), "Lỗi", error);
+            if (error != null) DialogHelper.showSimpleDialog(requireContext(), "Lỗi", error);
+        });
+    }
+
+    private void observeDashboardData(View view) {
+        TextView tvCityLevel = view.findViewById(R.id.tv_city_level_home);
+        TextView tvProsperity = view.findViewById(R.id.tv_prosperity_home);
+        TextView tvStability = view.findViewById(R.id.tv_stability_home);
+
+        TextView tvStreakCount = view.findViewById(R.id.tv_streak_count);
+        MaterialButton btnCheckin = view.findViewById(R.id.btn_checkin);
+        IconicsImageView ivStreakIcon = view.findViewById(R.id.iv_streak_icon);
+        TextView tvRestoreStreakHint = view.findViewById(R.id.tv_restore_streak_hint);
+
+        profileViewModel.fetchUserData();
+
+        profileViewModel.cityData.observe(getViewLifecycleOwner(), city -> {
+            if (city != null && tvCityLevel != null) {
+                tvCityLevel.setText("Cấp " + city.getLevel());
+                tvProsperity.setText(String.valueOf(city.getProsperityPoints()));
+                tvStability.setText(String.valueOf(city.getStabilityPoints()));
             }
         });
+
+        profileViewModel.currentUser.observe(getViewLifecycleOwner(), user -> {
+            if (user != null && tvStreakCount != null) {
+                tvStreakCount.setText(user.getDailyStreak() + " ngày");
+
+                if (user.isTodayCheckedIn()) {
+                    btnCheckin.setVisibility(View.GONE);
+                    ivStreakIcon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.colorDanger));
+                } else {
+                    btnCheckin.setVisibility(View.VISIBLE);
+                    btnCheckin.setText("Check-in");
+                    btnCheckin.setEnabled(true);
+                    btnCheckin.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.colorWarning));
+                    btnCheckin.setIcon(null);
+                    ivStreakIcon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.colorOnSurfaceVariant));
+                }
+                tvRestoreStreakHint.setVisibility(user.getDailyStreak() == 0 ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        if (btnCheckin != null) {
+            btnCheckin.setOnClickListener(v -> {
+                btnCheckin.setEnabled(false);
+                profileViewModel.checkInToday();
+            });
+        }
+
+        if (tvRestoreStreakHint != null) {
+            tvRestoreStreakHint.setOnClickListener(v -> {
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "Hãy tải MoneyApp để quản lý tài chính thông minh nhé!");
+                sendIntent.setType("text/plain");
+
+                Intent broadcastIntent = new Intent("com.example.moneyapp.SHARE_SUCCESS");
+                broadcastIntent.setPackage(requireContext().getPackageName());
+
+                PendingIntent pi = PendingIntent.getBroadcast(
+                        requireContext(), 0, broadcastIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+                );
+
+                Intent shareIntent = Intent.createChooser(sendIntent, "Khôi phục chuỗi qua...", pi.getIntentSender());
+                startActivity(shareIntent);
+            });
+        }
     }
 
     private void populateCharts(List<PieChartItem> items) {
         if (items == null || items.isEmpty()) {
             int emptyColor = ContextCompat.getColor(requireContext(), R.color.colorEmpty);
-
             ArrayList<PieEntry> emptyEntries = new ArrayList<>();
             emptyEntries.add(new PieEntry(100f, ""));
             PieDataSet emptyDataSet = new PieDataSet(emptyEntries, "");
@@ -192,10 +304,7 @@ public class HomeFragment extends BaseFragment {
             if (customLinearChart != null) {
                 customLinearChart.removeAllViews();
                 View segment = new View(getContext());
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                );
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 segment.setLayoutParams(params);
                 segment.setBackgroundColor(emptyColor);
                 customLinearChart.addView(segment);
@@ -228,29 +337,18 @@ public class HomeFragment extends BaseFragment {
 
         for (int i = 0; i < items.size(); i++) {
             PieChartItem item = items.get(i);
-
             View segment = new View(getContext());
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    item.getPercentage()
-            );
-
-            if (i < items.size() - 1) {
-                params.setMarginEnd(dpToPx(4));
-            }
-
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, item.getPercentage());
+            if (i < items.size() - 1) params.setMarginEnd(dpToPx(4));
             segment.setLayoutParams(params);
             segment.setBackgroundColor(item.getColor());
-
             customLinearChart.addView(segment);
         }
     }
 
     private void setupScrollBehavior() {
         View topSlice = requireView().findViewById(R.id.top_slice);
-        com.google.android.material.appbar.CollapsingToolbarLayout collapsingToolbar =
-                requireView().findViewById(R.id.collapsing_toolbar);
+        com.google.android.material.appbar.CollapsingToolbarLayout collapsingToolbar = requireView().findViewById(R.id.collapsing_toolbar);
 
         chartsWrapper.post(() -> {
             int topHeight = topSlice.getHeight();
@@ -261,8 +359,7 @@ public class HomeFragment extends BaseFragment {
                 wrapperMarginBottom = ((ViewGroup.MarginLayoutParams) wrapParams).bottomMargin;
             }
 
-            android.widget.FrameLayout.LayoutParams params =
-                    (android.widget.FrameLayout.LayoutParams) chartsWrapper.getLayoutParams();
+            android.widget.FrameLayout.LayoutParams params = (android.widget.FrameLayout.LayoutParams) chartsWrapper.getLayoutParams();
             params.topMargin = topHeight;
             chartsWrapper.setLayoutParams(params);
 
@@ -281,7 +378,6 @@ public class HomeFragment extends BaseFragment {
                     if (totalScrollRange == 0) return;
 
                     float percentage = (float) Math.abs(verticalOffset) / totalScrollRange;
-
                     float pieAlpha = Math.max(0f, 1f - (percentage * 2.5f));
                     pieChartContainer.setAlpha(pieAlpha);
                     pieChartContainer.setScaleX(0.8f + (0.2f * pieAlpha));
@@ -303,19 +399,12 @@ public class HomeFragment extends BaseFragment {
         adapter.setOnCategoryClickListener((categoryId, categoryName) -> {
             Bundle bundle = new Bundle();
             bundle.putInt("tabType", isExpenseTab ? 1 : 2);
-
             bundle.putString("categoryId", categoryId);
             bundle.putString("categoryName", categoryName);
-
             if (currentStartDate != null) bundle.putLong("startDate", currentStartDate.getTime());
             if (currentEndDate != null) bundle.putLong("endDate", currentEndDate.getTime());
 
-            NavOptions fadeOptions = new NavOptions.Builder()
-                    .setEnterAnim(R.anim.fade_in)
-                    .setExitAnim(R.anim.fade_out)
-                    .setPopEnterAnim(R.anim.fade_in)
-                    .setPopExitAnim(R.anim.fade_out)
-                    .build();
+            NavOptions fadeOptions = new NavOptions.Builder().setEnterAnim(R.anim.fade_in).setExitAnim(R.anim.fade_out).setPopEnterAnim(R.anim.fade_in).setPopExitAnim(R.anim.fade_out).build();
             Navigation.findNavController(requireView()).navigate(R.id.historyFragment, bundle, fadeOptions);
         });
         rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -338,21 +427,13 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     protected void onFabClick() {
-        NavOptions navOptions = new NavOptions.Builder()
-                .setEnterAnim(R.anim.slide_in_right)
-                .setExitAnim(R.anim.slide_out_left)
-                .setPopEnterAnim(R.anim.slide_in_left)
-                .setPopExitAnim(R.anim.slide_out_right)
-                .build();
+        NavOptions navOptions = new NavOptions.Builder().setEnterAnim(R.anim.slide_in_right).setExitAnim(R.anim.slide_out_left).setPopEnterAnim(R.anim.slide_in_left).setPopExitAnim(R.anim.slide_out_right).build();
         Navigation.findNavController(requireView()).navigate(R.id.transactionEntryFragment, null, navOptions);
     }
     @Override
-    protected String getFabLabel() {
-        return "Thêm giao dịch";
-    }
+    protected String getFabLabel() { return "Thêm giao dịch"; }
 
     private int dpToPx(int dp) {
-        float density = getResources().getDisplayMetrics().density;
-        return Math.round((float) dp * density);
+        return Math.round((float) dp * getResources().getDisplayMetrics().density);
     }
 }
