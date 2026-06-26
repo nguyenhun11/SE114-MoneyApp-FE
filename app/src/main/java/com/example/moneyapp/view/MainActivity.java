@@ -1,12 +1,16 @@
 package com.example.moneyapp.view;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
@@ -57,14 +61,10 @@ public class MainActivity extends AppCompatActivity {
             bottomNav.setOnItemSelectedListener(item -> {
                 int itemId = item.getItemId();
                 NavOptions options = new NavOptions.Builder()
-                        .setLaunchSingleTop(true)
-                        .setRestoreState(false)
+                        .setLaunchSingleTop(true).setRestoreState(false)
                         .setPopUpTo(navController.getGraph().getStartDestinationId(), false, false)
-                        .setEnterAnim(R.anim.fade_in)
-                        .setExitAnim(R.anim.fade_out)
-                        .setPopEnterAnim(R.anim.fade_in)
-                        .setPopExitAnim(R.anim.fade_out)
-                        .build();
+                        .setEnterAnim(R.anim.fade_in).setExitAnim(R.anim.fade_out)
+                        .setPopEnterAnim(R.anim.fade_in).setPopExitAnim(R.anim.fade_out).build();
                 try {
                     navController.navigate(itemId, null, options);
                     return true;
@@ -73,44 +73,21 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-    }
+        drawerLayout.setDrawerElevation(0f);
 
-    public void openRightSideMenu() {
-        if (drawerLayout != null) {
-            drawerLayout.openDrawer(GravityCompat.END);
-        }
-    }
+        drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+                super.onDrawerSlide(drawerView, slideOffset);
 
-    private void setupSideMenuIcons(NavController navController) {
-        setupSideMenuItem(R.id.btn_statistics, "gmd_insert_chart", "Thống kê", R.id.statisticsFragment, navController);
-        setupSideMenuItem(R.id.btn_goals, "gmd_star", getString(R.string.goal_title), R.id.goalFragment, navController);
-        // Thêm MoneyCity và Budget vào Side Menu
-        setupSideMenuItem(R.id.btn_city_menu, "gmd_location_city", "Thành phố MoneyCity", R.id.cityFragment, navController);
-        setupSideMenuItem(R.id.btn_budget_menu, "gmd_account_balance_wallet", "Quản lý Ngân sách", R.id.budgetFragment, navController);
+                View mainContent = findViewById(R.id.main_content_wrapper);
 
-        setupSideMenuItem(R.id.btn_info, "gmd_info", "Thông tin", R.id.informationFragment, navController);
-        setupSideMenuItem(R.id.btn_settings, "gmd_settings", "Cài đặt", R.id.settingsFragment, navController);
-    }
-
-    private void setupSideMenuItem(int viewId, String iconName, String title, int destinationId, NavController navController) {
-        View menuItem = findViewById(viewId);
-        if (menuItem != null) {
-            IconicsImageView ivIcon = menuItem.findViewById(R.id.iv_icon);
-            ivIcon.setImageDrawable(getShrunkIcon(iconName, R.color.colorOnSurface));
-
-            ((TextView) menuItem.findViewById(R.id.tv_title)).setText(title);
-
-            menuItem.setOnClickListener(v -> {
-                drawerLayout.closeDrawer(GravityCompat.END);
-                NavOptions options = new NavOptions.Builder()
-                        .setEnterAnim(R.anim.slide_in_right)
-                        .setExitAnim(R.anim.slide_out_left)
-                        .setPopEnterAnim(R.anim.slide_in_left)
-                        .setPopExitAnim(R.anim.slide_out_right)
-                        .build();
-                navController.navigate(destinationId, null, options);
-            });
-        }
+                if (mainContent != null) {
+                    float slideX = -(drawerView.getWidth() * slideOffset);
+                    mainContent.setTranslationX(slideX);
+                }
+            }
+        });
     }
 
     private Drawable getShrunkIcon(String iconName, int colorResId) {
@@ -123,6 +100,44 @@ public class MainActivity extends AppCompatActivity {
         int paddingPx = (int) (3 * getResources().getDisplayMetrics().density);
 
         return new InsetDrawable(drawable, paddingPx);
+    }
+
+    public void openRightSideMenu() {
+        if (drawerLayout != null) {
+            drawerLayout.openDrawer(GravityCompat.END);
+        }
+    }
+    private void setupSideMenuIcons(NavController navController) {
+        setupSideMenuItem(R.id.btn_home_menu, "gmd_home", "Trang chủ", R.id.homeFragment, navController, R.color.colorPrimary, R.color.colorPrimaryBgLight);
+        setupSideMenuItem(R.id.btn_statistics, "gmd_insert_chart", "Thống kê", R.id.statisticsFragment, navController, R.color.colorPrimary, R.color.colorPrimaryBgLight);
+        setupSideMenuItem(R.id.btn_budget_menu, "gmd_account_balance_wallet", "Quản lý Ngân sách", R.id.budgetFragment, navController, R.color.colorDanger, R.color.colorDangerBgLight);
+        setupSideMenuItem(R.id.btn_goals, "gmd_star", getString(R.string.goal_title), R.id.goalFragment, navController, R.color.colorWarning, R.color.colorWarningBgLight);
+        setupSideMenuItem(R.id.btn_city_menu, "gmd_location_city", "Thành phố MoneyCity", R.id.cityFragment, navController, R.color.colorSuccess, R.color.colorSuccessBgLight);
+        setupSideMenuItem(R.id.btn_info, "gmd_info", "Thông tin ứng dụng", R.id.informationFragment, navController, R.color.colorInfo, R.color.colorInfoBgLight);
+        setupSideMenuItem(R.id.btn_settings, "gmd_settings", "Cài đặt", R.id.settingsFragment, navController, R.color.colorNeutral, R.color.colorNeutralBgLight);
+    }
+
+    private void setupSideMenuItem(int viewId, String iconName, String title, int destinationId, NavController navController, int iconColorRes, int bgColorRes) {
+        View menuItem = findViewById(viewId);
+        if (menuItem != null) {
+            IconicsImageView ivIcon = menuItem.findViewById(R.id.iv_icon);
+            IconicsDrawable drawable = new IconicsDrawable(this, iconName);
+            drawable.setColorFilter(ContextCompat.getColor(this, iconColorRes), android.graphics.PorterDuff.Mode.SRC_IN);
+            ivIcon.setImageDrawable(drawable);
+
+            FrameLayout flBg = menuItem.findViewById(R.id.fl_icon_bg);
+            flBg.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ContextCompat.getColor(this, bgColorRes)));
+
+            ((TextView) menuItem.findViewById(R.id.tv_title)).setText(title);
+
+            menuItem.setOnClickListener(v -> {
+                drawerLayout.closeDrawer(GravityCompat.END);
+                NavOptions options = new NavOptions.Builder()
+                        .setEnterAnim(R.anim.slide_in_right).setExitAnim(R.anim.slide_out_left)
+                        .setPopEnterAnim(R.anim.slide_in_left).setPopExitAnim(R.anim.slide_out_right).build();
+                navController.navigate(destinationId, null, options);
+            });
+        }
     }
 
     public MainUIHandler getUiHandler() {

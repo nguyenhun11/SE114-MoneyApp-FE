@@ -8,27 +8,35 @@
     android:focusable="true"
     android:gravity="center_vertical"
     android:paddingHorizontal="20dp"
-    android:paddingVertical="16dp">
+    android:paddingVertical="14dp">
 
-    <com.mikepenz.iconics.view.IconicsImageView
-        android:id="@+id/iv_icon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        app:ico_color="@color/colorOnSurface" />
+    <FrameLayout
+        android:id="@+id/fl_icon_bg"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_circle">
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:layout_marginStart="16dp"
+        android:layout_weight="1"
         android:text="Tên tính năng"
         android:textColor="@color/colorOnSurface"
-        android:textSize="16sp" />
+        android:textSize="15sp"
+        android:textStyle="bold" />
 
     <com.mikepenz.iconics.view.IconicsImageView
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        app:ico_icon="gmd_arrow_right"
-        app:ico_color="@color/colorOnSurfaceVariant" />
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        app:iiv_color="@color/colorOnSurfaceVariant"
+        app:iiv_icon="gmd_arrow_forward_ios" />
 </LinearLayout>

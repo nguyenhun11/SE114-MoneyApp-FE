@@ -26,8 +26,26 @@
     <color name="colorInfo">#3B82F6</color>
     <color name="colorInfoBgLight">#DBEAFE</color>
 
+    <color name="colorNeutral">#64748B</color>
+    <color name="colorNeutralBgLight">#F1F5F9</color>
+    <color name="colorTextMuted">#94A3B8</color>
+    <color name="colorDivider">#E2E8F0</color>
+
     <color name="bg_gradient_start">#4318FF</color>
     <color name="bg_gradient_end">#7551FF</color>
 
     <color name="tabSelectedColor">#F4F7FE</color>
+
+    <color name="colorChartTeal">#14B8A6</color>
+    <color name="colorChartRose">#F43F5E</color>
+    <color name="colorChartPurple">#A855F7</color>
+    <color name="colorChartCyan">#06B6D4</color>
+    <color name="colorChartOrange">#F97316</color>
+    <color name="colorChartIndigo">#6366F1</color>
+    <color name="colorChartLime">#84CC16</color>
+
+    <color name="colorIncome">#10B981</color>
+    <color name="colorExpense">#F43F5E</color>
+    <color name="colorIncomeBg">#D1FAE5</color>
+    <color name="colorExpenseBg">#FFE4E6</color>
 </resources>

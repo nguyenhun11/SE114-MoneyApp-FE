@@ -7,8 +7,8 @@
     android:layout_height="match_parent"
     tools:openDrawer="end">
 
-    <!-- 1. MÀN HÌNH CHÍNH (NavHost + BottomNav + FAB) -->
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main_content_wrapper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorBackground">
@@ -35,9 +35,9 @@
             app:elevation="0dp"
             app:itemBackground="@android:color/transparent"
             app:itemIconTint="@color/nav_item_color"
+            app:itemRippleColor="@android:color/transparent"
             app:itemTextColor="@color/nav_item_color"
             app:labelVisibilityMode="labeled"
-            app:itemRippleColor="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -84,77 +84,102 @@
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- 2. SIDE MENU (NGĂN KÉO BÊN PHẢI) -->
     <LinearLayout
         android:id="@+id/side_menu_right"
-        android:layout_width="300dp"
+        android:layout_width="308dp"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:background="@color/colorSurface"
+        android:background="@color/colorBackground"
         android:clickable="true"
         android:focusable="true"
         android:orientation="vertical"
-        android:visibility="gone"
-        android:paddingTop="48dp">
+        android:paddingTop="50dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="16dp"
             android:text="Tiện ích"
             android:textColor="@color/colorOnSurface"
             android:textSize="24sp"
             android:textStyle="bold" />
 
-        <include
-            android:id="@+id/btn_statistics"
-            layout="@layout/item_more_menu" />
-
-        <View
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorBorder" />
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            app:cardBackgroundColor="@color/colorSurface"
+            app:cardCornerRadius="@dimen/card_radius"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/colorBorder"
+            app:strokeWidth="1dp">
 
-        <include
-            android:id="@+id/btn_goals"
-            layout="@layout/item_more_menu" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorBorder" />
+                <include
+                    android:id="@+id/btn_home_menu"
+                    layout="@layout/item_more_menu" />
 
-        <include
-            android:id="@+id/btn_city_menu"
-            layout="@layout/item_more_menu" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorBorder" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorBorder" />
+                <include
+                    android:id="@+id/btn_statistics"
+                    layout="@layout/item_more_menu" />
 
-        <include
-            android:id="@+id/btn_budget_menu"
-            layout="@layout/item_more_menu" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorBorder" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorBorder" />
+                <include
+                    android:id="@+id/btn_budget_menu"
+                    layout="@layout/item_more_menu" />
 
-        <include
-            android:id="@+id/btn_info"
-            layout="@layout/item_more_menu" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorBorder" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorBorder" />
+                <include
+                    android:id="@+id/btn_goals"
+                    layout="@layout/item_more_menu" />
 
-        <include
-            android:id="@+id/btn_settings"
-            layout="@layout/item_more_menu" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorBorder" />
+
+                <include
+                    android:id="@+id/btn_city_menu"
+                    layout="@layout/item_more_menu" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorBorder" />
+
+                <include
+                    android:id="@+id/btn_info"
+                    layout="@layout/item_more_menu" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorBorder" />
+
+                <include
+                    android:id="@+id/btn_settings"
+                    layout="@layout/item_more_menu" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
     </LinearLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

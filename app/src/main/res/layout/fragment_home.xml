@@ -193,13 +193,13 @@
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:background="@drawable/bg_circle"
-                            android:backgroundTint="@color/colorInfoBgLight">
+                            android:backgroundTint="@color/colorPrimaryBgLight">
 
                             <com.mikepenz.iconics.view.IconicsImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
-                                app:iiv_color="@color/colorInfo"
+                                app:iiv_color="@color/colorPrimary"
                                 app:iiv_icon="gmd_insert_chart" />
                         </FrameLayout>
 
@@ -227,13 +227,13 @@
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:background="@drawable/bg_circle"
-                            android:backgroundTint="@color/colorSuccessBgLight">
+                            android:backgroundTint="@color/colorDangerBgLight">
 
                             <com.mikepenz.iconics.view.IconicsImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
-                                app:iiv_color="@color/colorSuccess"
+                                app:iiv_color="@color/colorDanger"
                                 app:iiv_icon="gmd_account_balance_wallet" />
                         </FrameLayout>
 
@@ -295,13 +295,13 @@
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:background="@drawable/bg_circle"
-                            android:backgroundTint="@color/colorPrimaryBgLight">
+                            android:backgroundTint="@color/colorSuccessBgLight">
 
                             <com.mikepenz.iconics.view.IconicsImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
-                                app:iiv_color="@color/colorPrimary"
+                                app:iiv_color="@color/colorSuccess"
                                 app:iiv_icon="gmd_location_city" />
                         </FrameLayout>
 
@@ -329,13 +329,13 @@
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:background="@drawable/bg_circle"
-                            android:backgroundTint="@color/colorDangerBgLight">
+                            android:backgroundTint="@color/colorInfoBgLight">
 
                             <com.mikepenz.iconics.view.IconicsImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
-                                app:iiv_color="@color/colorDanger"
+                                app:iiv_color="@color/colorInfo"
                                 app:iiv_icon="gmd_assignment" />
                         </FrameLayout>
 
@@ -364,13 +364,13 @@
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:background="@drawable/bg_circle"
-                            android:backgroundTint="#ECEFF1">
+                            android:backgroundTint="@color/colorNeutralBgLight">
 
                             <com.mikepenz.iconics.view.IconicsImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
-                                app:iiv_color="@color/colorOnSurfaceVariant"
+                                app:iiv_color="@color/colorNeutral"
                                 app:iiv_icon="gmd_settings" />
                         </FrameLayout>
 
