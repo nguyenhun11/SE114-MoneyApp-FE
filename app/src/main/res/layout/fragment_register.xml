@@ -45,7 +45,7 @@
             android:background="@drawable/bg_edittext_outline"
             android:hint="@string/register_name_hint"
             android:gravity="center"
-            android:inputType="textPersonName"
+            android:inputType="text"
             android:paddingHorizontal="20dp"
             android:textColor="@color/black"
             android:textColorHint="#BCBCBC"
