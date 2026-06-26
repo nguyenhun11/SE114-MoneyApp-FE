@@ -16,8 +16,8 @@
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:contentScrim="@android:color/transparent"
             android:background="@color/colorBackground"
+            app:contentScrim="@android:color/transparent"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
             <com.google.android.material.card.MaterialCardView
@@ -292,22 +292,28 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical">
+
                         <TextView
                             android:id="@+id/tv_city_level_profile"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Cấp -"
-                            android:textStyle="bold"
                             android:textColor="@color/colorPrimary"
-                            android:textSize="18sp"/>
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Thành phố"
-                            android:textSize="11sp"/>
+                            android:textSize="11sp" />
                     </LinearLayout>
 
-                    <View android:layout_width="1dp" android:layout_height="match_parent" android:background="@color/colorBorder" android:layout_marginHorizontal="8dp"/>
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="8dp"
+                        android:background="@color/colorBorder" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -315,22 +321,28 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical">
+
                         <TextView
                             android:id="@+id/tv_prosperity_profile"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="-"
-                            android:textStyle="bold"
                             android:textColor="@color/colorSuccess"
-                            android:textSize="18sp"/>
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Thịnh vượng"
-                            android:textSize="11sp"/>
+                            android:textSize="11sp" />
                     </LinearLayout>
 
-                    <View android:layout_width="1dp" android:layout_height="match_parent" android:background="@color/colorBorder" android:layout_marginHorizontal="8dp"/>
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="8dp"
+                        android:background="@color/colorBorder" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -338,19 +350,21 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical">
+
                         <TextView
                             android:id="@+id/tv_stability_profile"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="-"
-                            android:textStyle="bold"
                             android:textColor="@color/colorInfo"
-                            android:textSize="18sp"/>
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Ổn định"
-                            android:textSize="11sp"/>
+                            android:textSize="11sp" />
                     </LinearLayout>
 
                     <com.mikepenz.iconics.view.IconicsImageView
@@ -555,35 +569,35 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:baselineAligned="false"
                 android:layout_marginBottom="48dp"
+                android:baselineAligned="false"
                 android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_logout"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:text="@string/profile_logout"
-                    android:textColor="@color/colorOnSurface"
-                    app:icon="@drawable/logout_button_img"
-                    app:iconTint="@color/colorOnSurface"
-                    app:strokeColor="@color/colorBorder" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_delete_account"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="56dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:text="@string/profile_delete_account"
                     android:textColor="@color/colorDanger"
                     app:icon="@drawable/delete_button_img"
                     app:iconTint="@color/colorDanger"
                     app:strokeColor="@color/colorDanger" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_logout"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/profile_logout"
+                    android:textColor="@color/colorOnSurface"
+                    app:icon="@drawable/logout_button_img"
+                    app:iconTint="@color/colorOnSurface"
+                    app:strokeColor="@color/colorBorder" />
             </LinearLayout>
 
         </LinearLayout>

@@ -5,28 +5,39 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_bottom_sheet"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:paddingHorizontal="24dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="24dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_drag_handle" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:layout_marginBottom="24dp">
+        android:orientation="horizontal">
+
 
         <ImageView
             android:id="@+id/ivBuildingIconLarge"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:padding="8dp"
             android:background="@drawable/bg_circle"
-            android:backgroundTint="#E8F5E9"/>
+            android:backgroundTint="#E8F5E9"
+            android:padding="8dp" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginStart="20dp"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
@@ -36,7 +47,7 @@
                 android:text="House"
                 android:textColor="@color/colorOnSurface"
                 android:textSize="22sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvBuildingLevelDetail"
@@ -44,36 +55,36 @@
                 android:layout_height="wrap_content"
                 android:text="Cấp 1"
                 android:textColor="@color/colorOnSurfaceVariant"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
         android:text="Thông số công trình"
         android:textColor="@color/colorOnSurface"
-        android:textStyle="bold"
         android:textSize="16sp"
-        android:layout_marginBottom="12dp"/>
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvBuildingEffect"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
         android:text="Cung cấp 5 SP mỗi ngày."
         android:textColor="@color/colorOnSurfaceVariant"
-        android:textSize="14sp"
-        android:layout_marginBottom="24dp"/>
+        android:textSize="14sp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnUpgradeBuilding"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:text="Nâng cấp (200 PP)"
-        app:cornerRadius="28dp"
         android:textAllCaps="false"
-        app:backgroundTint="#FFB300"/>
+        app:backgroundTint="#FFB300"
+        app:cornerRadius="28dp" />
 
     <TextView
         android:id="@+id/tvUpgradeHint"
@@ -84,6 +95,6 @@
         android:text="Bạn cần thêm 50 PP để nâng cấp"
         android:textColor="@color/colorDanger"
         android:textSize="12sp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </LinearLayout>

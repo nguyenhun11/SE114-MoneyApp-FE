@@ -89,7 +89,7 @@ public class BudgetAddFragment extends BaseFragment {
         // PHÂN NHÁNH: THÊM MỚI hoặc CHỈNH SỬA
         if (budgetId != null) {
             setupHeader(view, "Sửa ngân sách",
-                    "gmd_navigate_before", v -> Navigation.findNavController(v).navigateUp(),
+                    "gmd_arrow_back", v -> Navigation.findNavController(v).navigateUp(),
                     "gmd_delete_outline", v -> showDeleteConfirmDialog()); // Icon xóa
 
             fillExistingData(getArguments());

@@ -185,6 +185,10 @@ public class GoalAddFragment extends BaseFragment {
     public void onFabClick() {
         saveGoal();
     }
+    @Override
+    protected String getFabLabel(){
+        return "Lưu mục tiêu";
+    }
 
     private void saveGoal() {
         String name = etName.getText().toString().trim();

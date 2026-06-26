@@ -56,10 +56,6 @@ public class CityFragment extends BaseFragment {
         });
 
         viewModel.fetchCityData();
-
-        view.findViewById(R.id.fabBuild).setOnClickListener(v -> 
-            DialogHelper.showSimpleDialog(getContext(), "Hướng dẫn", "Chọn một ô trống để bắt đầu xây dựng!")
-        );
     }
 
     private void updateUI(CityResponse city) {
@@ -170,5 +166,22 @@ public class CityFragment extends BaseFragment {
             ));
         });
         bottomSheet.show(getChildFragmentManager(), "BuildMenu");
+    }
+
+    @Override
+    protected boolean shouldShowBottomNavigation() {
+        return false;
+    }
+    @Override
+    protected String getFabLabel(){
+        return "Xây dựng";
+    }
+    @Override
+    protected void onFabClick(){
+        DialogHelper.showSimpleDialog(getContext(), "Hướng dẫn", "Chọn một ô trống để bắt đầu xây dựng!");
+    }
+    @Override
+    protected int getFabBackgroundColorRes(){
+        return R.color.colorChartOrange;
     }
 }

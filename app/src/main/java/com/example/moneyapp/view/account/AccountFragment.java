@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.local.PreferenceManager;
+import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.view.BaseFragment;
@@ -180,7 +181,7 @@ public class AccountFragment extends BaseFragment {
         if (getActivity() instanceof MainActivity) {
             MainActivity mainActivity = (MainActivity) getActivity();
             if (mainActivity.getUiHandler() != null) {
-                mainActivity.getUiHandler().updateFAB(getFabIcon(), getFabLabel(), v -> onFabClick());
+                mainActivity.getUiHandler().updateFAB(getFabIcon(), getFabLabel(), 0,  v -> onFabClick());
             }
         }
     }
@@ -189,7 +190,7 @@ public class AccountFragment extends BaseFragment {
         Navigation.findNavController(requireView()).navigate(R.id.action_accountFragment_to_reorderCategoryFragment);
     }
 
-    private void showCategoryContextMenu(com.example.moneyapp.model.Category category, View anchorView) {
+    private void showCategoryContextMenu(Category category, View anchorView) {
         PopupMenu popupMenu = new PopupMenu(requireContext(), anchorView);
         if (!"Khác".equals(category.getCategoryName())) {
             popupMenu.getMenu().add(0, 1, 0, "Xóa danh mục");

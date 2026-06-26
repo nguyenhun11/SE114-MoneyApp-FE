@@ -2,7 +2,6 @@ package com.example.moneyapp.view.goal;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
@@ -26,6 +24,7 @@ import com.example.moneyapp.utils.DateConverter;
 import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.utils.PopupHelper;
 import com.example.moneyapp.utils.RewardHelper;
+import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.MainActivity;
 import com.example.moneyapp.view.components.AccountSelectorView;
 import com.example.moneyapp.viewmodel.AccountViewModel;
@@ -38,7 +37,7 @@ import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.Locale;
 
-public class GoalDetailFragment extends Fragment {
+public class GoalDetailFragment extends BaseFragment {
 
     private Goal goal;
     private GoalViewModel viewModel;
@@ -48,7 +47,6 @@ public class GoalDetailFragment extends Fragment {
     private CircularProgressIndicator cpProgress;
     private FrameLayout flIconContainer;
     private IconicsImageView ivIcon;
-    private AppCompatImageButton btnBack, btnEdit;
     private MaterialButton btnDeposit;
 
     @Override
@@ -84,37 +82,21 @@ public class GoalDetailFragment extends Fragment {
         cpProgress = view.findViewById(R.id.cp_progress);
         flIconContainer = view.findViewById(R.id.fl_icon_container);
         ivIcon = view.findViewById(R.id.iv_goal_icon);
-        btnBack = view.findViewById(R.id.btn_back);
-        btnEdit = view.findViewById(R.id.btn_edit);
         btnDeposit = view.findViewById(R.id.btn_deposit);
 
-        setupIcons();
         displayGoal();
-
-        btnBack.setOnClickListener(v -> Navigation.findNavController(v).navigateUp());
-        
-        btnEdit.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("goal", goal);
-            Navigation.findNavController(v).navigate(R.id.goalAddFragment, bundle);
-        });
+        setupHeader(view, "Chi tiết mục tiêu",
+                "gmd_arrow_back", v -> Navigation.findNavController(v).navigateUp(),
+                "gmd_edit", v -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("goal", goal);
+                    Navigation.findNavController(v).navigate(R.id.goalAddFragment, bundle);
+                });
 
         btnDeposit.setOnClickListener(v -> showDepositDialog());
 
         observeViewModel();
         viewModel.fetchGoals(); // Tải lại dữ liệu khi vào màn hình
-    }
-
-    private void setupIcons() {
-        int color = ContextCompat.getColor(requireContext(), R.color.white);
-        
-        IconicsDrawable backDrawable = new IconicsDrawable(requireContext(), "gmd_arrow_back");
-        backDrawable.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
-        btnBack.setImageDrawable(backDrawable);
-        
-        IconicsDrawable editDrawable = new IconicsDrawable(requireContext(), "gmd_edit");
-        editDrawable.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
-        btnEdit.setImageDrawable(editDrawable);
     }
 
     private void displayGoal() {

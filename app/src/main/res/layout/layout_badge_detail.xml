@@ -3,10 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_card_bottom"
+    android:background="@drawable/bg_bottom_sheet"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="32dp">
+    android:padding="8dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_drag_handle" />
+
 
     <FrameLayout
         android:layout_width="wrap_content"
@@ -18,9 +26,9 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_gravity="center"
+            android:alpha="0.6"
             android:background="@drawable/bg_circle"
-            android:backgroundTint="#FFF8E1"
-            android:alpha="0.6" />
+            android:backgroundTint="#FFF8E1" />
 
         <com.mikepenz.iconics.view.IconicsImageView
             android:id="@+id/iv_badge_icon_detail"
@@ -64,6 +72,7 @@
         android:id="@+id/btn_badge_close"
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        android:layout_marginHorizontal="32dp"
         android:layout_marginTop="32dp"
         android:text="Đóng"
         android:textAllCaps="false"

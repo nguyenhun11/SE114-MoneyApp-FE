@@ -41,7 +41,7 @@ public abstract class BaseFragment extends Fragment {
                 uiHandler.setBottomNavigationVisibility(shouldShowBottomNavigation());
 
                 if (shouldShowFAB()) {
-                    uiHandler.updateFAB(getFabIcon(), getFabLabel(), v -> onFabClick());
+                    uiHandler.updateFAB(getFabIcon(), getFabLabel(), getFabBackgroundColorRes(), v -> onFabClick());
                     uiHandler.setFABVisibility(true);
                 } else {
                     uiHandler.setFABVisibility(false);
@@ -63,6 +63,9 @@ public abstract class BaseFragment extends Fragment {
 
     protected String getFabIcon() {
         return "gmd_add";
+    }
+    protected int getFabBackgroundColorRes() {
+        return 0;
     }
     protected String getFabLabel() {
         return "Thêm giao dịch";

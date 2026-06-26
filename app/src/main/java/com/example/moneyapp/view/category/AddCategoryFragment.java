@@ -109,7 +109,7 @@ public class AddCategoryFragment extends BaseFragment {
         if (categoryId != null) {
             if (!isDefaultCategory) {
                 setupHeader(view, title,
-                        "gmd_navigate_before", v -> Navigation.findNavController(v).navigateUp(),
+                        "gmd_arrow_back", v -> Navigation.findNavController(v).navigateUp(),
                         "gmd_delete_outline", v -> showDeleteConfirmDialog());
             } else {
                 setupHeader(view, title, true);

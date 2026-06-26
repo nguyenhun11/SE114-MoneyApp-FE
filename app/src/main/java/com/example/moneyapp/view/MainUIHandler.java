@@ -65,9 +65,18 @@ public class MainUIHandler {
         });
     }
 
-    public void updateFAB(String iconName, String labelText, View.OnClickListener listener) {
+    public void updateFAB(String iconName, String labelText, int fabBgColorRes, View.OnClickListener listener) {
         if (fabAdd != null) {
             Context context = fabAdd.getContext();
+
+            if (fabBgColorRes != 0) {
+                fabAdd.setBackgroundResource(R.drawable.bg_circle);
+                fabAdd.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ContextCompat.getColor(context, fabBgColorRes)));
+            } else {
+                fabAdd.setBackgroundTintList(null);
+                fabAdd.setBackgroundResource(R.drawable.bg_button_gradient);
+            }
+
             if (iconName != null && !iconName.isEmpty()) {
                 IconicsDrawable drawable = new IconicsDrawable(context, iconName);
                 drawable.setColorFilter(ContextCompat.getColor(context, R.color.colorOnPrimary), android.graphics.PorterDuff.Mode.SRC_IN);

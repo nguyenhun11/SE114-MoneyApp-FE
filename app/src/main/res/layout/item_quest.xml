@@ -73,7 +73,7 @@
             android:textSize="12sp"
             android:visibility="visible"
             app:backgroundTint="@color/colorSuccess"
-            app:cornerRadius="16dp"
+            app:cornerRadius="@dimen/button_radius"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

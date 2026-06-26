@@ -5,16 +5,26 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_bottom_sheet"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:paddingHorizontal="24dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="24dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_drag_handle" />
+
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:text="Xây dựng đô thị"
         android:textColor="@color/colorOnSurface"
         android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
+        android:textStyle="bold" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayoutBuild"
@@ -22,14 +32,16 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         app:tabIndicatorColor="@color/colorPrimary"
+        app:tabRippleColor="@android:color/transparent"
         app:tabSelectedTextColor="@color/colorPrimary"
-        app:tabTextColor="@color/colorOnSurfaceVariant"
         app:tabTextAppearance="@style/TextAppearance.MaterialComponents.Caption"
-        app:tabRippleColor="@android:color/transparent">
+        app:tabTextColor="@color/colorOnSurfaceVariant">
+
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Công trình (PP)" />
+
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,6 +53,6 @@
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_marginTop="16dp"
-        android:clipToPadding="false"/>
+        android:clipToPadding="false" />
 
 </LinearLayout>
