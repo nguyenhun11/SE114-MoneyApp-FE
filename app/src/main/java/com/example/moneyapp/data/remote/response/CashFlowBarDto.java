@@ -1,9 +1,19 @@
 package com.example.moneyapp.data.remote.response;
 
+import com.google.gson.annotations.SerializedName;
+
 public class CashFlowBarDto {
+    @SerializedName("period")
     private String period;
+    @SerializedName("totalIncome")
     private double totalIncome;
+    @SerializedName("totalExpense")
     private double totalExpense;
+    @SerializedName("totalSaved")
+    private double totalSaved;
+    @SerializedName("totalWithdrawn")
+    private double totalWithdrawn;
+    @SerializedName("netBalance")
     private double netBalance;
 
     public String getPeriod() {
@@ -36,5 +46,13 @@ public class CashFlowBarDto {
 
     public void setNetBalance(double netBalance) {
         this.netBalance = netBalance;
+    }
+
+    public double getTotalSaved() {
+        return totalSaved;
+    }
+
+    public double getTotalWithdrawn() {
+        return totalWithdrawn;
     }
 }

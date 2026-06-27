@@ -1,5 +1,7 @@
 package com.example.moneyapp.data.remote.api;
 
+import androidx.room.Delete;
+
 import com.example.moneyapp.data.remote.request.AccountRequest;
 import com.example.moneyapp.data.remote.request.AdjustBalanceRequest;
 import com.example.moneyapp.data.remote.request.BudgetRequest;
@@ -8,6 +10,7 @@ import com.example.moneyapp.data.remote.request.CategoryGroupRequest;
 import com.example.moneyapp.data.remote.request.DepositRequest;
 import com.example.moneyapp.data.remote.request.GoalRequest;
 import com.example.moneyapp.data.remote.request.TransferRequest;
+import com.example.moneyapp.data.remote.request.WithdrawRequest;
 import com.example.moneyapp.data.remote.response.BadgeResponse;
 import com.example.moneyapp.data.remote.response.BudgetResponse;
 import com.example.moneyapp.data.remote.response.CategoryGroupResponse;
@@ -33,10 +36,14 @@ import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
 import com.example.moneyapp.data.remote.response.CategoryResponse;
 import com.example.moneyapp.data.remote.response.CityResponse;
 import com.example.moneyapp.data.remote.response.ExchangeRateResponse;
+import com.example.moneyapp.data.remote.response.GoalRecordDeleteResponse;
+import com.example.moneyapp.data.remote.response.GoalRecordResponse;
 import com.example.moneyapp.data.remote.response.GoalResponse;
 import com.example.moneyapp.data.remote.response.CheckInResponse;
+import com.example.moneyapp.data.remote.response.GoalTransactionResponse;
 import com.example.moneyapp.data.remote.response.QuestResponse;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
+import com.example.moneyapp.data.remote.response.TotalBalanceDto;
 import com.example.moneyapp.data.remote.response.TransactionResponse;
 import com.example.moneyapp.data.remote.response.TransferResponse;
 import com.example.moneyapp.data.remote.response.UserProfileResponse;
@@ -92,7 +99,7 @@ public interface ApiService {
     @GET("api/Account/{id}")
     Call<AccountResponse> getAccountById(@Path("id") String id);
     @GET("api/Account/total-balance")
-    Call<Map<String, Double>> getTotalBalance();
+    Call<Map<String, TotalBalanceDto>> getTotalBalance();
     @POST("api/Account")
     Call<AccountResponse> createAccount(@Body AccountRequest request);
     @PUT("api/Account/{id}")
@@ -240,18 +247,22 @@ public interface ApiService {
     //region Goals
     @GET("api/Goals")
     Call<List<GoalResponse>> getAllGoals();
-
     @POST("api/Goals")
     Call<GoalResponse> createGoal(@Body GoalRequest request);
-
     @PUT("api/Goals/{id}")
     Call<Void> updateGoal(@Path("id") int id, @Body GoalRequest request);
-
     @DELETE("api/Goals/{id}")
     Call<Void> deleteGoal(@Path("id") int id);
-
     @POST("api/Goals/{id}/deposit")
-    Call<GoalResponse> depositToGoal(@Path("id") int id, @Body DepositRequest request);
+    Call<GoalTransactionResponse> depositToGoal(@Path("id") int id, @Body DepositRequest request);
+    @POST("api/Goals/{id}/withdraw")
+    Call<GoalTransactionResponse> withdrawFromGoal(@Path("id") int id, @Body WithdrawRequest request);
+    @GET("api/Goals/{id}/records")
+    Call<List<GoalRecordResponse>> getGoalRecords(@Path("id") int id);
+    @GET("api/Goals/records/{recordId}")
+    Call<GoalRecordResponse> getGoalRecordById(@Path("recordId") int recordId);
+    @DELETE("api/Goals/records/{recordId}")
+    Call<GoalRecordDeleteResponse> deleteGoalRecord(@Path("recordId") int recordId);
     //endregion
 
     //region Budget
@@ -272,6 +283,8 @@ public interface ApiService {
     Call<Void> build(@Body BuildRequest request);
     @POST("api/City/upgrade/{id}")
     Call<Void> upgradeBuilding(@Path("id") int id);
+    //endregion
+
     //region Currency
     @GET("api/ExchangeRate")
     Call<ExchangeRateResponse> getLatestExchangeRates();

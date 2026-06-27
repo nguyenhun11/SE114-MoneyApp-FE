@@ -290,10 +290,11 @@ public class AccountDetailFragment extends BaseFragment {
         }
 
         boolean includeInTotal = !switchExclude.isChecked();
-
         Account accountToSave = new Account(
                 currentAccountId,
                 name,
+                balance,
+                0.0,
                 balance,
                 currentCurrencyCode,
                 selectedColorId,
@@ -321,7 +322,7 @@ public class AccountDetailFragment extends BaseFragment {
                     setupHeader(requireView(), acc.getAccountName(), true);
 
                     etName.setText(acc.getAccountName());
-                    etBalance.setText(String.format(Locale.US, "%.0f", acc.getBalance()));
+                    etBalance.setText(String.format(Locale.US, "%.0f", acc.getTotalBalance()));
                     etDescription.setText(acc.getDescription());
                     switchExclude.setChecked(!acc.isIncludeInTotal());
 

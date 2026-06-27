@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.moneyapp.R;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.utils.AppResourceManager;
-import com.example.moneyapp.utils.CurrencyFormatter; // Nhớ import thư viện format tiền
+import com.example.moneyapp.utils.CurrencyFormatter;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
@@ -57,12 +57,36 @@ public class AccountPopupAdapter extends RecyclerView.Adapter<AccountPopupAdapte
         Account account = list.get(position);
 
         holder.tvName.setText(account.getAccountName());
-        holder.tvBalance.setText(CurrencyFormatter.formatVND(account.getBalance()));
 
+        // 1. Tách số dư và Đơn vị tiền tệ
+        double availableBalance = account.getAvailableBalance();
+        double lockedBalance = account.getLockedBalance();
+        String currencyCode = account.getCurrencyCode() != null ? account.getCurrencyCode() : "VND";
+
+        // 2. Cập nhật Số dư khả dụng
+        holder.tvAvailableBalance.setText(String.format("%s %s", CurrencyFormatter.formatVND(availableBalance), currencyCode));
+
+        // 3. Cập nhật Số dư đang khóa
+        if (lockedBalance > 0) {
+            holder.tvLockedBalance.setVisibility(View.VISIBLE);
+            holder.tvLockedBalance.setText(String.format("🔒 %s %s", CurrencyFormatter.formatVND(lockedBalance), currencyCode));
+        } else {
+            holder.tvLockedBalance.setVisibility(View.GONE);
+        }
+
+        // 4. Đổi màu đỏ nếu số dư khả dụng bị âm
+        if (availableBalance < 0) {
+            holder.tvAvailableBalance.setTextColor(ContextCompat.getColor(context, R.color.colorDanger));
+        } else {
+            holder.tvAvailableBalance.setTextColor(ContextCompat.getColor(context, R.color.colorOnSurfaceVariant));
+        }
+
+        // 5. Cập nhật Icon và màu nền
         holder.ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, account.getIcon()));
         int colorValue = AppResourceManager.getColor(account.getColor());
         holder.viewColorCircle.setBackgroundTintList(ColorStateList.valueOf(colorValue));
 
+        // 6. Trạng thái được chọn (Selected state)
         if (selectedPosition == position) {
             holder.cardBg.setStrokeWidth(3);
             holder.cardBg.setCardBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryBgLight));
@@ -94,7 +118,8 @@ public class AccountPopupAdapter extends RecyclerView.Adapter<AccountPopupAdapte
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName;
-        TextView tvBalance;
+        TextView tvAvailableBalance;
+        TextView tvLockedBalance;
         ImageView ivIcon;
         View viewColorCircle;
         MaterialCardView cardBg;
@@ -105,7 +130,9 @@ public class AccountPopupAdapter extends RecyclerView.Adapter<AccountPopupAdapte
             viewColorCircle = itemView.findViewById(R.id.viewColorCircle);
             ivIcon = itemView.findViewById(R.id.ivIcon);
             tvName = itemView.findViewById(R.id.tvAccountName);
-            tvBalance = itemView.findViewById(R.id.tvAccountBalance);
+
+            tvAvailableBalance = itemView.findViewById(R.id.tvAvailableBalance);
+            tvLockedBalance = itemView.findViewById(R.id.tvLockedBalance);
         }
     }
 }

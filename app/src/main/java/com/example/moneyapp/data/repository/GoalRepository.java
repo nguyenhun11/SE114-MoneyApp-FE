@@ -4,7 +4,11 @@ import android.content.Context;
 
 import com.example.moneyapp.data.remote.request.DepositRequest;
 import com.example.moneyapp.data.remote.request.GoalRequest;
+import com.example.moneyapp.data.remote.request.WithdrawRequest;
+import com.example.moneyapp.data.remote.response.GoalRecordDeleteResponse;
+import com.example.moneyapp.data.remote.response.GoalRecordResponse;
 import com.example.moneyapp.data.remote.response.GoalResponse;
+import com.example.moneyapp.data.remote.response.GoalTransactionResponse;
 import com.example.moneyapp.model.Goal;
 
 import java.util.ArrayList;
@@ -37,7 +41,6 @@ public class GoalRepository extends BaseRepository {
                 response.isActive()
         );
     }
-
     public void getAllGoals(GoalCallback<List<Goal>> callback) {
         apiService.getAllGoals().enqueue(new Callback<List<GoalResponse>>() {
             @Override
@@ -113,20 +116,91 @@ public class GoalRepository extends BaseRepository {
             }
         });
     }
-
-    public void depositToGoal(int id, double amount, GoalCallback<Goal> callback) {
-        apiService.depositToGoal(id, new DepositRequest(amount)).enqueue(new Callback<GoalResponse>() {
+    public void depositToGoal(int id, double amount, String accountId, GoalCallback<GoalTransactionResponse> callback) {
+        apiService.depositToGoal(id, new DepositRequest(amount, accountId)).enqueue(new Callback<GoalTransactionResponse>() {
             @Override
-            public void onResponse(Call<GoalResponse> call, Response<GoalResponse> response) {
+            public void onResponse(Call<GoalTransactionResponse> call, Response<GoalTransactionResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(mapToGoal(response.body()));
+                    callback.onSuccess(response.body());
                 } else {
                     callback.onError("Failed to deposit: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(Call<GoalResponse> call, Throwable t) {
+            public void onFailure(Call<GoalTransactionResponse> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
+    }
+
+    // ĐÃ THÊM: Hàm rút tiền
+    public void withdrawFromGoal(int id, double amount, String accountId, GoalCallback<GoalTransactionResponse> callback) {
+        apiService.withdrawFromGoal(id, new WithdrawRequest(amount, accountId)).enqueue(new Callback<GoalTransactionResponse>() {
+            @Override
+            public void onResponse(Call<GoalTransactionResponse> call, Response<GoalTransactionResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed to withdraw: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GoalTransactionResponse> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
+    }
+    public void getGoalRecords(int id, GoalCallback<List<GoalRecordResponse>> callback) {
+        apiService.getGoalRecords(id).enqueue(new Callback<List<GoalRecordResponse>>() {
+            @Override
+            public void onResponse(Call<List<GoalRecordResponse>> call, Response<List<GoalRecordResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed to fetch records: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<GoalRecordResponse>> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
+    }
+
+    public void getGoalRecordById(int recordId, GoalCallback<GoalRecordResponse> callback) {
+        apiService.getGoalRecordById(recordId).enqueue(new Callback<GoalRecordResponse>() {
+            @Override
+            public void onResponse(Call<GoalRecordResponse> call, Response<GoalRecordResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed to fetch record detail: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GoalRecordResponse> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
+    }
+
+    public void deleteGoalRecord(int recordId, GoalCallback<GoalRecordDeleteResponse> callback) {
+        apiService.deleteGoalRecord(recordId).enqueue(new Callback<GoalRecordDeleteResponse>() {
+            @Override
+            public void onResponse(Call<GoalRecordDeleteResponse> call, Response<GoalRecordDeleteResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed to delete record: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GoalRecordDeleteResponse> call, Throwable t) {
                 callback.onError(t.getMessage());
             }
         });

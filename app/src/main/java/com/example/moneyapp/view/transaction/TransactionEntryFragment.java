@@ -552,7 +552,21 @@ public class TransactionEntryFragment extends BaseFragment {
                 tvCurrency.setText(currentCurrencyCode);
                 restoreDateToUI(t.getDate());
 
-                Account mockAccount = new Account(t.getAccountId(), t.getAccountName(), 0.0, "VND", t.getAccountColorId(), t.getAccountIconId(), "", true, 0, new Date(), new Date());
+                Account mockAccount = new Account(
+                        t.getAccountId(),
+                        t.getAccountName(),
+                        0.0,
+                        0.0,
+                        0.0,
+                        "VND",
+                        t.getAccountColorId(),
+                        t.getAccountIconId(),
+                        "",
+                        true,
+                        0,
+                        new Date(),
+                        new Date()
+                );
                 this.selectedSourceAccount = mockAccount;
                 viewSelectSource.setAccount(mockAccount, true);
 
@@ -590,11 +604,39 @@ public class TransactionEntryFragment extends BaseFragment {
                 if (transfer.getDescription() != null) etDescription.setText(transfer.getDescription());
                 restoreDateToUI(transfer.getDate());
 
-                Account mockSrc = new Account(transfer.getSourceAccountId(), transfer.getSourceAccountName(), 0.0, "VND", transfer.getSourceAccountColor(), transfer.getSourceAccountIcon(), "", true, 0, new Date(), new Date());
+                Account mockSrc = new Account(
+                        transfer.getSourceAccountId(),
+                        transfer.getSourceAccountName(),
+                        0.0,
+                        0.0,
+                        0.0,
+                        "VND",
+                        transfer.getSourceAccountColor(),
+                        transfer.getSourceAccountIcon(),
+                        "",
+                        true,
+                        0,
+                        new Date(),
+                        new Date()
+                );
                 this.selectedSourceAccount = mockSrc;
                 viewSelectSource.setAccount(mockSrc, true);
 
-                Account mockDest = new Account(transfer.getDestinationAccountId(), transfer.getDestinationAccountName(), 0.0, "VND", transfer.getDestinationAccountColor(), transfer.getDestinationAccountIcon(), "", true, 0, new Date(), new Date());
+                Account mockDest = new Account(
+                        transfer.getDestinationAccountId(),
+                        transfer.getDestinationAccountName(),
+                        0.0,
+                        0.0,
+                        0.0,
+                        "VND",
+                        transfer.getDestinationAccountColor(),
+                        transfer.getDestinationAccountIcon(),
+                        "",
+                        true,
+                        0,
+                        new Date(),
+                        new Date()
+                );
                 this.selectedDestAccount = mockDest;
                 viewSelectDest.setAccount(mockDest, true);
 

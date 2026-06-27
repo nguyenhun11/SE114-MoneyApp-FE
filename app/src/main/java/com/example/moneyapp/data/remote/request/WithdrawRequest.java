@@ -2,17 +2,14 @@ package com.example.moneyapp.data.remote.request;
 
 import com.google.gson.annotations.SerializedName;
 
-public class DepositRequest {
+public class WithdrawRequest {
     @SerializedName("amount")
     private double amount;
     @SerializedName("accountId")
     private String accountId;
 
-    public DepositRequest(double amount, String accountId) {
+    public WithdrawRequest(double amount, String accountId) {
         this.amount = amount;
         this.accountId = accountId;
     }
-
-    public double getAmount() { return amount; }
-    public void setAmount(double amount) { this.amount = amount; }
 }

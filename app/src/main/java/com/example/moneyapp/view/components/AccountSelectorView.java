@@ -64,9 +64,9 @@ public class AccountSelectorView extends LinearLayout {
         flIconBg.setBackgroundTintList(ColorStateList.valueOf(actualColor));
         ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(getContext(), account.getIcon()));
 
-        if (showBalance && account.getBalance() != null) {
+        if (showBalance && account.getTotalBalance() != null) {
             tvBalance.setVisibility(View.VISIBLE);
-            tvBalance.setText("Số dư: " + CurrencyFormatter.formatVND(account.getBalance()) + "đ");
+            tvBalance.setText("Số dư: " + CurrencyFormatter.formatVND(account.getTotalBalance()) + "đ");
         } else {
             tvBalance.setVisibility(View.GONE);
         }

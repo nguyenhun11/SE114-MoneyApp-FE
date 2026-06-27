@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast; // Thêm Toast
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,6 +50,8 @@ public class GoalDetailFragment extends BaseFragment {
     private IconicsImageView ivIcon;
     private MaterialButton btnDeposit;
 
+    private boolean isGoalJustCompleted = false;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +71,7 @@ public class GoalDetailFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).getUiHandler().setBottomNavigationVisibility(false);
             ((MainActivity) getActivity()).getUiHandler().setFABVisibility(false);
@@ -96,17 +99,17 @@ public class GoalDetailFragment extends BaseFragment {
         btnDeposit.setOnClickListener(v -> showDepositDialog());
 
         observeViewModel();
-        viewModel.fetchGoals(); // Tải lại dữ liệu khi vào màn hình
+        viewModel.fetchGoals(); // Load dữ liệu mới nhất từ server
     }
 
     private void displayGoal() {
         if (goal == null) return;
 
         tvName.setText(goal.getName());
-        
+
         String displayDate = DateConverter.formatToDisplay(goal.getDeadline());
         tvDeadline.setText(getString(R.string.goal_deadline_label, displayDate));
-        
+
         int percent = goal.getProgressPercent();
         tvPercent.setText(String.format(Locale.getDefault(), "%d%%", percent));
         cpProgress.setProgress(percent);
@@ -117,7 +120,7 @@ public class GoalDetailFragment extends BaseFragment {
         int color = AppResourceManager.getColor(goal.getColorId());
         flIconContainer.setBackgroundTintList(ColorStateList.valueOf(color));
         ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(requireContext(), goal.getIconId()));
-        
+
         cpProgress.setIndicatorColor(color);
         tvPercent.setTextColor(color);
         btnDeposit.setBackgroundColor(color);
@@ -128,7 +131,6 @@ public class GoalDetailFragment extends BaseFragment {
         EditText etAmount = dialogView.findViewById(R.id.et_deposit_amount);
         AccountSelectorView accountSelector = dialogView.findViewById(R.id.view_select_account);
 
-        // Load accounts and setup popup
         accountViewModel.loadAccounts();
         accountSelector.setOnClickListener(v -> {
             PopupHelper.showAccountFilterPopup(requireContext(), accountViewModel.getAccountsLiveData().getValue(), "Chọn nguồn tiền", false, account -> {
@@ -175,9 +177,19 @@ public class GoalDetailFragment extends BaseFragment {
                     String amountStr = etAmount.getText().toString().trim().replaceAll("[.,]", "");
                     if (!amountStr.isEmpty() && accountSelector.getSelectedAccount() != null) {
                         double amount = Double.parseDouble(amountStr);
-                        viewModel.depositToGoal(goal, amount, accountSelector.getSelectedAccount().getAccountId());
+
+                        // ĐÃ SỬA: Lấy String AccountID và chỉ truyền GoalID
+                        String accountId = accountSelector.getSelectedAccount().getAccountId().toString();
+
+                        // Check trước xem nếu nạp thêm khoản này thì có 100% không để chốt Reward
+                        double projectedAmount = goal.getCurrentAmount() + amount;
+                        if (projectedAmount >= goal.getTargetAmount() && goal.getProgressPercent() < 100) {
+                            isGoalJustCompleted = true;
+                        }
+
+                        viewModel.depositToGoal(goal.getId(), amount, accountId);
                     } else {
-                        DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Vui lòng nhập tiền và chọn ví");
+                        DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Vui lòng nhập số tiền và chọn nguồn tiền hợp lệ.");
                     }
                 })
                 .setNegativeButton("Hủy", null)
@@ -186,17 +198,26 @@ public class GoalDetailFragment extends BaseFragment {
 
     private void observeViewModel() {
         viewModel.getGoals().observe(getViewLifecycleOwner(), goals -> {
-            // Cập nhật lại thông tin goal hiện tại từ danh sách mới
             for (Goal g : goals) {
                 if (g.getId() == goal.getId()) {
-                    if (g.getProgressPercent() >= 100 && goal.getProgressPercent() < 100) {
-                        RewardHelper.showBigReward(requireContext(), "+100 PP", 
-                                "Chúc mừng! Bạn đã hoàn thành mục tiêu '" + g.getName() + "'. Thành phố của bạn đang phát triển vượt bậc!");
-                    }
                     goal = g;
                     displayGoal();
                     break;
                 }
+            }
+        });
+
+        viewModel.getIsOperationSuccess().observe(getViewLifecycleOwner(), isSuccess -> {
+            if (isSuccess) {
+                Toast.makeText(requireContext(), "Giao dịch thành công!", Toast.LENGTH_SHORT).show();
+
+                if (isGoalJustCompleted) {
+                    RewardHelper.showBigReward(requireContext(), "+100 PP",
+                            "Chúc mừng! Bạn đã hoàn thành mục tiêu '" + goal.getName() + "'. Thành phố của bạn đang phát triển vượt bậc!");
+                    isGoalJustCompleted = false; // Reset cờ
+                }
+
+                viewModel.resetOperationStatus();
             }
         });
 

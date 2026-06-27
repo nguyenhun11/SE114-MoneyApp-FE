@@ -5,7 +5,9 @@ import java.util.Date;
 public class Account {
     private String accountId;
     private String accountName;
-    private Double balance;
+    private double totalBalance;
+    private double lockedBalance;
+    private double availableBalance;
     private String currencyCode;
     private int icon;
     private int color;
@@ -17,7 +19,10 @@ public class Account {
 
     public Account(String accountId,
                    String accountName,
-                   Double balance, String currencyCode,
+                   Double totalBalance,
+                   double lockedBalance,
+                   double availableBalance,
+                   String currencyCode,
                    int color,
                    int icon,
                    String description,
@@ -27,7 +32,9 @@ public class Account {
                    Date updatedAt) {
         this.accountId = accountId;
         this.accountName = accountName;
-        this.balance = balance;
+        this.totalBalance = totalBalance;
+        this.lockedBalance = lockedBalance;
+        this.availableBalance = availableBalance;
         this.currencyCode = currencyCode;
         this.icon = icon;
         this.color = color;
@@ -54,12 +61,12 @@ public class Account {
         this.accountName = accountName;
     }
 
-    public Double getBalance() {
-        return balance;
+    public Double getTotalBalance() {
+        return totalBalance;
     }
 
-    public void setBalance(Double balance) {
-        this.balance = balance;
+    public void setTotalBalance(Double totalBalance) {
+        this.totalBalance = totalBalance;
     }
 
     public Integer getIcon() {
@@ -124,5 +131,21 @@ public class Account {
 
     public void setCurrencyCode(String currencyCode) {
         this.currencyCode = currencyCode;
+    }
+
+    public double getLockedBalance() {
+        return lockedBalance;
+    }
+
+    public void setLockedBalance(double lockedBalance) {
+        this.lockedBalance = lockedBalance;
+    }
+
+    public double getAvailableBalance() {
+        return availableBalance;
+    }
+
+    public void setAvailableBalance(double availableBalance) {
+        this.availableBalance = availableBalance;
     }
 }

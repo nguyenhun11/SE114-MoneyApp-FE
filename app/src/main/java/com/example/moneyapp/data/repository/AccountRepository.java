@@ -7,6 +7,7 @@ import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.data.remote.request.AccountRequest;
 import com.example.moneyapp.data.remote.request.ReorderAccountRequest;
 import com.example.moneyapp.data.remote.response.AccountResponse;
+import com.example.moneyapp.data.remote.response.TotalBalanceDto;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.utils.DateConverter;
 
@@ -35,7 +36,9 @@ public class AccountRepository extends BaseRepository {
         return new Account(
                 response.getId(),
                 response.getAccountName(),
-                response.getBalance(),
+                response.getTotalBalance(),
+                response.getLockedBalance(),
+                response.getAvailableBalance(),
                 response.getCurrencyCode(),
                 response.getColorId(),
                 response.getIconId(),
@@ -71,10 +74,10 @@ public class AccountRepository extends BaseRepository {
         });
     }
 
-    public void getTotalBalance(AccountCallback<Map<String, Double>> callback) {
-        apiService.getTotalBalance().enqueue(new Callback<Map<String, Double>>() {
+    public void getTotalBalance(AccountCallback<Map<String, TotalBalanceDto>> callback) {
+        apiService.getTotalBalance().enqueue(new Callback<Map<String, TotalBalanceDto>>() {
             @Override
-            public void onResponse(Call<Map<String, Double>> call, Response<Map<String, Double>> response) {
+            public void onResponse(Call<Map<String, TotalBalanceDto>> call, Response<Map<String, TotalBalanceDto>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
@@ -83,7 +86,7 @@ public class AccountRepository extends BaseRepository {
             }
 
             @Override
-            public void onFailure(Call<Map<String, Double>> call, Throwable t) {
+            public void onFailure(Call<Map<String, TotalBalanceDto>> call, Throwable t) {
                 callback.onError(t.getMessage());
             }
         });
@@ -119,7 +122,7 @@ public class AccountRepository extends BaseRepository {
 
         AccountRequest request = new AccountRequest(
                 account.getAccountName(),
-                account.getBalance(),
+                account.getTotalBalance(),
                 account.getCurrencyCode(),
                 account.getColor(),
                 account.getIcon(),
@@ -155,7 +158,7 @@ public class AccountRepository extends BaseRepository {
 
         AccountRequest request = new AccountRequest(
                 account.getAccountName(),
-                account.getBalance(),
+                account.getTotalBalance(),
                 account.getCurrencyCode(),
                 account.getColor(),
                 account.getIcon(),

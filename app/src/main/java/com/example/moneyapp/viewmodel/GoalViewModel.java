@@ -8,25 +8,21 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.moneyapp.data.remote.request.GoalRequest;
-import com.example.moneyapp.data.remote.request.TransactionRequest;
-import com.example.moneyapp.data.remote.response.CategoryGroupResponse;
-import com.example.moneyapp.data.repository.CategoryRepository;
+import com.example.moneyapp.data.remote.response.GoalRecordDeleteResponse;
+import com.example.moneyapp.data.remote.response.GoalRecordResponse;
+import com.example.moneyapp.data.remote.response.GoalTransactionResponse;
 import com.example.moneyapp.data.repository.GoalRepository;
-import com.example.moneyapp.data.repository.TransactionRepository;
-import com.example.moneyapp.model.Category;
-import com.example.moneyapp.model.CategoryType;
 import com.example.moneyapp.model.Goal;
-import com.example.moneyapp.model.Transaction;
 
-import java.util.Date;
 import java.util.List;
 
 public class GoalViewModel extends AndroidViewModel {
+
     private final GoalRepository goalRepository;
-    private final TransactionRepository transactionRepository;
-    private final CategoryRepository categoryRepository;
 
     private final MutableLiveData<List<Goal>> goals = new MutableLiveData<>();
+    private final MutableLiveData<List<GoalRecordResponse>> goalRecords = new MutableLiveData<>();
+
     private final MutableLiveData<String> error = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isOperationSuccess = new MutableLiveData<>();
@@ -34,11 +30,10 @@ public class GoalViewModel extends AndroidViewModel {
     public GoalViewModel(@NonNull Application application) {
         super(application);
         goalRepository = new GoalRepository(application);
-        transactionRepository = new TransactionRepository(application);
-        categoryRepository = new CategoryRepository(application);
     }
 
     public LiveData<List<Goal>> getGoals() { return goals; }
+    public LiveData<List<GoalRecordResponse>> getGoalRecords() { return goalRecords; }
     public LiveData<String> getError() { return error; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
     public LiveData<Boolean> getIsOperationSuccess() { return isOperationSuccess; }
@@ -114,89 +109,15 @@ public class GoalViewModel extends AndroidViewModel {
         });
     }
 
-    public void depositToGoal(Goal goal, double amount, String accountId) {
+    public void depositToGoal(int goalId, double amount, String accountId) {
         isLoading.setValue(true);
-
-        // 1. Tìm hoặc tạo Hạng mục "Tiết kiệm"
-        categoryRepository.getExpenseCategories(new CategoryRepository.CategoryCallback<List<Category>>() {
+        // Code sạch sẽ tuyệt đối, Backend sẽ tự lo liệu mọi logic trừ/khóa tiền
+        goalRepository.depositToGoal(goalId, amount, accountId, new GoalRepository.GoalCallback<GoalTransactionResponse>() {
             @Override
-            public void onSuccess(List<Category> categories) {
-                Category foundCategory = null;
-                for (Category c : categories) {
-                    if ("Tiết kiệm".equalsIgnoreCase(c.getCategoryName())) {
-                        foundCategory = c;
-                        break;
-                    }
-                }
-
-                if (foundCategory != null) {
-                    Category finalFoundCategory = foundCategory;
-                    if (foundCategory.getIcon() != 17) {
-                        // Tự động sửa lại icon cho đúng
-                        foundCategory.setIcon(17);
-                        categoryRepository.updateCategory(foundCategory, new CategoryRepository.CategoryCallback<Void>() {
-                            @Override
-                            public void onSuccess(Void result) {
-                                performDeposit(goal, amount, accountId, finalFoundCategory.getCategoryId());
-                            }
-
-                            @Override
-                            public void onError(String message) {
-                                // Vẫn cho phép nạp tiền dù lỗi cập nhật icon
-                                performDeposit(goal, amount, accountId, finalFoundCategory.getCategoryId());
-                            }
-                        });
-                    } else {
-                        performDeposit(goal, amount, accountId, foundCategory.getCategoryId());
-                    }
-                } else {
-                    // Nếu chưa có, tạo mới hạng mục "Tiết kiệm" trong nhóm đầu tiên tìm thấy
-                    categoryRepository.getAllExpenseCategoryGroups(new CategoryRepository.CategoryCallback<List<CategoryGroupResponse>>() {
-                        @Override
-                        public void onSuccess(List<CategoryGroupResponse> groups) {
-                            String groupId = (groups != null && !groups.isEmpty()) ? groups.get(0).getId() : null;
-
-                            Category newCat = new Category(null, "Tiết kiệm", CategoryType.EXPENSE, groupId, null, 0, 17, 0, null, null);
-                            categoryRepository.createCategory(newCat, new CategoryRepository.CategoryCallback<Void>() {
-                                @Override
-                                public void onSuccess(Void result) {
-                                    // Gọi lại để lấy ID mới tạo
-                                    categoryRepository.getExpenseCategories(new CategoryRepository.CategoryCallback<List<Category>>() {
-                                        @Override
-                                        public void onSuccess(List<Category> updatedCats) {
-                                            for (Category c : updatedCats) {
-                                                if ("Tiết kiệm".equalsIgnoreCase(c.getCategoryName())) {
-                                                    performDeposit(goal, amount, accountId, c.getCategoryId());
-                                                    return;
-                                                }
-                                            }
-                                            error.setValue("Không tìm thấy hạng mục Tiết kiệm sau khi tạo");
-                                            isLoading.setValue(false);
-                                        }
-
-                                        @Override
-                                        public void onError(String message) {
-                                            error.setValue(message);
-                                            isLoading.setValue(false);
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void onError(String message) {
-                                    error.setValue(message);
-                                    isLoading.setValue(false);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onError(String message) {
-                            error.setValue("Không lấy được nhóm hạng mục: " + message);
-                            isLoading.setValue(false);
-                        }
-                    });
-                }
+            public void onSuccess(GoalTransactionResponse result) {
+                isOperationSuccess.setValue(true);
+                isLoading.setValue(false);
+                fetchGoals(); // Cập nhật lại UI màn hình chính
             }
 
             @Override
@@ -207,53 +128,55 @@ public class GoalViewModel extends AndroidViewModel {
         });
     }
 
-    private void performDeposit(Goal goal, double amount, String accountId, String categoryId) {
-        // 2. Cập nhật Goal Balance
-        goalRepository.depositToGoal(goal.getId(), amount, new GoalRepository.GoalCallback<Goal>() {
+    public void withdrawFromGoal(int goalId, double amount, String accountId) {
+        isLoading.setValue(true);
+        goalRepository.withdrawFromGoal(goalId, amount, accountId, new GoalRepository.GoalCallback<GoalTransactionResponse>() {
             @Override
-            public void onSuccess(Goal updatedGoal) {
-                // ĐÃ SỬA: Dùng Constructor mới của Transaction (Đủ 5 biến tiền tệ)
-                Transaction transaction = new Transaction(
-                        null, // id
-                        accountId, // accountId
-                        null, // accountName
-                        categoryId, // categoryId
-                        null, // categoryName
-                        CategoryType.EXPENSE, // type
-                        amount, // originalAmount
-                        "VND", // currencyCode (Mặc định cho mục tiêu)
-                        amount, // accountAmount
-                        amount, // baseAmount
-                        1.0, // exchangeRate
-                        new Date(), // date
-                        "Nạp tiền mục tiêu: " + goal.getName(), // note
-                        0, // catColor
-                        0, // catIcon
-                        0, // accColor
-                        0, // accIcon
-                        null, // imageUrls
-                        0, // moodId
-                        new Date() // createdAt
-                );
+            public void onSuccess(GoalTransactionResponse result) {
+                isOperationSuccess.setValue(true);
+                isLoading.setValue(false);
+                fetchGoals(); // Cập nhật lại UI màn hình chính
+            }
 
-                transactionRepository.createTransaction(transaction, new TransactionRepository.TransactionCallback<Transaction>() {
-                    @Override
-                    public void onSuccess(Transaction result) {
-                        isOperationSuccess.setValue(true);
-                        isLoading.setValue(false);
-                        fetchGoals();
-                    }
+            @Override
+            public void onError(String message) {
+                error.setValue(message);
+                isLoading.setValue(false);
+            }
+        });
+    }
 
-                    @Override
-                    public void onError(String message) {
-                        // Vẫn đánh dấu thành công vì Goal đã được cập nhật,
-                        // nhưng báo lỗi cho phần Transaction
-                        error.setValue("Đã nạp tiền nhưng lỗi tạo giao dịch: " + message);
-                        isOperationSuccess.setValue(true);
-                        isLoading.setValue(false);
-                        fetchGoals();
-                    }
-                });
+    // ==========================================
+    // 3. LỊCH SỬ GIAO DỊCH (RECORDS)
+    // ==========================================
+
+    public void fetchGoalRecords(int goalId) {
+        isLoading.setValue(true);
+        goalRepository.getGoalRecords(goalId, new GoalRepository.GoalCallback<List<GoalRecordResponse>>() {
+            @Override
+            public void onSuccess(List<GoalRecordResponse> result) {
+                goalRecords.setValue(result);
+                isLoading.setValue(false);
+            }
+
+            @Override
+            public void onError(String message) {
+                error.setValue(message);
+                isLoading.setValue(false);
+            }
+        });
+    }
+
+    public void deleteGoalRecord(int recordId, int currentGoalId) {
+        isLoading.setValue(true);
+        goalRepository.deleteGoalRecord(recordId, new GoalRepository.GoalCallback<GoalRecordDeleteResponse>() {
+            @Override
+            public void onSuccess(GoalRecordDeleteResponse result) {
+                isOperationSuccess.setValue(true);
+                isLoading.setValue(false);
+                // Sau khi xóa lịch sử, cần tải lại danh sách lịch sử VÀ tải lại danh sách mục tiêu
+                fetchGoalRecords(currentGoalId);
+                fetchGoals();
             }
 
             @Override

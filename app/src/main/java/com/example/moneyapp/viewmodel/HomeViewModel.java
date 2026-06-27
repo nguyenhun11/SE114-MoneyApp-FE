@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
+import com.example.moneyapp.data.remote.response.TotalBalanceDto;
 import com.example.moneyapp.data.repository.AccountRepository;
 import com.example.moneyapp.data.repository.StatisticRepository;
 import com.example.moneyapp.utils.AppResourceManager;
@@ -63,16 +64,17 @@ public class HomeViewModel extends AndroidViewModel {
 
         isLoading.setValue(true);
 
-        accountRepository.getTotalBalance(new AccountRepository.AccountCallback<java.util.Map<String, Double>>() {
+        accountRepository.getTotalBalance(new AccountRepository.AccountCallback<java.util.Map<String, TotalBalanceDto>>() {
             @Override
-            public void onSuccess(java.util.Map<String, Double> result) {
+            public void onSuccess(java.util.Map<String, TotalBalanceDto> result) {
                 double totalBaseAmount = 0.0;
                 String systemCurrency = "VND";
 
                 if (result != null) {
-                    for (java.util.Map.Entry<String, Double> entry : result.entrySet()) {
+                    for (java.util.Map.Entry<String, TotalBalanceDto> entry : result.entrySet()) {
                         String currency = entry.getKey();
-                        double amount = entry.getValue();
+                        TotalBalanceDto dto = entry.getValue();
+                        double amount = dto.getAvailableBalance();
 
                         totalBaseAmount += amount * getMockExchangeRate(currency, systemCurrency);
                     }

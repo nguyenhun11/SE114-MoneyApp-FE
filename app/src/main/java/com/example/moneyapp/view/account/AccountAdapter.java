@@ -56,16 +56,26 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
         holder.tvName.setText(account.getAccountName());
 
         String accCurrency = account.getCurrencyCode() != null ? account.getCurrencyCode() : "VND";
-        double balance = account.getBalance();
 
-        String formattedBalance = CurrencyFormatter.formatVND(balance);
-        holder.tvBalance.setText(String.format("%s %s", formattedBalance, accCurrency));
+        double availableBalance = account.getAvailableBalance();
+        double lockedBalance = account.getLockedBalance();
+
+        String formattedAvailable = CurrencyFormatter.formatVND(availableBalance);
+        holder.tvAvailableBalance.setText(String.format("%s %s", formattedAvailable, accCurrency));
+
+        if (lockedBalance > 0) {
+            holder.tvLockedBalance.setVisibility(View.VISIBLE);
+            String formattedLocked = CurrencyFormatter.formatVND(lockedBalance);
+            holder.tvLockedBalance.setText(String.format("🔒 %s %s", formattedLocked, accCurrency));
+        } else {
+            holder.tvLockedBalance.setVisibility(View.GONE);
+        }
 
         if (!accCurrency.equalsIgnoreCase(systemCurrency)) {
             holder.tvBaseBalance.setVisibility(View.VISIBLE);
-            double baseBalance = CurrencyFormatter.previewConversion(balance, accCurrency, systemCurrency);
+            double baseBalance = CurrencyFormatter.previewConversion(availableBalance, accCurrency, systemCurrency);
             String formattedBase = CurrencyFormatter.formatVND(baseBalance);
-            holder.tvBaseBalance.setText(String.format("≈ %s %s", formattedBase, systemCurrency));
+            holder.tvBaseBalance.setText(String.format("%s %s", formattedBase, systemCurrency));
         } else {
             holder.tvBaseBalance.setVisibility(View.GONE);
         }
@@ -76,18 +86,15 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
             holder.ivHiddenEye.setVisibility(View.VISIBLE);
         }
 
-        // 4. Xử lý màu sắc số dư
-        if (balance < 0) {
-            // NẾU ÂM: Bắt buộc hiển thị màu Đỏ (Danger)
-            holder.tvBalance.setTextColor(ContextCompat.getColor(context, R.color.colorDanger));
+        if (availableBalance < 0) {
+            holder.tvAvailableBalance.setTextColor(ContextCompat.getColor(context, R.color.colorDanger));
         } else {
-            // NẾU DƯƠNG HOẶC BẰNG 0: Đổi màu theo trạng thái Ẩn/Hiện của ví
             int normalColor = ContextCompat.getColor(context, R.color.colorOnSurface);
             int dimColor = ContextCompat.getColor(context, R.color.colorOnSurfaceVariant);
-            holder.tvBalance.setTextColor(account.isIncludeInTotal() ? normalColor : dimColor);
+            holder.tvAvailableBalance.setTextColor(account.isIncludeInTotal() ? normalColor : dimColor);
         }
 
-        // 5. Hiển thị Icon và màu ví
+        // 6. Hiển thị Icon và màu ví
         int actualColor = AppResourceManager.getColor(account.getColor());
         holder.ivIcon.setImageDrawable(AppResourceManager.getWhiteIcon(context, account.getIcon()));
         holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(actualColor));
@@ -105,7 +112,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
     public static class AccountViewHolder extends RecyclerView.ViewHolder {
         FrameLayout flIconContainer;
         IconicsImageView ivIcon, ivHiddenEye;
-        TextView tvName, tvBalance, tvBaseBalance;
+        TextView tvName, tvAvailableBalance, tvLockedBalance, tvBaseBalance;
 
         public AccountViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -113,7 +120,9 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.AccountV
             ivIcon = itemView.findViewById(R.id.iv_account_icon);
             ivHiddenEye = itemView.findViewById(R.id.iv_hidden_eye);
             tvName = itemView.findViewById(R.id.tv_account_name);
-            tvBalance = itemView.findViewById(R.id.tv_account_balance);
+
+            tvAvailableBalance = itemView.findViewById(R.id.tv_available_balance);
+            tvLockedBalance = itemView.findViewById(R.id.tv_locked_balance);
             tvBaseBalance = itemView.findViewById(R.id.tv_account_base_balance);
         }
     }

@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.moneyapp.data.remote.response.TotalBalanceDto;
 import com.example.moneyapp.data.repository.AccountRepository;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.utils.CurrencyFormatter;
@@ -66,16 +67,17 @@ public class AccountViewModel extends AndroidViewModel {
     }
 
     public void loadTotalBalance() {
-        repository.getTotalBalance(new AccountRepository.AccountCallback<Map<String, Double>>() {
+        repository.getTotalBalance(new AccountRepository.AccountCallback<Map<String, TotalBalanceDto>>() {
             @Override
-            public void onSuccess(Map<String, Double> result) {
+            public void onSuccess(Map<String, TotalBalanceDto> result) {
                 double totalBaseAmount = 0.0;
                 String systemCurrency = "VND"; // TODO: Lấy từ User Preferences sau
 
                 if (result != null) {
-                    for (Map.Entry<String, Double> entry : result.entrySet()) {
+                    for (Map.Entry<String, TotalBalanceDto> entry : result.entrySet()) {
                         String currency = entry.getKey();
-                        double amount = entry.getValue();
+                        TotalBalanceDto dto = entry.getValue();
+                        double amount = dto.getAvailableBalance();
                         totalBaseAmount += CurrencyFormatter.previewConversion(amount, currency, systemCurrency);
                     }
                 }

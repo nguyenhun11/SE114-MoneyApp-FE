@@ -1,117 +1,82 @@
 package com.example.moneyapp.data.remote.response;
 
-public class AccountResponse {
-    private String id;
-    private String accountName;
-    private int colorId;
-    private int iconId;
-    private double balance;
-    private String currencyCode;
-    private String description;
-    private boolean includeInTotalBalance;
-    private int sortingOrder;
-    private String createdAt;
-    private String lastUpdatedAt;
+import com.google.gson.annotations.SerializedName;
 
-    public AccountResponse(String id, String accountName, int colorId, int iconId, double balance, String currencyCode, String description, boolean includeInTotalBalance, int sortingOrder, String createdAt, String lastUpdatedAt) {
-        this.id = id;
-        this.accountName = accountName;
-        this.colorId = colorId;
-        this.iconId = iconId;
-        this.balance = balance;
-        this.currencyCode = currencyCode;
-        this.description = description;
-        this.includeInTotalBalance = includeInTotalBalance;
-        this.sortingOrder = sortingOrder;
-        this.createdAt = createdAt;
-        this.lastUpdatedAt = lastUpdatedAt;
-    }
+public class AccountResponse {
+    @SerializedName("id")
+    private String id;
+    @SerializedName("accountName")
+    private String accountName;
+    @SerializedName("colorId")
+    private int colorId;
+    @SerializedName("iconId")
+    private int iconId;
+    @SerializedName("totalBalance")
+    private double totalBalance;
+    @SerializedName("lockedBalance")
+    private double lockedBalance;
+    @SerializedName("availableBalance")
+    private double availableBalance;
+    @SerializedName("currencyCode")
+    private String currencyCode;
+    @SerializedName("description")
+    private String description;
+    @SerializedName("includeInTotalBalance")
+    private boolean includeInTotalBalance;
+    @SerializedName("sortingOrder")
+    private int sortingOrder;
+    @SerializedName("createdAt")
+    private String createdAt;
+    @SerializedName("lastUpdatedAt")
+    private String lastUpdatedAt;
 
     public String getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getAccountName() {
         return accountName;
     }
 
-    public void setAccountName(String accountName) {
-        this.accountName = accountName;
-    }
-
     public int getColorId() {
         return colorId;
-    }
-
-    public void setColorId(int colorId) {
-        this.colorId = colorId;
     }
 
     public int getIconId() {
         return iconId;
     }
 
-    public void setIconId(int iconId) {
-        this.iconId = iconId;
-    }
-
-    public double getBalance() {
-        return balance;
-    }
-
-    public void setBalance(double balance) {
-        this.balance = balance;
+    public double getTotalBalance() {
+        return totalBalance;
     }
 
     public String getDescription() {
         return description;
     }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public boolean isIncludeInTotalBalance() {
         return includeInTotalBalance;
     }
-
-    public void setIncludeInTotalBalance(boolean includeInTotalBalance) {
-        this.includeInTotalBalance = includeInTotalBalance;
-    }
-
     public int getSortingOrder() {
         return sortingOrder;
-    }
-
-    public void setSortingOrder(int sortingOrder) {
-        this.sortingOrder = sortingOrder;
     }
 
     public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public String getLastUpdatedAt() {
         return lastUpdatedAt;
-    }
-
-    public void setLastUpdatedAt(String lastUpdatedAt) {
-        this.lastUpdatedAt = lastUpdatedAt;
     }
 
     public String getCurrencyCode() {
         return currencyCode;
     }
 
-    public void setCurrencyCode(String currencyCode) {
-        this.currencyCode = currencyCode;
+    public double getLockedBalance() {
+        return lockedBalance;
+    }
+
+    public double getAvailableBalance() {
+        return availableBalance;
     }
 }
