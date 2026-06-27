@@ -22,6 +22,7 @@ import com.example.moneyapp.model.Transaction;
 import com.example.moneyapp.model.Transfer;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.utils.CurrencyFormatter;
+import com.google.android.material.card.MaterialCardView;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
 
@@ -31,6 +32,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final List<HistoryItem> items;
     private final List<Account> accountList;
     private final String systemCurrency;
+    private boolean isShowTypeTag = false;
     private final OnItemClickListener listener;
 
     public interface OnItemClickListener {
@@ -69,7 +71,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (holder instanceof TransactionViewHolder) {
             bindTransaction((TransactionViewHolder) holder, item.getTransaction(), isLastItem);
         } else if (holder instanceof TransferViewHolder) {
-            bindTransferOrAdjust((TransferViewHolder) holder, item, isLastItem);
+            bindTransferAdjustOrGoal((TransferViewHolder) holder, item, isLastItem);
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -118,9 +120,10 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(actualColor));
 
         holder.divider.setVisibility(isLastItem ? View.GONE : View.VISIBLE);
+        setupTypeTag(holder, HistoryItem.TYPE_TRANSACTION, t.getType(), false);
     }
 
-    private void bindTransferOrAdjust(TransferViewHolder holder, HistoryItem item, boolean isLastItem) {
+    private void bindTransferAdjustOrGoal(TransferViewHolder holder, HistoryItem item, boolean isLastItem) {
         Context context = holder.itemView.getContext();
 
         if (item.getType() == HistoryItem.TYPE_TRANSFER) {
@@ -128,9 +131,9 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             holder.ivIcon.setIcon(new IconicsDrawable(context, "gmd-swap-horiz"));
             holder.ivIcon.setColorFilter(Color.WHITE);
-            holder.flIconContainer.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.colorInfo));
+            holder.flIconContainer.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.colorPrimary));
 
-            holder.tvSourceAccount.setText("Từ: " + t.getSourceAccountName());
+            holder.tvSourceAccount.setText("Chuyển từ: " + t.getSourceAccountName());
             holder.tvSourceAccount.setVisibility(View.VISIBLE);
             holder.tvDestAccount.setText("Đến: " + t.getDestinationAccountName());
             holder.tvDestAccount.setTextColor(ContextCompat.getColor(context, R.color.colorOnSurface));
@@ -147,7 +150,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             String srcCurrency = (srcAcc != null && srcAcc.getCurrencyCode() != null) ? srcAcc.getCurrencyCode() : "VND";
 
             holder.tvAmount.setText(CurrencyFormatter.formatVND(t.getSourceAmount()) + " " + srcCurrency);
-            holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorInfo));
+            holder.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
 
             if (!srcCurrency.equalsIgnoreCase(systemCurrency)) {
                 holder.tvBaseAmount.setVisibility(View.VISIBLE);
@@ -157,7 +160,8 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 holder.tvBaseAmount.setVisibility(View.GONE);
             }
 
-        } else if (item.getType() == HistoryItem.TYPE_ADJUST_BALANCE) {
+        }
+        else if (item.getType() == HistoryItem.TYPE_ADJUST_BALANCE) {
             var adjust = item.getAdjustBalance();
             Account acc = findAccountById(adjust.getAccountId());
             String accCurrency = (acc != null && acc.getCurrencyCode() != null) ? acc.getCurrencyCode() : "VND";
@@ -194,9 +198,99 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 holder.tvBaseAmount.setVisibility(View.GONE);
             }
         }
+        else if (item.getType() == HistoryItem.TYPE_GOAL_RECORD) {
+            var record = item.getGoalRecord();
+            boolean isDeposit = "Deposit".equalsIgnoreCase(record.getType());
+            String accName = record.getAccountName() != null ? record.getAccountName() : "Ví";
+
+            holder.ivIcon.setIcon(new IconicsDrawable(context, isDeposit ? "gmd-file-download" : "gmd-file-upload"));
+            holder.ivIcon.setColorFilter(Color.WHITE);
+            holder.flIconContainer.setBackgroundTintList(ColorStateList.valueOf(
+                    ContextCompat.getColor(context, isDeposit ? R.color.colorInfo : R.color.colorWarning)));
+
+            String goalName = (record.getGoalName() != null && !record.getGoalName().isEmpty())
+                    ? record.getGoalName()
+                    : "Mục tiêu tiết kiệm";
+
+            if (isDeposit) {
+                holder.tvSourceAccount.setText("Nạp từ: " + accName);
+                holder.tvDestAccount.setText("Vào: " + goalName);
+            } else {
+                holder.tvSourceAccount.setText("Rút từ: " + goalName);
+                holder.tvDestAccount.setText("Về: " + accName);
+            }
+            holder.tvSourceAccount.setVisibility(View.VISIBLE);
+            holder.tvDestAccount.setVisibility(View.VISIBLE);
+            holder.tvDestAccount.setTextColor(ContextCompat.getColor(context, R.color.colorOnSurfaceVariant));
+            holder.tvNote.setVisibility(View.GONE);
+
+            // 3. Tiền tệ
+            String sign = isDeposit ? "+" : "-";
+            int colorRes = isDeposit ? R.color.colorInfo : R.color.colorWarning;
+            holder.tvAmount.setText(sign + " " + CurrencyFormatter.formatVND(record.getAmount()) + " " + systemCurrency);
+            holder.tvAmount.setTextColor(ContextCompat.getColor(context, colorRes));
+            holder.tvBaseAmount.setVisibility(View.GONE);
+        }
         holder.divider.setVisibility(isLastItem ? View.GONE : View.VISIBLE);
+
+        boolean isDeposit = item.getType() == HistoryItem.TYPE_GOAL_RECORD && "Deposit".equalsIgnoreCase(item.getGoalRecord().getType());
+        setupTypeTag(holder, item.getType(), null, isDeposit);
     }
 
+    private void setupTypeTag(RecyclerView.ViewHolder holder, int itemType, CategoryType transactionType, boolean isDeposit) {
+        MaterialCardView cardTag = null;
+        TextView tvTag = null;
+        Context context = holder.itemView.getContext();
+
+        if (holder instanceof TransactionViewHolder) {
+            cardTag = ((TransactionViewHolder) holder).cardTypeTag;
+            tvTag = ((TransactionViewHolder) holder).tvTypeTag;
+        } else if (holder instanceof TransferViewHolder) {
+            cardTag = ((TransferViewHolder) holder).cardTypeTag;
+            tvTag = ((TransferViewHolder) holder).tvTypeTag;
+        }
+
+        if (cardTag == null || tvTag == null) return;
+
+        if (!isShowTypeTag) {
+            cardTag.setVisibility(View.GONE);
+            return;
+        }
+
+        cardTag.setVisibility(View.VISIBLE);
+        int colorRes = R.color.colorOnSurface;
+        int bgLightRes = R.color.colorSurface;
+        String tagText = "";
+
+        if (itemType == HistoryItem.TYPE_TRANSACTION) {
+            if (transactionType == CategoryType.EXPENSE) {
+                colorRes = R.color.colorDanger;
+                bgLightRes = R.color.colorDangerBgLight;
+                tagText = "Chi tiêu";
+            } else {
+                colorRes = R.color.colorSuccess;
+                bgLightRes = R.color.colorSuccessBgLight;
+                tagText = "Thu nhập";
+            }
+        } else if (itemType == HistoryItem.TYPE_TRANSFER) {
+            colorRes = R.color.colorPrimary;
+            bgLightRes = R.color.colorPrimaryBgLight;
+            tagText = "Chuyển khoản";
+        } else if (itemType == HistoryItem.TYPE_ADJUST_BALANCE) {
+            colorRes = R.color.colorNeutral;
+            bgLightRes = R.color.colorNeutralBgLight;
+            tagText = "Điều chỉnh số dư";
+        } else if (itemType == HistoryItem.TYPE_GOAL_RECORD) {
+            colorRes = isDeposit ? R.color.colorInfo : R.color.colorWarning;
+            bgLightRes = isDeposit ? R.color.colorInfoBgLight : R.color.colorWarningBgLight;
+            tagText = isDeposit ? "Nạp tiết kiệm" : "Rút tiết kiệm";
+        }
+
+        tvTag.setText(tagText);
+        tvTag.setTextColor(ContextCompat.getColor(context, colorRes));
+        cardTag.setStrokeColor(ContextCompat.getColor(context, colorRes));
+        cardTag.setCardBackgroundColor(ContextCompat.getColor(context, bgLightRes));
+    }
     private Account findAccountById(String accountId) {
         if (accountId == null || accountList == null) return null;
         for (Account a : accountList) {
@@ -205,16 +299,24 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return null;
     }
 
+    public void setShowTypeTag(boolean show) {
+        this.isShowTypeTag = show;
+        notifyDataSetChanged();
+    }
+
     public static class TransactionViewHolder extends RecyclerView.ViewHolder {
         FrameLayout flIconContainer;
         IconicsImageView ivIcon;
-        TextView tvCategoryName, tvAccountName, tvNote, tvAmount, tvBaseAmount, tvMoodEmoji;
+        MaterialCardView cardTypeTag;
+        TextView tvTypeTag, tvCategoryName, tvAccountName, tvNote, tvAmount, tvBaseAmount, tvMoodEmoji;
         View divider;
 
         public TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
             flIconContainer = itemView.findViewById(R.id.fl_icon_container);
             ivIcon = itemView.findViewById(R.id.iv_transaction_icon);
+            cardTypeTag = itemView.findViewById(R.id.card_type_tag);
+            tvTypeTag = itemView.findViewById(R.id.tv_type_tag);
             tvCategoryName = itemView.findViewById(R.id.tvCategoryName);
             tvAccountName = itemView.findViewById(R.id.tvAccountName);
             tvNote = itemView.findViewById(R.id.tvNote);
@@ -227,13 +329,16 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public static class TransferViewHolder extends RecyclerView.ViewHolder {
         FrameLayout flIconContainer;
-        TextView tvSourceAccount, tvDestAccount, tvNote, tvAmount, tvBaseAmount;
+        MaterialCardView cardTypeTag;
+        TextView tvTypeTag, tvSourceAccount, tvDestAccount, tvNote, tvAmount, tvBaseAmount;
         View divider;
         IconicsImageView ivIcon;
 
         public TransferViewHolder(@NonNull View itemView) {
             super(itemView);
             flIconContainer = itemView.findViewById(R.id.fl_icon_container);
+            cardTypeTag = itemView.findViewById(R.id.card_type_tag);
+            tvTypeTag = itemView.findViewById(R.id.tv_type_tag);
             tvSourceAccount = itemView.findViewById(R.id.tvSourceAccount);
             tvDestAccount = itemView.findViewById(R.id.tvDestAccount);
             tvNote = itemView.findViewById(R.id.tvNote);

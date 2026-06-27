@@ -121,7 +121,6 @@
         android:label="Thông tin"
         tools:layout="@layout/fragment_information" />
 
-    <!-- Saving Goals -->
     <fragment
         android:id="@+id/goalFragment"
         android:name="com.example.moneyapp.view.goal.GoalFragment"
@@ -149,7 +148,17 @@
         <action
             android:id="@+id/action_goalDetailFragment_to_goalAddFragment"
             app:destination="@id/goalAddFragment" />
+
+        <action
+            android:id="@+id/action_goalDetailFragment_to_goalTransactionFragment"
+            app:destination="@id/goalTransactionFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/goalTransactionFragment"
+        android:name="com.example.moneyapp.view.goal.GoalTransactionFragment"
+        android:label="Giao dịch mục tiêu"
+        tools:layout="@layout/fragment_goal_transaction" />
 
     <fragment
         android:id="@+id/budgetFragment"

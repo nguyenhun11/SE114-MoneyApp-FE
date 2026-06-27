@@ -11,6 +11,9 @@ public class GoalRecordResponse {
     @SerializedName("goalId")
     private int goalId;
 
+    @SerializedName("goalName")
+    private String goalName;
+
     @SerializedName("accountId")
     private String accountId; // Dùng String để hứng kiểu Guid từ C#
 
@@ -54,7 +57,7 @@ public class GoalRecordResponse {
         return accountName;
     }
 
-    public void setAccountName(String accountName) {
-        this.accountName = accountName;
+    public String getGoalName() {
+        return goalName;
     }
 }

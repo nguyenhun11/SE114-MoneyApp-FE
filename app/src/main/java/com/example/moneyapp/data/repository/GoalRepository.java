@@ -10,8 +10,10 @@ import com.example.moneyapp.data.remote.response.GoalRecordResponse;
 import com.example.moneyapp.data.remote.response.GoalResponse;
 import com.example.moneyapp.data.remote.response.GoalTransactionResponse;
 import com.example.moneyapp.model.Goal;
+import com.example.moneyapp.utils.DateConverter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -183,6 +185,26 @@ public class GoalRepository extends BaseRepository {
 
             @Override
             public void onFailure(Call<GoalRecordResponse> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
+    }
+
+    public void getAllGoalRecords(Date startDate, Date endDate, String accountId, GoalCallback<List<GoalRecordResponse>> callback) {
+        String startStr = startDate != null ? DateConverter.convertDateToString(startDate) : null;
+        String endStr = endDate != null ? DateConverter.convertDateToString(endDate) : null;
+
+        apiService.getAllGoalRecords(startStr, endStr, accountId).enqueue(new Callback<List<GoalRecordResponse>>() {
+            @Override
+            public void onResponse(Call<List<GoalRecordResponse>> call, Response<List<GoalRecordResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Lỗi tải lịch sử tiết kiệm: " + response.code());
+                }
+            }
+            @Override
+            public void onFailure(Call<List<GoalRecordResponse>> call, Throwable t) {
                 callback.onError(t.getMessage());
             }
         });

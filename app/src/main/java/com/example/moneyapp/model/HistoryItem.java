@@ -1,5 +1,8 @@
 package com.example.moneyapp.model;
 
+import com.example.moneyapp.data.remote.response.GoalRecordResponse;
+import com.example.moneyapp.utils.DateConverter;
+
 import java.util.Date;
 
 public class HistoryItem {
@@ -7,28 +10,31 @@ public class HistoryItem {
     public static final int TYPE_TRANSACTION = 0;
     public static final int TYPE_TRANSFER = 1;
     public static final int TYPE_ADJUST_BALANCE = 2;
+    public static final int TYPE_GOAL_RECORD = 3;
 
     private int type;
     private Transaction transaction;
     private Transfer transfer;
     private AdjustBalance adjustBalance;
+    private GoalRecordResponse goalRecord;
 
-    // Khởi tạo cho Thu / Chi
     public HistoryItem(Transaction transaction) {
         this.type = TYPE_TRANSACTION;
         this.transaction = transaction;
     }
 
-    // Khởi tạo cho Chuyển khoản
     public HistoryItem(Transfer transfer) {
         this.type = TYPE_TRANSFER;
         this.transfer = transfer;
     }
 
-    // Khởi tạo cho Điều chỉnh số dư
     public HistoryItem(AdjustBalance adjustBalance) {
         this.type = TYPE_ADJUST_BALANCE;
         this.adjustBalance = adjustBalance;
+    }
+    public HistoryItem(GoalRecordResponse goalRecord) {
+        this.type = TYPE_GOAL_RECORD;
+        this.goalRecord = goalRecord;
     }
 
     public int getType() {
@@ -42,12 +48,11 @@ public class HistoryItem {
     public Transfer getTransfer() {
         return transfer;
     }
-
     public AdjustBalance getAdjustBalance() {
         return adjustBalance;
     }
+    public GoalRecordResponse getGoalRecord() { return goalRecord; }
 
-    // Lấy ngày để ViewModel gom nhóm (Group)
     public Date getDate() {
         if (type == TYPE_TRANSACTION && transaction != null) {
             return transaction.getDate();
@@ -55,6 +60,8 @@ public class HistoryItem {
             return transfer.getDate();
         } else if (type == TYPE_ADJUST_BALANCE && adjustBalance != null) {
             return adjustBalance.getCreatedAt();
+        } else if (type == TYPE_GOAL_RECORD && goalRecord != null) {
+            return DateConverter.convertStringToDate(goalRecord.getCreatedAt());
         }
         return null;
     }

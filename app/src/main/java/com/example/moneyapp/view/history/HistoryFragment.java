@@ -80,11 +80,7 @@ public class HistoryFragment extends BaseFragment {
             initialTab = getArguments().getInt("tabType", 0);
         } else {
             // Ưu tiên 2: Lấy bộ nhớ đệm toàn cục
-            int globalType = PreferenceManager.getInstance(requireContext()).getLastTabType();
-            // Dịch ngược từ Chuẩn chung (0: Chi, 1: Thu, 2: Chuyển khoản) sang Tab của History
-            if (globalType == 0) initialTab = 1;      // Chi tiêu
-            else if (globalType == 1) initialTab = 2; // Thu nhập
-            else if (globalType == 2) initialTab = 3; // Chuyển khoản
+            initialTab = PreferenceManager.getInstance(requireContext()).getLastTabType();
         }
 
         // =========================================================
@@ -93,6 +89,9 @@ public class HistoryFragment extends BaseFragment {
         String[] historyTabs = { "Tất cả", "Chi tiêu", "Thu nhập", "Chuyển khoản", "Điều chỉnh số dư", "Tiết kiệm" };
 
         setupHeaderTabs(view, historyTabs, initialTab, index -> {
+            if (adapter != null) {
+                adapter.setShowTypeTag(index == 0 || index == 5);
+            }
             // CHỈ LƯU VÀO BỘ NHỚ NẾU LÀ THU/CHI/CHUYỂN KHOẢN (Để đồng bộ với Home/Entry)
             if (index >= 1 && index <= 3) {
                 int globalTypeToSave = index - 1; // Dịch lại: 1->0, 2->1, 3->2
@@ -107,7 +106,7 @@ public class HistoryFragment extends BaseFragment {
                 historyViewModel.setCategoryFilter(null);
                 if (tvCategoryFilter != null) tvCategoryFilter.setText("Tất cả hạng mục");
 
-            } else if (index == 4 || index == 0) { // Điều chỉnh số dư hoặc Tất cả
+            } else if (index == 4 || index == 0 || index == 5) { // Điều chỉnh số dư hoặc Tất cả hoac tiet kiem
                 btnCategoryFilter.setVisibility(View.GONE);
                 btnDestAccountFilter.setVisibility(View.GONE);
 
@@ -209,6 +208,8 @@ public class HistoryFragment extends BaseFragment {
         timeSelector.setOnTimeRangeChangeListener((startDate, endDate) -> {
             historyViewModel.setTimeRangeAndReload(startDate, endDate);
         });
+
+        adapter.setShowTypeTag(initialTab == 0 || initialTab == 5);
 
         observeViewModels();
         accountViewModel.loadAccounts();

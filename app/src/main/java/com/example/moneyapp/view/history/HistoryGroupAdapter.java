@@ -21,6 +21,7 @@ public class HistoryGroupAdapter extends RecyclerView.Adapter<HistoryGroupAdapte
     private List<DailyHistoryGroup> groups;
     private List<Account> accountList;
     private final String systemCurrency;
+    private boolean isShowTypeTag = false;
     private final HistoryItemAdapter.OnItemClickListener childListener;
 
     public HistoryGroupAdapter(List<DailyHistoryGroup> groups, List<Account> accountList, String systemCurrency, HistoryItemAdapter.OnItemClickListener listener) {
@@ -73,10 +74,16 @@ public class HistoryGroupAdapter extends RecyclerView.Adapter<HistoryGroupAdapte
                 systemCurrency,
                 childListener
         );
+        childAdapter.setShowTypeTag(this.isShowTypeTag);
 
         holder.rvDailyTransactions.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
         holder.rvDailyTransactions.setAdapter(childAdapter);
         holder.rvDailyTransactions.setNestedScrollingEnabled(false);
+    }
+
+    public void setShowTypeTag(boolean show) {
+        this.isShowTypeTag = show;
+        notifyDataSetChanged();
     }
 
     @Override

@@ -48,7 +48,7 @@ public class GoalDetailFragment extends BaseFragment {
     private CircularProgressIndicator cpProgress;
     private FrameLayout flIconContainer;
     private IconicsImageView ivIcon;
-    private MaterialButton btnDeposit;
+    private MaterialButton btnDeposit, btnWithdraw;
 
     private boolean isGoalJustCompleted = false;
 
@@ -86,6 +86,7 @@ public class GoalDetailFragment extends BaseFragment {
         flIconContainer = view.findViewById(R.id.fl_icon_container);
         ivIcon = view.findViewById(R.id.iv_goal_icon);
         btnDeposit = view.findViewById(R.id.btn_deposit);
+        btnWithdraw = view.findViewById(R.id.btn_withdraw);
 
         displayGoal();
         setupHeader(view, "Chi tiết mục tiêu",
@@ -96,8 +97,8 @@ public class GoalDetailFragment extends BaseFragment {
                     Navigation.findNavController(v).navigate(R.id.goalAddFragment, bundle);
                 });
 
-        btnDeposit.setOnClickListener(v -> showDepositDialog());
-
+        btnDeposit.setOnClickListener(v -> navigateToTransaction(GoalTransactionFragment.TYPE_DEPOSIT));
+        btnWithdraw.setOnClickListener(v -> navigateToTransaction(GoalTransactionFragment.TYPE_WITHDRAW));
         observeViewModel();
         viewModel.fetchGoals(); // Load dữ liệu mới nhất từ server
     }
@@ -123,77 +124,13 @@ public class GoalDetailFragment extends BaseFragment {
 
         cpProgress.setIndicatorColor(color);
         tvPercent.setTextColor(color);
-        btnDeposit.setBackgroundColor(color);
     }
 
-    private void showDepositDialog() {
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.layout_dialog_deposit, null);
-        EditText etAmount = dialogView.findViewById(R.id.et_deposit_amount);
-        AccountSelectorView accountSelector = dialogView.findViewById(R.id.view_select_account);
-
-        accountViewModel.loadAccounts();
-        accountSelector.setOnClickListener(v -> {
-            PopupHelper.showAccountFilterPopup(requireContext(), accountViewModel.getAccountsLiveData().getValue(), "Chọn nguồn tiền", false, account -> {
-                accountSelector.setAccount(account, false);
-            });
-        });
-
-        etAmount.addTextChangedListener(new android.text.TextWatcher() {
-            private String current = "";
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(android.text.Editable s) {
-                if (!s.toString().equals(current)) {
-                    etAmount.removeTextChangedListener(this);
-                    String cleanString = s.toString().replaceAll("[.,]", "");
-
-                    if (!cleanString.isEmpty()) {
-                        try {
-                            double parsed = Double.parseDouble(cleanString);
-                            String formatted = CurrencyFormatter.formatVND(parsed);
-                            current = formatted;
-                            etAmount.setText(formatted);
-                            etAmount.setSelection(formatted.length());
-                        } catch (NumberFormatException e) { }
-                    } else {
-                        current = "";
-                        etAmount.setText("");
-                    }
-                    etAmount.addTextChangedListener(this);
-                }
-            }
-        });
-
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.deposit_goal)
-                .setView(dialogView)
-                .setPositiveButton("Nạp", (dialog, which) -> {
-                    String amountStr = etAmount.getText().toString().trim().replaceAll("[.,]", "");
-                    if (!amountStr.isEmpty() && accountSelector.getSelectedAccount() != null) {
-                        double amount = Double.parseDouble(amountStr);
-
-                        // ĐÃ SỬA: Lấy String AccountID và chỉ truyền GoalID
-                        String accountId = accountSelector.getSelectedAccount().getAccountId().toString();
-
-                        // Check trước xem nếu nạp thêm khoản này thì có 100% không để chốt Reward
-                        double projectedAmount = goal.getCurrentAmount() + amount;
-                        if (projectedAmount >= goal.getTargetAmount() && goal.getProgressPercent() < 100) {
-                            isGoalJustCompleted = true;
-                        }
-
-                        viewModel.depositToGoal(goal.getId(), amount, accountId);
-                    } else {
-                        DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Vui lòng nhập số tiền và chọn nguồn tiền hợp lệ.");
-                    }
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+    private void navigateToTransaction(String type) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("goal", goal);
+        bundle.putString("type", type);
+        Navigation.findNavController(requireView()).navigate(R.id.goalTransactionFragment, bundle);
     }
 
     private void observeViewModel() {

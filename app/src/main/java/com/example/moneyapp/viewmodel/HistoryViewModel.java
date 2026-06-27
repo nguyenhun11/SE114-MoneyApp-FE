@@ -7,7 +7,9 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.moneyapp.data.remote.response.GoalRecordResponse;
 import com.example.moneyapp.data.repository.AdjustBalanceRepository;
+import com.example.moneyapp.data.repository.GoalRepository;
 import com.example.moneyapp.data.repository.TransactionRepository;
 import com.example.moneyapp.data.repository.TransferRepository;
 import com.example.moneyapp.model.AdjustBalance;
@@ -30,6 +32,7 @@ public class HistoryViewModel extends AndroidViewModel {
     private final TransactionRepository transactionRepository;
     private final TransferRepository transferRepository;
     private final AdjustBalanceRepository adjustBalanceRepository;
+    private final GoalRepository goalRepository;
 
     private final MutableLiveData<List<DailyHistoryGroup>> groupedTransactionsLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
@@ -47,6 +50,7 @@ public class HistoryViewModel extends AndroidViewModel {
         transactionRepository = new TransactionRepository(application);
         transferRepository = new TransferRepository(application);
         adjustBalanceRepository = new AdjustBalanceRepository(application);
+        goalRepository = new GoalRepository(application);
     }
 
     public LiveData<List<DailyHistoryGroup>> getGroupedTransactions() { return groupedTransactionsLiveData; }
@@ -89,14 +93,16 @@ public class HistoryViewModel extends AndroidViewModel {
         List<HistoryItem> mergedList = new ArrayList<>();
 
         // Cờ xác định xem cần tải API nào dựa trên Tab
-        boolean loadTransactions = (filterIndex == 0 || filterIndex == 1 || filterIndex == 2 || filterIndex == 5);
+        boolean loadTransactions = (filterIndex == 0 || filterIndex == 1 || filterIndex == 2);
         boolean loadTransfers = (filterIndex == 0 || filterIndex == 3);
         boolean loadAdjusts = (filterIndex == 0 || filterIndex == 4);
+        boolean loadGoals = (filterIndex == 0 || filterIndex == 5);
 
         int totalApis = 0;
         if (loadTransactions) totalApis++;
         if (loadTransfers) totalApis++;
         if (loadAdjusts) totalApis++;
+        if (loadGoals) totalApis++;
 
         final int TOTAL_APIS_TO_CALL = totalApis;
         final int[] completedCalls = {0};
@@ -169,6 +175,22 @@ public class HistoryViewModel extends AndroidViewModel {
                 public void onError(String message) {
                     checkAllDone.run();
                 }
+            });
+        }
+
+        if (loadGoals) {
+            goalRepository.getAllGoalRecords(start, end, accountId, new GoalRepository.GoalCallback<List<GoalRecordResponse>>() {
+                @Override
+                public void onSuccess(List<GoalRecordResponse> result) {
+                    if (result != null) {
+                        for (GoalRecordResponse r : result) {
+                            mergedList.add(new HistoryItem(r));
+                        }
+                    }
+                    checkAllDone.run();
+                }
+                @Override
+                public void onError(String message) { checkAllDone.run(); }
             });
         }
     }

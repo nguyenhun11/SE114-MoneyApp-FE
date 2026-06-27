@@ -261,6 +261,12 @@ public interface ApiService {
     Call<List<GoalRecordResponse>> getGoalRecords(@Path("id") int id);
     @GET("api/Goals/records/{recordId}")
     Call<GoalRecordResponse> getGoalRecordById(@Path("recordId") int recordId);
+    @GET("api/Goals/records/all")
+    Call<List<GoalRecordResponse>> getAllGoalRecords(
+            @Query("startDate") String startDate,
+            @Query("endDate") String endDate,
+            @Query("accountId") String accountId
+    );
     @DELETE("api/Goals/records/{recordId}")
     Call<GoalRecordDeleteResponse> deleteGoalRecord(@Path("recordId") int recordId);
     //endregion

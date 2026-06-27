@@ -24,10 +24,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/card_horizontal_margin"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="@dimen/header_margin_top"
         app:cardBackgroundColor="@color/colorSurface"
         app:cardCornerRadius="@dimen/card_radius"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
         app:strokeColor="@color/colorBorder"
         app:strokeWidth="1dp">
 
@@ -36,7 +36,10 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:paddingStart="24dp"
+            android:paddingTop="24dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="16dp">
 
             <FrameLayout
                 android:id="@+id/fl_icon_container"
@@ -73,30 +76,32 @@
                 android:textSize="14sp"
                 tools:text="Hạn định: 25/12/2024" />
 
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/cp_progress"
+            <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                app:indicatorColor="@color/colorPrimary"
-                app:indicatorSize="120dp"
-                app:trackColor="@color/colorBorder"
-                app:trackThickness="12dp"
-                tools:progress="65" />
+                android:layout_marginBottom="24dp">
 
-            <TextView
-                android:id="@+id/tv_percent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="-80dp"
-                android:textColor="@color/colorPrimary"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                tools:text="65%" />
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/cp_progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:indicatorColor="@color/colorPrimary"
+                    app:indicatorSize="120dp"
+                    app:trackColor="@color/colorBorder"
+                    app:trackThickness="12dp"
+                    tools:progress="65" />
 
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="60dp" />
+                <TextView
+                    android:id="@+id/tv_percent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    tools:text="65%" />
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -152,17 +157,41 @@
 
             </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_deposit"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:backgroundTint="@color/colorPrimary"
-                android:padding="12dp"
-                android:text="@string/deposit_goal"
-                app:cornerRadius="@dimen/button_radius" />
+                android:layout_marginBottom="0dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_withdraw"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/colorPrimaryBgLight"
+                    android:padding="12dp"
+                    android:text="Rút tiền"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimary"
+                    app:cornerRadius="@dimen/button_radius"
+                    app:strokeColor="@color/colorPrimary" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_deposit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:padding="12dp"
+                    android:text="Nạp tiền"
+                    android:textAllCaps="false"
+                    app:cornerRadius="@dimen/button_radius" />
+            </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
