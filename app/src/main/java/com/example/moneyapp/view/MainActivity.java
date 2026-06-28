@@ -38,6 +38,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Khôi phục kết nối tới Notification Listener Service nếu đã bật
+        if (com.example.moneyapp.data.local.PreferenceManager.getInstance(this).isNotificationListenerEnabled()) {
+            android.service.notification.NotificationListenerService.requestRebind(
+                    new android.content.ComponentName(this, com.example.moneyapp.service.TransactionNotificationListenerService.class)
+            );
+        }
+
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
