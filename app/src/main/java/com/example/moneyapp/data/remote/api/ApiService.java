@@ -35,6 +35,7 @@ import com.example.moneyapp.data.remote.response.CashFlowBarDto;
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
 import com.example.moneyapp.data.remote.response.CategoryResponse;
 import com.example.moneyapp.data.remote.response.CityResponse;
+import com.example.moneyapp.data.remote.response.DashboardOverviewResponse;
 import com.example.moneyapp.data.remote.response.ExchangeRateResponse;
 import com.example.moneyapp.data.remote.response.GoalRecordDeleteResponse;
 import com.example.moneyapp.data.remote.response.GoalRecordResponse;
@@ -91,6 +92,11 @@ public interface ApiService {
     Call<Void> updateUserProfile(@Body UserProfileRequest request);
     @DELETE("api/User")
     Call<Void> deleteUser(@Query("mode") String mode);
+    //endregion
+
+    //region Dashboard
+    @GET("api/Dashboard/overview")
+    Call<DashboardOverviewResponse> getDashboardOverview();
     //endregion
 
     //region Account
