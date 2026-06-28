@@ -164,6 +164,12 @@ public class NotificationReceiver extends BroadcastReceiver {
                             @Override
                             public void onSuccess(Transaction result) {
                                 pendingDao.deletePendingTransaction(pendingTx);
+
+                                // Gửi broadcast báo UI cập nhật
+                                Intent updateIntent = new Intent("com.example.moneyapp.PENDING_TRANSACTION_UPDATED");
+                                updateIntent.setPackage(context.getPackageName());
+                                context.sendBroadcast(updateIntent);
+
                                 NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
                                 String formattedAmount = currencyFormat.format(pendingTx.getAmount());
                                 showToastOnMainThread(context, "Đã lưu nhanh: " + formattedAmount + " (" + matchedCategory.getCategoryName() + ")");
@@ -204,6 +210,11 @@ public class NotificationReceiver extends BroadcastReceiver {
         try {
             pendingDao.deletePendingTransactionById(pendingTxId);
             Log.d(TAG, "Đã bỏ qua và xóa giao dịch nháp ID: " + pendingTxId);
+
+            // Gửi broadcast báo UI cập nhật
+            Intent updateIntent = new Intent("com.example.moneyapp.PENDING_TRANSACTION_UPDATED");
+            updateIntent.setPackage(context.getPackageName());
+            context.sendBroadcast(updateIntent);
         } catch (Exception e) {
             Log.e(TAG, "Lỗi khi xóa giao dịch nháp bỏ qua", e);
         }
