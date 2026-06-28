@@ -93,7 +93,7 @@
                 android:id="@+id/btn_pending_delete"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/ic_back"
+                android:src="@android:drawable/ic_delete"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Delete draft"
                 android:layout_marginEnd="12dp"
@@ -104,8 +104,7 @@
                 android:id="@+id/btn_pending_approve"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/ic_more"
-                android:rotation="90"
+                android:src="@android:drawable/ic_input_add"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Approve draft"
                 app:tint="#4CAF50" />
