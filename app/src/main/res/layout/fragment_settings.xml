@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
 
+    <!-- Phần nền Gradient cho Header -->
     <View
         android:id="@+id/bg_header"
         android:layout_width="match_parent"
@@ -12,6 +13,7 @@
         android:background="@drawable/bg_header_gradient"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- File Layout Header Title có nút Back -->
     <include
         android:id="@+id/header_layout"
         layout="@layout/layout_header_title"
@@ -19,15 +21,90 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Container chứa các danh mục Cài đặt (Thiết kế dạng Card bo góc sang trọng) -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="@string/settings_title"
-        android:textColor="@color/colorOnSurface"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="24dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/colorSurface"
+        app:layout_constraintTop_toBottomOf="@id/bg_header"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bg_header" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Tiêu đề nhóm Cài đặt chung -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tính năng hệ thống"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Dòng cấu hình Lắng nghe thông báo tự động -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- Icon cài đặt -->
+                <com.mikepenz.iconics.view.IconicsImageView
+                    android:id="@+id/iv_setting_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    app:iiv_icon="gmd_notifications_active"
+                    app:iiv_color="@color/colorPrimary" />
+
+                <!-- Text Tiêu đề và Mô tả giải thích tính năng -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/iv_setting_icon"
+                    android:layout_toStartOf="@+id/switch_notification_listener"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="vertical"
+                    android:layout_centerVertical="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Đọc thông báo tự động"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tự động bóc tách giao dịch từ tin nhắn ngân hàng (MoMo, VCB, Techcombank, MB Bank, SMS...)"
+                        android:textSize="12sp"
+                        android:textColor="@color/colorOnSurfaceVariant"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <!-- Switch để người dùng bật tắt tính năng -->
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switch_notification_listener"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
