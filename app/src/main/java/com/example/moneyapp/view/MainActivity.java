@@ -1,5 +1,6 @@
 package com.example.moneyapp.view;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -23,6 +24,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.moneyapp.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
 
@@ -72,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
                     return NavigationUI.onNavDestinationSelected(item, navController);
                 }
             });
+
+            // Kiểm tra và xử lý điều hướng nếu Activity được mở từ Click thông báo đẩy
+            handleNotificationIntent(getIntent());
         }
         drawerLayout.setDrawerElevation(0f);
 
@@ -137,6 +142,25 @@ public class MainActivity extends AppCompatActivity {
                         .setPopEnterAnim(R.anim.slide_in_left).setPopExitAnim(R.anim.slide_out_right).build();
                 navController.navigate(destinationId, null, options);
             });
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent); // Cập nhật intent mới nhận được
+        handleNotificationIntent(intent);
+    }
+
+    private void handleNotificationIntent(Intent intent) {
+        if (intent != null && intent.getBooleanExtra("OPEN_PENDING_LIST", false)) {
+            NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.nav_host_fragment);
+            if (navHostFragment != null) {
+                NavController navController = navHostFragment.getNavController();
+                // Thực hiện điều hướng trực tiếp sang màn hình PendingTransactionsFragment
+                navController.navigate(R.id.pendingTransactionsFragment);
+            }
         }
     }
 
