@@ -4,9 +4,12 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -17,15 +20,13 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
-import com.example.moneyapp.data.repository.PendingTransactionRepository;
-import android.os.Handler;
-import android.os.Looper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.local.PreferenceManager;
 import com.example.moneyapp.data.remote.response.QuestResponse;
+import com.example.moneyapp.data.repository.PendingTransactionRepository;
 import com.example.moneyapp.utils.DialogHelper;
 import com.example.moneyapp.view.BaseFragment;
 import com.example.moneyapp.view.category.CategorySummaryAdapter;
@@ -40,6 +41,7 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.ArrayList;
@@ -251,13 +253,54 @@ public class HomeFragment extends BaseFragment {
         TextView tvProsperity = view.findViewById(R.id.tv_prosperity_home);
         TextView tvStability = view.findViewById(R.id.tv_stability_home);
 
+        View cardUserProfile = view.findViewById(R.id.card_user_profile);
+        TextView tvUserName = view.findViewById(R.id.tv_user_name);
         TextView tvStreakCount = view.findViewById(R.id.tv_streak_count);
-        MaterialButton btnCheckin = view.findViewById(R.id.btn_checkin);
-        IconicsImageView ivStreakIcon = view.findViewById(R.id.iv_streak_icon);
-        TextView tvRestoreStreakHint = view.findViewById(R.id.tv_restore_streak_hint);
+        ImageView ivUserAvatar = view.findViewById(R.id.iv_user_avatar);
+
+        View cardCityStats = view.findViewById(R.id.card_city_stats);
+        if (cardCityStats != null) {
+            cardCityStats.setOnClickListener(v ->
+                    Navigation.findNavController(v).navigate(R.id.cityFragment)
+            );
+        }
 
         profileViewModel.fetchUserData();
 
+        // 1. LẮNG NGHE DATA USER & CẬP NHẬT GIAO DIỆN PROFILE (Đã xóa code cũ gây crash)
+        profileViewModel.currentUser.observe(getViewLifecycleOwner(), user -> {
+            if (user != null) {
+                if (tvUserName != null) tvUserName.setText(user.getName());
+                if (tvStreakCount != null) tvStreakCount.setText(user.getDailyStreak() + " ngày");
+
+                // Tạo avatar mặc định (Icon hình người màu xám)
+                com.mikepenz.iconics.IconicsDrawable defaultAvatar = new com.mikepenz.iconics.IconicsDrawable(requireContext(), "gmd-person");
+                defaultAvatar.setColorFilter(ContextCompat.getColor(requireContext(), R.color.colorOnSurfaceVariant), android.graphics.PorterDuff.Mode.SRC_IN);
+
+                if (ivUserAvatar != null) {
+                    if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isEmpty()) {
+                        com.bumptech.glide.Glide.with(requireContext())
+                                .load(user.getProfileImageUrl())
+                                .placeholder(defaultAvatar) // Hiện icon trong lúc chờ mạng tải
+                                .error(defaultAvatar)       // Nếu link ảnh lỗi, quay về icon mặc định
+                                .circleCrop()               // Ép cắt tròn
+                                .into(ivUserAvatar);
+                    } else {
+                        // Nếu user chưa có ảnh mạng, set icon mặc định
+                        ivUserAvatar.setImageDrawable(defaultAvatar);
+                    }
+                }
+            }
+        });
+
+        // 2. CHUYỂN TRANG PROFILE
+        if (cardUserProfile != null) {
+            cardUserProfile.setOnClickListener(v ->
+                    Navigation.findNavController(v).navigate(R.id.profileFragment)
+            );
+        }
+
+        // 3. LẮNG NGHE DATA CITY
         profileViewModel.cityData.observe(getViewLifecycleOwner(), city -> {
             if (city != null && tvCityLevel != null) {
                 tvCityLevel.setText("Cấp " + city.getLevel());
@@ -265,57 +308,10 @@ public class HomeFragment extends BaseFragment {
                 tvStability.setText(String.valueOf(city.getStabilityPoints()));
             }
         });
-
-        profileViewModel.currentUser.observe(getViewLifecycleOwner(), user -> {
-            if (user != null && tvStreakCount != null) {
-                tvStreakCount.setText(user.getDailyStreak() + " ngày");
-
-                if (user.isTodayCheckedIn()) {
-                    btnCheckin.setVisibility(View.GONE);
-                    ivStreakIcon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.colorDanger));
-                } else {
-                    btnCheckin.setVisibility(View.VISIBLE);
-                    btnCheckin.setText("Check-in");
-                    btnCheckin.setEnabled(true);
-                    btnCheckin.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.colorWarning));
-                    btnCheckin.setIcon(null);
-                    ivStreakIcon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.colorOnSurfaceVariant));
-                }
-                tvRestoreStreakHint.setVisibility(user.getDailyStreak() == 0 ? View.VISIBLE : View.GONE);
-            }
-        });
-
-        if (btnCheckin != null) {
-            btnCheckin.setOnClickListener(v -> {
-                btnCheckin.setEnabled(false);
-                profileViewModel.checkInToday();
-            });
-        }
-
-        if (tvRestoreStreakHint != null) {
-            tvRestoreStreakHint.setOnClickListener(v -> {
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "Hãy tải MoneyApp để quản lý tài chính thông minh nhé!");
-                sendIntent.setType("text/plain");
-
-                Intent broadcastIntent = new Intent("com.example.moneyapp.SHARE_SUCCESS");
-                broadcastIntent.setPackage(requireContext().getPackageName());
-
-                PendingIntent pi = PendingIntent.getBroadcast(
-                        requireContext(), 0, broadcastIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
-                );
-
-                Intent shareIntent = Intent.createChooser(sendIntent, "Khôi phục chuỗi qua...", pi.getIntentSender());
-                startActivity(shareIntent);
-            });
-        }
     }
 
     private void observeBffDashboard(View view) {
-        // ĐÃ FIX LỖI: Ép kiểu rõ ràng về MaterialCardView để có hàm setStrokeColor
-        com.google.android.material.card.MaterialCardView cardSmartInsights = view.findViewById(R.id.card_smart_insights);
+        MaterialCardView cardSmartInsights = view.findViewById(R.id.card_smart_insights);
         IconicsImageView ivInsightIcon = view.findViewById(R.id.iv_insight_icon);
         TextView tvInsightTitle = view.findViewById(R.id.tv_insight_title);
         TextView tvInsightMessage = view.findViewById(R.id.tv_insight_message);
@@ -326,12 +322,39 @@ public class HomeFragment extends BaseFragment {
         View layoutBudget = view.findViewById(R.id.layout_budget_alerts);
         LinearLayout containerBudget = view.findViewById(R.id.container_budget_alerts);
 
+        View layoutQuests = view.findViewById(R.id.layout_pending_quests);
+        LinearLayout containerQuests = view.findViewById(R.id.container_pending_quests);
+        View layoutGoals = view.findViewById(R.id.layout_goal_highlights);
+        LinearLayout containerGoals = view.findViewById(R.id.container_goal_highlights);
+
+        View headerRecent = view.findViewById(R.id.header_recent_transactions);
+        if (headerRecent != null) {
+            headerRecent.setOnClickListener(v ->
+                    Navigation.findNavController(v).navigate(R.id.historyFragment) // Sang trang Lịch sử
+            );
+        }
+
+        View headerBudget = view.findViewById(R.id.header_budget_alerts);
+        if (headerBudget != null) {
+            headerBudget.setOnClickListener(v ->
+                    Navigation.findNavController(v).navigate(R.id.budgetFragment) // Sang trang Ngân sách
+            );
+        }
+
+        View headerQuests = view.findViewById(R.id.header_pending_quests);
+        if (headerQuests != null) {
+            headerQuests.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.questFragment));
+        }
+
+        View headerGoals = view.findViewById(R.id.header_goal_highlights);
+        if (headerGoals != null) {
+            headerGoals.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.goalFragment));
+        }
+
         homeViewModel.getDashboardOverview().observe(getViewLifecycleOwner(), overview -> {
             if (overview == null) return;
 
-            // ==========================================
             // 1. XỬ LÝ SMART INSIGHTS
-            // ==========================================
             if (overview.getSmartInsights() != null && !overview.getSmartInsights().isEmpty()) {
                 cardSmartInsights.setVisibility(View.VISIBLE);
                 com.example.moneyapp.data.remote.response.DashboardOverviewResponse.SmartInsight insight = overview.getSmartInsights().get(0);
@@ -362,9 +385,7 @@ public class HomeFragment extends BaseFragment {
 
             LayoutInflater inflater = LayoutInflater.from(requireContext());
 
-            // ==========================================
             // 2. XỬ LÝ GIAO DỊCH GẦN ĐÂY (List đơn giản)
-            // ==========================================
             if (overview.getRecentTransactions() != null && !overview.getRecentTransactions().isEmpty()) {
                 layoutRecent.setVisibility(View.VISIBLE);
                 containerRecent.removeAllViews();
@@ -397,9 +418,7 @@ public class HomeFragment extends BaseFragment {
                 layoutRecent.setVisibility(View.GONE);
             }
 
-            // ==========================================
             // 3. XỬ LÝ CẢNH BÁO NGÂN SÁCH (Tái sử dụng thẻ Budget)
-            // ==========================================
             if (overview.getBudgetAlerts() != null && !overview.getBudgetAlerts().isEmpty()) {
                 layoutBudget.setVisibility(View.VISIBLE);
                 containerBudget.removeAllViews();
@@ -440,6 +459,63 @@ public class HomeFragment extends BaseFragment {
                 }
             } else {
                 layoutBudget.setVisibility(View.GONE);
+            }
+
+            // 4. XỬ LÝ NHIỆM VỤ ƯU TIÊN
+            if (overview.getPendingQuests() != null && !overview.getPendingQuests().isEmpty()) {
+                layoutQuests.setVisibility(View.VISIBLE);
+                containerQuests.removeAllViews();
+
+                for (com.example.moneyapp.data.remote.response.DashboardOverviewResponse.PendingQuest quest : overview.getPendingQuests()) {
+                    // Tận dụng item mini
+                    View itemQuest = inflater.inflate(R.layout.item_dashboard_quest, containerQuests, false);
+                    TextView tvQuestTitle = itemQuest.findViewById(R.id.tv_quest_title);
+                    TextView tvQuestProgress = itemQuest.findViewById(R.id.tv_quest_progress);
+                    com.google.android.material.progressindicator.LinearProgressIndicator pbQuest = itemQuest.findViewById(R.id.pb_quest);
+
+                    tvQuestTitle.setText(quest.getTitle());
+                    tvQuestProgress.setText(quest.getCurrentProgress() + " / " + quest.getTarget());
+
+                    int progressPercent = quest.getTarget() > 0 ? (int)(((float)quest.getCurrentProgress() / quest.getTarget()) * 100) : 0;
+                    pbQuest.setProgress(progressPercent);
+
+                    containerQuests.addView(itemQuest);
+                }
+            } else {
+                layoutQuests.setVisibility(View.GONE);
+            }
+
+            // 5. XỬ LÝ MỤC TIÊU TIẾT KIỆM
+            if (overview.getGoalHighlights() != null && !overview.getGoalHighlights().isEmpty()) {
+                layoutGoals.setVisibility(View.VISIBLE);
+                containerGoals.removeAllViews();
+
+                for (com.example.moneyapp.data.remote.response.DashboardOverviewResponse.GoalHighlight goal : overview.getGoalHighlights()) {
+                    // Do Mục tiêu có UI hệt như Budget, ta TÁI SỬ DỤNG LẠI item_budget.xml luôn cho lẹ!
+                    View itemGoal = inflater.inflate(R.layout.item_budget, containerGoals, false);
+
+                    TextView tvCatName = itemGoal.findViewById(R.id.tv_category_name);
+                    TextView tvSpentSummary = itemGoal.findViewById(R.id.tv_spent_summary);
+                    TextView tvPercentage = itemGoal.findViewById(R.id.tv_percentage);
+                    TextView tvCycleInfo = itemGoal.findViewById(R.id.tv_cycle_info);
+                    com.google.android.material.progressindicator.LinearProgressIndicator pbGoal = itemGoal.findViewById(R.id.pb_budget);
+
+                    tvCatName.setText(goal.getName());
+                    tvCycleInfo.setText("Đang tiết kiệm");
+                    tvCycleInfo.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorSuccess)); // Chữ màu xanh
+
+                    tvSpentSummary.setText(com.example.moneyapp.utils.CurrencyFormatter.formatVND(goal.getCurrentAmount()) + " / " + com.example.moneyapp.utils.CurrencyFormatter.formatVND(goal.getTargetAmount()));
+
+                    pbGoal.setProgress(Math.min(goal.getProgressPercent(), 100));
+                    pbGoal.setIndicatorColor(ContextCompat.getColor(requireContext(), R.color.colorSuccess)); // Thanh chạy màu xanh lá
+
+                    tvPercentage.setText(goal.getProgressPercent() + "%");
+                    tvPercentage.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorSuccess));
+
+                    containerGoals.addView(itemGoal);
+                }
+            } else {
+                layoutGoals.setVisibility(View.GONE);
             }
         });
     }
