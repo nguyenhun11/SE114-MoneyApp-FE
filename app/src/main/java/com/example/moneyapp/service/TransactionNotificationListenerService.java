@@ -40,6 +40,8 @@ public class TransactionNotificationListenerService extends NotificationListener
     private static final int BASE_NOTIF_ID = 999;
 
     private PendingTransactionRepository pendingRepository;
+    private static final int CACHE_SIZE = 20;
+    private static final java.util.List<String> processedKeys = new java.util.ArrayList<>();
 
     @Override
     public void onCreate() {
@@ -62,6 +64,25 @@ public class TransactionNotificationListenerService extends NotificationListener
 
         // Lấy thông tin chi tiết của thông báo hệ thống nhận được
         String packageName = sbn.getPackageName();
+        if (packageName != null && packageName.equals(getPackageName())) {
+            Log.d(TAG, "Bỏ qua thông báo từ chính ứng dụng MoneyApp.");
+            return;
+        }
+
+        String notificationKey = sbn.getKey();
+        if (notificationKey != null) {
+            synchronized (processedKeys) {
+                if (processedKeys.contains(notificationKey)) {
+                    Log.d(TAG, "Bỏ qua thông báo trùng lặp (đã xử lý key: " + notificationKey + ").");
+                    return;
+                }
+                processedKeys.add(notificationKey);
+                if (processedKeys.size() > CACHE_SIZE) {
+                    processedKeys.remove(0);
+                }
+            }
+        }
+
         Bundle extras = sbn.getNotification().extras;
         if (extras == null) return;
 
@@ -189,6 +210,12 @@ public class TransactionNotificationListenerService extends NotificationListener
                 @Override
                 public void onSuccess() {
                     Log.d(TAG, "Đã lưu giao dịch chờ duyệt thành công vào database.");
+                    
+                    // Phát broadcast thông báo có thay đổi trong DB
+                    Intent updateIntent = new Intent("com.example.moneyapp.PENDING_TRANSACTION_UPDATED");
+                    updateIntent.setPackage(getPackageName());
+                    sendBroadcast(updateIntent);
+
                     // Hiển thị thông báo đẩy của MoneyApp trên status bar để người dùng nhấn vào duyệt
                     showLocalNotification(pendingTx);
                 }
