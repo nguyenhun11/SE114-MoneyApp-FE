@@ -147,7 +147,7 @@
         android:id="@+id/layout_dashboard_overview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="10dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:visibility="visible">
 
         <com.google.android.material.card.MaterialCardView
@@ -155,7 +155,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/card_horizontal_margin"
-            android:layout_marginTop="128dp"
+            android:layout_marginTop="16dp"
             app:cardBackgroundColor="@color/colorSurface"
             app:cardCornerRadius="@dimen/card_radius"
             app:cardElevation="0dp"

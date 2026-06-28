@@ -75,6 +75,7 @@ public class HomeFragment extends BaseFragment {
     private TextView tvPendingBannerText;
     private PendingTransactionRepository pendingRepository;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private int calculatedMinHeight = 0;
 
     @Nullable
     @Override
@@ -167,14 +168,19 @@ public class HomeFragment extends BaseFragment {
 
             chartsWrapper.setVisibility(View.GONE);
 
-            cardTopSlice.setVisibility(View.INVISIBLE);
+            cardTopSlice.setVisibility(View.GONE);
 
             appBarLayout.setExpanded(true, false);
             AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbar.getLayoutParams();
             params.setScrollFlags(0); // Khóa cuộn
             collapsingToolbar.setLayoutParams(params);
 
+            collapsingToolbar.setMinimumHeight(0); // Thu nhỏ hoàn toàn khoảng trống
+
             homeViewModel.setTabTypeAndReload(0);
+            
+            // Cập nhật lại số lượng giao dịch chờ duyệt ngay khi chuyển về tab Tổng quan
+            checkPendingTransactions();
 
         } else {
             layoutDashboardOverview.setVisibility(View.GONE);
@@ -188,6 +194,10 @@ public class HomeFragment extends BaseFragment {
             AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbar.getLayoutParams();
             params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP);
             collapsingToolbar.setLayoutParams(params);
+
+            if (calculatedMinHeight > 0) {
+                collapsingToolbar.setMinimumHeight(calculatedMinHeight); // Khôi phục chiều cao tối thiểu cho biểu đồ
+            }
 
             int vmIndex = (index == 1) ? 0 : 1;
             PreferenceManager.getInstance(requireContext()).setLastTabType(vmIndex);
@@ -430,7 +440,14 @@ public class HomeFragment extends BaseFragment {
             params.topMargin = topHeight;
             chartsWrapper.setLayoutParams(params);
 
-            collapsingToolbar.setMinimumHeight(topHeight + linearHeight + wrapperMarginBottom);
+            calculatedMinHeight = topHeight + linearHeight + wrapperMarginBottom;
+
+            int currentTab = PreferenceManager.getInstance(requireContext()).getLastHomeTab();
+            if (currentTab != 0) {
+                collapsingToolbar.setMinimumHeight(calculatedMinHeight);
+            } else {
+                collapsingToolbar.setMinimumHeight(0);
+            }
 
             if (appBarLayout != null) {
                 linearChartContainer.setAlpha(0f);
