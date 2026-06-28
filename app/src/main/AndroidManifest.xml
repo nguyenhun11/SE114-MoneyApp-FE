@@ -4,6 +4,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -36,6 +39,20 @@
             android:exported="false"
             android:theme="@style/Theme.MoneyApp"
             android:windowSoftInputMode="adjustResize" />
+
+        <!-- Service lắng nghe thông báo hệ thống, yêu cầu quyền BIND_NOTIFICATION_LISTENER_SERVICE -->
+        <service android:name=".service.TransactionNotificationListenerService"
+            android:label="MoneyApp Notification Listener"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- BroadcastReceiver nhận sự kiện click các nút Lưu nhanh / Bỏ qua từ thanh thông báo đẩy -->
+        <receiver android:name=".service.NotificationReceiver"
+            android:exported="false" />
 
     </application>
 
