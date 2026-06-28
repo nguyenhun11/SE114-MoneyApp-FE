@@ -314,7 +314,7 @@ public class ProfileFragment extends BaseFragment {
             int wrapperMarginBottom = getResources().getDimensionPixelSize(R.dimen.card_horizontal_margin); // ~12-16dp
 
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) profileCardWrapper.getLayoutParams();
-            params.topMargin = topHeight + 80;
+            params.topMargin = topHeight + 32;
             profileCardWrapper.setLayoutParams(params);
 
             collapsingToolbar.setMinimumHeight(topHeight + collapsedHeight + wrapperMarginBottom);

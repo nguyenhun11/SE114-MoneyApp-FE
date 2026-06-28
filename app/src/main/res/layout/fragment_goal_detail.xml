@@ -17,240 +17,232 @@
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/colorBackground"
             app:contentScrim="@android:color/transparent"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_expanded"
+                android:id="@+id/goal_card_wrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/card_horizontal_margin"
-                android:layout_marginTop="80dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="12dp"
                 app:cardBackgroundColor="@color/colorSurface"
                 app:cardCornerRadius="@dimen/card_radius"
-                app:layout_collapseMode="none"
                 app:strokeColor="@color/colorBorder"
                 app:strokeWidth="1dp">
 
-                <LinearLayout
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="24dp"
-                    android:paddingTop="32dp"
-                    android:paddingBottom="24dp">
-
-                    <FrameLayout
-                        android:id="@+id/fl_icon_container"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:background="@drawable/bg_circle"
-                        android:backgroundTint="@color/colorPrimary">
-
-                        <com.mikepenz.iconics.view.IconicsImageView
-                            android:id="@+id/iv_goal_icon"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:layout_gravity="center"
-                            app:ico_color="@color/white"
-                            tools:ico_icon="gmd-star" />
-                    </FrameLayout>
-
-                    <TextView
-                        android:id="@+id/tv_goal_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:textColor="@color/colorOnSurface"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        tools:text="Mua xe máy" />
-
-                    <TextView
-                        android:id="@+id/tv_goal_deadline"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textColor="@color/colorOnSurfaceVariant"
-                        android:textSize="14sp"
-                        tools:text="Hạn định: 31/12/2024" />
-
-                    <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginVertical="24dp">
-
-                        <com.google.android.material.progressindicator.CircularProgressIndicator
-                            android:id="@+id/cp_progress"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:indicatorColor="@color/colorPrimary"
-                            app:indicatorSize="140dp"
-                            app:trackColor="@color/colorBorder"
-                            app:trackThickness="12dp"
-                            tools:progress="65" />
-
-                        <TextView
-                            android:id="@+id/tv_percent"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="28sp"
-                            android:textStyle="bold"
-                            tools:text="65%" />
-                    </FrameLayout>
+                    android:layout_height="wrap_content">
 
                     <LinearLayout
+                        android:id="@+id/expanded_content"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Hiện tại"
-                                android:textColor="@color/colorOnSurfaceVariant"
-                                android:textSize="12sp" />
-
-                            <TextView
-                                android:id="@+id/tv_current_amount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/colorOnSurface"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                tools:text="13.000.000 đ" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="end"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Mục tiêu"
-                                android:textColor="@color/colorOnSurfaceVariant"
-                                android:textSize="12sp" />
-
-                            <TextView
-                                android:id="@+id/tv_target_amount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/colorOnSurface"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                tools:text="20.000.000 đ" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_compact"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/card_horizontal_margin"
-                android:layout_marginTop="80dp"
-                android:layout_marginBottom="16dp"
-                android:alpha="0"
-                app:cardBackgroundColor="@color/colorSurface"
-                app:cardCornerRadius="@dimen/card_radius"
-                app:layout_collapseMode="pin"
-                app:strokeColor="@color/colorBorder"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="32dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="24dp">
 
                         <FrameLayout
-                            android:id="@+id/fl_icon_container_compact"
-                            android:layout_width="44dp"
-                            android:layout_height="44dp"
-                            android:background="@drawable/bg_circle"
-                            android:backgroundTint="@color/colorPrimary">
+                            android:id="@+id/fl_icon_container"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:layout_marginBottom="16dp"
+                            android:background="@drawable/bg_circle">
 
                             <com.mikepenz.iconics.view.IconicsImageView
-                                android:id="@+id/iv_goal_icon_compact"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
+                                android:id="@+id/iv_goal_icon"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
                                 android:layout_gravity="center"
                                 app:ico_color="@color/white"
                                 tools:ico_icon="gmd-star" />
                         </FrameLayout>
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/tv_goal_name_compact"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:ellipsize="end"
-                                android:maxLines="1"
-                                android:textColor="@color/colorOnSurface"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                tools:text="Mua xe máy" />
-
-                            <TextView
-                                android:id="@+id/tv_goal_amount_compact"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:textColor="@color/colorOnSurfaceVariant"
-                                android:textSize="13sp"
-                                tools:text="15.000.000 / 20.000.000 đ" />
-                        </LinearLayout>
-
                         <TextView
-                            android:id="@+id/tv_goal_percent_compact"
+                            android:id="@+id/tv_goal_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="18sp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:textColor="@color/colorOnSurface"
+                            android:textSize="22sp"
                             android:textStyle="bold"
-                            tools:text="75%" />
+                            tools:text="Mua xe máy" />
+
+                        <TextView
+                            android:id="@+id/tv_goal_deadline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="14sp"
+                            tools:text="Hạn định: 31/12/2024" />
+
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginVertical="24dp">
+
+                            <com.google.android.material.progressindicator.CircularProgressIndicator
+                                android:id="@+id/cp_progress"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:indicatorColor="@color/colorPrimary"
+                                app:indicatorSize="140dp"
+                                app:trackColor="@color/colorBorder"
+                                app:trackThickness="12dp"
+                                tools:progress="65" />
+
+                            <TextView
+                                android:id="@+id/tv_percent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="28sp"
+                                android:textStyle="bold"
+                                tools:text="65%" />
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Hiện tại"
+                                    android:textColor="@color/colorOnSurfaceVariant"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_current_amount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/colorOnSurface"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    tools:text="13.000.000 đ" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="end"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Mục tiêu"
+                                    android:textColor="@color/colorOnSurfaceVariant"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_target_amount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/colorOnSurface"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    tools:text="20.000.000 đ" />
+                            </LinearLayout>
+                        </LinearLayout>
                     </LinearLayout>
 
-                    <com.google.android.material.progressindicator.LinearProgressIndicator
-                        android:id="@+id/pb_goal_progress_compact"
+                    <LinearLayout
+                        android:id="@+id/collapsed_content"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        app:indicatorColor="@color/colorPrimary"
-                        app:trackColor="@color/colorBorder"
-                        app:trackCornerRadius="4dp"
-                        app:trackThickness="6dp"
-                        tools:progress="75" />
-                </LinearLayout>
+                        android:layout_gravity="bottom"
+                        android:alpha="0"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:visibility="invisible">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <FrameLayout
+                                android:id="@+id/fl_icon_container_compact"
+                                android:layout_width="44dp"
+                                android:layout_height="44dp"
+                                android:background="@drawable/bg_circle">
+
+                                <com.mikepenz.iconics.view.IconicsImageView
+                                    android:id="@+id/iv_goal_icon_compact"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:layout_gravity="center"
+                                    app:ico_color="@color/white"
+                                    tools:ico_icon="gmd-star" />
+                            </FrameLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tv_goal_name_compact"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="end"
+                                    android:maxLines="1"
+                                    android:textColor="@color/colorOnSurface"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold"
+                                    tools:text="Mua xe máy" />
+
+                                <TextView
+                                    android:id="@+id/tv_goal_amount_compact"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:textColor="@color/colorOnSurfaceVariant"
+                                    android:textSize="13sp"
+                                    tools:text="15.000.000 / 20.000.000 đ" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tv_goal_percent_compact"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                tools:text="75%" />
+                        </LinearLayout>
+
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/pb_goal_progress_compact"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            app:indicatorColor="@color/colorPrimary"
+                            app:trackColor="@color/colorBorder"
+                            app:trackCornerRadius="4dp"
+                            app:trackThickness="6dp"
+                            tools:progress="75" />
+                    </LinearLayout>
+                </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <FrameLayout
@@ -278,19 +270,19 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="100dp"
+        android:paddingBottom="80dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:paddingHorizontal="@dimen/card_horizontal_margin"
             android:paddingTop="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/card_horizontal_margin"
                 android:orientation="horizontal"
                 android:weightSum="2">
 
@@ -303,6 +295,11 @@
                     android:layout_weight="1"
                     android:padding="12dp"
                     android:text="Rút tiền"
+                    android:backgroundTint="@color/colorPrimaryBgLight"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimary"
+                    app:strokeColor="@color/colorPrimary"
+                    app:strokeWidth="1dp"
                     app:cornerRadius="@dimen/button_radius" />
 
                 <com.google.android.material.button.MaterialButton
@@ -313,24 +310,15 @@
                     android:layout_weight="1"
                     android:padding="12dp"
                     android:text="Nạp tiền"
+                    android:backgroundTint="@color/colorPrimary"
                     app:cornerRadius="@dimen/button_radius" />
             </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/card_horizontal_margin"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="8dp"
-                android:text="Lịch sử giao dịch"
-                android:textColor="@color/colorOnSurfaceVariant"
-                android:textSize="14sp"
-                android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_goal_records"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="-20dp"
                 android:nestedScrollingEnabled="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 

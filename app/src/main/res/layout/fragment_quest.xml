@@ -8,7 +8,7 @@
     <View
         android:id="@+id/bg_header"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:layout_height="@dimen/header_height_small"
         android:background="@drawable/bg_header_gradient"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,9 +23,8 @@
         android:id="@+id/rvQuests"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="@dimen/main_top_margin_small"
         android:clipToPadding="false"
-        android:paddingTop="8dp"
         android:paddingBottom="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_layout" />

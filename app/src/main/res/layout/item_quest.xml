@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="20dp"
+    android:layout_marginHorizontal="@dimen/card_horizontal_margin"
     android:layout_marginBottom="12dp"
     app:cardBackgroundColor="@color/colorSurface"
-    app:cardCornerRadius="20dp"
+    app:cardCornerRadius="@dimen/card_radius"
     app:cardElevation="0dp"
     app:strokeColor="@color/colorBorder"
     app:strokeWidth="1dp">
@@ -16,67 +17,101 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+        <FrameLayout
+            android:id="@+id/fl_quest_icon"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_circle"
+            android:backgroundTint="#FFF3E0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                app:iiv_color="@color/colorWarning"
+                app:iiv_icon="gmd-stars" />
+        </FrameLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClaimReward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="Nhận thưởng"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            app:cornerRadius="@dimen/button_radius"
+            app:layout_constraintBottom_toBottomOf="@id/fl_quest_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/fl_quest_icon" />
         <TextView
             android:id="@+id/tvQuestTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Nhiệm vụ"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="12dp"
             android:textColor="@color/colorOnSurface"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/btnClaimReward"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@id/fl_quest_icon"
+            app:layout_constraintTop_toTopOf="@id/fl_quest_icon"
+            tools:text="Ghi chép chuyên cần" />
 
         <TextView
             android:id="@+id/tvQuestDesc"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Mô tả nhiệm vụ"
             android:textColor="@color/colorOnSurfaceVariant"
             android:textSize="13sp"
-            app:layout_constraintEnd_toStartOf="@+id/btnClaimReward"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvQuestTitle" />
+            app:layout_constraintEnd_toEndOf="@id/tvQuestTitle"
+            app:layout_constraintStart_toStartOf="@id/tvQuestTitle"
+            app:layout_constraintTop_toBottomOf="@id/tvQuestTitle"
+            tools:text="Nhập ít nhất 3 giao dịch thu/chi vào hôm nay" />
 
-        <ProgressBar
+        <!-- GIẢI PHÁP 1: Tạo thanh chắn (Barrier). Progress Bar sẽ luôn nằm dưới thằng nào dài hơn (Icon hoặc Text) -->
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="fl_quest_icon,tvQuestDesc" />
+
+        <!-- Progress bar neo vào Thanh Chắn Barrier thay vì Icon -->
+        <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/pbQuestProgress"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="0dp"
-            android:layout_height="8dp"
-            android:layout_marginTop="12dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:max="100"
-            android:progress="0"
-            app:layout_constraintEnd_toStartOf="@+id/btnClaimReward"
+            app:indicatorColor="@color/colorPrimary"
+            app:layout_constraintEnd_toStartOf="@id/tvQuestProgressText"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvQuestDesc" />
+            app:layout_constraintTop_toBottomOf="@id/barrier_content"
+            app:trackColor="@color/colorBorder"
+            app:trackCornerRadius="4dp"
+            app:trackThickness="8dp"
+            tools:progress="66" />
 
         <TextView
             android:id="@+id/tvQuestProgressText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="0/3"
             android:textColor="@color/colorOnSurfaceVariant"
-            android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/pbQuestProgress" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnClaimReward"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nhận"
-            android:textAllCaps="false"
-            android:textSize="12sp"
-            android:visibility="visible"
-            app:backgroundTint="@color/colorSuccess"
-            app:cornerRadius="@dimen/button_radius"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/pbQuestProgress"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@id/pbQuestProgress"
+            tools:text="2/3" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

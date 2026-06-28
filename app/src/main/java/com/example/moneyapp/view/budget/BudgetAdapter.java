@@ -1,11 +1,9 @@
 package com.example.moneyapp.view.budget;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.remote.response.BudgetResponse;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -50,9 +49,7 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.ViewHolder
         Context context = holder.itemView.getContext();
 
         holder.tvCategoryName.setText(budget.getCategoryName());
-        holder.tvSpentSummary.setText("Đã chi: " + formatter.format(budget.getUsedAmount()) + " / " + formatter.format(budget.getAmount()) + " đ");
 
-        // Xử lý thông tin Chu kỳ
         String periodText = "Tháng";
         if (budget.getPeriod() == 0) periodText = "Tuần";
         else if (budget.getPeriod() == 2) periodText = "Năm";
@@ -61,31 +58,40 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.ViewHolder
         holder.tvCycleInfo.setTextColor(ContextCompat.getColor(context, R.color.colorInfo));
 
         int progress = (int) budget.getPercentageUsed();
-        holder.pbBudget.setProgress(Math.min(progress, 100));
+        holder.pbBudget.setProgress(Math.min(progress, 100)); // Không cho thanh chạy vượt khỏi viền
+
+        String spentSummary = "Đã chi: " + formatter.format(budget.getUsedAmount()) + " / " + formatter.format(budget.getAmount()) + " đ";
+        holder.tvSpentSummary.setText(spentSummary);
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onBudgetClick(budget);
             }
         });
+        int indicatorColor;
 
         if (progress > 100) {
+            // Vượt quá ngân sách (Đỏ)
+            indicatorColor = ContextCompat.getColor(context, R.color.colorDanger);
             holder.tvPercentage.setText("Vượt mức " + progress + "%");
-            holder.tvPercentage.setTextColor(ContextCompat.getColor(context, R.color.colorDanger));
+            holder.tvPercentage.setTextColor(indicatorColor);
+            holder.tvSpentSummary.setTextColor(indicatorColor); // Cảnh báo luôn trên dòng tiền
         } else {
+            // Trong mức an toàn
             holder.tvPercentage.setText(progress + "%");
             holder.tvPercentage.setTextColor(ContextCompat.getColor(context, R.color.colorOnSurfaceVariant));
+            holder.tvSpentSummary.setTextColor(ContextCompat.getColor(context, R.color.colorOnSurfaceVariant));
+
+            if (progress < 60) {
+                indicatorColor = ContextCompat.getColor(context, R.color.colorSuccess);
+            } else if (progress < 80) {
+                indicatorColor = ContextCompat.getColor(context, R.color.colorWarning);
+            } else {
+                indicatorColor = ContextCompat.getColor(context, R.color.colorDanger);
+            }
         }
 
-        int color;
-        if (progress < 70) {
-            color = ContextCompat.getColor(context, R.color.colorSuccess);
-        } else if (progress < 90) {
-            color = ContextCompat.getColor(context, R.color.colorWarning);
-        } else {
-            color = ContextCompat.getColor(context, R.color.colorDanger);
-        }
-        holder.pbBudget.setProgressTintList(ColorStateList.valueOf(color));
+        holder.pbBudget.setIndicatorColor(indicatorColor);
     }
 
     @Override
@@ -95,7 +101,7 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.ViewHolder
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvCategoryName, tvSpentSummary, tvPercentage, tvCycleInfo;
-        ProgressBar pbBudget;
+        LinearProgressIndicator pbBudget;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -103,6 +109,7 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.ViewHolder
             tvSpentSummary = itemView.findViewById(R.id.tv_spent_summary);
             tvPercentage = itemView.findViewById(R.id.tv_percentage);
             tvCycleInfo = itemView.findViewById(R.id.tv_cycle_info);
+            // Ánh xạ id mới
             pbBudget = itemView.findViewById(R.id.pb_budget);
         }
     }

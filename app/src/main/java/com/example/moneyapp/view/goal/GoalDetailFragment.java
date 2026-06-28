@@ -54,13 +54,13 @@ public class GoalDetailFragment extends BaseFragment {
     private GoalViewModel viewModel;
     private AccountViewModel accountViewModel;
 
-    // View Mở rộng
+    // View Expanded
     private TextView tvName, tvDeadline, tvPercent, tvCurrent, tvTarget;
     private FrameLayout flIconContainer;
     private IconicsImageView ivIcon;
     private CircularProgressIndicator cpProgress;
 
-    // View Thu gọn
+    // View Compact
     private TextView tvNameCompact, tvAmountCompact, tvPercentCompact;
     private FrameLayout flIconContainerCompact;
     private IconicsImageView ivIconCompact;
@@ -68,8 +68,10 @@ public class GoalDetailFragment extends BaseFragment {
 
     // Layout Controls
     private MaterialButton btnDeposit, btnWithdraw;
-    private View cardExpanded, cardCompact;
     private RecyclerView rvGoalRecords;
+
+    // Khai báo cho Animation giống Profile
+    private View goalCardWrapper, topSlice, expandedContent, collapsedContent;
 
     private HistoryGroupAdapter historyAdapter;
     private List<Account> accountList = new ArrayList<>();
@@ -97,6 +99,7 @@ public class GoalDetailFragment extends BaseFragment {
             ((MainActivity) getActivity()).getUiHandler().setFABVisibility(false);
         }
 
+        // Ánh xạ Mở Rộng
         tvName = view.findViewById(R.id.tv_goal_name);
         tvDeadline = view.findViewById(R.id.tv_goal_deadline);
         flIconContainer = view.findViewById(R.id.fl_icon_container);
@@ -106,6 +109,7 @@ public class GoalDetailFragment extends BaseFragment {
         tvTarget = view.findViewById(R.id.tv_target_amount);
         cpProgress = view.findViewById(R.id.cp_progress);
 
+        // Ánh xạ Thu Gọn
         tvNameCompact = view.findViewById(R.id.tv_goal_name_compact);
         tvAmountCompact = view.findViewById(R.id.tv_goal_amount_compact);
         tvPercentCompact = view.findViewById(R.id.tv_goal_percent_compact);
@@ -113,12 +117,15 @@ public class GoalDetailFragment extends BaseFragment {
         flIconContainerCompact = view.findViewById(R.id.fl_icon_container_compact);
         ivIconCompact = view.findViewById(R.id.iv_goal_icon_compact);
 
+        // Nút & Layout
         btnDeposit = view.findViewById(R.id.btn_deposit);
         btnWithdraw = view.findViewById(R.id.btn_withdraw);
-
-        cardExpanded = view.findViewById(R.id.card_expanded);
-        cardCompact = view.findViewById(R.id.card_compact);
         rvGoalRecords = view.findViewById(R.id.rv_goal_records);
+
+        goalCardWrapper = view.findViewById(R.id.goal_card_wrapper);
+        topSlice = view.findViewById(R.id.top_slice);
+        expandedContent = view.findViewById(R.id.expanded_content);
+        collapsedContent = view.findViewById(R.id.collapsed_content);
 
         setupHeader(view, "Chi tiết mục tiêu", "gmd_arrow_back", v -> Navigation.findNavController(v).navigateUp(), "gmd_edit", v -> {
             Bundle bundle = new Bundle();
@@ -140,35 +147,89 @@ public class GoalDetailFragment extends BaseFragment {
     }
 
     private void setupScrollBehavior(View view) {
-        com.google.android.material.appbar.CollapsingToolbarLayout collapsingToolbar = view.findViewById(R.id.collapsing_toolbar);
         AppBarLayout appBarLayout = view.findViewById(R.id.app_bar_layout);
+        com.google.android.material.appbar.CollapsingToolbarLayout collapsingToolbar = view.findViewById(R.id.collapsing_toolbar);
 
-        cardCompact.post(() -> {
-            // LỖI 3 FIX: Tính chính xác Toán học điểm dừng!
-            // AppBar chỉ được cuộn lên và dừng đúng tại điểm này:
-            // Khoảng cách Lề trên (MarginTop = 70dp) + Chiều cao khối Compact + Lề dưới (MarginBottom = 16dp)
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) cardCompact.getLayoutParams();
-            int minHeight = params.topMargin + cardCompact.getHeight() + params.bottomMargin;
+        goalCardWrapper.post(() -> {
+            if (!isAdded()) return;
+            int topHeight = topSlice.getHeight();
 
-            // Set chốt chặn cuộn
-            collapsingToolbar.setMinimumHeight(minHeight);
-        });
+            // Đo chiều cao thật của khối Collapsed khi nó đang tàng hình
+            collapsedContent.measure(
+                    View.MeasureSpec.makeMeasureSpec(goalCardWrapper.getWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+            );
+            int collapsedHeight = collapsedContent.getMeasuredHeight();
 
-        appBarLayout.addOnOffsetChangedListener((appBar, verticalOffset) -> {
-            int totalScrollRange = appBar.getTotalScrollRange();
-            if (totalScrollRange == 0) return;
+            // Lấy khoảng cách margin (khoảng 12dp)
+            int wrapperMarginBottom = getResources().getDimensionPixelSize(R.dimen.card_horizontal_margin);
 
-            float percentage = (float) Math.abs(verticalOffset) / totalScrollRange;
+            // Set Margin để Card nằm lọt dưới Header Tím
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) goalCardWrapper.getLayoutParams();
+            params.topMargin = topHeight + 32;
+            goalCardWrapper.setLayoutParams(params);
 
-            // FADE OUT Thẻ Mở rộng
-            float expAlpha = Math.max(0f, 1f - (percentage * 1.5f));
-            cardExpanded.setAlpha(expAlpha);
-            cardExpanded.setVisibility(expAlpha <= 0f ? View.INVISIBLE : View.VISIBLE);
+            // CHỐT CHẶN CUỘN
+            collapsingToolbar.setMinimumHeight(topHeight + collapsedHeight + wrapperMarginBottom);
 
-            // FADE IN Thẻ Thu gọn
-            float comAlpha = Math.max(0f, (percentage - 0.4f) * 2.5f);
-            cardCompact.setAlpha(comAlpha);
-            cardCompact.setVisibility(comAlpha <= 0f ? View.INVISIBLE : View.VISIBLE);
+            if (appBarLayout != null) {
+                // Khởi tạo trạng thái ban đầu
+                collapsedContent.setAlpha(0f);
+                collapsedContent.setTranslationY(30f);
+                collapsedContent.setVisibility(View.INVISIBLE);
+
+                expandedContent.setAlpha(1f);
+                expandedContent.setScaleX(1f);
+                expandedContent.setScaleY(1f);
+                expandedContent.setVisibility(View.VISIBLE);
+
+                final boolean[] isCurrentlyCollapsed = {false};
+
+                appBarLayout.addOnOffsetChangedListener((appBar, verticalOffset) -> {
+                    int totalScrollRange = appBar.getTotalScrollRange();
+                    if (totalScrollRange == 0) return;
+
+                    float percentage = (float) Math.abs(verticalOffset) / totalScrollRange;
+                    boolean shouldCollapse = percentage > 0.5f;
+
+                    // Chỉ kích hoạt Animation khi qua ngưỡng 50%
+                    if (shouldCollapse != isCurrentlyCollapsed[0]) {
+                        isCurrentlyCollapsed[0] = shouldCollapse;
+
+                        if (shouldCollapse) {
+                            // THU GỌN: Ẩn Khối To, Hiện Khối Dạng Dòng
+                            expandedContent.animate()
+                                    .alpha(0f)
+                                    .scaleX(0.8f).scaleY(0.8f)
+                                    .setDuration(150)
+                                    .withEndAction(() -> expandedContent.setVisibility(View.INVISIBLE))
+                                    .start();
+
+                            collapsedContent.setVisibility(View.VISIBLE);
+                            collapsedContent.animate()
+                                    .alpha(1f)
+                                    .translationY(0f)
+                                    .setDuration(150)
+                                    .start();
+                        } else {
+                            // MỞ BUNG: Ẩn Khối Dạng Dòng, Hiện Khối To
+                            collapsedContent.animate()
+                                    .alpha(0f)
+                                    .translationY(30f)
+                                    .setDuration(150)
+                                    .withEndAction(() -> collapsedContent.setVisibility(View.INVISIBLE))
+                                    .start();
+
+                            expandedContent.setVisibility(View.VISIBLE);
+                            expandedContent.animate()
+                                    .alpha(1f)
+                                    .scaleX(1f).scaleY(1f)
+                                    .setDuration(150)
+                                    .start();
+                        }
+                    }
+                });
+            }
         });
     }
 
@@ -270,7 +331,8 @@ public class GoalDetailFragment extends BaseFragment {
             }
         });
         viewModel.getGoalRecords().observe(getViewLifecycleOwner(), records -> {
-            if (records != null) historyAdapter.updateData(groupGoalRecordsByDate(records), accountList);
+            if (records != null)
+                historyAdapter.updateData(groupGoalRecordsByDate(records), accountList);
         });
         accountViewModel.getAccountsLiveData().observe(getViewLifecycleOwner(), accounts -> {
             if (accounts != null) {
