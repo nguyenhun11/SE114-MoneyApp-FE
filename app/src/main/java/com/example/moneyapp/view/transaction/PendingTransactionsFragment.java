@@ -53,6 +53,7 @@ public class PendingTransactionsFragment extends BaseFragment {
     private PendingAdapter adapter;
     private final List<PendingTransaction> pendingList = new ArrayList<>();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private android.content.BroadcastReceiver updateReceiver;
 
     @Nullable
     @Override
@@ -102,6 +103,21 @@ public class PendingTransactionsFragment extends BaseFragment {
             }
         });
         rvPending.setAdapter(adapter);
+
+        // Đăng ký BroadcastReceiver để cập nhật UI tự động khi có thay đổi DB từ Service/Receiver
+        updateReceiver = new android.content.BroadcastReceiver() {
+            @Override
+            public void onReceive(android.content.Context context, android.content.Intent intent) {
+                loadPendingTransactions();
+            }
+        };
+        android.content.IntentFilter filter = new android.content.IntentFilter("com.example.moneyapp.PENDING_TRANSACTION_UPDATED");
+        androidx.core.content.ContextCompat.registerReceiver(
+                requireContext(),
+                updateReceiver,
+                filter,
+                androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+        );
     }
 
     @Override
@@ -390,6 +406,14 @@ public class PendingTransactionsFragment extends BaseFragment {
     @Override
     protected boolean shouldShowBottomNavigation() {
         return false; // Ẩn thanh BottomNavigation khi xem danh sách duyệt để tối ưu diện tích
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (updateReceiver != null) {
+            requireContext().unregisterReceiver(updateReceiver);
+        }
     }
 }
 
