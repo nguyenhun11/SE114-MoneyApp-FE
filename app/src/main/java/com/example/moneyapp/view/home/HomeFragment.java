@@ -12,10 +12,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
+import com.example.moneyapp.data.repository.PendingTransactionRepository;
+import android.os.Handler;
+import android.os.Looper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -66,6 +70,11 @@ public class HomeFragment extends BaseFragment {
     private boolean isExpenseTab = true;
     private Date currentStartDate;
     private Date currentEndDate;
+
+    private CardView cardPendingBanner;
+    private TextView tvPendingBannerText;
+    private PendingTransactionRepository pendingRepository;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Nullable
     @Override
@@ -130,6 +139,20 @@ public class HomeFragment extends BaseFragment {
 
         observeViewModel();
         observeDashboardData(view);
+
+        // Khởi tạo repository truy cập các giao dịch nháp chờ duyệt
+        pendingRepository = new PendingTransactionRepository(requireActivity().getApplication());
+
+        // Ánh xạ các view liên quan đến Banner báo giao dịch nháp
+        cardPendingBanner = view.findViewById(R.id.card_pending_banner);
+        tvPendingBannerText = view.findViewById(R.id.tv_pending_banner_text);
+
+        // Thiết lập sự kiện click vào banner để mở màn hình duyệt
+        if (cardPendingBanner != null) {
+            cardPendingBanner.setOnClickListener(v -> 
+                Navigation.findNavController(v).navigate(R.id.pendingTransactionsFragment)
+            );
+        }
     }
 
     private void handleTabSwitch(int index) {
@@ -285,6 +308,51 @@ public class HomeFragment extends BaseFragment {
                 startActivity(shareIntent);
             });
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Cập nhật lại số lượng giao dịch chờ duyệt khi fragment hiển thị lại (onResume)
+        checkPendingTransactions();
+    }
+
+    /**
+     * Truy vấn số lượng giao dịch chờ duyệt trong Database.
+     * Cập nhật ẩn/hiện Banner và số lượng tương ứng lên giao diện.
+     */
+    private void checkPendingTransactions() {
+        if (pendingRepository == null) return;
+
+        pendingRepository.getPendingCount(new PendingTransactionRepository.PendingCountCallback() {
+            @Override
+            public void onSuccess(int count) {
+                // Đảm bảo chạy code giao diện trên Main Thread
+                mainHandler.post(() -> {
+                    // Kiểm tra null-safety phòng trường hợp Fragment đã hủy view
+                    if (getView() == null || cardPendingBanner == null || tvPendingBannerText == null) {
+                        return;
+                    }
+
+                    if (count > 0) {
+                        // Hiển thị banner và thiết lập thông điệp số lượng
+                        cardPendingBanner.setVisibility(View.VISIBLE);
+                        tvPendingBannerText.setText("Bạn có " + count + " giao dịch chờ duyệt tự động!");
+                    } else {
+                        // Ẩn banner nếu không có giao dịch nháp nào
+                        cardPendingBanner.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String message) {
+                // Log lỗi ra hệ thống khi xảy ra sự cố truy vấn
+                mainHandler.post(() -> 
+                    android.util.Log.e("HomeFragment", "Lỗi kiểm tra giao dịch chờ duyệt: " + message)
+                );
+            }
+        });
     }
 
     private void populateCharts(List<PieChartItem> items) {

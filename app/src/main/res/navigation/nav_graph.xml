@@ -9,7 +9,11 @@
         android:id="@+id/homeFragment"
         android:name="com.example.moneyapp.view.home.HomeFragment"
         android:label="@string/home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_pendingTransactionsFragment"
+            app:destination="@id/pendingTransactionsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/historyFragment"
@@ -122,6 +126,12 @@
         tools:layout="@layout/fragment_information" />
 
     <fragment
+        android:id="@+id/pendingTransactionsFragment"
+        android:name="com.example.moneyapp.view.transaction.PendingTransactionsFragment"
+        android:label="Giao dịch chờ duyệt"
+        tools:layout="@layout/fragment_pending_transactions" />
+
+    <fragment
         android:id="@+id/goalFragment"
         android:name="com.example.moneyapp.view.goal.GoalFragment"
         android:label="@string/goal_title"
@@ -187,5 +197,6 @@
         android:name="com.example.moneyapp.view.quest.QuestFragment"
         android:label="Nhiệm vụ"
         tools:layout="@layout/fragment_quest" />
+
 
 </navigation>

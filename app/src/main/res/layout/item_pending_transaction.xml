@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/colorSurface">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <!-- Icon Loại giao dịch bên trái (Cộng/Trừ tiền) -->
+        <View
+            android:id="@+id/view_type_indicator"
+            android:layout_width="4dp"
+            android:layout_height="50dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@color/colorPrimary" />
+
+        <!-- Phần thông tin giao dịch ở giữa -->
+        <LinearLayout
+            android:id="@+id/layout_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/view_type_indicator"
+            android:layout_toStartOf="@+id/tv_pending_amount"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:orientation="vertical">
+
+            <!-- Tên ví/Tài khoản nguồn nhận diện -->
+            <TextView
+                android:id="@+id/tv_pending_account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ví Momo"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorOnSurface" />
+
+            <!-- Nội dung giao dịch bóc tách được -->
+            <TextView
+                android:id="@+id/tv_pending_note"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chuyển khoản thanh toán cà phê Highlands"
+                android:textSize="12sp"
+                android:textColor="@color/colorOnSurfaceVariant"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginTop="2dp" />
+
+            <!-- Ngày giờ nhận giao dịch -->
+            <TextView
+                android:id="@+id/tv_pending_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2026-06-28 07:15"
+                android:textSize="10sp"
+                android:textColor="@color/colorOnSurfaceVariant"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- Số tiền giao dịch bên phải -->
+        <TextView
+            android:id="@+id/tv_pending_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:text="-50.000đ"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#E91E63" />
+
+        <!-- Nút hành động nhanh bên dưới số tiền -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/tv_pending_amount"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <!-- Nút Xóa/Bỏ qua giao dịch nháp -->
+            <ImageButton
+                android:id="@+id/btn_pending_delete"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@android:drawable/ic_delete"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Delete draft"
+                android:layout_marginEnd="12dp"
+                app:tint="#D82020" />
+
+            <!-- Nút Duyệt / Lưu nhanh -->
+            <ImageButton
+                android:id="@+id/btn_pending_approve"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@android:drawable/ic_input_add"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Approve draft"
+                app:tint="#4CAF50" />
+        </LinearLayout>
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

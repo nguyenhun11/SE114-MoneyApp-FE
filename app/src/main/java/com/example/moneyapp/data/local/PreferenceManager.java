@@ -99,5 +99,12 @@ public class PreferenceManager {
         return sharedPreferences.getInt(KEY_LAST_HOME_TAB, 0);
     }
 
+    public void setNotificationListenerEnabled(boolean enabled) {
+        sharedPreferences.edit().putBoolean("isNotificationListenerEnabled", enabled).apply();
+    }
 
+    public boolean isNotificationListenerEnabled() {
+        return sharedPreferences.getBoolean("isNotificationListenerEnabled", false);
+    }
 }
+
