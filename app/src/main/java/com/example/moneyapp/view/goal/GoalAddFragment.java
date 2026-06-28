@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
@@ -28,19 +29,21 @@ import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class GoalAddFragment extends BaseFragment {
 
     private EditText etName, etTargetAmount;
-    private TextView tvDeadline, btnDelete;
+    private TextView tvDeadline;
     private IconicsImageView ivPreviewIcon;
     private View viewPreviewColor;
-    
+
     private GoalViewModel viewModel;
     private int selectedColorId = 0;
     private int selectedIconId = 16; // Mặc định là gmd-star
-    private String selectedDeadline = "";
+    private String selectedDeadline = ""; // Chuỗi gốc lưu xuống DB (yyyy-MM-dd)
     private Goal existingGoal = null;
 
     @Override
@@ -67,16 +70,20 @@ public class GoalAddFragment extends BaseFragment {
         tvDeadline = view.findViewById(R.id.tv_deadline);
         ivPreviewIcon = view.findViewById(R.id.iv_preview_icon);
         viewPreviewColor = view.findViewById(R.id.view_preview_color);
-        btnDelete = view.findViewById(R.id.btn_delete_goal);
 
-        setupHeader(view, existingGoal == null ? R.string.add_goal_title : R.string.edit_goal_title, true);
+        if (existingGoal != null) {
+            setupHeader(view, "Sửa mục tiêu",
+                    "gmd_arrow_back", v -> Navigation.findNavController(v).navigateUp(),
+                    "gmd_delete_outline", v -> deleteGoal());
+        } else {
+            setupHeader(view, "Thêm mục tiêu mới", true);
+        }
+
         setupPickers(view);
         setupAmountFormatter();
-        
+
         if (existingGoal != null) {
             fillData();
-            btnDelete.setVisibility(View.VISIBLE);
-            btnDelete.setOnClickListener(v -> deleteGoal());
         } else {
             updatePreview();
         }
@@ -106,11 +113,17 @@ public class GoalAddFragment extends BaseFragment {
                     .build();
 
             datePicker.addOnPositiveButtonClickListener(selection -> {
-                Calendar calendar = Calendar.getInstance();
+                // FIX LỖI 1: Bắt buộc dùng TimeZone UTC để không bị trừ lùi mất 1 ngày ở VN
+                Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                 calendar.setTimeInMillis(selection);
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                selectedDeadline = sdf.format(calendar.getTime());
-                tvDeadline.setText(selectedDeadline);
+
+                // Format để gửi lên Backend
+                SimpleDateFormat sdfApi = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                selectedDeadline = sdfApi.format(calendar.getTime());
+
+                // Format để hiển thị cho User xem
+                SimpleDateFormat sdfDisplay = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                tvDeadline.setText(sdfDisplay.format(calendar.getTime()));
             });
 
             datePicker.show(getChildFragmentManager(), "DATE_PICKER");
@@ -154,20 +167,37 @@ public class GoalAddFragment extends BaseFragment {
     private void fillData() {
         etName.setText(existingGoal.getName());
         etTargetAmount.setText(CurrencyFormatter.formatVND(existingGoal.getTargetAmount()));
-        tvDeadline.setText(existingGoal.getDeadline());
-        selectedDeadline = existingGoal.getDeadline();
+
+        selectedDeadline = existingGoal.getDeadline(); // Giả sử Backend trả về "2026-12-31"
+
+        try {
+            SimpleDateFormat sdfApi = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            SimpleDateFormat sdfDisplay = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
+            Date parsedDate = sdfApi.parse(selectedDeadline);
+            if(parsedDate != null) {
+                tvDeadline.setText(sdfDisplay.format(parsedDate)); // Hiển thị 31/12/2026
+            } else {
+                tvDeadline.setText(selectedDeadline);
+            }
+        } catch (Exception e) {
+            tvDeadline.setText(selectedDeadline);
+        }
+
         selectedColorId = existingGoal.getColorId();
         selectedIconId = existingGoal.getIconId();
         updatePreview();
     }
 
     private void updatePreview() {
-        int color = AppResourceManager.getColor(selectedColorId);
-        
         ivPreviewIcon.post(() -> {
-            ivPreviewIcon.setIcon(new IconicsDrawable(requireContext(), AppResourceManager.getIconName(selectedIconId)));
-            ivPreviewIcon.setImageTintList(ColorStateList.valueOf(color));
-            viewPreviewColor.setBackgroundTintList(ColorStateList.valueOf(color));
+            ivPreviewIcon.setImageDrawable(AppResourceManager.getWhiteIcon(requireContext(), selectedIconId));
+            if (selectedColorId == 0) {
+                viewPreviewColor.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorEmpty)));
+            } else {
+                int color = AppResourceManager.getColor(selectedColorId);
+                viewPreviewColor.setBackgroundTintList(ColorStateList.valueOf(color));
+            }
         });
     }
 
@@ -185,6 +215,7 @@ public class GoalAddFragment extends BaseFragment {
     public void onFabClick() {
         saveGoal();
     }
+
     @Override
     protected String getFabLabel(){
         return "Lưu mục tiêu";
@@ -222,8 +253,7 @@ public class GoalAddFragment extends BaseFragment {
             if (success) {
                 DialogHelper.showSimpleDialog(requireContext(), "Thành công", "Thao tác thành công", () -> {
                     viewModel.resetOperationStatus();
-                    
-                    // Nếu đang ở màn hình Sửa (có existingGoal), cần quay lại màn hình Danh sách (về 2 cấp)
+
                     if (existingGoal != null) {
                         Navigation.findNavController(requireView()).popBackStack(R.id.goalFragment, false);
                     } else {

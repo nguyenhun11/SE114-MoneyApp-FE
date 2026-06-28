@@ -178,8 +178,20 @@ public class BudgetAddFragment extends BaseFragment {
 
         // Khóa không cho đổi Hạng mục/Nhóm khi đang sửa (Tránh nhầm lẫn logic)
         for (int i = 0; i < rgScope.getChildCount(); i++) {
-            rgScope.getChildAt(i).setEnabled(false);
+            View radioBtn = rgScope.getChildAt(i);
+            radioBtn.setEnabled(false);
+            radioBtn.setAlpha(0.5f); // THÊM DÒNG NÀY: Làm mờ RadioButton đi 50%
         }
+
+        View btnSelectCategory = getView().findViewById(R.id.btnSelectCategory);
+        View btnSelectGroup = getView().findViewById(R.id.btnSelectGroup);
+
+        btnSelectCategory.setEnabled(false);
+        btnSelectCategory.setAlpha(0.5f); // Làm mờ ô chọn Hạng mục
+
+        btnSelectGroup.setEnabled(false);
+        btnSelectGroup.setAlpha(0.5f); // Làm mờ ô chọn Nhóm
+
         getView().findViewById(R.id.btnSelectCategory).setEnabled(false);
         getView().findViewById(R.id.btnSelectGroup).setEnabled(false);
 
@@ -281,14 +293,32 @@ public class BudgetAddFragment extends BaseFragment {
     }
 
     private void saveBudget() {
-        String amountStr = etAmount.getText().toString().replaceAll("[.,]", "");
-        if (amountStr.isEmpty() || selectedCategory == null) {
-            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Vui lòng nhập đủ thông tin");
+        String amountStr = etAmount.getText().toString().replaceAll("[.,đ ]", "").trim();
+
+        if (amountStr.isEmpty()) {
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Vui lòng nhập số tiền ngân sách");
+            return;
+        }
+
+        boolean isDataMissing = false;
+
+        if (currentScope == SCOPE_GROUP) {
+            if (selectedGroup == null && (getArguments() == null || getArguments().getString("categoryGroupId") == null)) {
+                isDataMissing = true;
+            }
+        } else if (currentScope == SCOPE_CATEGORY) {
+            if (selectedCategory == null && (getArguments() == null || getArguments().getString("categoryId") == null)) {
+                isDataMissing = true;
+            }
+        }
+
+        if (isDataMissing) {
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Vui lòng chọn Hạng mục hoặc Nhóm cần lập ngân sách");
             return;
         }
 
         double amount = Double.parseDouble(amountStr);
-        int period = 1; // Monthly
+        int period = 1; // Mặc định Tháng
         if (rbWeekly.isChecked()) period = 0;
         else if (rbYearly.isChecked()) period = 2;
 
@@ -297,22 +327,15 @@ public class BudgetAddFragment extends BaseFragment {
         if (currentScope == SCOPE_TOTAL) {
             request.setCategoryGroupId(null);
             request.setCategoryId(null);
-        }
-        else if (currentScope == SCOPE_GROUP) {
-            if (budgetId == null && selectedGroup == null) {
-                Toast.makeText(getContext(), "Vui lòng chọn nhóm hạng mục", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            request.setCategoryGroupId(budgetId != null ? getArguments().getString("categoryGroupId") : selectedGroup.getId());
+        } else if (currentScope == SCOPE_GROUP) {
+            String groupId = (budgetId != null) ? getArguments().getString("categoryGroupId") : selectedGroup.getId();
+            request.setCategoryGroupId(groupId);
             request.setCategoryId(null);
-        }
-        else if (currentScope == SCOPE_CATEGORY) {
-            if (budgetId == null && selectedCategory == null) {
-                Toast.makeText(getContext(), "Vui lòng chọn hạng mục", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            request.setCategoryGroupId(budgetId != null ? getArguments().getString("categoryGroupId") : selectedCategory.getGroupId());
-            request.setCategoryId(budgetId != null ? getArguments().getString("categoryId") : selectedCategory.getCategoryId());
+        } else if (currentScope == SCOPE_CATEGORY) {
+            String groupId = (budgetId != null) ? getArguments().getString("categoryGroupId") : selectedCategory.getGroupId();
+            String catId = (budgetId != null) ? getArguments().getString("categoryId") : selectedCategory.getCategoryId();
+            request.setCategoryGroupId(groupId);
+            request.setCategoryId(catId);
         }
 
         if (budgetId != null) {

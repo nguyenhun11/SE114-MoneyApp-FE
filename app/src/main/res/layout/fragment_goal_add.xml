@@ -19,181 +19,193 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.core.widget.NestedScrollView
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="@dimen/main_top_margin_small"
+        android:layout_marginBottom="@dimen/card_bottom_margin"
+        app:cardBackgroundColor="@color/colorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header_layout">
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
+        app:strokeColor="@color/colorBorder"
+        app:strokeWidth="1dp">
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/main_scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:scrollbarSize="0dp">
 
-            <com.google.android.material.card.MaterialCardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/card_horizontal_margin"
-                android:layout_marginTop="@dimen/header_margin_top"
-                android:layout_marginBottom="24dp"
-                app:cardBackgroundColor="@color/colorSurface"
-                app:cardCornerRadius="@dimen/card_radius"
-                app:cardElevation="0dp"
-                app:strokeColor="@color/colorBorder"
-                app:strokeWidth="1dp">
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Tên mục tiêu"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/et_goal_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@drawable/bg_input_border"
+                    android:hint="@string/goal_name_hint"
+                    android:paddingHorizontal="16dp"
+                    android:singleLine="true"
+                    android:textColor="@color/colorOnSurface"
+                    android:textColorHint="@color/colorOnSurfaceVariant"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Số tiền mục tiêu"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/et_target_amount"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@drawable/bg_input_border"
+                    android:hint="@string/goal_target_amount_hint"
+                    android:inputType="numberDecimal"
+                    android:paddingHorizontal="16dp"
+                    android:singleLine="true"
+                    android:textColor="@color/colorOnSurface"
+                    android:textColorHint="@color/colorOnSurfaceVariant"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Hạn định"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_deadline"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@drawable/bg_input_border"
+                    android:gravity="center_vertical"
+                    android:hint="@string/goal_deadline_hint"
+                    android:paddingHorizontal="16dp"
+                    android:textColor="@color/colorOnSurface"
+                    android:textColorHint="@color/colorOnSurfaceVariant"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Hiển thị"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tên mục tiêu"
-                        android:textColor="@color/colorOnSurface"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:id="@+id/et_goal_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_edittext_outline"
-                        android:hint="@string/goal_name_hint"
-                        android:padding="12dp"
-                        android:textColor="@color/colorOnSurface"
-                        android:textColorHint="@color/colorOnSurfaceVariant"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="Số tiền mục tiêu"
-                        android:textColor="@color/colorOnSurface"
-                        android:textStyle="bold" />
-
-                    <EditText
-                        android:id="@+id/et_target_amount"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_edittext_outline"
-                        android:hint="@string/goal_target_amount_hint"
-                        android:inputType="numberDecimal"
-                        android:padding="12dp"
-                        android:textColor="@color/colorOnSurface"
-                        android:textColorHint="@color/colorOnSurfaceVariant"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="Hạn định"
-                        android:textColor="@color/colorOnSurface"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tv_deadline"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_edittext_outline"
-                        android:hint="@string/goal_deadline_hint"
-                        android:padding="12dp"
-                        android:textColor="@color/colorOnSurface"
-                        android:textColorHint="@color/colorOnSurfaceVariant"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="Hiển thị"
-                        android:textColor="@color/colorOnSurface"
-                        android:textStyle="bold" />
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:orientation="horizontal">
+                        android:id="@+id/btn_select_icon"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input_border"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
-                        <LinearLayout
-                            android:id="@+id/btn_select_icon"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/bg_edittext_outline"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="12dp">
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/colorEmpty">
 
                             <com.mikepenz.iconics.view.IconicsImageView
                                 android:id="@+id/iv_preview_icon"
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
                                 android:layout_gravity="center"
                                 app:ico_color="@color/colorOnSurface"
                                 app:ico_icon="gmd_star" />
+                        </FrameLayout>
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="Biểu tượng"
-                                android:textColor="@color/colorOnSurface"
-                                android:textSize="12sp" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="16dp"
-                            android:layout_height="1dp" />
-
-                        <LinearLayout
-                            android:id="@+id/btn_select_color"
-                            android:layout_width="0dp"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/bg_edittext_outline"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="12dp">
-
-                            <View
-                                android:id="@+id/view_preview_color"
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:background="@drawable/bg_circle"
-                                android:backgroundTint="@color/colorPrimary" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="Màu sắc"
-                                android:textColor="@color/colorOnSurface"
-                                android:textSize="12sp" />
-                        </LinearLayout>
-
+                            android:layout_marginTop="8dp"
+                            android:text="Biểu tượng"
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="14sp" />
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/btn_delete_goal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="24dp"
-                        android:text="XÓA MỤC TIÊU"
-                        android:textColor="@color/colorDanger"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
+                    <LinearLayout
+                        android:id="@+id/btn_select_color"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input_border"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
+                        <View
+                            android:id="@+id/view_preview_color"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/colorPrimary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Màu sắc"
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="14sp" />
+                    </LinearLayout>
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+
+                <TextView
+                    android:id="@+id/btn_delete_goal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center"
+                    android:text="XÓA MỤC TIÊU"
+                    android:textColor="@color/colorDanger"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
