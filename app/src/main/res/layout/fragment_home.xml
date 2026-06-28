@@ -85,6 +85,115 @@
                         android:textSize="24sp"
                         android:textStyle="bold" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/menu_bottom_half"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="8dp">
+
+                    <LinearLayout
+                        android:id="@+id/btn_city_exp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/colorSuccessBgLight">
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                app:iiv_color="@color/colorSuccess"
+                                app:iiv_icon="gmd_location_city" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Thống kê"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btn_quests_exp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/colorInfoBgLight">
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                app:iiv_color="@color/colorInfo"
+                                app:iiv_icon="gmd_assignment" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:id="@+id/tv_menu_quests_status_exp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Nhiệm vụ"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btn_settings_exp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle"
+                            android:backgroundTint="@color/colorNeutralBgLight">
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                app:iiv_color="@color/colorNeutral"
+                                app:iiv_icon="gmd_settings" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Cài đặt"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
             </FrameLayout>
 
             <LinearLayout
@@ -128,6 +237,332 @@
                             android:id="@+id/time_selector"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
+
+                        <FrameLayout
+                            android:id="@+id/menu_top_half"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone">
+
+                            <LinearLayout
+                                android:id="@+id/menu_top_expanded"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingTop="16dp"
+                                android:paddingBottom="8dp">
+
+                                <LinearLayout
+                                    android:id="@+id/btn_stat_exp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:background="?attr/selectableItemBackground"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
+
+                                    <FrameLayout
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:background="@drawable/bg_circle"
+                                        android:backgroundTint="@color/colorPrimaryBgLight">
+
+                                        <com.mikepenz.iconics.view.IconicsImageView
+                                            android:layout_width="24dp"
+                                            android:layout_height="24dp"
+                                            android:layout_gravity="center"
+                                            app:iiv_color="@color/colorPrimary"
+                                            app:iiv_icon="gmd_insert_chart" />
+                                    </FrameLayout>
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:text="Thống kê"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/btn_budget_exp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:background="?attr/selectableItemBackground"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
+
+                                    <FrameLayout
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:background="@drawable/bg_circle"
+                                        android:backgroundTint="@color/colorDangerBgLight">
+
+                                        <com.mikepenz.iconics.view.IconicsImageView
+                                            android:layout_width="24dp"
+                                            android:layout_height="24dp"
+                                            android:layout_gravity="center"
+                                            app:iiv_color="@color/colorDanger"
+                                            app:iiv_icon="gmd_account_balance_wallet" />
+                                    </FrameLayout>
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:text="Ngân sách"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/btn_goals_exp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:background="?attr/selectableItemBackground"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
+
+                                    <FrameLayout
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:background="@drawable/bg_circle"
+                                        android:backgroundTint="@color/colorWarningBgLight">
+
+                                        <com.mikepenz.iconics.view.IconicsImageView
+                                            android:layout_width="24dp"
+                                            android:layout_height="24dp"
+                                            android:layout_gravity="center"
+                                            app:iiv_color="@color/colorWarning"
+                                            app:iiv_icon="gmd_star" />
+                                    </FrameLayout>
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:text="Tiết kiệm"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <HorizontalScrollView
+                                android:id="@+id/menu_top_collapsed"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:alpha="0"
+                                android:clipToPadding="false"
+                                android:paddingHorizontal="4dp"
+                                android:scrollbars="none"
+                                android:visibility="invisible">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:paddingTop="24dp">
+
+                                    <LinearLayout
+                                        android:id="@+id/btn_stat_col"
+                                        android:layout_width="76dp"
+                                        android:layout_height="wrap_content"
+                                        android:background="?attr/selectableItemBackground"
+                                        android:clickable="true"
+                                        android:focusable="true"
+                                        android:gravity="center"
+                                        android:orientation="vertical">
+
+                                        <FrameLayout
+                                            android:layout_width="40dp"
+                                            android:layout_height="40dp"
+                                            android:background="@drawable/bg_circle"
+                                            android:backgroundTint="@color/colorPrimaryBgLight">
+
+                                            <com.mikepenz.iconics.view.IconicsImageView
+                                                android:layout_width="20dp"
+                                                android:layout_height="20dp"
+                                                android:layout_gravity="center"
+                                                app:iiv_color="@color/colorPrimary"
+                                                app:iiv_icon="gmd_insert_chart" />
+                                        </FrameLayout>
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Thống kê"
+                                            android:textSize="11sp" />
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:id="@+id/btn_budget_col"
+                                        android:layout_width="76dp"
+                                        android:layout_height="wrap_content"
+                                        android:background="?attr/selectableItemBackground"
+                                        android:clickable="true"
+                                        android:focusable="true"
+                                        android:gravity="center"
+                                        android:orientation="vertical">
+
+                                        <FrameLayout
+                                            android:layout_width="40dp"
+                                            android:layout_height="40dp"
+                                            android:background="@drawable/bg_circle"
+                                            android:backgroundTint="@color/colorDangerBgLight">
+
+                                            <com.mikepenz.iconics.view.IconicsImageView
+                                                android:layout_width="20dp"
+                                                android:layout_height="20dp"
+                                                android:layout_gravity="center"
+                                                app:iiv_color="@color/colorDanger"
+                                                app:iiv_icon="gmd_account_balance_wallet" />
+                                        </FrameLayout>
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Ngân sách"
+                                            android:textSize="11sp" />
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:id="@+id/btn_goals_col"
+                                        android:layout_width="76dp"
+                                        android:layout_height="wrap_content"
+                                        android:background="?attr/selectableItemBackground"
+                                        android:clickable="true"
+                                        android:focusable="true"
+                                        android:gravity="center"
+                                        android:orientation="vertical">
+
+                                        <FrameLayout
+                                            android:layout_width="40dp"
+                                            android:layout_height="40dp"
+                                            android:background="@drawable/bg_circle"
+                                            android:backgroundTint="@color/colorWarningBgLight">
+
+                                            <com.mikepenz.iconics.view.IconicsImageView
+                                                android:layout_width="20dp"
+                                                android:layout_height="20dp"
+                                                android:layout_gravity="center"
+                                                app:iiv_color="@color/colorWarning"
+                                                app:iiv_icon="gmd_star" />
+                                        </FrameLayout>
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Tiết kiệm"
+                                            android:textSize="11sp" />
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:id="@+id/btn_city_col"
+                                        android:layout_width="76dp"
+                                        android:layout_height="wrap_content"
+                                        android:background="?attr/selectableItemBackground"
+                                        android:clickable="true"
+                                        android:focusable="true"
+                                        android:gravity="center"
+                                        android:orientation="vertical">
+
+                                        <FrameLayout
+                                            android:layout_width="40dp"
+                                            android:layout_height="40dp"
+                                            android:background="@drawable/bg_circle"
+                                            android:backgroundTint="@color/colorSuccessBgLight">
+
+                                            <com.mikepenz.iconics.view.IconicsImageView
+                                                android:layout_width="20dp"
+                                                android:layout_height="20dp"
+                                                android:layout_gravity="center"
+                                                app:iiv_color="@color/colorSuccess"
+                                                app:iiv_icon="gmd_location_city" />
+                                        </FrameLayout>
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Thành phố"
+                                            android:textSize="11sp" />
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:id="@+id/btn_quests_col"
+                                        android:layout_width="76dp"
+                                        android:layout_height="wrap_content"
+                                        android:background="?attr/selectableItemBackground"
+                                        android:clickable="true"
+                                        android:focusable="true"
+                                        android:gravity="center"
+                                        android:orientation="vertical">
+
+                                        <FrameLayout
+                                            android:layout_width="40dp"
+                                            android:layout_height="40dp"
+                                            android:background="@drawable/bg_circle"
+                                            android:backgroundTint="@color/colorInfoBgLight">
+
+                                            <com.mikepenz.iconics.view.IconicsImageView
+                                                android:layout_width="20dp"
+                                                android:layout_height="20dp"
+                                                android:layout_gravity="center"
+                                                app:iiv_color="@color/colorInfo"
+                                                app:iiv_icon="gmd_assignment" />
+                                        </FrameLayout>
+
+                                        <TextView
+                                            android:id="@+id/tv_menu_quests_status_col"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Nhiệm vụ"
+                                            android:textSize="11sp" />
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:id="@+id/btn_settings_col"
+                                        android:layout_width="76dp"
+                                        android:layout_height="wrap_content"
+                                        android:background="?attr/selectableItemBackground"
+                                        android:clickable="true"
+                                        android:focusable="true"
+                                        android:gravity="center"
+                                        android:orientation="vertical">
+
+                                        <FrameLayout
+                                            android:layout_width="40dp"
+                                            android:layout_height="40dp"
+                                            android:background="@drawable/bg_circle"
+                                            android:backgroundTint="@color/colorNeutralBgLight">
+
+                                            <com.mikepenz.iconics.view.IconicsImageView
+                                                android:layout_width="20dp"
+                                                android:layout_height="20dp"
+                                                android:layout_gravity="center"
+                                                app:iiv_color="@color/colorNeutral"
+                                                app:iiv_icon="gmd_settings" />
+                                        </FrameLayout>
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="4dp"
+                                            android:text="Cài đặt"
+                                            android:textSize="11sp" />
+                                    </LinearLayout>
+                                </LinearLayout>
+                            </HorizontalScrollView>
+                        </FrameLayout>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -143,315 +578,26 @@
         android:paddingBottom="100dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/layout_dashboard_overview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="10dp"
-        android:visibility="visible">
+        android:clipToPadding="false"
+        android:paddingBottom="80dp"
+        android:visibility="visible"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_menu_grid"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/card_horizontal_margin"
-            android:layout_marginTop="128dp"
-            app:cardBackgroundColor="@color/colorSurface"
-            app:cardCornerRadius="@dimen/card_radius"
-            app:cardElevation="0dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:strokeColor="@color/colorBorder"
-            app:strokeWidth="1dp">
+            android:orientation="vertical"
+            android:paddingTop="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
-
-                <GridLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:alignmentMode="alignMargins"
-                    android:columnCount="3"
-                    android:rowCount="2">
-
-                    <LinearLayout
-                        android:id="@+id/btn_menu_statistics"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:background="?attr/selectableItemBackground"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:paddingVertical="12dp">
-
-                        <FrameLayout
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="@drawable/bg_circle"
-                            android:backgroundTint="@color/colorPrimaryBgLight">
-
-                            <com.mikepenz.iconics.view.IconicsImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_gravity="center"
-                                app:iiv_color="@color/colorPrimary"
-                                app:iiv_icon="gmd_insert_chart" />
-                        </FrameLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Thống kê"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/btn_menu_budget"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:background="?attr/selectableItemBackground"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:paddingVertical="12dp">
-
-                        <FrameLayout
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="@drawable/bg_circle"
-                            android:backgroundTint="@color/colorDangerBgLight">
-
-                            <com.mikepenz.iconics.view.IconicsImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_gravity="center"
-                                app:iiv_color="@color/colorDanger"
-                                app:iiv_icon="gmd_account_balance_wallet" />
-                        </FrameLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Ngân sách"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/btn_menu_goals"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:background="?attr/selectableItemBackground"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:paddingVertical="12dp">
-
-                        <FrameLayout
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="@drawable/bg_circle"
-                            android:backgroundTint="@color/colorWarningBgLight">
-
-                            <com.mikepenz.iconics.view.IconicsImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_gravity="center"
-                                app:iiv_color="@color/colorWarning"
-                                app:iiv_icon="gmd_star" />
-                        </FrameLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Tiết kiệm"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/btn_menu_city"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:background="?attr/selectableItemBackground"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:paddingVertical="12dp">
-
-                        <FrameLayout
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="@drawable/bg_circle"
-                            android:backgroundTint="@color/colorSuccessBgLight">
-
-                            <com.mikepenz.iconics.view.IconicsImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_gravity="center"
-                                app:iiv_color="@color/colorSuccess"
-                                app:iiv_icon="gmd_location_city" />
-                        </FrameLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="MoneyCity"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/btn_menu_quests"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:background="?attr/selectableItemBackground"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:paddingVertical="12dp">
-
-                        <FrameLayout
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="@drawable/bg_circle"
-                            android:backgroundTint="@color/colorInfoBgLight">
-
-                            <com.mikepenz.iconics.view.IconicsImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_gravity="center"
-                                app:iiv_color="@color/colorInfo"
-                                app:iiv_icon="gmd_assignment" />
-                        </FrameLayout>
-
-                        <TextView
-                            android:id="@+id/tv_menu_quests_status"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Nhiệm vụ"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/btn_menu_settings"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:background="?attr/selectableItemBackground"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:paddingVertical="12dp">
-
-                        <FrameLayout
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="@drawable/bg_circle"
-                            android:backgroundTint="@color/colorNeutralBgLight">
-
-                            <com.mikepenz.iconics.view.IconicsImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_gravity="center"
-                                app:iiv_color="@color/colorNeutral"
-                                app:iiv_icon="gmd_settings" />
-                        </FrameLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Cài đặt"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-                </GridLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:clipToPadding="false"
-            android:paddingBottom="100dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/card_menu_grid">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingHorizontal="@dimen/card_horizontal_margin"
-                android:paddingTop="16dp">
-
-                <!-- Banner hiển thị số lượng giao dịch chờ duyệt được phát hiện qua thông báo -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/card_pending_banner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:visibility="gone"
-                    app:cardBackgroundColor="#FFEFCB"
-                    app:cardCornerRadius="@dimen/button_radius"
-                    app:cardElevation="0dp"
-                    app:strokeColor="#FFB300"
-                    app:strokeWidth="1dp">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp">
-
-                        <com.mikepenz.iconics.view.IconicsImageView
-                            android:id="@+id/iv_bell"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_alignParentStart="true"
-                            android:layout_centerVertical="true"
-                            app:iiv_color="#D86000"
-                            app:iiv_icon="gmd_notifications_active" />
-
-                        <TextView
-                            android:id="@+id/tv_pending_banner_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="12dp"
-                            android:layout_marginEnd="12dp"
-                            android:layout_toStartOf="@+id/iv_arrow"
-                            android:layout_toEndOf="@id/iv_bell"
-                            android:text="Bạn có giao dịch chờ duyệt tự động!"
-                            android:textColor="#D86000"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                        <com.mikepenz.iconics.view.IconicsImageView
-                            android:id="@+id/iv_arrow"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            app:iiv_color="#D86000"
-                            app:iiv_icon="gmd_chevron_right" />
-
-                    </RelativeLayout>
-                </com.google.android.material.card.MaterialCardView>
+                android:paddingHorizontal="@dimen/card_horizontal_margin">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_user_profile"
@@ -465,7 +611,7 @@
                     app:cardCornerRadius="@dimen/button_radius"
                     app:cardElevation="0dp"
                     app:strokeColor="@color/colorWarning"
-                    app:strokeWidth="1.5dp">
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -523,6 +669,58 @@
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <!-- Banner hiển thị số lượng giao dịch chờ duyệt được phát hiện qua thông báo -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_pending_banner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="#FFEFCB"
+                    app:cardCornerRadius="@dimen/button_radius"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#FFB300"
+                    app:strokeWidth="1dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
+
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:id="@+id/iv_bell"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            app:iiv_color="#D86000"
+                            app:iiv_icon="gmd_notifications_active" />
+
+                        <TextView
+                            android:id="@+id/tv_pending_banner_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="12dp"
+                            android:layout_toStartOf="@+id/iv_arrow"
+                            android:layout_toEndOf="@id/iv_bell"
+                            android:text="Bạn có giao dịch chờ duyệt tự động!"
+                            android:textColor="#D86000"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:id="@+id/iv_arrow"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            app:iiv_color="#D86000"
+                            app:iiv_icon="gmd_chevron_right" />
+
+                    </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
@@ -606,6 +804,7 @@
                         <com.mikepenz.iconics.view.IconicsImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
+                            android:padding="4dp"
                             app:iiv_color="@color/colorOnSurfaceVariant"
                             app:iiv_icon="gmd_chevron_right" />
                     </LinearLayout>
@@ -648,6 +847,7 @@
                         <com.mikepenz.iconics.view.IconicsImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
+                            android:padding="4dp"
                             app:iiv_color="@color/colorOnSurfaceVariant"
                             app:iiv_icon="gmd_chevron_right" />
                     </LinearLayout>
@@ -690,6 +890,7 @@
                         <com.mikepenz.iconics.view.IconicsImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
+                            android:padding="4dp"
                             app:iiv_color="@color/colorOnSurfaceVariant"
                             app:iiv_icon="gmd_chevron_right" />
                     </LinearLayout>
@@ -732,6 +933,7 @@
                         <com.mikepenz.iconics.view.IconicsImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
+                            android:padding="4dp"
                             app:iiv_color="@color/colorOnSurfaceVariant"
                             app:iiv_icon="gmd_chevron_right" />
                     </LinearLayout>
@@ -747,7 +949,6 @@
                     android:id="@+id/card_city_stats"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="?attr/selectableItemBackground"
@@ -846,7 +1047,7 @@
                 </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
