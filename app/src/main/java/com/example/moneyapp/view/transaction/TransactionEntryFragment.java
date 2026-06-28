@@ -21,6 +21,7 @@ import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.local.PreferenceManager;
+import com.example.moneyapp.data.repository.PendingTransactionRepository;
 import com.example.moneyapp.data.remote.request.TransferRequest;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.Category;
@@ -58,6 +59,7 @@ public class TransactionEntryFragment extends BaseFragment {
 
     private String editTransactionId = null;
     private String editTransferId = null;
+    private String pendingTxId = null;
     private boolean isEditing = false;
     private boolean isDataInitialized = false;
 
@@ -131,11 +133,26 @@ public class TransactionEntryFragment extends BaseFragment {
                 transferViewModel.loadTransferById(editTransferId);
                 currentMode = EntryMode.TRANSFER;
                 isEditing = true;
+            } else if (getArguments().containsKey("pendingTxId")) {
+                pendingTxId = getArguments().getString("pendingTxId");
+                double parsedAmount = getArguments().getDouble("amount", 0.0);
+                int parsedType = getArguments().getInt("type", 1);
+                String parsedNote = getArguments().getString("note", "");
+
+                if (parsedAmount > 0) {
+                    etAmount.setText(String.format(Locale.US, "%.0f", parsedAmount));
+                }
+                etDescription.setText(parsedNote);
+                currentMode = (parsedType == 2) ? EntryMode.INCOME : EntryMode.EXPENSE;
             }
         }
 
         if (!isEditing) {
             int initialTab = PreferenceManager.getInstance(requireContext()).getLastTabType();
+            if (pendingTxId != null && getArguments() != null) {
+                int parsedType = getArguments().getInt("type", 1);
+                initialTab = (parsedType == 2) ? 1 : 0;
+            }
 
             if (initialTab == 0) currentMode = EntryMode.EXPENSE;
             else if (initialTab == 1) currentMode = EntryMode.INCOME;
@@ -512,6 +529,21 @@ public class TransactionEntryFragment extends BaseFragment {
             if (accounts != null) {
                 accountList.clear();
                 accountList.addAll(accounts);
+                
+                // Tự động chọn tài khoản ví khớp với nguồn nhận diện được qua thông báo
+                if (pendingTxId != null && selectedSourceAccount == null && getArguments() != null) {
+                    String targetAccountName = getArguments().getString("accountName", "");
+                    for (Account acc : accounts) {
+                        if (acc.getAccountName().toLowerCase().contains(targetAccountName.toLowerCase())) {
+                            updateSelectedSource(acc);
+                            break;
+                        }
+                    }
+                    if (selectedSourceAccount == null && !accounts.isEmpty()) {
+                        updateSelectedSource(accounts.get(0));
+                    }
+                }
+                
                 upgradeMockAccountsAndCategories();
             }
         });
@@ -520,6 +552,20 @@ public class TransactionEntryFragment extends BaseFragment {
             if (categories != null) {
                 categoryList.clear();
                 categoryList.addAll(categories);
+                
+                // Tự động chọn hạng mục mặc định "Khác" hoặc hạng mục đầu tiên
+                if (pendingTxId != null && selectedCategory == null) {
+                    for (Category cat : categories) {
+                        if (cat.getCategoryName().equals("Khác") || cat.getCategoryName().equals("Khac")) {
+                            updateSelectedCategory(cat);
+                            break;
+                        }
+                    }
+                    if (selectedCategory == null && !categories.isEmpty()) {
+                        updateSelectedCategory(categories.get(0));
+                    }
+                }
+                
                 upgradeMockAccountsAndCategories();
             }
         });
@@ -798,6 +844,12 @@ public class TransactionEntryFragment extends BaseFragment {
 
             if (editTransactionId == null && editTransferId == null) {
                 RewardHelper.showSmallReward(requireView(), "+1 SP - Thói quen tốt!");
+            }
+
+            // Xóa bản nháp khỏi SQLite local khi lưu thành công
+            if (pendingTxId != null) {
+                new PendingTransactionRepository(requireActivity().getApplication())
+                        .deletePendingTransactionById(pendingTxId, null);
             }
             
             DialogHelper.showSimpleDialog(requireContext(), "Thành công", "Lưu giao dịch thành công!", () -> {
