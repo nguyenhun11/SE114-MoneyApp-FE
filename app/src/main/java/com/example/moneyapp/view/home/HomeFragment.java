@@ -274,8 +274,14 @@ public class HomeFragment extends BaseFragment {
     private void observeViewModel() {
         homeViewModel.getTotalBalance().observe(getViewLifecycleOwner(), balance -> {
             String displayBalance = "0";
+            String currencyStr = PreferenceManager.getInstance(requireContext()).getDefaultCurrency();
             if (balance != null) {
-                displayBalance = String.format(Locale.getDefault(), "%,.0f đ", balance).replace(",", ".");
+                String format = "%,.0f " + (currencyStr != null ? currencyStr : "VND");
+                displayBalance = String.format(Locale.getDefault(), format, balance);
+
+                displayBalance = displayBalance.replace(",", ".");
+            } else {
+                displayBalance = "0 " + (currencyStr != null ? currencyStr : "VND");
             }
             setupBalanceSelector(requireView(), getString(R.string.total_balance), displayBalance, false, null, null, null, null);
         });
