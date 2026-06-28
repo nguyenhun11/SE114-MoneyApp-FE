@@ -166,6 +166,15 @@
                     android:background="@color/colorBorder" />
 
                 <include
+                    android:id="@+id/btn_pending_transactions"
+                    layout="@layout/item_more_menu" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorBorder" />
+
+                <include
                     android:id="@+id/btn_info"
                     layout="@layout/item_more_menu" />
 

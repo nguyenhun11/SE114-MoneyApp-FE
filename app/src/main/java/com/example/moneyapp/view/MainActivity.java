@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         setupSideMenuItem(R.id.btn_budget_menu, "gmd_account_balance_wallet", "Quản lý Ngân sách", R.id.budgetFragment, navController, R.color.colorDanger, R.color.colorDangerBgLight);
         setupSideMenuItem(R.id.btn_goals, "gmd_star", getString(R.string.goal_title), R.id.goalFragment, navController, R.color.colorWarning, R.color.colorWarningBgLight);
         setupSideMenuItem(R.id.btn_city_menu, "gmd_location_city", "Thành phố MoneyCity", R.id.cityFragment, navController, R.color.colorSuccess, R.color.colorSuccessBgLight);
+        setupSideMenuItem(R.id.btn_pending_transactions, "gmd_notifications", "Giao dịch chờ duyệt", R.id.pendingTransactionsFragment, navController, R.color.colorInfo, R.color.colorInfoBgLight);
         setupSideMenuItem(R.id.btn_info, "gmd_info", "Thông tin ứng dụng", R.id.informationFragment, navController, R.color.colorInfo, R.color.colorInfoBgLight);
         setupSideMenuItem(R.id.btn_settings, "gmd_settings", "Cài đặt", R.id.settingsFragment, navController, R.color.colorNeutral, R.color.colorNeutralBgLight);
     }

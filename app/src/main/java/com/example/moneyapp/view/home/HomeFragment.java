@@ -334,13 +334,12 @@ public class HomeFragment extends BaseFragment {
                         return;
                     }
 
+                    // Luôn luôn hiển thị banner để làm nút bấm đi đến danh sách duyệt tự động
+                    cardPendingBanner.setVisibility(View.VISIBLE);
                     if (count > 0) {
-                        // Hiển thị banner và thiết lập thông điệp số lượng
-                        cardPendingBanner.setVisibility(View.VISIBLE);
                         tvPendingBannerText.setText("Bạn có " + count + " giao dịch chờ duyệt tự động!");
                     } else {
-                        // Ẩn banner nếu không có giao dịch nháp nào
-                        cardPendingBanner.setVisibility(View.GONE);
+                        tvPendingBannerText.setText("Duyệt giao dịch tự động (0)");
                     }
                 });
             }

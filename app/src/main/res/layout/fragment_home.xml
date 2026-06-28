@@ -406,7 +406,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     app:cardBackgroundColor="#FFEFCB"
                     app:cardCornerRadius="@dimen/button_radius"
                     app:strokeColor="#FFB300"
