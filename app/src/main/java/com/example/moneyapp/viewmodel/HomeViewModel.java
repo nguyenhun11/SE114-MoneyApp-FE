@@ -8,8 +8,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.moneyapp.data.remote.response.CategoryPieChartDto;
+import com.example.moneyapp.data.remote.response.DashboardOverviewResponse;
 import com.example.moneyapp.data.remote.response.TotalBalanceDto;
 import com.example.moneyapp.data.repository.AccountRepository;
+import com.example.moneyapp.data.repository.DashboardRepository;
 import com.example.moneyapp.data.repository.StatisticRepository;
 import com.example.moneyapp.utils.AppResourceManager;
 import com.example.moneyapp.view.home.PieChartItem;
@@ -19,12 +21,14 @@ import java.util.Date;
 import java.util.List;
 
 public class HomeViewModel extends AndroidViewModel {
+    private final DashboardRepository dashboardRepository;
     private final AccountRepository accountRepository;
     private final StatisticRepository statisticRepository;
 
     private final MutableLiveData<Double> totalBalance = new MutableLiveData<>();
     private final MutableLiveData<List<PieChartItem>> categoryExpenses = new MutableLiveData<>();
     private final MutableLiveData<Double> chartTotalAmount = new MutableLiveData<>();
+    private final MutableLiveData<DashboardOverviewResponse> dashboardOverview = new MutableLiveData<>();
     private final MutableLiveData<String> error = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
@@ -34,6 +38,7 @@ public class HomeViewModel extends AndroidViewModel {
 
     public HomeViewModel(@NonNull Application application) {
         super(application);
+        dashboardRepository = new DashboardRepository(application);
         accountRepository = new AccountRepository(application);
         statisticRepository = new StatisticRepository(application);
     }
@@ -41,6 +46,7 @@ public class HomeViewModel extends AndroidViewModel {
     public LiveData<Double> getTotalBalance() { return totalBalance; }
     public LiveData<List<PieChartItem>> getCategoryExpenses() { return categoryExpenses; }
     public LiveData<Double> getChartTotalAmount() { return chartTotalAmount; }
+    public LiveData<DashboardOverviewResponse> getDashboardOverview() { return dashboardOverview; }
     public LiveData<String> getError() { return error; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
 
@@ -125,6 +131,23 @@ public class HomeViewModel extends AndroidViewModel {
         } else {
             statisticRepository.getIncomePieChart(currentStartDate, currentEndDate, callback);
         }
+    }
+
+    public void fetchDashboardOverview() {
+        isLoading.setValue(true);
+        dashboardRepository.getDashboardOverview(new DashboardRepository.DashboardCallback() {
+            @Override
+            public void onSuccess(DashboardOverviewResponse result) {
+                dashboardOverview.postValue(result);
+                isLoading.postValue(false);
+            }
+
+            @Override
+            public void onError(String message) {
+                error.postValue(message);
+                isLoading.postValue(false);
+            }
+        });
     }
 
     private double getMockExchangeRate(String fromCurrency, String toCurrency) {

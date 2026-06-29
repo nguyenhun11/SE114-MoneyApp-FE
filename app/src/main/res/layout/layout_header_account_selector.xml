@@ -36,14 +36,6 @@
                 android:text="@string/total_balance"
                 android:textColor="@color/colorOnPrimary"
                 android:textSize="12sp" />
-
-            <com.mikepenz.iconics.view.IconicsImageView
-                android:id="@+id/iv_arrow_down"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginStart="4dp"
-                app:ico_color="@color/colorOnPrimary"
-                app:ico_icon="gmd_keyboard_arrow_down" />
         </LinearLayout>
 
         <RelativeLayout

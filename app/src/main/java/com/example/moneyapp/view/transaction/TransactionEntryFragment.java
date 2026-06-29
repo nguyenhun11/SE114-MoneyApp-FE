@@ -849,7 +849,21 @@ public class TransactionEntryFragment extends BaseFragment {
             // Xóa bản nháp khỏi SQLite local khi lưu thành công
             if (pendingTxId != null) {
                 new PendingTransactionRepository(requireActivity().getApplication())
-                        .deletePendingTransactionById(pendingTxId, null);
+                        .deletePendingTransactionById(pendingTxId, new PendingTransactionRepository.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+                                if (getContext() != null) {
+                                    android.content.Intent updateIntent = new android.content.Intent("com.example.moneyapp.PENDING_TRANSACTION_UPDATED");
+                                    updateIntent.setPackage(getContext().getPackageName());
+                                    getContext().sendBroadcast(updateIntent);
+                                }
+                            }
+
+                            @Override
+                            public void onError(String message) {
+                                android.util.Log.e("TransactionEntry", "Lỗi khi xóa giao dịch nháp: " + message);
+                            }
+                        });
             }
             
             DialogHelper.showSimpleDialog(requireContext(), "Thành công", "Lưu giao dịch thành công!", () -> {

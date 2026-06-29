@@ -63,6 +63,11 @@ public class SettingFragment extends BaseFragment {
                     // Nếu đã có quyền, lưu trạng thái bật vào preferences
                     preferenceManager.setNotificationListenerEnabled(true);
                     Toast.makeText(getContext(), "Đã kích hoạt tính năng tự động đọc thông báo!", Toast.LENGTH_SHORT).show();
+                    
+                    // Kích hoạt kết nối dịch vụ
+                    android.service.notification.NotificationListenerService.requestRebind(
+                            new android.content.ComponentName(requireContext(), com.example.moneyapp.service.TransactionNotificationListenerService.class)
+                    );
                 } else {
                     // Nếu chưa có quyền, tắt tạm thời switch và hiển thị Dialog giải thích & hướng dẫn cấp quyền
                     switchNotification.setChecked(false);

@@ -176,21 +176,9 @@ public abstract class BaseFragment extends Fragment {
         View selector = view.findViewById(R.id.btn_select_account);
         TextView tvAccount = view.findViewById(R.id.tv_account_name);
         TextView tvAmount = view.findViewById(R.id.tv_total_amount);
-        View ivArrow = view.findViewById(R.id.iv_arrow_down);
 
         if (tvAccount != null) tvAccount.setText(accountName);
         if (tvAmount != null) tvAmount.setText(balance);
-
-        if (selector != null) {
-            if (canSelect) {
-                selector.setOnClickListener(v -> showAccountPopup());
-                if (ivArrow != null) ivArrow.setVisibility(View.VISIBLE);
-            } else {
-                selector.setOnClickListener(null);
-                selector.setClickable(false);
-                if (ivArrow != null) ivArrow.setVisibility(View.GONE);
-            }
-        }
 
         setupActionButtons(view, leftIconName, leftListener, rightIconName, rightListener);
 

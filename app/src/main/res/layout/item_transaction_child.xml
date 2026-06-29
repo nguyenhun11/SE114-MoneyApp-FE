@@ -80,9 +80,15 @@
                     android:id="@+id/tvCategoryName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
                     android:textColor="@color/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
+                    app:autoSizeMaxTextSize="16sp"
+                    app:autoSizeMinTextSize="12sp"
+                    app:autoSizeTextType="uniform"
                     tools:text="Sinh hoạt" />
 
                 <TextView
@@ -119,9 +125,13 @@
                 android:id="@+id/tvAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:includeFontPadding="false"
                 android:textColor="#E8435A"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                app:autoSizeMaxTextSize="16sp"
+                app:autoSizeMinTextSize="12sp"
+                app:autoSizeTextType="uniform"
                 tools:text="- 2.00 USD" />
 
             <TextView

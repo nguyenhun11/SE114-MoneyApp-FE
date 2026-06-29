@@ -162,7 +162,12 @@ public class ProfileFragment extends BaseFragment {
                 defaultAvatar.setColorFilter(ContextCompat.getColor(requireContext(), R.color.colorOnSurfaceVariant), android.graphics.PorterDuff.Mode.SRC_IN);
 
                 if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isEmpty()) {
-                    Glide.with(this).load(user.getProfileImageUrl()).placeholder(defaultAvatar).into(ivAvatar);
+                    Glide.with(this)
+                            .load(user.getProfileImageUrl())
+                            .placeholder(defaultAvatar)
+                            .error(defaultAvatar) // Đề phòng ảnh lỗi
+                            .circleCrop()         // ĐÂY LÀ DÒNG QUAN TRỌNG ĐỂ CẮT ẢNH HOÀN HẢO
+                            .into(ivAvatar);
                 } else {
                     ivAvatar.setImageDrawable(defaultAvatar);
                 }
