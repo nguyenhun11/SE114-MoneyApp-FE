@@ -4,6 +4,9 @@ import android.content.Context;
 
 import com.example.moneyapp.data.remote.request.BuildRequest;
 import com.example.moneyapp.data.remote.response.CityResponse;
+import com.example.moneyapp.data.remote.response.RankItemDto;
+
+import java.util.List;
 
 import retrofit2.Call;
 
@@ -22,5 +25,9 @@ public class CityRepository extends BaseRepository {
 
     public Call<Void> upgrade(int buildingId) {
         return apiService.upgradeBuilding(buildingId);
+    }
+
+    public Call<List<RankItemDto>> getRanking(int type) {
+        return apiService.getCityRanking(type);
     }
 }

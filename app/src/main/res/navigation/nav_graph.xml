@@ -190,7 +190,21 @@
         android:id="@+id/cityFragment"
         android:name="com.example.moneyapp.view.city.CityFragment"
         android:label="MoneyCity"
-        tools:layout="@layout/fragment_city" />
+        tools:layout="@layout/fragment_city">
+        <action
+            android:id="@+id/action_cityFragment_to_cityRankFragment"
+            app:destination="@id/cityRankFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cityRankFragment"
+        android:name="com.example.moneyapp.view.city.CityRankFragment"
+        android:label="Bảng xếp hạng"
+        tools:layout="@layout/fragment_city_rank" />
 
     <fragment
         android:id="@+id/questFragment"

@@ -34,6 +34,14 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
 
     @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+        android.content.res.Configuration override = new android.content.res.Configuration(newBase.getResources().getConfiguration());
+        override.fontScale = 1.0f;
+        applyOverrideConfiguration(override);
+        super.attachBaseContext(newBase);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);

@@ -43,6 +43,7 @@ import com.example.moneyapp.data.remote.response.GoalResponse;
 import com.example.moneyapp.data.remote.response.CheckInResponse;
 import com.example.moneyapp.data.remote.response.GoalTransactionResponse;
 import com.example.moneyapp.data.remote.response.QuestResponse;
+import com.example.moneyapp.data.remote.response.RankItemDto;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
 import com.example.moneyapp.data.remote.response.TotalBalanceDto;
 import com.example.moneyapp.data.remote.response.TransactionResponse;
@@ -295,6 +296,8 @@ public interface ApiService {
     Call<Void> build(@Body BuildRequest request);
     @POST("api/City/upgrade/{id}")
     Call<Void> upgradeBuilding(@Path("id") int id);
+    @GET("api/City/ranking")
+    Call<List<RankItemDto>> getCityRanking(@Query("type") int type);
     //endregion
 
     //region Currency

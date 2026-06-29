@@ -67,7 +67,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:lineSpacingExtra="4dp"
-                    android:text="• Điểm danh (Check-in): +10 SP\n• Nhập giao dịch: +1 SP / lần\n• Duy trì Streak: Mở khóa danh hiệu (tương lai)"
+                    android:text="• Điểm danh (Check-in): +10 SP\n• Nhập giao dịch: +1 SP / lần\n• Duy trì Streak: Mở khóa danh hiệu"
                     android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

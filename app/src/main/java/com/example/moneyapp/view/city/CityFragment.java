@@ -38,9 +38,23 @@ public class CityFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupHeader(view, "MoneyCity", null, null, "gmd_info_outline", v -> 
+        setupHeader(view, "MoneyCity", null, null, "gmd_info_outline", v ->
             new CityGuideBottomSheet().show(getChildFragmentManager(), "CityGuide")
         );
+
+        // Nút Bảng xếp hạng
+        View btnRanking = view.findViewById(R.id.btn_action_right_2);
+        if (btnRanking instanceof com.mikepenz.iconics.view.IconicsImageView) {
+            com.mikepenz.iconics.view.IconicsImageView ivRanking = (com.mikepenz.iconics.view.IconicsImageView) btnRanking;
+            ivRanking.setVisibility(View.VISIBLE);
+            com.mikepenz.iconics.IconicsDrawable icon = new com.mikepenz.iconics.IconicsDrawable(requireContext(), "gmd_leaderboard");
+            icon.setColorFilter(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.colorOnPrimary),
+                    android.graphics.PorterDuff.Mode.SRC_IN);
+            ivRanking.setIcon(icon);
+            ivRanking.setOnClickListener(v ->
+                androidx.navigation.Navigation.findNavController(v).navigate(R.id.action_cityFragment_to_cityRankFragment)
+            );
+        }
 
         tvLevel = view.findViewById(R.id.tvLevel);
         tvProsperity = view.findViewById(R.id.tvProsperity);

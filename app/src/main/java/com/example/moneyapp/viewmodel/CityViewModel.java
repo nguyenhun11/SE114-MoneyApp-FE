@@ -9,7 +9,10 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.moneyapp.data.remote.request.BuildRequest;
 import com.example.moneyapp.data.remote.response.CityResponse;
+import com.example.moneyapp.data.remote.response.RankItemDto;
 import com.example.moneyapp.data.repository.CityRepository;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -18,6 +21,7 @@ import retrofit2.Response;
 public class CityViewModel extends AndroidViewModel {
     private final CityRepository repository;
     private final MutableLiveData<CityResponse> cityData = new MutableLiveData<>();
+    private final MutableLiveData<List<RankItemDto>> rankingData = new MutableLiveData<>();
     private final MutableLiveData<String> error = new MutableLiveData<>();
 
     public CityViewModel(@NonNull Application application) {
@@ -26,6 +30,7 @@ public class CityViewModel extends AndroidViewModel {
     }
 
     public LiveData<CityResponse> getCityData() { return cityData; }
+    public LiveData<List<RankItemDto>> getRankingData() { return rankingData; }
     public LiveData<String> getError() { return error; }
 
     public void fetchCityData() {
@@ -41,6 +46,24 @@ public class CityViewModel extends AndroidViewModel {
 
             @Override
             public void onFailure(Call<CityResponse> call, Throwable t) {
+                error.setValue(t.getMessage());
+            }
+        });
+    }
+
+    public void fetchRankingData(int type) {
+        repository.getRanking(type).enqueue(new Callback<List<RankItemDto>>() {
+            @Override
+            public void onResponse(Call<List<RankItemDto>> call, Response<List<RankItemDto>> response) {
+                if (response.isSuccessful()) {
+                    rankingData.setValue(response.body());
+                } else {
+                    error.setValue("Không thể tải bảng xếp hạng");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<RankItemDto>> call, Throwable t) {
                 error.setValue(t.getMessage());
             }
         });

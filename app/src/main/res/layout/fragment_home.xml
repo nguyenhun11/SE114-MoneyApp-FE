@@ -123,7 +123,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="Thống kê"
+                            android:text="Thành phố"
                             android:textSize="12sp" />
                     </LinearLayout>
 
@@ -223,7 +223,7 @@
                         layout="@layout/layout_header_tabs"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="50dp" />
+                        android:layout_marginHorizontal="24dp" />
 
                     <LinearLayout
                         android:id="@+id/card_top_slice"
