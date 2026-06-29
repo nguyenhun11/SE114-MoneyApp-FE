@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +15,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -57,57 +56,135 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. ÉP KÍCH THƯỚC ẢNH CHUẨN 35% MÀN HÌNH (Đồng bộ với thiết kế)
+        // 1. ÉP KÍCH THƯỚC ẢNH ĐỒNG BỘ VỚI SPLASH
         View cvHeader = view.findViewById(R.id.cv_login_header);
         int screenHeight = getResources().getDisplayMetrics().heightPixels;
         ViewGroup.LayoutParams params = cvHeader.getLayoutParams();
-        params.height = (int) (screenHeight * 0.35); // Ép đúng 35% màn hình
+        params.height = (int) (screenHeight * 0.5); // Chỉnh 0.35 - 0.4 để khớp 100% với Splash
         cvHeader.setLayoutParams(params);
 
-        // 2. KÍCH HOẠT THANH CUỘN CHO BÀN PHÍM
-        View rootView = view.findViewById(R.id.root_scroll_view);
-        if (rootView != null) {
-            ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
-                int bottomPadding = insets.getInsets(WindowInsetsCompat.Type.ime() | WindowInsetsCompat.Type.systemBars()).bottom;
-                v.setPadding(0, 0, 0, bottomPadding); // Đẩy nội dung lên khi có bàn phím
-                return insets;
-            });
-        }
-
+        // 2. KHỞI TẠO VIEWMODEL VÀ GOOGLE CLIENT
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
-
-        // Configure Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .build();
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
 
-        // Ánh xạ UI - Đã cập nhật thành MaterialButton
-        MaterialButton btnLogin = view.findViewById(R.id.btn_login);
+        // 3. ÁNH XẠ UI
+        androidx.core.widget.NestedScrollView rootScrollView = view.findViewById(R.id.root_scroll_view);
+        androidx.appcompat.widget.AppCompatButton btnLogin = view.findViewById(R.id.btn_login);
         MaterialButton btnGoogleLogin = view.findViewById(R.id.btn_google_login);
         TextView tvGoToRegister = view.findViewById(R.id.tv_go_to_register);
         TextView tvForgotPassword = view.findViewById(R.id.tv_forgot_password);
         EditText etEmail = view.findViewById(R.id.et_email);
         EditText etPassword = view.findViewById(R.id.et_password);
+        com.mikepenz.iconics.view.IconicsImageView ivShowPassword = view.findViewById(R.id.iv_show_password);
 
+        // 4. XỬ LÝ NÚT HIỆN/ẨN MẬT KHẨU
+        final boolean[] isPasswordVisible = {false};
+        ivShowPassword.setOnClickListener(v -> {
+            isPasswordVisible[0] = !isPasswordVisible[0];
+
+            int iconColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.colorOnSurfaceVariant);
+
+            if (isPasswordVisible[0]) {
+                // Hiện mật khẩu
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                com.mikepenz.iconics.IconicsDrawable icon = new com.mikepenz.iconics.IconicsDrawable(requireContext(), "gmd-visibility");
+                icon.setColorFilter(iconColor, android.graphics.PorterDuff.Mode.SRC_IN);
+                ivShowPassword.setIcon(icon);
+            } else {
+                // Ẩn mật khẩu
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                com.mikepenz.iconics.IconicsDrawable icon = new com.mikepenz.iconics.IconicsDrawable(requireContext(), "gmd-visibility-off");
+                icon.setColorFilter(iconColor, android.graphics.PorterDuff.Mode.SRC_IN);
+                ivShowPassword.setIcon(icon);
+            }
+
+            // Đặt lại font chữ và đưa con trỏ về cuối dòng
+            etPassword.setTypeface(android.graphics.Typeface.DEFAULT);
+            etPassword.setSelection(etPassword.getText().length());
+        });
+
+        // 4. BƠM KHÔNG GIAN VÀ TỰ ĐỘNG CUỘN CHÍNH XÁC KHI BÀN PHÍM HIỆN
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(rootScrollView, (v, insets) -> {
+            int imeHeight = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime()).bottom;
+            int navHeight = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars()).bottom;
+            int paddingBottom = Math.max(imeHeight, navHeight);
+
+            // 💥 Bí quyết ở đây: Đệm phần đáy bằng đúng chiều cao bàn phím để có dư không gian cuộn
+            v.setPadding(0, 0, 0, paddingBottom);
+
+            // Khi bàn phím mở, tự động đưa ô đang gõ lên trên bàn phím
+            if (imeHeight > 0) {
+                v.postDelayed(() -> {
+                    View focus = view.findFocus();
+                    if (focus == etEmail || focus == etPassword) {
+                        View target = (focus == etPassword) ? view.findViewById(R.id.fl_password_wrapper) : focus;
+                        if (target != null) {
+                            int visibleHeight = v.getHeight() - paddingBottom;
+                            // Tính khoảng cách: Lấy đáy của ô + 80px đệm - vùng hiển thị
+                            int scrollY = target.getBottom() + 80 - visibleHeight;
+                            rootScrollView.smoothScrollTo(0, Math.max(0, scrollY));
+                        }
+                    }
+                }, 100);
+            }
+            return insets;
+        });
+
+        // 5. XỬ LÝ KHI NGƯỜI DÙNG TỰ BẤM CHUYỂN QUA LẠI GIỮA EMAIL VÀ PASSWORD
+        View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
+            if (hasFocus) {
+                rootScrollView.postDelayed(() -> {
+                    View target = (v == etPassword) ? view.findViewById(R.id.fl_password_wrapper) : v;
+                    if (target != null) {
+                        int visibleHeight = rootScrollView.getHeight() - rootScrollView.getPaddingBottom();
+                        int scrollY = target.getBottom() + 80 - visibleHeight;
+                        rootScrollView.smoothScrollTo(0, Math.max(0, scrollY));
+                    }
+                }, 150);
+            }
+        };
+        etEmail.setOnFocusChangeListener(focusListener);
+        etPassword.setOnFocusChangeListener(focusListener);
+
+        // 6. GÕ XONG BẤM "HOÀN TẤT" LÀ ĐĂNG NHẬP LUÔN
+        if (etPassword != null && btnLogin != null) {
+            etPassword.setOnEditorActionListener((v, actionId, event) -> {
+                if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+                    // Đóng bàn phím
+                    android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
+                    // Kích hoạt click nút Đăng nhập
+                    btnLogin.performClick();
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        // 7. XỬ LÝ CLICK ĐĂNG NHẬP
         if (btnLogin != null) {
             btnLogin.setOnClickListener(v -> {
-                String loginInput = etEmail.getText().toString();
-                String password = etPassword.getText().toString();
+                String loginInput = etEmail != null ? etEmail.getText().toString() : "";
+                String password = etPassword != null ? etPassword.getText().toString() : "";
                 authViewModel.login(loginInput, password);
             });
         }
 
+        // 8. XỬ LÝ CLICK GOOGLE LOGIN
         if (btnGoogleLogin != null) {
             btnGoogleLogin.setOnClickListener(v -> {
-                // Buộc Google Sign-In hiện hộp thoại chọn tài khoản bằng cách Logout trước khi tiến hành Launch
                 googleSignInClient.signOut().addOnCompleteListener(requireActivity(), task -> {
                     googleSignInLauncher.launch(googleSignInClient.getSignInIntent());
                 });
             });
         }
 
+        // 9. CHUYỂN SANG TRANG ĐĂNG KÝ (Tô màu chữ động)
         if (tvGoToRegister != null) {
             String text = getString(R.string.login_no_account);
             android.text.SpannableString ss = new android.text.SpannableString(text);
@@ -138,12 +215,14 @@ public class LoginFragment extends Fragment {
             });
         }
 
+        // 10. QUÊN MẬT KHẨU
         if (tvForgotPassword != null) {
             tvForgotPassword.setOnClickListener(v -> {
                 Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_forgotPasswordFragment);
             });
         }
 
+        // 11. OBSERVE VIEWMODEL
         authViewModel.loginSuccess.observe(getViewLifecycleOwner(), user -> {
             SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
             prefs.edit().putBoolean("isLoggedIn", true).apply();

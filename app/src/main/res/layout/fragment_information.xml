@@ -63,7 +63,7 @@
                             android:id="@+id/iv_app_logo"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/logo_app"
+                            android:src="@mipmap/ic_launcher"
                             android:scaleType="centerCrop" />
                     </androidx.cardview.widget.CardView>
 
@@ -248,7 +248,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Tất cả dữ liệu tài chính của bạn được lưu trữ hoàn toàn cục bộ (Offline) trực tiếp trên thiết bị của bạn. Chúng tôi cam kết tuyệt đối không thu thập, lưu trữ trực tuyến hay chia sẻ bất kỳ thông tin nhạy cảm nào của người dùng."
+                        android:text="Chúng tôi cam kết tuyệt đối không thu thập, lưu trữ trực tuyến hay chia sẻ bất kỳ thông tin nhạy cảm nào của người dùng."
                         android:textColor="@color/colorOnSurface"
                         android:textSize="14sp"
                         android:lineSpacingExtra="4sp" />
