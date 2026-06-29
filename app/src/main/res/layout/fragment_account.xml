@@ -54,6 +54,70 @@
         app:strokeColor="@color/colorBorder"
         app:strokeWidth="1dp">
 
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_account_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/bg_skeleton" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/bg_skeleton" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/bg_skeleton" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:background="@drawable/bg_skeleton" />
+            </LinearLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_empty_state"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:id="@+id/iv_empty_icon"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:alpha="0.4"
+                app:iiv_color="@color/colorOnSurfaceVariant"
+                app:iiv_icon="gmd_account_balance_wallet" />
+
+            <TextView
+                android:id="@+id/tv_empty_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Chưa có dữ liệu.\nHãy tạo mới ngay!"
+                android:textAlignment="center"
+                android:textColor="@color/colorOnSurfaceVariant"
+                android:textSize="14sp" />
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_main_list"
             android:layout_width="match_parent"

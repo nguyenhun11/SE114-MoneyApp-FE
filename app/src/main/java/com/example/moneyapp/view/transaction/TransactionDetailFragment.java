@@ -79,6 +79,25 @@ public class TransactionDetailFragment extends BaseFragment {
     }
 
     private void observeViewModel(View view) {
+        com.facebook.shimmer.ShimmerFrameLayout shimmerDetail = view.findViewById(R.id.shimmer_detail);
+        View layoutContent = view.findViewById(R.id.layout_content);
+
+        transactionViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                if (shimmerDetail != null) {
+                    shimmerDetail.setVisibility(View.VISIBLE);
+                    shimmerDetail.startShimmer();
+                }
+                if (layoutContent != null) layoutContent.setVisibility(View.GONE);
+            } else {
+                if (shimmerDetail != null) {
+                    shimmerDetail.stopShimmer();
+                    shimmerDetail.setVisibility(View.GONE);
+                }
+                if (layoutContent != null) layoutContent.setVisibility(View.VISIBLE);
+            }
+        });
+
         transactionViewModel.getSelectedTransaction().observe(
                 getViewLifecycleOwner(),
                 t -> {

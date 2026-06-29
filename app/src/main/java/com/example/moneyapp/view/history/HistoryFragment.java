@@ -70,9 +70,7 @@ public class HistoryFragment extends BaseFragment {
         setupHeader(view, "Lịch sử giao dịch", false);
         setupFilters(view);
 
-        // =========================================================
         // BƯỚC 1: XÁC ĐỊNH TAB KHỞI ĐẦU (ĐỒNG BỘ SHAREDPREFS)
-        // =========================================================
         int initialTab = 0; // Mặc định là Tab 0 (Tất cả)
 
         if (getArguments() != null && getArguments().containsKey("tabType")) {
@@ -80,23 +78,17 @@ public class HistoryFragment extends BaseFragment {
             initialTab = getArguments().getInt("tabType", 0);
         } else {
             // Ưu tiên 2: Lấy bộ nhớ đệm toàn cục
-            initialTab = PreferenceManager.getInstance(requireContext()).getLastTabType();
+            initialTab = PreferenceManager.getInstance(requireContext()).getLastHistoryTab();
         }
 
-        // =========================================================
         // BƯỚC 2: CẤU HÌNH TABS VÀ XỬ LÝ SỰ KIỆN ĐỔI TAB
-        // =========================================================
         String[] historyTabs = { "Tất cả", "Chi tiêu", "Thu nhập", "Chuyển khoản", "Điều chỉnh số dư", "Tiết kiệm" };
 
         setupHeaderTabs(view, historyTabs, initialTab, index -> {
             if (adapter != null) {
                 adapter.setShowTypeTag(index == 0 || index == 5);
             }
-            // CHỈ LƯU VÀO BỘ NHỚ NẾU LÀ THU/CHI/CHUYỂN KHOẢN (Để đồng bộ với Home/Entry)
-            if (index >= 1 && index <= 3) {
-                int globalTypeToSave = index - 1; // Dịch lại: 1->0, 2->1, 3->2
-                PreferenceManager.getInstance(requireContext()).setLastTabType(globalTypeToSave);
-            }
+            PreferenceManager.getInstance(requireContext()).setLastHistoryTab(index);
 
             // Xử lý UI Filter theo Tab
             if (index == 3) { // Tab Chuyển khoản
@@ -216,8 +208,49 @@ public class HistoryFragment extends BaseFragment {
     }
 
     private void observeViewModels() {
+        com.facebook.shimmer.ShimmerFrameLayout shimmerHistory = requireView().findViewById(R.id.shimmer_history);
+        View layoutEmptyState = requireView().findViewById(R.id.layout_empty_state);
+        RecyclerView rvTransactions = requireView().findViewById(R.id.rvTransactions);
+
+        historyViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                if (shimmerHistory != null) {
+                    shimmerHistory.setVisibility(View.VISIBLE);
+                    shimmerHistory.startShimmer();
+                }
+                if (rvTransactions != null) rvTransactions.setVisibility(View.GONE);
+                if (layoutEmptyState != null) layoutEmptyState.setVisibility(View.GONE);
+            } else {
+                if (shimmerHistory != null) {
+                    shimmerHistory.stopShimmer();
+                    shimmerHistory.setVisibility(View.GONE);
+                }
+
+                List<?> currentItems = historyViewModel.getGroupedTransactions().getValue();
+                if (currentItems == null || currentItems.isEmpty()) {
+                    if (rvTransactions != null) rvTransactions.setVisibility(View.GONE);
+                    if (layoutEmptyState != null) layoutEmptyState.setVisibility(View.VISIBLE);
+                } else {
+                    if (rvTransactions != null) rvTransactions.setVisibility(View.VISIBLE);
+                    if (layoutEmptyState != null) layoutEmptyState.setVisibility(View.GONE);
+                }
+            }
+        });
+
         historyViewModel.getGroupedTransactions().observe(getViewLifecycleOwner(), items -> {
             adapter.updateData(items, accountList);
+
+            Boolean isLoading = historyViewModel.getIsLoading().getValue();
+            // Nếu không trong trạng thái Loading thì cập nhật UI ngay
+            if (isLoading == null || !isLoading) {
+                if (items == null || items.isEmpty()) {
+                    if (rvTransactions != null) rvTransactions.setVisibility(View.GONE);
+                    if (layoutEmptyState != null) layoutEmptyState.setVisibility(View.VISIBLE);
+                } else {
+                    if (rvTransactions != null) rvTransactions.setVisibility(View.VISIBLE);
+                    if (layoutEmptyState != null) layoutEmptyState.setVisibility(View.GONE);
+                }
+            }
         });
 
         accountViewModel.getAccountsLiveData().observe(getViewLifecycleOwner(), accounts -> {
@@ -237,7 +270,6 @@ public class HistoryFragment extends BaseFragment {
             }
         });
     }
-
     @Override
     public void onResume() {
         super.onResume();

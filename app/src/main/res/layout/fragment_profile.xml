@@ -174,433 +174,500 @@
         android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="@dimen/card_horizontal_margin">
+            android:layout_height="wrap_content">
 
-            <com.google.android.material.card.MaterialCardView
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_profile_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardBackgroundColor="@color/colorSurface"
-                app:cardCornerRadius="@dimen/button_radius"
-                app:strokeColor="@color/colorWarning"
-                app:strokeWidth="1.5dp">
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:paddingHorizontal="@dimen/card_horizontal_margin">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="90dp"
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/bg_skeleton" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="72dp"
+                        android:layout_marginBottom="24dp"
+                        android:background="@drawable/bg_skeleton" />
+
+                    <View
+                        android:layout_width="150dp"
+                        android:layout_height="20dp"
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/bg_skeleton" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_marginBottom="24dp"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:layout_marginEnd="12dp"
+                            android:background="@drawable/bg_skeleton" />
+
+                        <View
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:layout_marginEnd="12dp"
+                            android:background="@drawable/bg_skeleton" />
+
+                        <View
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:background="@drawable/bg_skeleton" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:background="@drawable/bg_skeleton" />
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_profile_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/card_horizontal_margin">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardBackgroundColor="@color/colorSurface"
+                    app:cardCornerRadius="@dimen/button_radius"
+                    app:strokeColor="@color/colorWarning"
+                    app:strokeWidth="1.5dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-                        <FrameLayout
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="@drawable/bg_circle"
-                            android:backgroundTint="#FFF3E0">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
-                            <com.mikepenz.iconics.view.IconicsImageView
-                                android:id="@+id/iv_streak_icon"
-                                android:layout_width="28dp"
-                                android:layout_height="28dp"
-                                android:layout_gravity="center"
-                                app:iiv_color="@color/colorWarning"
-                                app:iiv_icon="gmd-local-fire-department" />
-                        </FrameLayout>
+                            <FrameLayout
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:background="@drawable/bg_circle"
+                                android:backgroundTint="#FFF3E0">
+
+                                <com.mikepenz.iconics.view.IconicsImageView
+                                    android:id="@+id/iv_streak_icon"
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    android:layout_gravity="center"
+                                    app:iiv_color="@color/colorWarning"
+                                    app:iiv_icon="gmd-local-fire-department" />
+                            </FrameLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Chuỗi ngày tích lũy"
+                                    android:textColor="@color/colorOnSurfaceVariant"
+                                    android:textSize="13sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_streak_count"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0 ngày"
+                                    android:textColor="@color/colorWarning"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_checkin"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Check-in"
+                                android:textAllCaps="false"
+                                app:backgroundTint="@color/colorWarning"
+                                app:cornerRadius="@dimen/button_radius" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tv_restore_streak_hint"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:gravity="center"
+                            android:text="Chia sẻ app để khôi phục chuỗi"
+                            android:textColor="@color/colorWarning"
+                            android:textSize="13sp"
+                            android:textStyle="bold|italic"
+                            android:visibility="visible" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_city_stats"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/colorSurface"
+                    app:cardCornerRadius="@dimen/button_radius"
+                    app:strokeColor="@color/colorInfo"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp">
 
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
                             android:layout_weight="1"
+                            android:gravity="center"
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/tv_city_level_profile"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Chuỗi ngày tích lũy"
-                                android:textColor="@color/colorOnSurfaceVariant"
-                                android:textSize="13sp" />
+                                android:text="Cấp -"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
 
                             <TextView
-                                android:id="@+id/tv_streak_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="0 ngày"
-                                android:textColor="@color/colorWarning"
-                                android:textSize="20sp"
-                                android:textStyle="bold" />
+                                android:text="Thành phố"
+                                android:textSize="11sp" />
                         </LinearLayout>
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btn_checkin"
-                            android:layout_width="wrap_content"
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginHorizontal="8dp"
+                            android:background="@color/colorBorder" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Check-in"
-                            android:textAllCaps="false"
-                            app:backgroundTint="@color/colorWarning"
-                            app:cornerRadius="@dimen/button_radius" />
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
 
+                            <TextView
+                                android:id="@+id/tv_prosperity_profile"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="-"
+                                android:textColor="@color/colorSuccess"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Thịnh vượng"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginHorizontal="8dp"
+                            android:background="@color/colorBorder" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_stability_profile"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="-"
+                                android:textColor="@color/colorInfo"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ổn định"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:id="@+id/btn_city_guide"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginStart="8dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:padding="4dp"
+                            app:iiv_color="@color/colorOnSurfaceVariant"
+                            app:iiv_icon="gmd_help_outline" />
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <TextView
-                        android:id="@+id/tv_restore_streak_hint"
+                <TextView
+                    style="@style/InputLabel"
+                    android:layout_marginTop="8dp"
+                    android:text="Huy hiệu &amp; Thành tựu" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvBadges"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="4dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/colorSurface"
+                    app:cardCornerRadius="@dimen/button_radius"
+                    app:strokeColor="@color/colorBorder"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:background="?attr/selectableItemBackground"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:text="Chia sẻ app để khôi phục chuỗi"
-                        android:textColor="@color/colorWarning"
-                        android:textSize="13sp"
-                        android:textStyle="bold|italic"
-                        android:visibility="visible" />
+                        android:orientation="vertical"
+                        android:paddingHorizontal="24dp"
+                        android:paddingVertical="8dp">
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/profile_email"
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="13sp" />
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_city_stats"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/colorSurface"
-                app:cardCornerRadius="@dimen/button_radius"
-                app:strokeColor="@color/colorInfo"
-                app:strokeWidth="1dp">
+                        <TextView
+                            android:id="@+id/tv_profile_email"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:text="..."
+                            android:textColor="@color/colorOnSurface"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="16dp"
+                            android:background="@color/colorBorder" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/profile_created_date"
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tv_created_at"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:text="..."
+                            android:textColor="@color/colorOnSurface"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="16dp"
+                            android:background="@color/colorBorder" />
+
+                        <LinearLayout
+                            android:id="@+id/ll_change_password"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/profile_change_password_link"
+                                android:textColor="@color/colorOnSurface"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                app:iiv_color="@color/colorOnSurfaceVariant"
+                                app:iiv_icon="gmd-keyboard-arrow-right" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="16dp"
+                            android:background="@color/colorBorder" />
+
+                        <LinearLayout
+                            android:id="@+id/ll_change_currency"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Đơn vị tiền tệ mặc định"
+                                android:textColor="@color/colorOnSurface"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_default_currency"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:text="VND"
+                                android:textColor="@color/colorInfo"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                app:iiv_color="@color/colorOnSurfaceVariant"
+                                app:iiv_icon="gmd-keyboard-arrow-right" />
+                        </LinearLayout>
+
+                        <!--                    <View-->
+                        <!--                        android:layout_width="match_parent"-->
+                        <!--                        android:layout_height="1dp"-->
+                        <!--                        android:layout_marginBottom="16dp"-->
+                        <!--                        android:background="@color/colorBorder" />-->
+
+                        <!--                    <RelativeLayout-->
+                        <!--                        android:layout_width="match_parent"-->
+                        <!--                        android:layout_height="wrap_content">-->
+
+                        <!--                        <LinearLayout-->
+                        <!--                            android:layout_width="wrap_content"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            android:orientation="vertical">-->
+
+                        <!--                            <TextView-->
+                        <!--                                android:layout_width="wrap_content"-->
+                        <!--                                android:layout_height="wrap_content"-->
+                        <!--                                android:text="@string/profile_sync"-->
+                        <!--                                android:textColor="@color/colorOnSurface"-->
+                        <!--                                android:textSize="16sp"-->
+                        <!--                                android:textStyle="bold" />-->
+
+                        <!--                            <TextView-->
+                        <!--                                android:layout_width="wrap_content"-->
+                        <!--                                android:layout_height="wrap_content"-->
+                        <!--                                android:text="@string/profile_internet_required"-->
+                        <!--                                android:textColor="@color/colorOnSurfaceVariant"-->
+                        <!--                                android:textSize="13sp" />-->
+                        <!--                        </LinearLayout>-->
+
+                        <!--                        <androidx.appcompat.widget.SwitchCompat-->
+                        <!--                            android:id="@+id/sw_sync"-->
+                        <!--                            android:layout_width="wrap_content"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            android:layout_alignParentEnd="true"-->
+                        <!--                            android:layout_centerVertical="true"-->
+                        <!--                            app:thumbTint="@color/switch_colors"-->
+                        <!--                            app:trackTint="@color/colorOnSurfaceVariant" />-->
+                        <!--                    </RelativeLayout>-->
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:layout_marginBottom="48dp"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
 
-                    <LinearLayout
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_delete_account"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="56dp"
+                        android:layout_marginEnd="8dp"
                         android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                        android:text="@string/profile_delete_account"
+                        android:textColor="@color/colorDanger"
+                        app:icon="@drawable/delete_button_img"
+                        app:iconTint="@color/colorDanger"
+                        app:strokeColor="@color/colorDanger" />
 
-                        <TextView
-                            android:id="@+id/tv_city_level_profile"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Cấp -"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Thành phố"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginHorizontal="8dp"
-                        android:background="@color/colorBorder" />
-
-                    <LinearLayout
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_logout"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tv_prosperity_profile"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="-"
-                            android:textColor="@color/colorSuccess"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Thịnh vượng"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginHorizontal="8dp"
-                        android:background="@color/colorBorder" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tv_stability_profile"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="-"
-                            android:textColor="@color/colorInfo"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Ổn định"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <com.mikepenz.iconics.view.IconicsImageView
-                        android:id="@+id/btn_city_guide"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_height="56dp"
                         android:layout_marginStart="8dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:padding="4dp"
-                        app:iiv_color="@color/colorOnSurfaceVariant"
-                        app:iiv_icon="gmd_help_outline" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                style="@style/InputLabel"
-                android:layout_marginTop="8dp"
-                android:text="Huy hiệu &amp; Thành tựu" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvBadges"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:clipToPadding="false"
-                android:paddingHorizontal="4dp" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="@color/colorSurface"
-                app:cardCornerRadius="@dimen/button_radius"
-                app:strokeColor="@color/colorBorder"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="24dp"
-                    android:paddingVertical="8dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/profile_email"
-                        android:textColor="@color/colorOnSurfaceVariant"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:id="@+id/tv_profile_email"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:text="..."
+                        android:layout_weight="1"
+                        android:text="@string/profile_logout"
                         android:textColor="@color/colorOnSurface"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="16dp"
-                        android:background="@color/colorBorder" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/profile_created_date"
-                        android:textColor="@color/colorOnSurfaceVariant"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:id="@+id/tv_created_at"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:text="..."
-                        android:textColor="@color/colorOnSurface"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="16dp"
-                        android:background="@color/colorBorder" />
-
-                    <LinearLayout
-                        android:id="@+id/ll_change_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:background="?attr/selectableItemBackground"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/profile_change_password_link"
-                            android:textColor="@color/colorOnSurface"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <com.mikepenz.iconics.view.IconicsImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            app:iiv_color="@color/colorOnSurfaceVariant"
-                            app:iiv_icon="gmd-keyboard-arrow-right" />
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="16dp"
-                        android:background="@color/colorBorder" />
-
-                    <LinearLayout
-                        android:id="@+id/ll_change_currency"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:background="?attr/selectableItemBackground"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Đơn vị tiền tệ mặc định"
-                            android:textColor="@color/colorOnSurface"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tv_default_currency"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
-                            android:text="VND"
-                            android:textColor="@color/colorInfo"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <com.mikepenz.iconics.view.IconicsImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            app:iiv_color="@color/colorOnSurfaceVariant"
-                            app:iiv_icon="gmd-keyboard-arrow-right" />
-                    </LinearLayout>
-
-                    <!--                    <View-->
-                    <!--                        android:layout_width="match_parent"-->
-                    <!--                        android:layout_height="1dp"-->
-                    <!--                        android:layout_marginBottom="16dp"-->
-                    <!--                        android:background="@color/colorBorder" />-->
-
-                    <!--                    <RelativeLayout-->
-                    <!--                        android:layout_width="match_parent"-->
-                    <!--                        android:layout_height="wrap_content">-->
-
-                    <!--                        <LinearLayout-->
-                    <!--                            android:layout_width="wrap_content"-->
-                    <!--                            android:layout_height="wrap_content"-->
-                    <!--                            android:orientation="vertical">-->
-
-                    <!--                            <TextView-->
-                    <!--                                android:layout_width="wrap_content"-->
-                    <!--                                android:layout_height="wrap_content"-->
-                    <!--                                android:text="@string/profile_sync"-->
-                    <!--                                android:textColor="@color/colorOnSurface"-->
-                    <!--                                android:textSize="16sp"-->
-                    <!--                                android:textStyle="bold" />-->
-
-                    <!--                            <TextView-->
-                    <!--                                android:layout_width="wrap_content"-->
-                    <!--                                android:layout_height="wrap_content"-->
-                    <!--                                android:text="@string/profile_internet_required"-->
-                    <!--                                android:textColor="@color/colorOnSurfaceVariant"-->
-                    <!--                                android:textSize="13sp" />-->
-                    <!--                        </LinearLayout>-->
-
-                    <!--                        <androidx.appcompat.widget.SwitchCompat-->
-                    <!--                            android:id="@+id/sw_sync"-->
-                    <!--                            android:layout_width="wrap_content"-->
-                    <!--                            android:layout_height="wrap_content"-->
-                    <!--                            android:layout_alignParentEnd="true"-->
-                    <!--                            android:layout_centerVertical="true"-->
-                    <!--                            app:thumbTint="@color/switch_colors"-->
-                    <!--                            app:trackTint="@color/colorOnSurfaceVariant" />-->
-                    <!--                    </RelativeLayout>-->
+                        app:icon="@drawable/logout_button_img"
+                        app:iconTint="@color/colorOnSurface"
+                        app:strokeColor="@color/colorBorder" />
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="48dp"
-                android:baselineAligned="false"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_delete_account"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:text="@string/profile_delete_account"
-                    android:textColor="@color/colorDanger"
-                    app:icon="@drawable/delete_button_img"
-                    app:iconTint="@color/colorDanger"
-                    app:strokeColor="@color/colorDanger" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_logout"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:text="@string/profile_logout"
-                    android:textColor="@color/colorOnSurface"
-                    app:icon="@drawable/logout_button_img"
-                    app:iconTint="@color/colorOnSurface"
-                    app:strokeColor="@color/colorBorder" />
             </LinearLayout>
-
-        </LinearLayout>
+        </FrameLayout>
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

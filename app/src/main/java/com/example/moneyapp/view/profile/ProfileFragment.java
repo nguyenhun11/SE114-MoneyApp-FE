@@ -132,6 +132,26 @@ public class ProfileFragment extends BaseFragment {
         View cardCityStats = view.findViewById(R.id.card_city_stats);
         View btnCityGuide = view.findViewById(R.id.btn_city_guide);
 
+        com.facebook.shimmer.ShimmerFrameLayout shimmerProfile = view.findViewById(R.id.shimmer_profile_content);
+        View layoutProfileContent = view.findViewById(R.id.layout_profile_content);
+
+        profileViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                if (shimmerProfile != null) {
+                    shimmerProfile.setVisibility(View.VISIBLE);
+                    shimmerProfile.startShimmer();
+                }
+                if (layoutProfileContent != null) layoutProfileContent.setVisibility(View.GONE);
+            } else {
+                if (shimmerProfile != null) {
+                    shimmerProfile.stopShimmer();
+                    shimmerProfile.setVisibility(View.GONE);
+                }
+                // Chỉ hiện nội dung thật khi đã tắt Skeleton
+                if (layoutProfileContent != null) layoutProfileContent.setVisibility(View.VISIBLE);
+            }
+        });
+
         // Fetch & Observe
         profileViewModel.fetchUserData();
         if (btnCityGuide != null) {

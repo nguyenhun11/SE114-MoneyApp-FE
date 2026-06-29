@@ -28,6 +28,9 @@ public class CategoryViewModel extends AndroidViewModel {
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> saveSuccess = new MutableLiveData<>();
 
+    // 💥 THÊM BIẾN QUẢN LÝ TRẠNG THÁI LOADING
+    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+
     private CategoryType currentType = CategoryType.EXPENSE;
 
     public CategoryViewModel(@NonNull Application application) {
@@ -44,6 +47,7 @@ public class CategoryViewModel extends AndroidViewModel {
     public LiveData<Category> getSelectedCategoryLiveData() { return selectedCategoryLiveData; }
     public LiveData<String> getErrorLiveData() { return errorLiveData; }
     public LiveData<Boolean> getSaveSuccess() { return saveSuccess; }
+    public LiveData<Boolean> getIsLoading() { return isLoading; }
 
     /**
      * Đặt lại trạng thái saveSuccess sau khi View đã tiêu thụ Event
@@ -54,6 +58,7 @@ public class CategoryViewModel extends AndroidViewModel {
     // region Tải Dữ Liệu Khởi Tạo (Fetch & Default Setup)
     public void loadCategories(CategoryType type) {
         this.currentType = type;
+        isLoading.setValue(true);
         categoriesLiveData.setValue(new ArrayList<>());
 
         CategoryRepository.CategoryCallback<List<CategoryGroupResponse>> groupCallback = new CategoryRepository.CategoryCallback<List<CategoryGroupResponse>>() {
@@ -71,6 +76,7 @@ public class CategoryViewModel extends AndroidViewModel {
             @Override
             public void onError(String message) {
                 errorLiveData.postValue(message);
+                isLoading.postValue(false);
             }
         };
 
@@ -94,12 +100,14 @@ public class CategoryViewModel extends AndroidViewModel {
                     }
                 } else {
                     categoriesLiveData.postValue(result);
+                    isLoading.postValue(false);
                 }
             }
 
             @Override
             public void onError(String message) {
                 errorLiveData.postValue(message);
+                isLoading.postValue(false);
             }
         };
 
@@ -121,6 +129,8 @@ public class CategoryViewModel extends AndroidViewModel {
             addCategory(new Category(null, "Thưởng", CategoryType.INCOME, group.getId(), group.getGroupName(),  4, 5, 1, new Date(), new Date()));
             addCategory(new Category(null, "Khác", CategoryType.INCOME, group.getId(), group.getGroupName(),  5, 15, 2, new Date(), new Date()));
         }
+
+        isLoading.postValue(false);
     }
 
     private void createDefaultCategories(CategoryType type) {
@@ -140,6 +150,7 @@ public class CategoryViewModel extends AndroidViewModel {
             @Override
             public void onError(String message) {
                 errorLiveData.postValue("Lỗi tạo nhóm: " + message);
+                isLoading.postValue(false);
             }
         };
 
@@ -167,15 +178,18 @@ public class CategoryViewModel extends AndroidViewModel {
     }
 
     public void loadCategoriesByGroupId(String groupId) {
+        isLoading.setValue(true);
         repository.getCategoriesByGroupId(groupId, new CategoryRepository.CategoryCallback<List<Category>>() {
             @Override
             public void onSuccess(List<Category> result) {
                 categoriesLiveData.postValue(result != null ? result : new ArrayList<>());
+                isLoading.postValue(false);
             }
 
             @Override
             public void onError(String message) {
                 errorLiveData.postValue(message);
+                isLoading.postValue(false);
             }
         });
     }
