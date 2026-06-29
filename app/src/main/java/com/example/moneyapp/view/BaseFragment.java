@@ -6,9 +6,9 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -272,9 +272,12 @@ public abstract class BaseFragment extends Fragment {
             if (imm != null) {
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
-            ScrollView mainScrollView = requireView().findViewById(R.id.main_scroll_view);
-            if (mainScrollView != null && mainScrollView.getChildAt(0) != null) {
-                mainScrollView.getChildAt(0).requestFocus();
+            View mainScrollView = requireView().findViewById(R.id.main_scroll_view);
+            if (mainScrollView instanceof ViewGroup) {
+                ViewGroup vg = (ViewGroup) mainScrollView;
+                if (vg.getChildAt(0) != null) {
+                    vg.getChildAt(0).requestFocus();
+                }
             }
         }
     }
