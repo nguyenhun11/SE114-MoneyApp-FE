@@ -57,6 +57,7 @@ import java.util.UUID;
 public class TransactionEntryFragment extends BaseFragment {
 
     public enum EntryMode {EXPENSE, INCOME, TRANSFER}
+    private boolean isCurrencyManuallyChanged = false;
 
     private EntryMode currentMode = EntryMode.EXPENSE;
 
@@ -266,6 +267,8 @@ public class TransactionEntryFragment extends BaseFragment {
         shimmerEntry = view.findViewById(R.id.shimmer_entry);
         flCategoryIcon = view.findViewById(R.id.flCategoryIcon);
 
+        isCurrencyManuallyChanged = false;
+
         View scrollContent = mainScrollView.getChildAt(0);
         if (scrollContent != null) {
             scrollContent.setFocusable(true);
@@ -387,6 +390,7 @@ public class TransactionEntryFragment extends BaseFragment {
             PopupHelper.showCurrencyFilterPopup(requireContext(), allCurrencies, selectedCurrency -> {
                 currentCurrencyCode = selectedCurrency;
                 tvCurrency.setText(currentCurrencyCode);
+                isCurrencyManuallyChanged = true; // <-- ĐÁNH DẤU: Người dùng đã tự chọn USD rồi nhé!
                 updateConvertedAmountFromInput();
             });
         });
@@ -500,9 +504,12 @@ public class TransactionEntryFragment extends BaseFragment {
     public void updateSelectedSource(Account account) {
         this.selectedSourceAccount = account;
         viewSelectSource.setAccount(account, true);
+
         if (editTransactionId == null && editTransferId == null && account.getCurrencyCode() != null) {
-            currentCurrencyCode = account.getCurrencyCode();
-            tvCurrency.setText(currentCurrencyCode);
+            if (!isCurrencyManuallyChanged) {
+                currentCurrencyCode = account.getCurrencyCode();
+                tvCurrency.setText(currentCurrencyCode);
+            }
         }
         updateConvertedAmountFromInput();
         checkSaveConditions();

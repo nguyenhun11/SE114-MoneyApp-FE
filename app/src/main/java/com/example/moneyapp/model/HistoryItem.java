@@ -61,8 +61,16 @@ public class HistoryItem {
         } else if (type == TYPE_ADJUST_BALANCE && adjustBalance != null) {
             return adjustBalance.getCreatedAt();
         } else if (type == TYPE_GOAL_RECORD && goalRecord != null) {
-            return DateConverter.convertStringToDate(goalRecord.getCreatedAt());
+            return goalRecord.getCreatedAt();
         }
         return null;
+    }
+
+    public Date getCreatedAt() {
+        if (type == TYPE_TRANSACTION && transaction != null) return transaction.getCreatedAt();
+        if (type == TYPE_TRANSFER && transfer != null) return transfer.getCreatedAt();
+        if (type == TYPE_ADJUST_BALANCE && adjustBalance != null) return adjustBalance.getCreatedAt();
+        if (type == TYPE_GOAL_RECORD && goalRecord != null) return goalRecord.getCreatedAt();
+        return null; // Fallback
     }
 }

@@ -111,10 +111,29 @@ public class HistoryViewModel extends AndroidViewModel {
             completedCalls[0]++;
             if (completedCalls[0] == TOTAL_APIS_TO_CALL) {
                 Collections.sort(mergedList, (item1, item2) -> {
-                    Date d1 = item1.getDate();
+                    Date d1 = item1.getDate(); // Ngày giao dịch (Bị reset về 00:00:00)
                     Date d2 = item2.getDate();
+
                     if (d1 == null || d2 == null) return 0;
-                    return d2.compareTo(d1); // Descending
+
+                    // 1. Ưu tiên sắp xếp theo Ngày giao dịch trước (Mới nhất lên đầu)
+                    int dateCompare = d2.compareTo(d1);
+
+                    // Nếu ngày KHÁC NHAU, trả về kết quả luôn
+                    if (dateCompare != 0) {
+                        return dateCompare;
+                    }
+
+                    // 2. Nếu CÙNG NGÀY (dateCompare == 0), thì sắp xếp theo CreatedAt (Thời gian tạo thực tế)
+                    // Cần đảm bảo HistoryItem có hàm getCreatedAt()
+                    Date created1 = item1.getCreatedAt();
+                    Date created2 = item2.getCreatedAt();
+
+                    if (created1 != null && created2 != null) {
+                        return created2.compareTo(created1); // Giao dịch nào tạo sau sẽ nổi lên trên cùng của ngày đó
+                    }
+
+                    return 0;
                 });
 
                 groupedTransactionsLiveData.postValue(groupTransactionsByDate(mergedList));

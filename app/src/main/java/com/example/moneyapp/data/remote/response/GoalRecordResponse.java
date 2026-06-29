@@ -1,5 +1,6 @@
 package com.example.moneyapp.data.remote.response;
 
+import com.example.moneyapp.utils.DateConverter;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
@@ -41,8 +42,8 @@ public class GoalRecordResponse {
         return type;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
+    public Date getCreatedAt() {
+        return DateConverter.convertStringToDate(createdAt);
     }
 
     public int getGoalId() {

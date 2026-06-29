@@ -287,14 +287,14 @@ public class GoalDetailFragment extends BaseFragment {
     private List<DailyHistoryGroup> groupGoalRecordsByDate(List<GoalRecordResponse> records) {
         if (records == null || records.isEmpty()) return new ArrayList<>();
         Collections.sort(records, (r1, r2) -> {
-            Date d1 = DateConverter.convertStringToDate(r1.getCreatedAt());
-            Date d2 = DateConverter.convertStringToDate(r2.getCreatedAt());
+            Date d1 = r1.getCreatedAt();
+            Date d2 = r2.getCreatedAt();
             if (d1 == null || d2 == null) return 0;
             return d2.compareTo(d1);
         });
         Map<String, List<HistoryItem>> groupedMap = new LinkedHashMap<>();
         for (GoalRecordResponse r : records) {
-            Date date = DateConverter.convertStringToDate(r.getCreatedAt());
+            Date date = r.getCreatedAt();
             String dateKey = formatToDisplayDate(date);
             if (!groupedMap.containsKey(dateKey)) groupedMap.put(dateKey, new ArrayList<>());
             groupedMap.get(dateKey).add(new HistoryItem(r));
