@@ -620,6 +620,12 @@ public class TransactionEntryFragment extends BaseFragment {
             if (Boolean.TRUE.equals(success)) handleOperationSuccess();
         });
 
+        transactionViewModel.getBonusMessageLiveData().observe(getViewLifecycleOwner(), bonusMsg -> {
+            if (bonusMsg != null) {
+                RewardHelper.showSmallReward(requireView(), bonusMsg + " - MoneyCity phát triển!");
+            }
+        });
+
         transferViewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
             if (Boolean.TRUE.equals(success)) handleOperationSuccess();
         });
@@ -905,9 +911,8 @@ public class TransactionEntryFragment extends BaseFragment {
         if (pendingOperations <= 0) {
             isSaving = false;
 
-            if (editTransactionId == null && editTransferId == null) {
-                RewardHelper.showSmallReward(requireView(), "+1 SP - Thói quen tốt!");
-            }
+            // Đã xóa phần RewardHelper.showSmallReward(requireView(), "+1 SP - Thói quen tốt!"); 
+            // vì logic thưởng giờ đã tập trung trong transactionViewModel.getBonusMessageLiveData()
 
             // Xóa bản nháp khỏi SQLite local khi lưu thành công
             if (pendingTxId != null) {

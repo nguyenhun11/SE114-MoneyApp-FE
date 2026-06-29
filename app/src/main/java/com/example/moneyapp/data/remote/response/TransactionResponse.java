@@ -24,8 +24,11 @@ public class TransactionResponse {
     private int moodId;
     private String createdAt;
     private String lastUpdatedAt;
+    private int baseSP;
+    private int bonusPP;
+    private int totalPP;
 
-    public TransactionResponse(String id, String accountId, String accountName, String categoryId, String categoryName, Integer type, String currencyCode, Double accountAmount, Double baseAmount, Double originalAmount, Double exchangeRate, String date, String note, int categoryColorId, int categoryIconId, int accountColorId, int accountIconId, List<String> imageUrls, int moodId, String createdAt, String lastUpdatedAt) {
+    public TransactionResponse(String id, String accountId, String accountName, String categoryId, String categoryName, Integer type, String currencyCode, Double accountAmount, Double baseAmount, Double originalAmount, Double exchangeRate, String date, String note, int categoryColorId, int categoryIconId, int accountColorId, int accountIconId, List<String> imageUrls, int moodId, String createdAt, String lastUpdatedAt, int baseSP, int bonusPP, int totalPP) {
         this.id = id;
         this.accountId = accountId;
         this.accountName = accountName;
@@ -47,6 +50,9 @@ public class TransactionResponse {
         this.moodId = moodId;
         this.createdAt = createdAt;
         this.lastUpdatedAt = lastUpdatedAt;
+        this.baseSP = baseSP;
+        this.bonusPP = bonusPP;
+        this.totalPP = totalPP;
     }
 
     public String getId() {
@@ -215,5 +221,29 @@ public class TransactionResponse {
 
     public void setExchangeRate(Double exchangeRate) {
         this.exchangeRate = exchangeRate;
+    }
+
+    public int getBaseSP() {
+        return baseSP;
+    }
+
+    public void setBaseSP(int baseSP) {
+        this.baseSP = baseSP;
+    }
+
+    public int getBonusPP() {
+        return bonusPP;
+    }
+
+    public void setBonusPP(int bonusPP) {
+        this.bonusPP = bonusPP;
+    }
+
+    public int getTotalPP() {
+        return totalPP;
+    }
+
+    public void setTotalPP(int totalPP) {
+        this.totalPP = totalPP;
     }
 }

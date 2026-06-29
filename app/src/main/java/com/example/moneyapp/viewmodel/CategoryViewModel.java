@@ -33,6 +33,8 @@ public class CategoryViewModel extends AndroidViewModel {
 
     private CategoryType currentType = CategoryType.EXPENSE;
 
+    private final java.util.Set<CategoryType> initializingTypes = java.util.Collections.synchronizedSet(new java.util.HashSet<>());
+
     public CategoryViewModel(@NonNull Application application) {
         super(application);
         repository = new CategoryRepository(application);
@@ -119,18 +121,53 @@ public class CategoryViewModel extends AndroidViewModel {
     }
 
     private void createDefaultCategoriesInGroup(CategoryType type, CategoryGroupResponse group) {
+        if (initializingTypes.contains(type)) return;
+        initializingTypes.add(type);
+
+        List<Category> defaults = new ArrayList<>();
         if (type == CategoryType.EXPENSE) {
-            addCategory(new Category(null, "Ăn uống", CategoryType.EXPENSE, group.getId(), group.getGroupName(), 4, 11, 0, new Date(), new Date()));
-            addCategory(new Category(null, "Di chuyển", CategoryType.EXPENSE, group.getId(), group.getGroupName(),  1, 12, 1, new Date(), new Date()));
-            addCategory(new Category(null, "Mua sắm", CategoryType.EXPENSE, group.getId(), group.getGroupName(), 9, 10, 2, new Date(), new Date()));
-            addCategory(new Category(null, "Khác", CategoryType.EXPENSE, group.getId(), group.getGroupName(), 5, 15, 3, new Date(), new Date()));
+            defaults.add(new Category(null, "Ăn uống", CategoryType.EXPENSE, group.getId(), group.getGroupName(), 4, 11, 0, new Date(), new Date()));
+            defaults.add(new Category(null, "Di chuyển", CategoryType.EXPENSE, group.getId(), group.getGroupName(),  1, 12, 1, new Date(), new Date()));
+            defaults.add(new Category(null, "Mua sắm", CategoryType.EXPENSE, group.getId(), group.getGroupName(), 9, 10, 2, new Date(), new Date()));
+            defaults.add(new Category(null, "Khác", CategoryType.EXPENSE, group.getId(), group.getGroupName(), 5, 15, 3, new Date(), new Date()));
         } else if (type == CategoryType.INCOME) {
-            addCategory(new Category(null, "Lương", CategoryType.INCOME, group.getId(), group.getGroupName(),  2, 14, 0, new Date(), new Date()));
-            addCategory(new Category(null, "Thưởng", CategoryType.INCOME, group.getId(), group.getGroupName(),  4, 5, 1, new Date(), new Date()));
-            addCategory(new Category(null, "Khác", CategoryType.INCOME, group.getId(), group.getGroupName(),  5, 15, 2, new Date(), new Date()));
+            defaults.add(new Category(null, "Lương", CategoryType.INCOME, group.getId(), group.getGroupName(),  2, 14, 0, new Date(), new Date()));
+            defaults.add(new Category(null, "Thưởng", CategoryType.INCOME, group.getId(), group.getGroupName(),  4, 5, 1, new Date(), new Date()));
+            defaults.add(new Category(null, "Khác", CategoryType.INCOME, group.getId(), group.getGroupName(),  5, 15, 2, new Date(), new Date()));
         }
 
-        isLoading.postValue(false);
+        if (defaults.isEmpty()) {
+            initializingTypes.remove(type);
+            isLoading.postValue(false);
+            return;
+        }
+
+        final int total = defaults.size();
+        final int[] completed = {0};
+
+        for (Category cat : defaults) {
+            repository.createCategory(cat, new CategoryRepository.CategoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    checkCompletion();
+                }
+
+                @Override
+                public void onError(String message) {
+                    checkCompletion();
+                }
+
+                private void checkCompletion() {
+                    synchronized (completed) {
+                        completed[0]++;
+                        if (completed[0] == total) {
+                            initializingTypes.remove(type);
+                            loadCategories(type);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     private void createDefaultCategories(CategoryType type) {

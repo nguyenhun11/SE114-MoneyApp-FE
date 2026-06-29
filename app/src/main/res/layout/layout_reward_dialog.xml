@@ -32,7 +32,8 @@
         android:layout_height="wrap_content"
         android:text="+10 SP"
         android:textColor="@color/colorOnSurface"
-        android:textSize="32sp"
+        android:textSize="24sp"
+        android:textAlignment="center"
         android:textStyle="bold" />
 
     <TextView

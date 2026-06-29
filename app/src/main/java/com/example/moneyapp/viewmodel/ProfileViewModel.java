@@ -238,6 +238,13 @@ public class ProfileViewModel extends AndroidViewModel {
                     currentUser.postValue(user);
                     errorMessage.postValue("CHECKIN_MSG:" + response.getMessage());
 
+
+                    String bonusMsg = response.getMessage();
+                    if (response.getBonusSP() > 0) {
+                        bonusMsg += "\n+" + response.getTotalSP() + " SP (Bonus: +" + response.getBonusSP() + " SP)";
+                    }
+                    errorMessage.postValue("CHECKIN_MSG:" + bonusMsg);
+
                     // Cập nhật lại điểm thành phố sau khi check-in
                     fetchCityData();
                 }
@@ -264,6 +271,13 @@ public class ProfileViewModel extends AndroidViewModel {
                     user.setTodayCheckedIn(true);
                     currentUser.postValue(user);
                     errorMessage.postValue("SUCCESS_RESTORE:" + response.getMessage());
+
+
+                    String bonusMsg = response.getMessage();
+                    if (response.getBonusSP() > 0) {
+                        bonusMsg += "\n+" + response.getTotalSP() + " SP (Bonus: +" + response.getBonusSP() + " SP)";
+                    }
+                    errorMessage.postValue("SUCCESS_RESTORE:" + bonusMsg);
 
                     // Cập nhật lại điểm thành phố sau khi khôi phục chuỗi
                     fetchCityData();

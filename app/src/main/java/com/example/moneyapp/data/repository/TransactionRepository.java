@@ -61,7 +61,10 @@ public class TransactionRepository extends BaseRepository {
                 response.getAccountIconId(),
                 response.getImageUrls(),
                 response.getMoodId(),
-                DateConverter.convertStringToDate(response.getCreatedAt())
+                DateConverter.convertStringToDate(response.getCreatedAt()),
+                response.getBaseSP(),
+                response.getBonusPP(),
+                response.getTotalPP()
         );
     }
 

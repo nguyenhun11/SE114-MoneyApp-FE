@@ -1,17 +1,19 @@
 package com.example.moneyapp.data.remote.response;
 
-public class CheckInResponse {
+public class QuestClaimResponse {
     private String message;
-    private int currentStreak;
-    private boolean isIncreased;
+    private int basePP;
+    private int bonusPP;
+    private int totalPP;
     private int baseSP;
     private int bonusSP;
     private int totalSP;
 
-    public CheckInResponse(String message, int currentStreak, boolean isIncreased, int baseSP, int bonusSP, int totalSP) {
+    public QuestClaimResponse(String message, int basePP, int bonusPP, int totalPP, int baseSP, int bonusSP, int totalSP) {
         this.message = message;
-        this.currentStreak = currentStreak;
-        this.isIncreased = isIncreased;
+        this.basePP = basePP;
+        this.bonusPP = bonusPP;
+        this.totalPP = totalPP;
         this.baseSP = baseSP;
         this.bonusSP = bonusSP;
         this.totalSP = totalSP;
@@ -25,20 +27,28 @@ public class CheckInResponse {
         this.message = message;
     }
 
-    public int getCurrentStreak() {
-        return currentStreak;
+    public int getBasePP() {
+        return basePP;
     }
 
-    public void setCurrentStreak(int currentStreak) {
-        this.currentStreak = currentStreak;
+    public void setBasePP(int basePP) {
+        this.basePP = basePP;
     }
 
-    public boolean isIncreased() {
-        return isIncreased;
+    public int getBonusPP() {
+        return bonusPP;
     }
 
-    public void setIncreased(boolean increased) {
-        isIncreased = increased;
+    public void setBonusPP(int bonusPP) {
+        this.bonusPP = bonusPP;
+    }
+
+    public int getTotalPP() {
+        return totalPP;
+    }
+
+    public void setTotalPP(int totalPP) {
+        this.totalPP = totalPP;
     }
 
     public int getBaseSP() {
