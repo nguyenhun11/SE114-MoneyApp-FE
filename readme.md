@@ -42,11 +42,11 @@ Hệ thống thiết kế theo mô hình Tài chính kết hợp Trò chơi hóa
 #### Ứng dụng phân thành các nhóm chức năng chính:
 
 * **Users**: Bảng trung tâm. Lưu trữ thông tin định danh (tên, email, mật khẩu hash), thông tin cá nhân (ảnh, số điện thoại) và thông số hoạt động (DailyStreak, tiền tệ mặc định).
-* **RefreshTokens**: Lưu trữ mã làm mới phiên đăng nhập để duy trì trạng thái bảo mật.
 * **Accounts**: Quản lý danh sách ví/tài khoản (Tiền mặt, Thẻ ngân hàng, Tiết kiệm). Lưu trữ số dư (Balance), loại tiền tệ và cấu hình hiển thị (màu sắc, biểu tượng).
 * **Categories & CategoryGroups**: Cấu trúc phân loại danh mục 2 cấp. CategoryGroup (Nhóm cha) chứa nhiều Category (Nhóm con). Hỗ trợ thiết lập mục tiêu chi tiêu hàng tháng cho từng danh mục.
 * **Transactions**: Ghi vết chi tiết giao dịch thu/chi. Liên kết dữ liệu giữa Account và Category. Lưu trữ mở rộng: MoodId (tâm trạng) và ImageUrls (ảnh hóa đơn).
 * **Transfers**: Ghi lại lịch sử chuyển tiền nội bộ giữa các ví. Tích hợp xử lý tỷ giá khi chuyển đổi giữa các loại tiền tệ khác nhau.
+* **Calculator**: Tích hợp máy tính cầm tay để tính khi nhập tiền.
 * **AdjustBalances**: Lưu vết các lệnh điều chỉnh số dư tài khoản thủ công (không tạo giao dịch thu/chi).
 * **Goals**: Quản lý tiến độ tiết kiệm mục tiêu. Lưu trữ số tiền cần đạt, số tiền hiện có và hạn chót (Deadline).
 * **Budgets**: Thiết lập giới hạn chi tiêu theo chu kỳ (Tuần/Tháng/Năm). Áp dụng cho toàn bộ hệ thống hoặc giới hạn theo từng danh mục cụ thể.
@@ -69,6 +69,9 @@ Hệ thống thiết kế theo mô hình Tài chính kết hợp Trò chơi hóa
 ---
 
 ### 🛠️ CÔNG NGHỆ & THƯ VIỆN SỬ DỤNG
+
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)![Material Design](https://img.shields.io/badge/Material%20Design-757575?style=for-the-badge&logo=materialdesign&logoColor=white)![Jetpack Navigation](https://img.shields.io/badge/Jetpack%20Navigation-3DDC84?style=for-the-badge&logo=android&logoColor=white)![Gson](https://img.shields.io/badge/Gson-4285F4?style=for-the-badge&logo=google&logoColor=white)![Room](https://img.shields.io/badge/Room-3DDC84?style=for-the-badge&logo=android&logoColor=white)![MPAndroidChart](https://img.shields.io/badge/MPAndroidChart-E91E63?style=for-the-badge&logo=chartdotjs&logoColor=white)![Retrofit](https://img.shields.io/badge/Retrofit%202-48B983?style=for-the-badge)![OkHttp](https://img.shields.io/badge/OkHttp-3EAAAF?style=for-the-badge)![Glide](https://img.shields.io/badge/Glide-4CAF50?style=for-the-badge)![Firebase Auth](https://img.shields.io/badge/Firebase%20Auth-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)![Google Sign-In](https://img.shields.io/badge/Google%20Sign--In-4285F4?style=for-the-badge&logo=google&logoColor=white)![Mikepenz Iconics](https://img.shields.io/badge/Mikepenz%20Iconics-212121?style=for-the-badge)
+
 * **Java**: Ngôn ngữ lập trình chính cho ứng dụng.
 * **Google Material Components**: Cung cấp các UI Widget chuẩn hóa theo phong cách thiết kế Material Design hiện đại giúp giao diện nhất quán và chuyên nghiệp.
 * **Jetpack Navigation Component**: Quản lý luồng di chuyển giữa các màn hình tập trung qua đồ thị điều hướng trực quan, xử lý Back Stack tự động và truyền tham số an toàn.
@@ -96,7 +99,7 @@ Hệ thống thiết kế theo mô hình Tài chính kết hợp Trò chơi hóa
 1. **Tải mã nguồn về máy**:
    * Giải nén file nén nguồn hoặc chạy lệnh:
      ```bash
-     git clone <URL_REPO_PROJECT>
+     git clone https://github.com/nguyenhun11/SE114-MoneyApp-FE.git
      ```
 2. **Mở dự án trên Android Studio**:
    * Mở Android Studio, click chọn **Open**.
