@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_scroll_view_register"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground"
-    android:fillViewport="true">
+    android:background="@color/colorSurface"
+    android:fillViewport="true"
+    android:isScrollContainer="true"
+    android:scrollbars="none">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -24,7 +27,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Name Field -->
         <TextView
             android:id="@+id/tv_label_name"
             android:layout_width="wrap_content"
@@ -55,7 +57,6 @@
             android:textColorHint="@color/colorOnSurfaceVariant"
             app:layout_constraintTop_toBottomOf="@id/tv_label_name" />
 
-        <!-- Email Field -->
         <TextView
             android:id="@+id/tv_label_email"
             android:layout_width="wrap_content"
@@ -86,7 +87,6 @@
             android:textColorHint="@color/colorOnSurfaceVariant"
             app:layout_constraintTop_toBottomOf="@id/tv_label_email" />
 
-        <!-- Password Field -->
         <TextView
             android:id="@+id/tv_label_password"
             android:layout_width="wrap_content"
@@ -100,22 +100,38 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/et_email_register" />
 
-        <EditText
-            android:id="@+id/et_password_register"
+        <FrameLayout
+            android:id="@+id/fl_password_register_wrapper"
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="4dp"
-            android:background="@drawable/bg_edittext_selector"
-            android:hint="@string/password_placeholder"
-            android:gravity="start|center_vertical"
-            android:inputType="textPassword"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:drawableStart="@drawable/ic_lock"
-            android:drawablePadding="12dp"
-            android:textColor="@color/colorOnSurface"
-            android:textColorHint="@color/colorOnSurfaceVariant"
-            app:layout_constraintTop_toBottomOf="@id/tv_label_password" />
+            app:layout_constraintTop_toBottomOf="@id/tv_label_password">
+
+            <EditText
+                android:id="@+id/et_password_register"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_edittext_selector"
+                android:hint="@string/password_placeholder"
+                android:gravity="start|center_vertical"
+                android:inputType="textPassword"
+                android:paddingStart="16dp"
+                android:paddingEnd="48dp"
+                android:drawableStart="@drawable/ic_lock"
+                android:drawablePadding="12dp"
+                android:textColor="@color/colorOnSurface"
+                android:textColorHint="@color/colorOnSurfaceVariant" />
+
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:id="@+id/iv_show_password_register"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:iiv_color="@color/colorOnSurfaceVariant"
+                app:iiv_icon="gmd_visibility_off" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/tv_helper_password"
@@ -127,9 +143,8 @@
             android:textColor="@color/colorOnSurfaceVariant"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/et_password_register" />
+            app:layout_constraintTop_toBottomOf="@id/fl_password_register_wrapper" />
 
-        <!-- Confirm Password Field -->
         <TextView
             android:id="@+id/tv_label_confirm_password"
             android:layout_width="wrap_content"
@@ -143,22 +158,38 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_helper_password" />
 
-        <EditText
-            android:id="@+id/et_confirm_password_register"
+        <FrameLayout
+            android:id="@+id/fl_confirm_password_register_wrapper"
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="4dp"
-            android:background="@drawable/bg_edittext_selector"
-            android:hint="@string/password_placeholder"
-            android:gravity="start|center_vertical"
-            android:inputType="textPassword"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:drawableStart="@drawable/ic_lock"
-            android:drawablePadding="12dp"
-            android:textColor="@color/colorOnSurface"
-            android:textColorHint="@color/colorOnSurfaceVariant"
-            app:layout_constraintTop_toBottomOf="@id/tv_label_confirm_password" />
+            app:layout_constraintTop_toBottomOf="@id/tv_label_confirm_password">
+
+            <EditText
+                android:id="@+id/et_confirm_password_register"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_edittext_selector"
+                android:hint="@string/password_placeholder"
+                android:gravity="start|center_vertical"
+                android:inputType="textPassword"
+                android:paddingStart="16dp"
+                android:paddingEnd="48dp"
+                android:drawableStart="@drawable/ic_lock"
+                android:drawablePadding="12dp"
+                android:textColor="@color/colorOnSurface"
+                android:textColorHint="@color/colorOnSurfaceVariant" />
+
+            <com.mikepenz.iconics.view.IconicsImageView
+                android:id="@+id/iv_show_confirm_password_register"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:iiv_color="@color/colorOnSurfaceVariant"
+                app:iiv_icon="gmd_visibility_off" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/tv_go_to_login"
@@ -171,21 +202,20 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/et_confirm_password_register" />
+            app:layout_constraintTop_toBottomOf="@id/fl_confirm_password_register_wrapper" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_register"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginHorizontal="48dp"
+            android:layout_height="48dp"
             android:layout_marginTop="16dp"
             android:text="@string/register_btn"
             android:textAllCaps="false"
             android:textColor="@color/colorSurface"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:backgroundTint="@color/colorPrimary"
-            app:cornerRadius="16dp"
+            app:backgroundTint="@null"
+            android:background="@drawable/bg_card_gradient"
             app:layout_constraintTop_toBottomOf="@id/tv_go_to_login" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

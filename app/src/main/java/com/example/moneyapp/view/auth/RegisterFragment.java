@@ -1,6 +1,8 @@
 package com.example.moneyapp.view.auth;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import com.example.moneyapp.viewmodel.AuthViewModel;
 
 public class RegisterFragment extends Fragment {
     private AuthViewModel authViewModel;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -29,8 +32,8 @@ public class RegisterFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
-
-        // Đổi từ MaterialButton sang Button để tránh ClassCastException khi dùng AppCompatButton trong XML
+        // 1. ÁNH XẠ UI
+        androidx.core.widget.NestedScrollView rootScrollView = view.findViewById(R.id.root_scroll_view_register);
         Button btnRegister = view.findViewById(R.id.btn_register);
         TextView tvGoToLogin = view.findViewById(R.id.tv_go_to_login);
         EditText etName = view.findViewById(R.id.et_name_register);
@@ -38,6 +41,85 @@ public class RegisterFragment extends Fragment {
         EditText etPassword = view.findViewById(R.id.et_password_register);
         EditText etConfirmPassword = view.findViewById(R.id.et_confirm_password_register);
 
+        com.mikepenz.iconics.view.IconicsImageView ivShowPassword = view.findViewById(R.id.iv_show_password_register);
+        com.mikepenz.iconics.view.IconicsImageView ivShowConfirmPassword = view.findViewById(R.id.iv_show_confirm_password_register);
+
+        // 2. XỬ LÝ ẨN/HIỆN MẬT KHẨU
+        final boolean[] isPasswordVisible = {false};
+        if (ivShowPassword != null) {
+            ivShowPassword.setOnClickListener(v -> {
+                isPasswordVisible[0] = !isPasswordVisible[0];
+                togglePasswordVisibility(requireContext(), etPassword, ivShowPassword, isPasswordVisible[0]);
+            });
+        }
+
+        final boolean[] isConfirmPasswordVisible = {false};
+        if (ivShowConfirmPassword != null) {
+            ivShowConfirmPassword.setOnClickListener(v -> {
+                isConfirmPasswordVisible[0] = !isConfirmPasswordVisible[0];
+                togglePasswordVisibility(requireContext(), etConfirmPassword, ivShowConfirmPassword, isConfirmPasswordVisible[0]);
+            });
+        }
+
+        // 3. TỰ ĐỘNG ĐỆM PHẦN ĐÁY VÀ CUỘN KHI BÀN PHÍM HIỆN (THUẬT TOÁN TỪ LOGIN)
+        if (rootScrollView != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(rootScrollView, (v, insets) -> {
+                int imeHeight = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime()).bottom;
+                int navHeight = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars()).bottom;
+                int paddingBottom = Math.max(imeHeight, navHeight);
+
+                // Đệm phần đáy bằng đúng chiều cao bàn phím để có không gian cuộn rộng rãi
+                v.setPadding(0, 0, 0, paddingBottom);
+
+                // Khi bàn phím mở lên, kiểm tra xem ô đang chọn có bị che khuất không để tự động kéo lên trên bàn phím
+                if (imeHeight > 0) {
+                    v.postDelayed(() -> {
+                        View focus = view.findFocus();
+                        if (focus == etName || focus == etEmail || focus == etPassword || focus == etConfirmPassword) {
+                            View target = focus;
+                            if (focus == etPassword) {
+                                target = view.findViewById(R.id.fl_password_register_wrapper);
+                            } else if (focus == etConfirmPassword) {
+                                target = view.findViewById(R.id.fl_confirm_password_register_wrapper);
+                            }
+
+                            if (target != null) {
+                                int visibleHeight = v.getHeight() - paddingBottom;
+                                int scrollY = target.getBottom() + 80 - visibleHeight;
+                                rootScrollView.smoothScrollTo(0, Math.max(0, scrollY));
+                            }
+                        }
+                    }, 100);
+                }
+                return insets;
+            });
+        }
+
+        // 4. XỬ LÝ KHI NGƯỜI DÙNG CHUYỂN HOẶC NHẤN VÀO CÁC Ô NHẬP LIỆU
+        View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
+            if (hasFocus && rootScrollView != null) {
+                rootScrollView.postDelayed(() -> {
+                    View target = v;
+                    if (v == etPassword) {
+                        target = view.findViewById(R.id.fl_password_register_wrapper);
+                    } else if (v == etConfirmPassword) {
+                        target = view.findViewById(R.id.fl_confirm_password_register_wrapper);
+                    }
+
+                    if (target != null) {
+                        int visibleHeight = rootScrollView.getHeight() - rootScrollView.getPaddingBottom();
+                        int scrollY = target.getBottom() + 80 - visibleHeight;
+                        rootScrollView.smoothScrollTo(0, Math.max(0, scrollY));
+                    }
+                }, 150);
+            }
+        };
+        etName.setOnFocusChangeListener(focusListener);
+        etEmail.setOnFocusChangeListener(focusListener);
+        etPassword.setOnFocusChangeListener(focusListener);
+        etConfirmPassword.setOnFocusChangeListener(focusListener);
+
+        // 5. XỬ LÝ CLICK ĐĂNG KÝ
         if (btnRegister != null) {
             btnRegister.setOnClickListener(v -> {
                 authViewModel.register(
@@ -49,6 +131,7 @@ public class RegisterFragment extends Fragment {
             });
         }
 
+        // 6. CHUYỂN SANG TRANG ĐĂNG NHẬP
         if (tvGoToLogin != null) {
             String text = getString(R.string.register_already_have_account);
             android.text.SpannableString ss = new android.text.SpannableString(text);
@@ -79,6 +162,7 @@ public class RegisterFragment extends Fragment {
             });
         }
 
+        // 7. OBSERVE VIEWMODEL
         authViewModel.registerSuccess.observe(getViewLifecycleOwner(), success -> {
             if (success != null && success) {
                 DialogHelper.showSimpleDialog(requireContext(), "Thành công", "Đăng ký thành công! Vui lòng đăng nhập.", () -> {
@@ -89,5 +173,26 @@ public class RegisterFragment extends Fragment {
         authViewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
             DialogHelper.showSimpleDialog(requireContext(), "Thông báo", message);
         });
+    }
+
+    // Hàm tiện ích dùng chung để thay đổi thuộc tính ẩn hiện mật khẩu và icon mắt
+    private void togglePasswordVisibility(Context context, EditText editText, com.mikepenz.iconics.view.IconicsImageView iconView, boolean isVisible) {
+        if (editText == null || iconView == null) return;
+        int iconColor = androidx.core.content.ContextCompat.getColor(context, R.color.colorOnSurfaceVariant);
+
+        if (isVisible) {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            com.mikepenz.iconics.IconicsDrawable icon = new com.mikepenz.iconics.IconicsDrawable(context, "gmd-visibility");
+            icon.setColorFilter(iconColor, android.graphics.PorterDuff.Mode.SRC_IN);
+            iconView.setIcon(icon);
+        } else {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            com.mikepenz.iconics.IconicsDrawable icon = new com.mikepenz.iconics.IconicsDrawable(context, "gmd-visibility-off");
+            icon.setColorFilter(iconColor, android.graphics.PorterDuff.Mode.SRC_IN);
+            iconView.setIcon(icon);
+        }
+
+        editText.setTypeface(android.graphics.Typeface.DEFAULT);
+        editText.setSelection(editText.getText().length());
     }
 }
