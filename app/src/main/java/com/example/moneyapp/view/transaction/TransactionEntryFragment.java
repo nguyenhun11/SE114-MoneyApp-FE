@@ -911,9 +911,8 @@ public class TransactionEntryFragment extends BaseFragment {
         if (pendingOperations <= 0) {
             isSaving = false;
 
-            if (editTransactionId == null && editTransferId == null) {
-                RewardHelper.showSmallReward(requireView(), "+1 SP - Thói quen tốt!");
-            }
+            // Đã xóa phần RewardHelper.showSmallReward(requireView(), "+1 SP - Thói quen tốt!"); 
+            // vì logic thưởng giờ đã tập trung trong transactionViewModel.getBonusMessageLiveData()
 
             // Xóa bản nháp khỏi SQLite local khi lưu thành công
             if (pendingTxId != null) {
