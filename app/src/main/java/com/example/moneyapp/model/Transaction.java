@@ -26,6 +26,9 @@ public class Transaction {
     private List<String> imageUrls;
     private int moodId;
     private Date createdAt;
+    private int baseSP;
+    private int bonusPP;
+    private int totalPP;
 
 
     public Transaction(String transactionId,
@@ -38,6 +41,19 @@ public class Transaction {
                        Date date,
                        String note, int categoryColorId, int categoryIconId, int accountColorId, int accountIconId,
                        List<String> imageUrls, int moodId, Date createdAt) {
+        this(transactionId, accountId, accountName, categoryId, categoryName, type, originalAmount, currencyCode, accountAmount, baseAmount, exchangeRate, date, note, categoryColorId, categoryIconId, accountColorId, accountIconId, imageUrls, moodId, createdAt, 0, 0, 0);
+    }
+
+    public Transaction(String transactionId,
+                       String accountId,
+                       String accountName,
+                       String categoryId,
+                       String categoryName,
+                       CategoryType type, Double originalAmount, String currencyCode, Double accountAmount,
+                       Double baseAmount, Double exchangeRate,
+                       Date date,
+                       String note, int categoryColorId, int categoryIconId, int accountColorId, int accountIconId,
+                       List<String> imageUrls, int moodId, Date createdAt, int baseSP, int bonusPP, int totalPP) {
         this.transactionId = transactionId;
         this.accountId = accountId;
         this.accountName = accountName;
@@ -58,6 +74,9 @@ public class Transaction {
         this.imageUrls = imageUrls;
         this.moodId = moodId;
         this.createdAt = createdAt;
+        this.baseSP = baseSP;
+        this.bonusPP = bonusPP;
+        this.totalPP = totalPP;
     }
 
     public String getTransactionId() { return transactionId; }
@@ -191,5 +210,29 @@ public class Transaction {
 
     public void setExchangeRate(Double exchangeRate) {
         this.exchangeRate = exchangeRate;
+    }
+
+    public int getBaseSP() {
+        return baseSP;
+    }
+
+    public void setBaseSP(int baseSP) {
+        this.baseSP = baseSP;
+    }
+
+    public int getBonusPP() {
+        return bonusPP;
+    }
+
+    public void setBonusPP(int bonusPP) {
+        this.bonusPP = bonusPP;
+    }
+
+    public int getTotalPP() {
+        return totalPP;
+    }
+
+    public void setTotalPP(int totalPP) {
+        this.totalPP = totalPP;
     }
 }

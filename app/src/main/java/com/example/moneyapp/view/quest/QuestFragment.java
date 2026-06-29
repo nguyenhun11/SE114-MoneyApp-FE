@@ -59,6 +59,9 @@ public class QuestFragment extends BaseFragment {
             if (rewardMsg != null) {
                 RewardHelper.showBigReward(requireContext(), rewardMsg, "Chúc mừng bạn đã hoàn thành nhiệm vụ!");
                 viewModel.resetClaimSuccess();
+                
+                // Cập nhật lại dữ liệu thành phố trong ProfileViewModel nếu cần, 
+                // hoặc đơn giản là để người dùng thấy điểm tăng khi quay lại màn hình chính
             }
         });
 

@@ -27,6 +27,7 @@ public class TransactionViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     private final MutableLiveData<Boolean> operationSuccess = new MutableLiveData<>();
     private final MutableLiveData<String> checkInMessageLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> bonusMessageLiveData = new MutableLiveData<>();
 
     public TransactionViewModel(@NonNull Application application) {
         super(application);
@@ -39,6 +40,7 @@ public class TransactionViewModel extends AndroidViewModel {
     public LiveData<Boolean> getIsLoading() { return isLoading; }
     public LiveData<Boolean> getOperationSuccess() { return operationSuccess; }
     public LiveData<String> getCheckInMessageLiveData() { return checkInMessageLiveData; }
+    public LiveData<String> getBonusMessageLiveData() { return bonusMessageLiveData; }
 
     public void loadTransactionById(String id) {
         isLoading.setValue(true);
@@ -63,6 +65,19 @@ public class TransactionViewModel extends AndroidViewModel {
             @Override
             public void onSuccess(Transaction result) {
                 operationSuccess.postValue(true);
+
+                if (result.getTotalPP() > 0 || result.getBaseSP() > 0) {
+                    StringBuilder bonusMsg = new StringBuilder();
+                    if (result.getBaseSP() > 0) bonusMsg.append("+").append(result.getBaseSP()).append(" SP");
+                    if (result.getTotalPP() > 0) {
+                        if (bonusMsg.length() > 0) bonusMsg.append(", ");
+                        bonusMsg.append("+").append(result.getTotalPP()).append(" PP");
+                        if (result.getBonusPP() > 0) {
+                            bonusMsg.append(" (Bonus: +").append(result.getBonusPP()).append(" PP)");
+                        }
+                    }
+                    bonusMessageLiveData.postValue(bonusMsg.toString());
+                }
 
                 // Refresh City data to update Stability points
                 new CityRepository(getApplication()).getCity().enqueue(new retrofit2.Callback<com.example.moneyapp.data.remote.response.CityResponse>() {

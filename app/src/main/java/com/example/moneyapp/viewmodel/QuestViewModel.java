@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.moneyapp.data.remote.response.QuestClaimResponse;
 import com.example.moneyapp.data.remote.response.QuestResponse;
 import com.example.moneyapp.data.repository.QuestRepository;
 
@@ -55,12 +56,26 @@ public class QuestViewModel extends AndroidViewModel {
     }
 
     public void claimReward(QuestResponse quest) {
-        repository.claimQuestReward(quest.getId()).enqueue(new Callback<Void>() {
+        repository.claimQuestReward(quest.getId()).enqueue(new Callback<QuestClaimResponse>() {
             @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                if (response.isSuccessful()) {
-                    String rewardMsg = "+" + quest.getRewardPoints() + (quest.getRewardType() == 1 ? " PP" : " SP");
-                    claimRewardSuccess.setValue(rewardMsg);
+            public void onResponse(@NonNull Call<QuestClaimResponse> call, @NonNull Response<QuestClaimResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    QuestClaimResponse claimRes = response.body();
+                    StringBuilder rewardMsg = new StringBuilder();
+                    
+                    if (quest.getRewardType() == 1) { // Nhiệm vụ thưởng PP
+                        rewardMsg.append("+").append(claimRes.getTotalPP()).append(" PP");
+                        if (claimRes.getBonusPP() > 0) {
+                            rewardMsg.append(" (Bonus: +").append(claimRes.getBonusPP()).append(" PP)");
+                        }
+                    } else { // Nhiệm vụ thưởng SP
+                        rewardMsg.append("+").append(claimRes.getTotalSP()).append(" SP");
+                        if (claimRes.getBonusSP() > 0) {
+                            rewardMsg.append(" (Bonus: +").append(claimRes.getBonusSP()).append(" SP)");
+                        }
+                    }
+
+                    claimRewardSuccess.setValue(rewardMsg.toString());
                     fetchQuests();
                 } else {
                     error.setValue("Lỗi khi nhận thưởng");
@@ -68,7 +83,7 @@ public class QuestViewModel extends AndroidViewModel {
             }
 
             @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<QuestClaimResponse> call, @NonNull Throwable t) {
                 error.setValue(t.getMessage());
             }
         });

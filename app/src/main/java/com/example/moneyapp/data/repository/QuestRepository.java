@@ -2,6 +2,7 @@ package com.example.moneyapp.data.repository;
 
 import android.content.Context;
 
+import com.example.moneyapp.data.remote.response.QuestClaimResponse;
 import com.example.moneyapp.data.remote.response.QuestResponse;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class QuestRepository extends BaseRepository {
         return apiService.getDailyQuests();
     }
 
-    public Call<Void> claimQuestReward(String id) {
+    public Call<QuestClaimResponse> claimQuestReward(String id) {
         return apiService.claimQuestReward(id);
     }
 }

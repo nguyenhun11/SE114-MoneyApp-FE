@@ -61,6 +61,8 @@ public class BuildingDetailBottomSheet extends BottomSheetDialogFragment {
         ivIcon.setImageDrawable(CityIconManager.getBuildingDrawable(getContext(), 
                 building.getBuildingType(), building.getLevel()));
         
+        tvEffect.setText(getBuildingEffectDescription(building.getBuildingType(), building.getLevel()));
+        
         int upgradeCost = building.getLevel() * 200; // Mock cost formula
         btnUpgrade.setText("Nâng cấp (" + upgradeCost + " PP)");
 
@@ -85,7 +87,37 @@ public class BuildingDetailBottomSheet extends BottomSheetDialogFragment {
             case "shop": return "Cửa hàng";
             case "factory": return "Nhà máy";
             case "park": return "Công viên";
+            case "road": return "Đường phố";
+            case "tree": return "Cây xanh";
+            case "bench": return "Ghế đá";
+            case "street_light": return "Đèn đường";
+            case "flower_bed": return "Bồn hoa";
+            case "fountain": return "Đài phun nước";
+            case "statue": return "Tượng đài";
             default: return "Công trình";
+        }
+    }
+
+    private String getBuildingEffectDescription(String type, int level) {
+        switch (type.toLowerCase()) {
+            case "house":
+                return "Cộng +" + (10 * level) + " SP mỗi khi bạn thực hiện Điểm danh hàng ngày.";
+            case "shop":
+                return "Cộng thêm phần thưởng mỗi khi bạn Nhận thưởng nhiệm vụ (+" + (50 * level) + " PP hoặc +" + (10 * level) + " SP).";
+            case "factory":
+                return "Cộng +" + (20 * level) + " PP mỗi khi bạn Ghi chép một giao dịch mới.";
+            case "road":
+                return "Giúp kết nối các khu vực trong thành phố.";
+            case "tree":
+                return "Cải thiện môi trường và cảnh quan đô thị.";
+            case "park":
+                return "Không gian thư giãn cho cư dân thành phố.";
+            case "fountain":
+                return "Kiến trúc nghệ thuật tăng vẻ đẹp cho quảng trường.";
+            case "statue":
+                return "Biểu tượng văn hóa của thành phố.";
+            default:
+                return "Công trình kiến trúc độc đáo của MoneyCity.";
         }
     }
 }

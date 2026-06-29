@@ -42,6 +42,7 @@ import com.example.moneyapp.data.remote.response.GoalRecordResponse;
 import com.example.moneyapp.data.remote.response.GoalResponse;
 import com.example.moneyapp.data.remote.response.CheckInResponse;
 import com.example.moneyapp.data.remote.response.GoalTransactionResponse;
+import com.example.moneyapp.data.remote.response.QuestClaimResponse;
 import com.example.moneyapp.data.remote.response.QuestResponse;
 import com.example.moneyapp.data.remote.response.RankItemDto;
 import com.example.moneyapp.data.remote.response.StackedBarChartDto;
@@ -309,7 +310,7 @@ public interface ApiService {
     @GET("api/Quests")
     Call<List<QuestResponse>> getDailyQuests();
     @POST("api/Quests/claim/{id}")
-    Call<Void> claimQuestReward(@Path("id") String id);
+    Call<QuestClaimResponse> claimQuestReward(@Path("id") String id);
     //endregion
 
     //region User Badges

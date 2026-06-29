@@ -582,6 +582,12 @@ public class TransactionEntryFragment extends BaseFragment {
             if (Boolean.TRUE.equals(success)) handleOperationSuccess();
         });
 
+        transactionViewModel.getBonusMessageLiveData().observe(getViewLifecycleOwner(), bonusMsg -> {
+            if (bonusMsg != null) {
+                RewardHelper.showSmallReward(requireView(), bonusMsg + " - MoneyCity phát triển!");
+            }
+        });
+
         transferViewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
             if (Boolean.TRUE.equals(success)) handleOperationSuccess();
         });

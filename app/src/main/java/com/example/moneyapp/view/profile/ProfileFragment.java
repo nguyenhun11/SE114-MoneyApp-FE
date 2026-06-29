@@ -249,10 +249,20 @@ public class ProfileFragment extends BaseFragment {
                 DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Cập nhật đơn vị tiền tệ thành công");
             } else if (message.startsWith("SUCCESS_RESTORE:")) {
                 String msgText = message.replace("SUCCESS_RESTORE:", "");
-                DialogHelper.showSimpleDialog(requireContext(), "Thông báo", msgText);
+                if (msgText.contains("\n")) {
+                    String[] parts = msgText.split("\n", 2);
+                    RewardHelper.showBigReward(requireContext(), parts[1], parts[0]);
+                } else {
+                    DialogHelper.showSimpleDialog(requireContext(), "Thông báo", msgText);
+                }
             } else if (message.startsWith("CHECKIN_MSG:")) {
                 String msgText = message.replace("CHECKIN_MSG:", "");
-                RewardHelper.showBigReward(requireContext(), "+10 SP", msgText);
+                if (msgText.contains("\n")) {
+                    String[] parts = msgText.split("\n", 2);
+                    RewardHelper.showBigReward(requireContext(), parts[1], parts[0]);
+                } else {
+                    RewardHelper.showBigReward(requireContext(), "+10 SP", msgText);
+                }
             } else {
                 DialogHelper.showSimpleDialog(requireContext(), "Lỗi", message);
             }

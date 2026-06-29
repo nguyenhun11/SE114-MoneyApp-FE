@@ -105,9 +105,9 @@ public class BuildMenuBottomSheet extends BottomSheetDialogFragment {
 
     private void setupData() {
         buildingOptions.clear();
-        buildingOptions.add(new BuildOption("house", "Nhà ở", "Công trình dân cư cơ bản", 100, "PP"));
-        buildingOptions.add(new BuildOption("shop", "Cửa hàng", "Tăng điểm thặng dư", 300, "PP"));
-        buildingOptions.add(new BuildOption("factory", "Nhà máy", "Trung tâm sản xuất", 600, "PP"));
+        buildingOptions.add(new BuildOption("house", "Nhà ở", "+10 SP cho mỗi căn (Level 1) khi Điểm danh", 100, "PP"));
+        buildingOptions.add(new BuildOption("shop", "Cửa hàng", "Thêm thưởng khi Nhận nhiệm vụ (+50 PP hoặc +10 SP mỗi căn Level 1)", 300, "PP"));
+        buildingOptions.add(new BuildOption("factory", "Nhà máy", "+20 PP cho mỗi căn (Level 1) khi Ghi chép chi tiêu", 600, "PP"));
 
         landscapeOptions.clear();
         landscapeOptions.add(new BuildOption("road", "Đường phố", "Kết nối các khu vực", 10, "SP"));
