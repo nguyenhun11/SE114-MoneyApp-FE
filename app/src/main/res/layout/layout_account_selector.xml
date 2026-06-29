@@ -62,6 +62,7 @@
         <com.mikepenz.iconics.view.IconicsImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:padding="4dp"
             app:iiv_color="@color/colorOnSurfaceVariant"
             app:iiv_icon="gmd-keyboard-arrow-down" />
     </LinearLayout>

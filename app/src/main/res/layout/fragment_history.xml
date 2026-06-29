@@ -164,6 +164,93 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_history"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_filters">
+
+        <!-- Giao diện giả lập: 1 cái ngày tháng + 2 giao dịch -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp">
+
+            <View
+                android:layout_width="120dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_skeleton" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bg_skeleton" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_skeleton" />
+
+            <View
+                android:layout_width="120dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_skeleton" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bg_skeleton" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bg_skeleton" />
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <!-- 2. EMPTY STATE (KHÔNG CÓ GIAO DỊCH) -->
+    <LinearLayout
+        android:id="@+id/layout_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_filters">
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:alpha="0.4"
+            app:iiv_color="@color/colorOnSurfaceVariant"
+            app:iiv_icon="gmd_receipt_long" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Không có giao dịch nào\ntrong khoảng thời gian này"
+            android:textAlignment="center"
+            android:textColor="@color/colorOnSurfaceVariant"
+            android:textSize="14sp" />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTransactions"
         android:layout_width="match_parent"

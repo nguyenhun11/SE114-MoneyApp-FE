@@ -1,6 +1,7 @@
 package com.example.moneyapp.view.transaction;
 
 import android.app.DatePickerDialog;
+import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -21,8 +23,8 @@ import androidx.navigation.Navigation;
 
 import com.example.moneyapp.R;
 import com.example.moneyapp.data.local.PreferenceManager;
-import com.example.moneyapp.data.repository.PendingTransactionRepository;
 import com.example.moneyapp.data.remote.request.TransferRequest;
+import com.example.moneyapp.data.repository.PendingTransactionRepository;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.model.Category;
 import com.example.moneyapp.model.CategoryType;
@@ -54,7 +56,8 @@ import java.util.UUID;
 
 public class TransactionEntryFragment extends BaseFragment {
 
-    public enum EntryMode { EXPENSE, INCOME, TRANSFER }
+    public enum EntryMode {EXPENSE, INCOME, TRANSFER}
+
     private EntryMode currentMode = EntryMode.EXPENSE;
 
     private String editTransactionId = null;
@@ -84,6 +87,9 @@ public class TransactionEntryFragment extends BaseFragment {
     // Các Block UI cần ẩn hiện
     private View layoutCategory, layoutDestAccount, layoutMoodSelector;
     private TextView tvSourceAccountLabel, tvSelectedCategory;
+    private com.facebook.shimmer.ShimmerFrameLayout shimmerEntry;
+    private ScrollView mainScrollView;
+    private FrameLayout flCategoryIcon;
     private IconicsImageView ivCategoryIcon;
     private AccountSelectorView viewSelectSource, viewSelectDest;
 
@@ -205,8 +211,11 @@ public class TransactionEntryFragment extends BaseFragment {
             if (selectedCategory == null || selectedCategory.getType() != type) {
                 selectedCategory = null;
                 tvSelectedCategory.setText("Chọn hạng mục...");
-                ivCategoryIcon.setIcon(new IconicsDrawable(requireContext(), "gmd_category"));
-                ivCategoryIcon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.colorOnSurface));
+
+                int emptyColor = ContextCompat.getColor(requireContext(), R.color.colorEmpty);
+                flCategoryIcon.setBackgroundTintList(android.content.res.ColorStateList.valueOf(emptyColor));
+                ivCategoryIcon.clearColorFilter();
+                ivCategoryIcon.setImageDrawable(AppResourceManager.getWhiteIcon(requireContext(), 0));
             }
 
         } else {
@@ -253,7 +262,9 @@ public class TransactionEntryFragment extends BaseFragment {
     }
 
     private void initViews(View view) {
-        ScrollView mainScrollView = view.findViewById(R.id.main_scroll_view);
+        mainScrollView = view.findViewById(R.id.main_scroll_view);
+        shimmerEntry = view.findViewById(R.id.shimmer_entry);
+        flCategoryIcon = view.findViewById(R.id.flCategoryIcon);
 
         View scrollContent = mainScrollView.getChildAt(0);
         if (scrollContent != null) {
@@ -324,8 +335,15 @@ public class TransactionEntryFragment extends BaseFragment {
 
         etAmount.addTextChangedListener(new TextWatcher() {
             private String current = "";
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
             @Override
             public void afterTextChanged(Editable s) {
                 if (!s.toString().equals(current)) {
@@ -339,7 +357,8 @@ public class TransactionEntryFragment extends BaseFragment {
                             etAmount.setText(formatted);
                             etAmount.setSelection(formatted.length());
                             updateConvertedAmountUI(parsed);
-                        } catch (NumberFormatException ignored) { }
+                        } catch (NumberFormatException ignored) {
+                        }
                     } else {
                         current = "";
                         etAmount.setText("");
@@ -387,7 +406,8 @@ public class TransactionEntryFragment extends BaseFragment {
         if (!amountStr.isEmpty()) {
             try {
                 updateConvertedAmountUI(Double.parseDouble(amountStr));
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) {
+            }
         }
     }
 
@@ -468,8 +488,12 @@ public class TransactionEntryFragment extends BaseFragment {
     public void updateSelectedCategory(Category category) {
         this.selectedCategory = category;
         tvSelectedCategory.setText(category.getCategoryName());
-        ivCategoryIcon.setIcon(new IconicsDrawable(requireContext(), AppResourceManager.getIconName(category.getIcon())));
-        ivCategoryIcon.setColorFilter(AppResourceManager.getColor(category.getColor()));
+
+        int categoryColor = AppResourceManager.getColor(category.getColor());
+        flCategoryIcon.setBackgroundTintList(android.content.res.ColorStateList.valueOf(categoryColor));
+        ivCategoryIcon.clearColorFilter();
+        ivCategoryIcon.setImageDrawable(AppResourceManager.getWhiteIcon(requireContext(), category.getIcon()));
+
         checkSaveConditions();
     }
 
@@ -495,8 +519,7 @@ public class TransactionEntryFragment extends BaseFragment {
         if (selectedSourceAccount != null && !accountList.isEmpty()) {
             for (Account acc : accountList) {
                 if (acc.getAccountId().equals(selectedSourceAccount.getAccountId())) {
-                    this.selectedSourceAccount = acc;
-                    viewSelectSource.setAccount(acc, true);
+                    updateSelectedSource(acc);
                     break;
                 }
             }
@@ -504,8 +527,7 @@ public class TransactionEntryFragment extends BaseFragment {
         if (selectedDestAccount != null && !accountList.isEmpty()) {
             for (Account acc : accountList) {
                 if (acc.getAccountId().equals(selectedDestAccount.getAccountId())) {
-                    this.selectedDestAccount = acc;
-                    viewSelectDest.setAccount(acc, true);
+                    updateSelectedDest(acc);
                     break;
                 }
             }
@@ -513,10 +535,7 @@ public class TransactionEntryFragment extends BaseFragment {
         if (selectedCategory != null && !categoryList.isEmpty()) {
             for (Category cat : categoryList) {
                 if (cat.getCategoryId().equals(selectedCategory.getCategoryId())) {
-                    this.selectedCategory = cat;
-                    tvSelectedCategory.setText(cat.getCategoryName());
-                    ivCategoryIcon.setIcon(new IconicsDrawable(requireContext(), AppResourceManager.getIconName(cat.getIcon())));
-                    ivCategoryIcon.setColorFilter(AppResourceManager.getColor(cat.getColor()));
+                    updateSelectedCategory(cat);
                     break;
                 }
             }
@@ -525,11 +544,30 @@ public class TransactionEntryFragment extends BaseFragment {
     }
 
     private void observeViewModels() {
+        androidx.lifecycle.Observer<Boolean> loadingObserver = isLoading -> {
+            if (isLoading) {
+                if (shimmerEntry != null) {
+                    shimmerEntry.setVisibility(View.VISIBLE);
+                    shimmerEntry.startShimmer();
+                }
+                if (mainScrollView != null) mainScrollView.setVisibility(View.GONE);
+            } else {
+                if (shimmerEntry != null) {
+                    shimmerEntry.stopShimmer();
+                    shimmerEntry.setVisibility(View.GONE);
+                }
+                if (mainScrollView != null) mainScrollView.setVisibility(View.VISIBLE);
+            }
+        };
+
+        transactionViewModel.getIsLoading().observe(getViewLifecycleOwner(), loadingObserver);
+        transferViewModel.getIsLoading().observe(getViewLifecycleOwner(), loadingObserver);
+
         accountViewModel.getAccountsLiveData().observe(getViewLifecycleOwner(), accounts -> {
             if (accounts != null) {
                 accountList.clear();
                 accountList.addAll(accounts);
-                
+
                 // Tự động chọn tài khoản ví khớp với nguồn nhận diện được qua thông báo
                 if (pendingTxId != null && selectedSourceAccount == null && getArguments() != null) {
                     String targetAccountName = getArguments().getString("accountName", "");
@@ -543,7 +581,7 @@ public class TransactionEntryFragment extends BaseFragment {
                         updateSelectedSource(accounts.get(0));
                     }
                 }
-                
+
                 upgradeMockAccountsAndCategories();
             }
         });
@@ -552,7 +590,7 @@ public class TransactionEntryFragment extends BaseFragment {
             if (categories != null) {
                 categoryList.clear();
                 categoryList.addAll(categories);
-                
+
                 // Tự động chọn hạng mục mặc định "Khác" hoặc hạng mục đầu tiên
                 if (pendingTxId != null && selectedCategory == null) {
                     for (Category cat : categories) {
@@ -565,7 +603,7 @@ public class TransactionEntryFragment extends BaseFragment {
                         updateSelectedCategory(categories.get(0));
                     }
                 }
-                
+
                 upgradeMockAccountsAndCategories();
             }
         });
@@ -617,11 +655,18 @@ public class TransactionEntryFragment extends BaseFragment {
                 viewSelectSource.setAccount(mockAccount, true);
 
                 CategoryType intendedType = t.getType() == CategoryType.EXPENSE ? CategoryType.EXPENSE : CategoryType.INCOME;
-                Category mockCategory = new Category(t.getCategoryId(), t.getCategoryName(), intendedType, "", "",0, t.getCategoryColorId(), t.getCategoryIconId(), new Date(), new Date());
+
+                int realColorId = t.getCategoryColorId();
+                int realIconId = t.getCategoryIconId();
+
+                Category mockCategory = new Category(t.getCategoryId(), t.getCategoryName(), intendedType, "", "", 0, realColorId, realIconId, new Date(), new Date());
                 this.selectedCategory = mockCategory;
                 tvSelectedCategory.setText(mockCategory.getCategoryName());
-                ivCategoryIcon.setIcon(new IconicsDrawable(requireContext(), AppResourceManager.getIconName(mockCategory.getIcon())));
-                ivCategoryIcon.setColorFilter(AppResourceManager.getColor(mockCategory.getColor()));
+
+                int correctCategoryColor = AppResourceManager.getColor(realColorId);
+                flCategoryIcon.setBackgroundTintList(ColorStateList.valueOf(correctCategoryColor));
+                ivCategoryIcon.clearColorFilter();
+                ivCategoryIcon.setImageDrawable(AppResourceManager.getWhiteIcon(requireContext(), realIconId));
 
                 String[] tabs = {"Chi tiêu", "Thu nhập", "Chuyển khoản"};
                 int targetTab = (currentMode == EntryMode.EXPENSE) ? 0 : 1;
@@ -647,7 +692,8 @@ public class TransactionEntryFragment extends BaseFragment {
                 currentMode = EntryMode.TRANSFER;
 
                 etAmount.setText(String.valueOf(transfer.getSourceAmount().longValue()));
-                if (transfer.getDescription() != null) etDescription.setText(transfer.getDescription());
+                if (transfer.getDescription() != null)
+                    etDescription.setText(transfer.getDescription());
                 restoreDateToUI(transfer.getDate());
 
                 Account mockSrc = new Account(
@@ -733,15 +779,26 @@ public class TransactionEntryFragment extends BaseFragment {
         tvRecentValue.setText(shortDateFmt.format(box3Date));
         tvRecentLabel.setText("Gần đây");
 
-        btnDateToday.setOnClickListener(v -> { hideKeyboard(); selectDateBox(0); });
-        btnDateYesterday.setOnClickListener(v -> { hideKeyboard(); selectDateBox(1); });
-        btnDateRecent.setOnClickListener(v -> { hideKeyboard(); selectDateBox(2); });
+        btnDateToday.setOnClickListener(v -> {
+            hideKeyboard();
+            selectDateBox(0);
+        });
+        btnDateYesterday.setOnClickListener(v -> {
+            hideKeyboard();
+            selectDateBox(1);
+        });
+        btnDateRecent.setOnClickListener(v -> {
+            hideKeyboard();
+            selectDateBox(2);
+        });
 
         btnPickDate.setOnClickListener(v -> {
             hideKeyboard();
-            Calendar c = Calendar.getInstance(); c.setTime(selectedDate);
+            Calendar c = Calendar.getInstance();
+            c.setTime(selectedDate);
             new DatePickerDialog(requireContext(), (dp, y, m, d) -> {
-                Calendar n = Calendar.getInstance(); n.set(y, m, d);
+                Calendar n = Calendar.getInstance();
+                n.set(y, m, d);
                 box3Date = truncateTime(n.getTime());
                 tvRecentValue.setText(shortDateFmt.format(box3Date));
                 tvRecentLabel.setText("Đã chọn");
@@ -758,13 +815,19 @@ public class TransactionEntryFragment extends BaseFragment {
         }
         Calendar cal = Calendar.getInstance();
         if (index == 0) selectedDate = truncateTime(cal.getTime());
-        else if (index == 1) { cal.add(Calendar.DAY_OF_YEAR, -1); selectedDate = truncateTime(cal.getTime()); }
-        else if (index == 2) selectedDate = box3Date;
+        else if (index == 1) {
+            cal.add(Calendar.DAY_OF_YEAR, -1);
+            selectedDate = truncateTime(cal.getTime());
+        } else if (index == 2) selectedDate = box3Date;
     }
 
     private Date truncateTime(Date date) {
-        Calendar cal = Calendar.getInstance(); cal.setTime(date);
-        cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 0); cal.set(Calendar.SECOND, 0); cal.set(Calendar.MILLISECOND, 0);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
 
@@ -865,7 +928,7 @@ public class TransactionEntryFragment extends BaseFragment {
                             }
                         });
             }
-            
+
             DialogHelper.showSimpleDialog(requireContext(), "Thành công", "Lưu giao dịch thành công!", () -> {
                 try {
                     Navigation.findNavController(requireView()).navigateUp();
@@ -882,8 +945,23 @@ public class TransactionEntryFragment extends BaseFragment {
         }
     }
 
-    @Override protected boolean shouldShowBottomNavigation() { return false; }
-    @Override protected String getFabIcon() { return "gmd_check"; }
-    @Override protected String getFabLabel() { return "Lưu lại"; }
-    @Override protected void onFabClick() { performSave(); }
+    @Override
+    protected boolean shouldShowBottomNavigation() {
+        return false;
+    }
+
+    @Override
+    protected String getFabIcon() {
+        return "gmd_check";
+    }
+
+    @Override
+    protected String getFabLabel() {
+        return "Lưu lại";
+    }
+
+    @Override
+    protected void onFabClick() {
+        performSave();
+    }
 }

@@ -1,7 +1,5 @@
 package com.example.moneyapp.view.home;
 
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,7 +7,6 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -45,7 +42,6 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
@@ -330,34 +326,55 @@ public class HomeFragment extends BaseFragment {
         });
 
         homeViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            ShimmerFrameLayout shimmerPie = requireView().findViewById(R.id.shimmer_pie_text);
+            ShimmerFrameLayout shimmerLinear = requireView().findViewById(R.id.shimmer_linear_text);
             if (isLoading) {
                 if (shimmerViewContainer != null) {
                     shimmerViewContainer.startShimmer();
                     shimmerViewContainer.setVisibility(View.VISIBLE);
                 }
-
-                if (pieChart != null) {
-                    pieChart.clear();
-                }
-
-                LinearLayout customLinearChart = requireView().findViewById(R.id.custom_linear_chart);
-                if (customLinearChart != null) {
-                    customLinearChart.removeAllViews();
-                }
-
                 rvCategories.setVisibility(View.GONE);
                 layoutDashboardOverview.setVisibility(View.GONE);
+
+                if (pieChart != null) pieChart.clear();
+                LinearLayout customLinearChart = requireView().findViewById(R.id.custom_linear_chart);
+                if (customLinearChart != null) customLinearChart.removeAllViews();
+
+                if (shimmerPie != null) {
+                    shimmerPie.startShimmer();
+                    shimmerPie.setVisibility(View.VISIBLE);
+                }
+                if (shimmerLinear != null) {
+                    shimmerLinear.startShimmer();
+                    shimmerLinear.setVisibility(View.VISIBLE);
+                }
+
+                if (tvTotalAmountPie != null) tvTotalAmountPie.setVisibility(View.INVISIBLE);
+                if (tvTotalAmountLinear != null) tvTotalAmountLinear.setVisibility(View.INVISIBLE);
             } else {
                 if (shimmerViewContainer != null) {
                     shimmerViewContainer.stopShimmer();
                     shimmerViewContainer.setVisibility(View.GONE);
                 }
+
                 int currentTab = PreferenceManager.getInstance(requireContext()).getLastHomeTab();
                 if (currentTab == 0) {
                     layoutDashboardOverview.setVisibility(View.VISIBLE);
                 } else {
                     rvCategories.setVisibility(View.VISIBLE);
                 }
+
+                if (shimmerPie != null) {
+                    shimmerPie.stopShimmer();
+                    shimmerPie.setVisibility(View.GONE);
+                }
+                if (shimmerLinear != null) {
+                    shimmerLinear.stopShimmer();
+                    shimmerLinear.setVisibility(View.GONE);
+                }
+
+                if (tvTotalAmountPie != null) tvTotalAmountPie.setVisibility(View.VISIBLE);
+                if (tvTotalAmountLinear != null) tvTotalAmountLinear.setVisibility(View.VISIBLE);
             }
         });
     }

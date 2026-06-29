@@ -22,6 +22,7 @@ public class AccountViewModel extends AndroidViewModel {
     private final MutableLiveData<Account> selectedAccount = new MutableLiveData<>();
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> saveSuccess = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
     public AccountViewModel(@NonNull Application application) {
         super(application);
@@ -48,20 +49,28 @@ public class AccountViewModel extends AndroidViewModel {
         return saveSuccess;
     }
 
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
     public void selectAccount(Account account) {
         selectedAccount.setValue(account);
     }
 
     public void loadAccounts() {
+        isLoading.setValue(true);
+
         repository.getAllAccounts(new AccountRepository.AccountCallback<List<Account>>() {
             @Override
             public void onSuccess(List<Account> result) {
                 accountsLiveData.postValue(result);
+                isLoading.postValue(false);
             }
 
             @Override
             public void onError(String message) {
                 errorLiveData.postValue(message);
+                isLoading.postValue(false);
             }
         });
     }

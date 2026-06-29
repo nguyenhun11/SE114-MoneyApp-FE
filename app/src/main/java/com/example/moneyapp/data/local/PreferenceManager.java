@@ -3,8 +3,6 @@ package com.example.moneyapp.data.local;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.moneyapp.model.User;
-
 public class PreferenceManager {
     private static final String PREF_NAME = "MoneyAppPrefs";
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
@@ -16,6 +14,8 @@ public class PreferenceManager {
     private static final String KEY_LAST_TAB_TYPE = "lastTabType";
     private static final String KEY_LAST_ACCOUNT_TAB = "lastAccountTab"; // Biến nhớ riêng cho category
     private static final String KEY_LAST_HOME_TAB = "lastHomeTab";
+    private static final String KEY_LAST_HISTORY_TAB = "lastHistoryTab";
+
 
 
     private static SharedPreferences sharedPreferences;
@@ -97,6 +97,13 @@ public class PreferenceManager {
 
     public int getLastHomeTab() {
         return sharedPreferences.getInt(KEY_LAST_HOME_TAB, 0);
+    }
+
+    public void setLastHistoryTab(int tabIndex) {
+        sharedPreferences.edit().putInt(KEY_LAST_HISTORY_TAB, tabIndex).apply();
+    }
+    public int getLastHistoryTab() {
+        return sharedPreferences.getInt(KEY_LAST_HISTORY_TAB, 0);
     }
 
     public void setNotificationListenerEnabled(boolean enabled) {

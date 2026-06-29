@@ -5,6 +5,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.moneyapp.data.local.PreferenceManager;
@@ -29,6 +30,9 @@ public class ProfileViewModel extends AndroidViewModel {
     public final MutableLiveData<CityResponse> cityData = new MutableLiveData<>();
     public MutableLiveData<String> errorMessage = new MutableLiveData<>();
 
+    // Biến quản lý Skeleton Loading bạn đã thêm rất chuẩn!
+    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+
     public ProfileViewModel(@NonNull Application application) {
         super(application);
         Context context = application.getApplicationContext();
@@ -37,7 +41,14 @@ public class ProfileViewModel extends AndroidViewModel {
         cityRepository = new CityRepository(context);
     }
 
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
     public void fetchUserData() {
+        // 💥 BẬT SKELETON TRƯỚC KHI GỌI API
+        isLoading.setValue(true);
+
         fetchCityData();
         userRepository.getUserProfile(new UserRepository.UserCallback<UserProfileResponse>() {
             @Override
@@ -58,11 +69,17 @@ public class ProfileViewModel extends AndroidViewModel {
                         DateConverter.convertStringToDate(response.getLastUpdatedAt())
                 );
                 currentUser.postValue(user);
+
+                // 💥 TẮT SKELETON KHI TẢI THÀNH CÔNG
+                isLoading.postValue(false);
             }
 
             @Override
             public void onError(String message) {
                 errorMessage.postValue(message);
+
+                // 💥 TẮT SKELETON KỂ CẢ KHI LỖI ĐỂ TRÁNH BỊ KẸT UI
+                isLoading.postValue(false);
             }
         });
     }
@@ -220,7 +237,7 @@ public class ProfileViewModel extends AndroidViewModel {
                     user.setTodayCheckedIn(true);
                     currentUser.postValue(user);
                     errorMessage.postValue("CHECKIN_MSG:" + response.getMessage());
-                    
+
                     // Cập nhật lại điểm thành phố sau khi check-in
                     fetchCityData();
                 }
@@ -247,7 +264,7 @@ public class ProfileViewModel extends AndroidViewModel {
                     user.setTodayCheckedIn(true);
                     currentUser.postValue(user);
                     errorMessage.postValue("SUCCESS_RESTORE:" + response.getMessage());
-                    
+
                     // Cập nhật lại điểm thành phố sau khi khôi phục chuỗi
                     fetchCityData();
                 }
