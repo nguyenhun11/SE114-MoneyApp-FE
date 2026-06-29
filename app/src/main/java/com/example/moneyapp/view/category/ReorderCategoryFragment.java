@@ -88,6 +88,7 @@ public class ReorderCategoryFragment extends BaseFragment {
         viewModel.getSaveSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success) {
                 viewModel.loadCategories(viewModel.getCurrentType());
+                viewModel.resetSaveSuccess();
             }
         });
     }
@@ -262,7 +263,8 @@ public class ReorderCategoryFragment extends BaseFragment {
                 .setPositiveButton("Thêm", (dialog, which) -> {
                     String groupName = input.getText().toString().trim();
                     if (!groupName.isEmpty()) {
-                        viewModel.updateCategoryGroup(null, groupName);
+                        CategoryType type = viewModel.getCurrentType() != null ? viewModel.getCurrentType() : CategoryType.EXPENSE;
+                        viewModel.createCategoryGroup(type, groupName);
                         Toast.makeText(getContext(), "Đang tạo nhóm...", Toast.LENGTH_SHORT).show();
                     }
                 })
