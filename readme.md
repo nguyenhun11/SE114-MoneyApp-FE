@@ -4,88 +4,109 @@ MoneyApp là ứng dụng giúp người dùng theo dõi thu nhập, chi tiêu v
 
 ---
 
-## 🏗 Kiến trúc dự án (Architecture)
-
-Dự án chia làm 3 tầng chính để đảm bảo tính dễ bảo trì và mở rộng:
-
-### 1. Tầng Dữ liệu (Data Layer - `data/`)
-Là "Single Source of Truth" của ứng dụng, quản lý mọi nguồn dữ liệu.
-- **`local/`**: Quản lý Database SQLite (Room).
-    - `entity/`: Các **Entity** (đại diện cho bảng trong DB).
-    - `dao/`: Các interface định nghĩa câu lệnh truy vấn.
-- **`remote/`**: Quản lý kết nối mạng (Retrofit).
-    - `api/`: Định nghĩa các API Endpoints.
-    - `request/` & `response/`: Các đối tượng trao đổi dữ liệu với Server.
-- **`repository/`**: Tầng điều phối dữ liệu. Quyết định lấy dữ liệu từ API hay Local DB và xử lý logic gộp dữ liệu.
-### 2. Tầng ViewModel (`viewmodel/` hoặc theo `ui/feature/`)
-- Xử lý logic nghiệp vụ (Business Logic).
-- Giữ trạng thái của UI (UI State)
-- **Quy tắc**: Cung cấp phương thức cho View, nhận dữ liệu từ Data, không để View gọi trực tiếp Data
-
-### 3. Tầng Giao diện (View Layer - `ui/`)
-- Chỉ làm nhiệm vụ hiển thị, điều hướng dữ liệu và gửi sự kiện từ người dùng đến ViewModel.
-- **`BaseFragment.java`**: Fragment cha cung cấp các tiện ích dùng chung (Header, Tabs, FAB).
-- **`MainActivity.java`**: Single Activity điều phối Navigation.
-- **`MainUIHandler.java`**: Xử lý logic hiển thị các thành phần UI hệ thống (BottomBar, FAB).
+### 🏛️ THÔNG TIN CHUNG
+* **Trường**: Đại học Công nghệ Thông tin - ĐHQG TP.HCM (UIT)
+* **Khoa**: Kỹ thuật Phần mềm
+* **Môn học**: Nhập môn ứng dụng di động - SE114
+* **Đề tài**: Quản lý tài chính cá nhân (MoneyApp)
+* **Học kỳ**: Học kỳ 2 — Năm học 2025 - 2026
 
 ---
 
-## 📂 Cấu trúc thư mục chi tiết
+### 👥 DANH SÁCH THÀNH VIÊN NHÓM
 
-```text
-app/src/main/java/com/example/moneyapp/
-├── data/
-│   ├── local/          # Database (Room)
-│   │   ├── dao/        # Data Access Objects
-│   │   └── entity/      # Entities (Bảng database)
-│   ├── remote/         # Network (Retrofit)
-│   │   ├── api/        # API Interfaces
-│   │   ├── request/    # Đối tượng gửi lên API
-│   │   └── response/    # Đối tượng nhận về từ API
-│   └── repository/     # Repositories (Điều phối dữ liệu)
-│   
-├── ui/                 # View Layer (Phân chia theo tính năng)
-│   ├── home/           # HomeFragment & HomeViewModel
-│   ├── auth/           # Login, Register, Forgot Password
-│   ├── transaction/    # Quản lý giao dịch
-│   ├── .../            # Các thành phần khác
-│   ├── BaseFragment.java
-│   └── MainActivity.java
-├── util/               # Tiện ích (Format tiền, ngày tháng, v.v.)
-└── viewmodel/          # Chứa ViewModel
-```
+| STT | Họ và tên | MSSV | Vai trò |
+| :--- | :--- | :--- | :--- |
+| 1 | Nguyễn Gia Hưng | 24520604 | Nhóm trưởng |
+| 2 | Phạm Hoàng Sơn | 24521536 | Thành viên |
+| 3 | Trần Lê Khánh Hưng | 24520629 | Thành viên |
+| 4 | Ninh Đức Quang Huy | 24520688 | Thành viên |
 
 ---
 
-## 🔄 Quy trình truy cập dữ liệu (Data Flow)
+### 🌟 GIỚI THIỆU ỨNG DỤNG (PROJECT OVERVIEW)
+**MoneyApp** là ứng dụng di động quản lý chi tiêu, hỗ trợ giải quyết các khó khăn trong việc quản lý tài chính cá nhân. 
 
-Tuân thủ luồng dữ liệu **một chiều**:
-1. **User Interaction**: Người dùng thao tác trên Fragment.
-2. **View -> ViewModel**: Fragment gọi hàm xử lý trong ViewModel.
-3. **ViewModel -> Repository**: ViewModel yêu cầu dữ liệu từ Repository.
-4. **Repository -> Remote/Local**: Repository lấy dữ liệu từ API hoặc Database.
-5. **Data -> ViewModel**: Repository trả dữ liệu về (thường qua Callback hoặc trực tiếp).
-6. **ViewModel -> View**: ViewModel cập nhật kết quả vào `LiveData`.
-7. **UI Update**: Fragment `observe` LiveData và tự động cập nhật giao diện.
+Hệ thống thiết kế theo mô hình Tài chính kết hợp Trò chơi hóa (Gamification). Tích hợp chức năng quản lý thu chi cơ bản với các tính năng tương tác: xây dựng thành phố, thực hiện nhiệm vụ và thu thập huy hiệu.
+
+#### 💡 Điểm nổi bật kỹ thuật của dự án:
+1. **Xử lý đa tiền tệ**: Lưu trữ đồng thời 3 thông số: số tiền gốc (OriginalAmount), số tiền quy đổi theo ví (AccountAmount) và tỷ giá tại thời điểm phát sinh (ExchangeRate).
+2. **Tùy biến sắp xếp**: Sử dụng trường SortingOrder để lưu thứ tự hiển thị do người dùng cấu hình cho ví và danh mục.
+3. **Nhất quán dữ liệu**: Áp dụng định dạng GUID làm khóa chính cho các bảng tài chính cốt lõi để đảm bảo tính duy nhất và tối ưu hóa đồng bộ dữ liệu.
+4. **Cơ chế xóa mềm (Soft Delete)**: Sử dụng trường IsActive trên hầu hết các bảng để ẩn dữ liệu khi xóa, bảo toàn lịch sử hệ thống và toàn vẹn mối quan hệ dữ liệu.
 
 ---
 
-## 🛠 Hướng dẫn
+### ✨ CÁC TÍNH NĂNG CHÍNH ĐÃ THỰC HIỆN
 
-### 1. Cách tạo màn hình mới (ví dụ: Quản lý Ví)
-- **Data**: Tạo `WalletEntity` trong `local/model` và `WalletDao`.
-- **Repository**: Tạo `WalletRepository` để xử lý logic lấy/lưu ví.
-- **ViewModel**: Tạo `WalletViewModel`, gọi Repository và cung cấp `LiveData<List<Wallet>>`.
-- **View**: Tạo `WalletFragment` kế thừa `BaseFragment`, sử dụng `setupHeader` và `observe` dữ liệu.
+#### Ứng dụng phân thành các nhóm chức năng chính:
 
-### 2. Sử dụng BaseFragment
-Kế thừa `BaseFragment` để tận dụng các hàm có sẵn:
-- `setupHeader(view, title, showBackBtn)`: Cài đặt tiêu đề trang.
-- `setupIncomeExpenseTabs(view, listener)`: Cài đặt tab Thu/Chi.
-- Override `getFabIcon()` và `onFabClick()` để điều khiển nút Floating Action Button.
+* **Users**: Bảng trung tâm. Lưu trữ thông tin định danh (tên, email, mật khẩu hash), thông tin cá nhân (ảnh, số điện thoại) và thông số hoạt động (DailyStreak, tiền tệ mặc định).
+* **RefreshTokens**: Lưu trữ mã làm mới phiên đăng nhập để duy trì trạng thái bảo mật.
+* **Accounts**: Quản lý danh sách ví/tài khoản (Tiền mặt, Thẻ ngân hàng, Tiết kiệm). Lưu trữ số dư (Balance), loại tiền tệ và cấu hình hiển thị (màu sắc, biểu tượng).
+* **Categories & CategoryGroups**: Cấu trúc phân loại danh mục 2 cấp. CategoryGroup (Nhóm cha) chứa nhiều Category (Nhóm con). Hỗ trợ thiết lập mục tiêu chi tiêu hàng tháng cho từng danh mục.
+* **Transactions**: Ghi vết chi tiết giao dịch thu/chi. Liên kết dữ liệu giữa Account và Category. Lưu trữ mở rộng: MoodId (tâm trạng) và ImageUrls (ảnh hóa đơn).
+* **Transfers**: Ghi lại lịch sử chuyển tiền nội bộ giữa các ví. Tích hợp xử lý tỷ giá khi chuyển đổi giữa các loại tiền tệ khác nhau.
+* **AdjustBalances**: Lưu vết các lệnh điều chỉnh số dư tài khoản thủ công (không tạo giao dịch thu/chi).
+* **Goals**: Quản lý tiến độ tiết kiệm mục tiêu. Lưu trữ số tiền cần đạt, số tiền hiện có và hạn chót (Deadline).
+* **Budgets**: Thiết lập giới hạn chi tiêu theo chu kỳ (Tuần/Tháng/Năm). Áp dụng cho toàn bộ hệ thống hoặc giới hạn theo từng danh mục cụ thể.
+* **CityStates & Buildings**: Dữ liệu mô phỏng xây dựng thành phố. Người dùng tích lũy điểm thịnh vượng (ProsperityPoints) và ổn định (StabilityPoints) từ hành vi quản lý tài chính để mua và nâng cấp các công trình (Buildings) trên bản đồ tọa độ (X, Y).
+* **Quests**: Quản lý các thử thách hành vi. Trạng thái thực hiện của người dùng được lưu trữ tại bảng UserQuests.
+* **Badges**: Hệ thống huy hiệu đạt được khi hoàn thành cột mốc. Lịch sử cấp phát lưu tại bảng UserBadges.
 
-### 3. Quy định làm việc
-- **KHÔNG** gọi trực tiếp Database/API trong Fragment.
-- **KHÔNG** truyền Context vào ViewModel.
-- Nhánh Git: `feat/ten-chuc-nang`.
-- Sử dụng các hàm trong `util/` để định dạng tiền tệ và thời gian.
+---
+
+### 🔑 TÀI KHOẢN TRẢI NGHIỆM SẴN CÓ (TEST CREDENTIALS)
+
+> [!IMPORTANT]
+> Để thuận tiện cho giảng viên chấm điểm, nhóm đã chuẩn bị sẵn các tài khoản để demo ứng dụng. Giảng viên chỉ cần đăng nhập bằng các tài khoản bên dưới để kiểm thử tất cả chức năng mà không cần tự tạo dữ liệu từ đầu:
+
+| Tên đăng nhập / Email | Mật khẩu |
+| :--- | :--- |
+| `a@g` | `123456` |
+
+
+---
+
+### 🛠️ CÔNG NGHỆ & THƯ VIỆN SỬ DỤNG
+* **Java**: Ngôn ngữ lập trình chính cho ứng dụng.
+* **Google Material Components**: Cung cấp các UI Widget chuẩn hóa theo phong cách thiết kế Material Design hiện đại giúp giao diện nhất quán và chuyên nghiệp.
+* **Jetpack Navigation Component**: Quản lý luồng di chuyển giữa các màn hình tập trung qua đồ thị điều hướng trực quan, xử lý Back Stack tự động và truyền tham số an toàn.
+* **Gson (Google)**: Chuyển đổi qua lại giữa chuỗi định dạng JSON nhận từ Server và đối tượng Java POJO nhanh chóng, giảm thiểu lỗi parse dữ liệu bằng tay.
+* **Room Persistence Library**: Lưu trữ dữ liệu cục bộ.
+* **MPAndroidChart**: Thư viện biểu đồ chuyên sâu.
+* **Retrofit 2 & OkHttp**: Hỗ trợ kết nối và gửi yêu cầu mạng.
+* **Glide**: Tải và lưu bộ nhớ đệm (caching) hình ảnh hiệu quả, tối ưu hóa việc hiển thị các icon hoặc ảnh đại diện của người dùng mà không gây đầy bộ nhớ RAM.
+* **Firebase Auth & Google Sign-In**: Xác thực bảo mật.
+* **Mikepenz Iconics**: Quản lí Icons.
+
+---
+
+### 💻 HƯỚNG DẪN CÀI ĐẶT & CHẠY ỨNG DỤNG
+
+#### 1. Yêu cầu cấu hình hệ thống
+* **Hệ điều hành**: Windows 10/11, macOS, hoặc Linux.
+* **IDE**: Android Studio (Koala, Ladybug hoặc phiên bản mới hơn).
+* **Java SDK**: JDK 11 hoặc mới hơn (Android Studio đã tích hợp sẵn).
+* **Android SDK**: Compile SDK 36 (Android 16), Min SDK 24 (Android 7.0).
+* **Thiết bị chạy thử**: Thiết bị ảo (Emulator) hoặc điện thoại thật hỗ trợ API Level 24 trở lên.
+
+#### 2. Các bước mở và chạy dự án trong Android Studio
+
+1. **Tải mã nguồn về máy**:
+   * Giải nén file nén nguồn hoặc chạy lệnh:
+     ```bash
+     git clone <URL_REPO_PROJECT>
+     ```
+2. **Mở dự án trên Android Studio**:
+   * Mở Android Studio, click chọn **Open**.
+   * Dẫn đường dẫn đến thư mục chứa mã nguồn dự án (thư mục chứa tệp `settings.gradle.kts`).
+3. **Đồng bộ hóa Gradle**:
+   * Hãy đợi khoảng 1-3 phút để Android Studio tải các dependencies và hoàn tất **Gradle Sync**.
+4. **Chạy ứng dụng (Run)**:
+   * Kết nối thiết bị Android thật (đã bật chế độ gỡ lỗi USB) hoặc khởi chạy thiết bị ảo (Emulator).
+   * Bấm biểu tượng nút **Run (▶️)** trên thanh công cụ phía trên hoặc bấm tổ hợp phím `Shift + F10` (trên Windows/Linux).
+   * Chờ quá trình build hoàn tất, file APK sẽ được cài đặt và ứng dụng tự khởi động trên thiết bị.
+
+---
+*Đồ án được thực hiện nhằm mục đích học tập môn Nhập môn ứng dụng di động tại UIT - Khoa Kỹ thuật phần mềm.*
