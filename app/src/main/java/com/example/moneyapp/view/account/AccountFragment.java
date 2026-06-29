@@ -27,7 +27,6 @@ import com.example.moneyapp.view.category.CategoryAdapter;
 import com.example.moneyapp.view.category.CategoryGroupAdapter;
 import com.example.moneyapp.viewmodel.AccountViewModel;
 import com.example.moneyapp.viewmodel.CategoryViewModel;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +132,7 @@ public class AccountFragment extends BaseFragment {
 
         CategoryAdapter.OnCategoryClickListener catClickListener = category -> {
             if ("Khác".equals(category.getCategoryName())) {
-                Snackbar.make(requireView(), "Đây là hạng mục mặc định và không thể chỉnh sửa", Snackbar.LENGTH_SHORT).show();
+                DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Đây là hạng mục mặc định và không thể chỉnh sửa");
                 return;
             }
             Bundle bundle = new Bundle();
@@ -202,7 +201,8 @@ public class AccountFragment extends BaseFragment {
 
         popupMenu.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == 1) {
-                categoryViewModel.deleteCategory(category.getCategoryId(), "soft_delete", null);
+                DialogHelper.showConfirmDialog(requireContext(), "Xác nhận xóa", "Bạn có muốn xóa danh mục này?", 
+                    () -> categoryViewModel.deleteCategory(category.getCategoryId(), "soft_delete", null), null);
                 return true;
             } else if (item.getItemId() == 2) {
                 navigateToReorderScreen();
