@@ -50,6 +50,30 @@ public class RegisterFragment extends Fragment {
         }
 
         if (tvGoToLogin != null) {
+            String text = getString(R.string.register_already_have_account);
+            android.text.SpannableString ss = new android.text.SpannableString(text);
+            int startIndex = text.indexOf("Đăng nhập");
+            int length = 9;
+            if (startIndex == -1) {
+                startIndex = text.indexOf("Login");
+                length = 5;
+            }
+            if (startIndex == -1) {
+                startIndex = text.indexOf("?");
+                if (startIndex != -1) {
+                    startIndex += 1;
+                    while (startIndex < text.length() && Character.isWhitespace(text.charAt(startIndex))) {
+                        startIndex++;
+                    }
+                    length = text.length() - startIndex;
+                }
+            }
+            if (startIndex != -1 && startIndex + length <= text.length()) {
+                int color = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.colorPrimary);
+                ss.setSpan(new android.text.style.ForegroundColorSpan(color),
+                        startIndex, startIndex + length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+            tvGoToLogin.setText(ss);
             tvGoToLogin.setOnClickListener(v -> {
                 Navigation.findNavController(v).navigateUp();
             });
