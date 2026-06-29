@@ -119,7 +119,7 @@ public class ProfileFragment extends BaseFragment {
         View llChangeCurrency = view.findViewById(R.id.ll_change_currency);
         TextView tvDefaultCurrency = view.findViewById(R.id.tv_default_currency);
 
-        SwitchCompat swSync = view.findViewById(R.id.sw_sync);
+        //SwitchCompat swSync = view.findViewById(R.id.sw_sync);
         Button btnLogout = view.findViewById(R.id.btn_logout);
         Button btnDelete = view.findViewById(R.id.btn_delete_account);
         IconicsImageView ivAvatar = view.findViewById(R.id.iv_profile_avatar);

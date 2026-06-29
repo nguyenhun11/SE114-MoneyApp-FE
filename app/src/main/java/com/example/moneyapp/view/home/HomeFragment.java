@@ -38,6 +38,7 @@ import com.example.moneyapp.view.components.TimeSelectorView;
 import com.example.moneyapp.viewmodel.HomeViewModel;
 import com.example.moneyapp.viewmodel.ProfileViewModel;
 import com.example.moneyapp.viewmodel.QuestViewModel;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -81,6 +82,8 @@ public class HomeFragment extends BaseFragment {
     private CardView cardPendingBanner;
     private TextView tvPendingBannerText;
     private PendingTransactionRepository pendingRepository;
+
+    private ShimmerFrameLayout shimmerViewContainer;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Nullable
@@ -109,6 +112,8 @@ public class HomeFragment extends BaseFragment {
 
         tvMenuQuestStatus = view.findViewById(R.id.tv_menu_quests_status_exp);
 
+        shimmerViewContainer = view.findViewById(R.id.shimmer_view_container);
+
         View btnMenuStatExp = view.findViewById(R.id.btn_stat_exp);
         View btnMenuBudgetExp = view.findViewById(R.id.btn_budget_exp);
         View btnMenuGoalsExp = view.findViewById(R.id.btn_goals_exp);
@@ -126,7 +131,7 @@ public class HomeFragment extends BaseFragment {
                 .setEnterAnim(R.anim.slide_in_right).setExitAnim(R.anim.slide_out_left)
                 .setPopEnterAnim(R.anim.slide_in_left).setPopExitAnim(R.anim.slide_out_right).build();
 
-// 1. Thống kê
+        // 1. Thống kê
         View.OnClickListener statListener = v -> Navigation.findNavController(v).navigate(R.id.statisticsFragment, null, slideOptions);
         if (btnMenuStatExp != null) btnMenuStatExp.setOnClickListener(statListener);
         if (btnMenuStatCol != null) btnMenuStatCol.setOnClickListener(statListener);
@@ -322,6 +327,38 @@ public class HomeFragment extends BaseFragment {
 
         homeViewModel.getError().observe(getViewLifecycleOwner(), error -> {
             if (error != null) DialogHelper.showSimpleDialog(requireContext(), "Lỗi", error);
+        });
+
+        homeViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading) {
+                if (shimmerViewContainer != null) {
+                    shimmerViewContainer.startShimmer();
+                    shimmerViewContainer.setVisibility(View.VISIBLE);
+                }
+
+                if (pieChart != null) {
+                    pieChart.clear();
+                }
+
+                LinearLayout customLinearChart = requireView().findViewById(R.id.custom_linear_chart);
+                if (customLinearChart != null) {
+                    customLinearChart.removeAllViews();
+                }
+
+                rvCategories.setVisibility(View.GONE);
+                layoutDashboardOverview.setVisibility(View.GONE);
+            } else {
+                if (shimmerViewContainer != null) {
+                    shimmerViewContainer.stopShimmer();
+                    shimmerViewContainer.setVisibility(View.GONE);
+                }
+                int currentTab = PreferenceManager.getInstance(requireContext()).getLastHomeTab();
+                if (currentTab == 0) {
+                    layoutDashboardOverview.setVisibility(View.VISIBLE);
+                } else {
+                    rvCategories.setVisibility(View.VISIBLE);
+                }
+            }
         });
     }
 
@@ -821,6 +858,7 @@ public class HomeFragment extends BaseFragment {
         pieChart.getLegend().setEnabled(false);
         pieChart.animate().cancel();
         pieChart.setExtraOffsets(10f, 10f, 10f, 10f);
+        pieChart.setNoDataText("");
     }
 
     @Override

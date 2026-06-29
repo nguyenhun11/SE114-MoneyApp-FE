@@ -449,7 +449,7 @@ public class TransactionEntryFragment extends BaseFragment {
         String currentId = isSource ? (selectedSourceAccount != null ? selectedSourceAccount.getAccountId() : null)
                 : (selectedDestAccount != null ? selectedDestAccount.getAccountId() : null);
 
-        PopupHelper.showAccountFilterPopup(requireContext(), accountList, currentId, true, account -> {
+        PopupHelper.showAccountFilterPopup(requireContext(), accountList, currentId, false, account -> {
             if (currentMode == EntryMode.TRANSFER) {
                 if (isSource && selectedDestAccount != null && selectedDestAccount.getAccountId().equals(account.getAccountId())) {
                     DialogHelper.showSimpleDialog(requireContext(), "Thông báo", "Nguồn và đích không được trùng nhau!");
