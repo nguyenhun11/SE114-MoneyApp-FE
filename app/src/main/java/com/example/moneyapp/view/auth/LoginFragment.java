@@ -57,11 +57,11 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. ÉP KÍCH THƯỚC ẢNH CHUẨN 50% MÀN HÌNH (Đồng bộ với Splash)
+        // 1. ÉP KÍCH THƯỚC ẢNH CHUẨN 35% MÀN HÌNH (Đồng bộ với thiết kế)
         View cvHeader = view.findViewById(R.id.cv_login_header);
         int screenHeight = getResources().getDisplayMetrics().heightPixels;
         ViewGroup.LayoutParams params = cvHeader.getLayoutParams();
-        params.height = (int) (screenHeight * 0.5); // Ép đúng 50% màn hình
+        params.height = (int) (screenHeight * 0.35); // Ép đúng 35% màn hình
         cvHeader.setLayoutParams(params);
 
         // 2. KÍCH HOẠT THANH CUỘN CHO BÀN PHÍM
@@ -109,6 +109,30 @@ public class LoginFragment extends Fragment {
         }
 
         if (tvGoToRegister != null) {
+            String text = getString(R.string.login_no_account);
+            android.text.SpannableString ss = new android.text.SpannableString(text);
+            int startIndex = text.indexOf("Đăng ký");
+            int length = 7;
+            if (startIndex == -1) {
+                startIndex = text.indexOf("Register");
+                length = 8;
+            }
+            if (startIndex == -1) {
+                startIndex = text.indexOf("?");
+                if (startIndex != -1) {
+                    startIndex += 1;
+                    while (startIndex < text.length() && Character.isWhitespace(text.charAt(startIndex))) {
+                        startIndex++;
+                    }
+                    length = text.length() - startIndex;
+                }
+            }
+            if (startIndex != -1 && startIndex + length <= text.length()) {
+                int color = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.colorPrimary);
+                ss.setSpan(new android.text.style.ForegroundColorSpan(color),
+                        startIndex, startIndex + length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+            tvGoToRegister.setText(ss);
             tvGoToRegister.setOnClickListener(v -> {
                 Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_registerFragment);
             });
