@@ -272,10 +272,27 @@ public class AccountDetailFragment extends BaseFragment {
     }
 
     private void showDeleteConfirmation() {
-        DialogHelper.showConfirmDialog(requireContext(), "Xóa tài khoản",
-                "Bạn có chắc chắn muốn xóa tài khoản này? Tất cả dữ liệu liên quan sẽ bị mất.",
-                () -> viewModel.deleteAccount(currentAccountId, "delete", null),
-                null);
+        Account currentAccount = null;
+        List<Account> accounts = viewModel.getAccountsLiveData().getValue();
+        if (accounts != null && currentAccountId != null) {
+            for (Account a : accounts) {
+                if (currentAccountId.equals(a.getAccountId())) {
+                    currentAccount = a;
+                    break;
+                }
+            }
+        }
+
+        if (currentAccount != null && currentAccount.getLockedBalance() > 0) {
+            DialogHelper.showSimpleDialog(requireContext(), "Thông báo",
+                    "⚠️ Ví này đang có khoản tiền bị khóa trong Mục tiêu tiết kiệm. " +
+                            "Bạn cần rút tiền từ Mục tiêu về ví trước khi thực hiện xóa.");
+        } else {
+            DialogHelper.showConfirmDialog(requireContext(), "Xóa tài khoản",
+                    "Bạn có chắc chắn muốn xóa tài khoản này? Tất cả dữ liệu liên quan sẽ bị mất.",
+                    () -> viewModel.deleteAccount(currentAccountId, "delete", null),
+                    null);
+        }
     }
 
     private void performSave() {

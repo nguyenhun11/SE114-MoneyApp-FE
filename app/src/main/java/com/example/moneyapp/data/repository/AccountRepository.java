@@ -61,7 +61,7 @@ public class AccountRepository extends BaseRepository {
                     }
                     callback.onSuccess(accounts);
                 } else {
-                    callback.onError("Không tải được danh sách ví: " + response.code());
+                    callback.onError(parseError(response, "Không tải được danh sách ví"));
                 }
             }
 
@@ -172,7 +172,7 @@ public class AccountRepository extends BaseRepository {
                 if (response.isSuccessful()) {
                     callback.onSuccess(null);
                 } else {
-                    callback.onError("Cập nhật ví thất bại: Lỗi " + response.code());
+                    callback.onError(parseError(response, "Cập nhật ví thất bại"));
                 }
             }
 
@@ -233,7 +233,7 @@ public class AccountRepository extends BaseRepository {
                 if (response.isSuccessful()) {
                     callback.onSuccess(null);
                 } else {
-                    callback.onError("Không thể xóa ví: Lỗi " + response.code());
+                    callback.onError(parseError(response, "Không thể xóa ví"));
                 }
             }
 
