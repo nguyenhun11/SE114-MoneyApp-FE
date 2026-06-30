@@ -242,6 +242,12 @@ public class GoalAddFragment extends BaseFragment {
 
     private void deleteGoal() {
         if (existingGoal != null) {
+            if (existingGoal.getCurrentAmount() > 0) {
+                DialogHelper.showSimpleDialog(requireContext(), "Thông báo", 
+                    "Mục tiêu này vẫn còn số dư. Vui lòng rút hết tiền trước khi xóa.");
+                return;
+            }
+
             DialogHelper.showConfirmDialog(requireContext(), "Xác nhận xóa", getString(R.string.confirm_delete_goal), () -> {
                 viewModel.deleteGoal(existingGoal.getId());
             }, null);

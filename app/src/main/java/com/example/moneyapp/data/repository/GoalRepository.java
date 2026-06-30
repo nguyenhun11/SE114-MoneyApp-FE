@@ -54,7 +54,7 @@ public class GoalRepository extends BaseRepository {
                     }
                     callback.onSuccess(goals);
                 } else {
-                    callback.onError("Failed to fetch goals: " + response.code());
+                    callback.onError(parseError(response, "Failed to fetch goals"));
                 }
             }
 
@@ -72,7 +72,7 @@ public class GoalRepository extends BaseRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(mapToGoal(response.body()));
                 } else {
-                    callback.onError("Failed to create goal: " + response.code());
+                    callback.onError(parseError(response, "Failed to create goal"));
                 }
             }
 
@@ -90,7 +90,7 @@ public class GoalRepository extends BaseRepository {
                 if (response.isSuccessful()) {
                     callback.onSuccess(null);
                 } else {
-                    callback.onError("Failed to update goal: " + response.code());
+                    callback.onError(parseError(response, "Failed to update goal"));
                 }
             }
 
@@ -108,7 +108,7 @@ public class GoalRepository extends BaseRepository {
                 if (response.isSuccessful()) {
                     callback.onSuccess(null);
                 } else {
-                    callback.onError("Failed to delete goal: " + response.code());
+                    callback.onError(parseError(response, "Failed to delete goal"));
                 }
             }
 
@@ -125,7 +125,7 @@ public class GoalRepository extends BaseRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
-                    callback.onError("Failed to deposit: " + response.code());
+                    callback.onError(parseError(response, "Failed to deposit"));
                 }
             }
 
@@ -144,7 +144,7 @@ public class GoalRepository extends BaseRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
-                    callback.onError("Failed to withdraw: " + response.code());
+                    callback.onError(parseError(response, "Failed to withdraw"));
                 }
             }
 
@@ -161,7 +161,7 @@ public class GoalRepository extends BaseRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
-                    callback.onError("Failed to fetch records: " + response.code());
+                    callback.onError(parseError(response, "Failed to fetch records"));
                 }
             }
 
@@ -179,7 +179,7 @@ public class GoalRepository extends BaseRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
-                    callback.onError("Failed to fetch record detail: " + response.code());
+                    callback.onError(parseError(response, "Failed to fetch record detail"));
                 }
             }
 
@@ -200,7 +200,7 @@ public class GoalRepository extends BaseRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
-                    callback.onError("Lỗi tải lịch sử tiết kiệm: " + response.code());
+                    callback.onError(parseError(response, "Lỗi tải lịch sử tiết kiệm"));
                 }
             }
             @Override
@@ -217,7 +217,7 @@ public class GoalRepository extends BaseRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
-                    callback.onError("Failed to delete record: " + response.code());
+                    callback.onError(parseError(response, "Failed to delete record"));
                 }
             }
 
