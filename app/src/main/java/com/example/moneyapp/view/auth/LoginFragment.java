@@ -43,12 +43,12 @@ public class LoginFragment extends Fragment {
                     Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                     handleSignInResult(task);
                 }
-            }
-    );
+            });
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
 
@@ -82,22 +82,25 @@ public class LoginFragment extends Fragment {
         com.mikepenz.iconics.view.IconicsImageView ivShowPassword = view.findViewById(R.id.iv_show_password);
 
         // 4. XỬ LÝ NÚT HIỆN/ẨN MẬT KHẨU
-        final boolean[] isPasswordVisible = {false};
+        final boolean[] isPasswordVisible = { false };
         ivShowPassword.setOnClickListener(v -> {
             isPasswordVisible[0] = !isPasswordVisible[0];
 
-            int iconColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.colorOnSurfaceVariant);
+            int iconColor = androidx.core.content.ContextCompat.getColor(requireContext(),
+                    R.color.colorOnSurfaceVariant);
 
             if (isPasswordVisible[0]) {
                 // Hiện mật khẩu
                 etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-                com.mikepenz.iconics.IconicsDrawable icon = new com.mikepenz.iconics.IconicsDrawable(requireContext(), "gmd-visibility");
+                com.mikepenz.iconics.IconicsDrawable icon = new com.mikepenz.iconics.IconicsDrawable(requireContext(),
+                        "gmd-visibility");
                 icon.setColorFilter(iconColor, android.graphics.PorterDuff.Mode.SRC_IN);
                 ivShowPassword.setIcon(icon);
             } else {
                 // Ẩn mật khẩu
                 etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                com.mikepenz.iconics.IconicsDrawable icon = new com.mikepenz.iconics.IconicsDrawable(requireContext(), "gmd-visibility-off");
+                com.mikepenz.iconics.IconicsDrawable icon = new com.mikepenz.iconics.IconicsDrawable(requireContext(),
+                        "gmd-visibility-off");
                 icon.setColorFilter(iconColor, android.graphics.PorterDuff.Mode.SRC_IN);
                 ivShowPassword.setIcon(icon);
             }
@@ -113,7 +116,8 @@ public class LoginFragment extends Fragment {
             int navHeight = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars()).bottom;
             int paddingBottom = Math.max(imeHeight, navHeight);
 
-            // 💥 Bí quyết ở đây: Đệm phần đáy bằng đúng chiều cao bàn phím để có dư không gian cuộn
+            // 💥 Bí quyết ở đây: Đệm phần đáy bằng đúng chiều cao bàn phím để có dư không
+            // gian cuộn
             v.setPadding(0, 0, 0, paddingBottom);
 
             // Khi bàn phím mở, tự động đưa ô đang gõ lên trên bàn phím
@@ -155,8 +159,10 @@ public class LoginFragment extends Fragment {
             etPassword.setOnEditorActionListener((v, actionId, event) -> {
                 if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
                     // Đóng bàn phím
-                    android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (imm != null) imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) requireContext()
+                            .getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null)
+                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 
                     // Kích hoạt click nút Đăng nhập
                     btnLogin.performClick();
@@ -246,7 +252,8 @@ public class LoginFragment extends Fragment {
                 DialogHelper.showSimpleDialog(requireContext(), "Lỗi", "Google ID Token is null");
             }
         } catch (ApiException e) {
-            DialogHelper.showSimpleDialog(requireContext(), "Lỗi đăng nhập", "Google Sign-In failed: " + e.getStatusCode());
+            DialogHelper.showSimpleDialog(requireContext(), "Lỗi đăng nhập",
+                    "Google Sign-In failed: " + e.getStatusCode());
         }
     }
 }

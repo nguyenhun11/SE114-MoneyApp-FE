@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "YOUR_PROJECT_NUMBER",
-    "project_id": "YOUR_PROJECT_ID",
-    "storage_bucket": "YOUR_STORAGE_BUCKET"
+    "project_number": "1081262818643",
+    "project_id": "moneyapp-1579cd02",
+    "storage_bucket": "moneyapp-1579cd02.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "YOUR_MOBILE_SDK_APP_ID",
+        "mobilesdk_app_id": "1:1081262818643:android:e0d90d09425725366acda6",
         "android_client_info": {
           "package_name": "com.example.moneyapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1081262818643-t5qi303sro8n6dahr5rupk860ukqjil1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.moneyapp",
+            "certificate_hash": "8617706cc1166180d9ca64b8d2bd6e1131519b3c"
+          }
+        },
+        {
+          "client_id": "1081262818643-s835nsdqavtnprdqeorgoehhkri4ha0o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "YOUR_API_KEY"
+          "current_key": "AIzaSyALpoAt2NYf_CzzRGthgYW7911feEjuKKE"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1081262818643-s835nsdqavtnprdqeorgoehhkri4ha0o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

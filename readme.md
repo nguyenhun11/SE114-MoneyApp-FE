@@ -29,39 +29,37 @@ MoneyApp là ứng dụng giúp người dùng theo dõi thu nhập, chi tiêu v
 
 Hệ thống thiết kế theo mô hình Tài chính kết hợp Trò chơi hóa (Gamification). Tích hợp chức năng quản lý thu chi cơ bản với các tính năng tương tác: xây dựng thành phố, thực hiện nhiệm vụ và thu thập huy hiệu.
 
-#### 💡 Điểm nổi bật kỹ thuật của dự án:
-1. **Xử lý đa tiền tệ**: Lưu trữ đồng thời 3 thông số: số tiền gốc (OriginalAmount), số tiền quy đổi theo ví (AccountAmount) và tỷ giá tại thời điểm phát sinh (ExchangeRate).
-2. **Tùy biến sắp xếp**: Sử dụng trường SortingOrder để lưu thứ tự hiển thị do người dùng cấu hình cho ví và danh mục.
-3. **Nhất quán dữ liệu**: Áp dụng định dạng GUID làm khóa chính cho các bảng tài chính cốt lõi để đảm bảo tính duy nhất và tối ưu hóa đồng bộ dữ liệu.
-4. **Cơ chế xóa mềm (Soft Delete)**: Sử dụng trường IsActive trên hầu hết các bảng để ẩn dữ liệu khi xóa, bảo toàn lịch sử hệ thống và toàn vẹn mối quan hệ dữ liệu.
-
 ---
 
 ### ✨ CÁC TÍNH NĂNG CHÍNH ĐÃ THỰC HIỆN
 
 #### Ứng dụng phân thành các nhóm chức năng chính:
 
-* **Users**: Bảng trung tâm. Lưu trữ thông tin định danh (tên, email, mật khẩu hash), thông tin cá nhân (ảnh, số điện thoại) và thông số hoạt động (DailyStreak, tiền tệ mặc định).
-* **Accounts**: Quản lý danh sách ví/tài khoản (Tiền mặt, Thẻ ngân hàng, Tiết kiệm). Lưu trữ số dư (Balance), loại tiền tệ và cấu hình hiển thị (màu sắc, biểu tượng).
-* **Categories & CategoryGroups**: Cấu trúc phân loại danh mục 2 cấp. CategoryGroup (Nhóm cha) chứa nhiều Category (Nhóm con). Hỗ trợ thiết lập mục tiêu chi tiêu hàng tháng cho từng danh mục.
-* **Transactions**: Ghi vết chi tiết giao dịch thu/chi. Liên kết dữ liệu giữa Account và Category. Lưu trữ mở rộng: MoodId (tâm trạng) và ImageUrls (ảnh hóa đơn).
-* **Transfers**: Ghi lại lịch sử chuyển tiền nội bộ giữa các ví. Tích hợp xử lý tỷ giá khi chuyển đổi giữa các loại tiền tệ khác nhau.
-* **Calculator**: Tích hợp máy tính cầm tay để tính khi nhập tiền.
-* **AdjustBalances**: Lưu vết các lệnh điều chỉnh số dư tài khoản thủ công (không tạo giao dịch thu/chi).
-* **Goals**: Quản lý tiến độ tiết kiệm mục tiêu. Lưu trữ số tiền cần đạt, số tiền hiện có và hạn chót (Deadline).
-* **Budgets**: Thiết lập giới hạn chi tiêu theo chu kỳ (Tuần/Tháng/Năm). Áp dụng cho toàn bộ hệ thống hoặc giới hạn theo từng danh mục cụ thể.
-* **CityStates & Buildings**: Dữ liệu mô phỏng xây dựng thành phố. Người dùng tích lũy điểm thịnh vượng (ProsperityPoints) và ổn định (StabilityPoints) từ hành vi quản lý tài chính để mua và nâng cấp các công trình (Buildings) trên bản đồ tọa độ (X, Y).
-* **Quests**: Quản lý các thử thách hành vi. Trạng thái thực hiện của người dùng được lưu trữ tại bảng UserQuests.
-* **Badges**: Hệ thống huy hiệu đạt được khi hoàn thành cột mốc. Lịch sử cấp phát lưu tại bảng UserBadges.
+* **Users & Authentication:** Bảng định danh trung tâm quản lý thông tin cá nhân (ảnh, email), thông số Gamification (DailyStreak) và tích hợp hệ thống xác thực bảo mật đa luồng (Google Sign-In, OTP quên mật khẩu, Token Rotation ngầm).
+* **Accounts:** Quản lý danh sách đa dạng các ví/tài khoản (Tiền mặt, Thẻ ngân hàng, Tiết kiệm) bao gồm số dư nội tại, loại tiền tệ và cấu hình hiển thị UI (màu sắc, biểu tượng).
+* **Categories & CategoryGroups:** Cấu trúc phân loại danh mục thu/chi 2 cấp (Nhóm cha - Nhóm con), hỗ trợ phân luồng dòng tiền chi tiết và làm cơ sở để thiết lập mục tiêu chi tiêu.
+* **Transactions:** Ghi vết chi tiết mọi giao dịch thu/chi, liên kết chéo dữ liệu giữa Account và Category, đồng thời lưu trữ mở rộng cảm xúc (MoodId) và hình ảnh hóa đơn (ImageUrls).
+* **Pending Transactions:** Quản lý cơ sở dữ liệu nháp cục bộ (Room DB) lưu trữ các giao dịch chờ duyệt, đi kèm hệ thống đếm và hiển thị cảnh báo (Banner) trực tiếp tại màn hình chính.
+* **Notifications:** Theo dõi thông báo từ điện thoại (với sự cho phép của người dùng) để lắng nghe các thông báo biến động số dư từ tin nhắn SMS hoặc thông báo ngân hàng, tạo các giao dịch chờ duyệt.
+* **Transfers:** Ghi lại lịch sử luân chuyển dòng tiền nội bộ giữa các ví, tự động đồng bộ và trừ/cộng số dư của tài khoản nguồn và tài khoản đích.
+* **Currency Exchange:** Xử lý và quy đổi linh hoạt tỷ giá giữa các loại tiền tệ khác nhau, hỗ trợ tính toán chính xác giá trị khi thực hiện giao dịch ngoại tệ hoặc chuyển tiền khác loại ví.
+* **Calculator:** Tích hợp bộ máy tính cầm tay mini ngay trên bàn phím nhập liệu, cho phép người dùng tính toán nhanh các biểu thức trực tiếp vào ô số tiền.
+* **AdjustBalances:** Lưu vết các lệnh điều chỉnh số dư tài khoản thủ công nhằm xử lý chênh lệch thực tế mà không sinh ra giao dịch thu/chi làm nhiễu báo cáo.
+* **Reports & Charts:** Hệ thống phân tích tài chính sử dụng thư viện MPAndroidChart kết xuất các báo cáo xu hướng thu/chi dưới dạng biểu đồ trực quan (PieChart, BarChart).
+* **Goals:** Quản lý tiến độ các mục tiêu tiết kiệm, liên tục tính toán số tiền hiện có so với số tiền cần đạt và theo dõi sát sao hạn chót (Deadline).
+* **Budgets:** Thiết lập và giám sát giới hạn chi tiêu theo các chu kỳ (Tuần/Tháng/Năm), có thể áp dụng khống chế cho tổng ngân sách hoặc siết chặt theo từng danh mục riêng biệt.
+* **CityStates & Buildings:** Hệ thống trò chơi hóa (Gamification) mô phỏng thành phố, nơi người dùng dùng điểm Thịnh vượng/Ổn định kiếm được từ việc quản lý tài chính kỷ luật để mua và nâng cấp công trình trên tọa độ (X, Y).
+* **Quests:** Quản lý hệ thống thử thách và nhiệm vụ tài chính định kỳ nhằm tạo động lực ghi chép, tiến trình hoàn thành được lưu vết chi tiết tại bảng UserQuests.
+* **Badges:** Hệ thống vinh danh cấp phát huy hiệu (thành tựu) khi người dùng đạt được các cột mốc quản lý tài chính quan trọng, lịch sử nhận huy hiệu lưu tại UserBadges.
 
 ---
 
-### 🔑 TÀI KHOẢN TRẢI NGHIỆM SẴN CÓ (TEST CREDENTIALS)
+### 🔑 TÀI KHOẢN TRẢI NGHIỆM SẴN CÓ
 
 > [!IMPORTANT]
 > Để thuận tiện cho giảng viên chấm điểm, nhóm đã chuẩn bị sẵn các tài khoản để demo ứng dụng. Giảng viên chỉ cần đăng nhập bằng các tài khoản bên dưới để kiểm thử tất cả chức năng mà không cần tự tạo dữ liệu từ đầu:
 
-| Tên đăng nhập / Email | Mật khẩu |
+| Email | Mật khẩu |
 | :--- | :--- |
 | `a@g` | `123456` |
 
@@ -96,20 +94,38 @@ Hệ thống thiết kế theo mô hình Tài chính kết hợp Trò chơi hóa
 
 #### 2. Các bước mở và chạy dự án trong Android Studio
 
-1. **Tải mã nguồn về máy**:
-   * Giải nén file nén nguồn hoặc chạy lệnh:
-     ```bash
-     git clone https://github.com/nguyenhun11/SE114-MoneyApp-FE.git
-     ```
-2. **Mở dự án trên Android Studio**:
-   * Mở Android Studio, click chọn **Open**.
-   * Dẫn đường dẫn đến thư mục chứa mã nguồn dự án (thư mục chứa tệp `settings.gradle.kts`).
-3. **Đồng bộ hóa Gradle**:
-   * Hãy đợi khoảng 1-3 phút để Android Studio tải các dependencies và hoàn tất **Gradle Sync**.
-4. **Chạy ứng dụng (Run)**:
-   * Kết nối thiết bị Android thật (đã bật chế độ gỡ lỗi USB) hoặc khởi chạy thiết bị ảo (Emulator).
-   * Bấm biểu tượng nút **Run (▶️)** trên thanh công cụ phía trên hoặc bấm tổ hợp phím `Shift + F10` (trên Windows/Linux).
-   * Chờ quá trình build hoàn tất, file APK sẽ được cài đặt và ứng dụng tự khởi động trên thiết bị.
+
+1. **Tải mã nguồn về máy tính**:
+* Tiến hành giải nén tệp mã nguồn đính kèm hoặc sao chép dự án từ kho lưu trữ GitHub bằng dòng lệnh sau:
+   ```bash
+   git clone https://github.com/nguyenhun11/SE114-MoneyApp-FE.git
+
+   ```
+
+
+2. **Cấu hình dịch vụ Firebase/Google Auth**:
+* Ứng dụng yêu cầu tệp định tuyến bảo mật `google-services.json` để kết nối với các dịch vụ xác thực.
+* **Dành cho Giảng viên đánh giá:** Nhóm đã chuẩn bị sẵn tệp cấu hình hoàn chỉnh trên Google Drive (đính kèm cùng link nộp đồ án). Thầy chỉ cần tải về trực tiếp vào thư mục `app/` của dự án.
+* **Dành cho thành viên phát triển:** Chạy lệnh copy dưới đây tại thư mục gốc để sinh ra tệp cấu hình từ tệp mẫu, sau đó liên hệ Tech Lead để lấy các biến môi trường thay thế vào:
+   ```bash
+   cp app/google-services.sample.json app/google-services.json
+
+   ```
+
+3. **Mở dự án trên nền tảng Android Studio**:
+* Khởi động phần mềm **Android Studio**, tại màn hình chào mừng chọn chức năng **Open** (hoặc File > Open).
+* Điều hướng đến thư mục mã nguồn vừa tải về (chọn đúng thư mục gốc có chứa tệp `settings.gradle.kts`) và nhấn **OK**.
+
+
+4. **Đồng bộ hóa môi trường (Gradle Sync)**:
+* Hệ thống sẽ tự động tiến hành tải các thư viện (dependencies) cần thiết để chạy dự án.
+* Vui lòng duy trì kết nối mạng và đợi khoảng 1-3 phút để quá trình **Gradle Sync** hoàn tất không báo lỗi ở cửa sổ Build.
+
+
+5. **Biên dịch và chạy ứng dụng (Run)**:
+* Kết nối thiết bị di động Android vật lý (yêu cầu đã bật chế độ *Gỡ lỗi USB - USB Debugging*) hoặc khởi chạy Máy ảo Android (Emulator) tích hợp sẵn.
+* Nhấn biểu tượng **Run (▶️)** màu xanh trên thanh công cụ phía trên, hoặc sử dụng tổ hợp phím `Shift + F10` (trên Windows/Linux).
+* Chờ quá trình biên dịch (Build) hoàn tất, tệp APK sẽ được triển khai tự động và ứng dụng MoneyApp sẽ khởi chạy trên thiết bị.
 
 ---
 *Đồ án được thực hiện nhằm mục đích học tập môn Nhập môn ứng dụng di động tại UIT - Khoa Kỹ thuật phần mềm.*
