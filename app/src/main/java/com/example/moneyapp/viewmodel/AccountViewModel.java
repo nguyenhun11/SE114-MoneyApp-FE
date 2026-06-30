@@ -12,8 +12,10 @@ import com.example.moneyapp.data.repository.AccountRepository;
 import com.example.moneyapp.model.Account;
 import com.example.moneyapp.utils.CurrencyFormatter;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AccountViewModel extends AndroidViewModel {
     private final AccountRepository repository;
@@ -23,6 +25,7 @@ public class AccountViewModel extends AndroidViewModel {
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> saveSuccess = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    private final AtomicBoolean isInitializing = new AtomicBoolean(false);
 
     public AccountViewModel(@NonNull Application application) {
         super(application);
@@ -63,13 +66,53 @@ public class AccountViewModel extends AndroidViewModel {
         repository.getAllAccounts(new AccountRepository.AccountCallback<List<Account>>() {
             @Override
             public void onSuccess(List<Account> result) {
-                accountsLiveData.postValue(result);
-                isLoading.postValue(false);
+                if (result == null || result.isEmpty()) {
+                    createDefaultAccount();
+                } else {
+                    accountsLiveData.postValue(result);
+                    isLoading.postValue(false);
+                }
             }
 
             @Override
             public void onError(String message) {
                 errorLiveData.postValue(message);
+                isLoading.postValue(false);
+            }
+        });
+    }
+
+    private void createDefaultAccount() {
+        if (isInitializing.getAndSet(true)) return;
+
+        // Tạo tài khoản mặc định: Tiền mặt, 0 VND, Màu ID 1, Icon ID 1
+        Account defaultAccount = new Account(
+                null,
+                "Tiền mặt",
+                0.0,
+                0.0,
+                0.0,
+                "VND",
+                1,
+                1,
+                "Ví mặc định",
+                true,
+                0,
+                new Date(),
+                new Date()
+        );
+
+        repository.insertAccount(defaultAccount, new AccountRepository.AccountCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                isInitializing.set(false);
+                loadAccounts(); // Tải lại danh sách sau khi tạo thành công
+            }
+
+            @Override
+            public void onError(String message) {
+                isInitializing.set(false);
+                errorLiveData.postValue("Lỗi khởi tạo ví mặc định: " + message);
                 isLoading.postValue(false);
             }
         });
