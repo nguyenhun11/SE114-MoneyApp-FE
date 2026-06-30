@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
@@ -20,290 +19,216 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmer_detail"
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/card_horizontal_margin"
-        android:layout_marginTop="32dp"
-        app:layout_constraintTop_toBottomOf="@id/header_layout">
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="@dimen/main_top_margin_small"
+        android:layout_marginBottom="@dimen/card_bottom_margin"
+        app:cardBackgroundColor="@color/colorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_layout"
+        app:strokeColor="@color/colorBorder"
+        app:strokeWidth="1dp">
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_skeleton"
-            android:orientation="vertical"
-            android:padding="32dp">
-
-            <View
-                android:layout_width="150dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="24dp"
-                android:background="@color/colorBackground" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="24dp"
-                android:layout_marginBottom="16dp"
-                android:background="@color/colorBackground" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="24dp"
-                android:layout_marginBottom="16dp"
-                android:background="@color/colorBackground" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="24dp"
-                android:layout_marginBottom="16dp"
-                android:background="@color/colorBackground" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="24dp"
-                android:background="@color/colorBackground" />
-        </LinearLayout>
-    </com.facebook.shimmer.ShimmerFrameLayout>
-
-    <LinearLayout
-        android:id="@+id/layout_content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/header_layout">
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_detail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/card_horizontal_margin"
-            android:layout_marginTop="32dp"
-            app:cardBackgroundColor="@color/colorSurface"
-            app:cardCornerRadius="@dimen/card_radius"
-            app:layout_constraintTop_toBottomOf="@id/header_layout"
-            app:strokeColor="@color/colorBorder"
-            app:strokeWidth="1dp">
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:scrollbarSize="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:orientation="vertical"
-                android:paddingHorizontal="32dp"
-                android:paddingTop="32dp"
-                android:paddingBottom="32dp">
+                android:padding="24dp">
 
                 <TextView
-                    android:id="@+id/tvDetailAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="36sp"
-                    android:textStyle="bold"
-                    tools:text="- 350.000đ"
-                    tools:textColor="@color/colorDanger" />
+                    android:layout_marginBottom="8dp"
+                    android:text="Số tiền ngân sách"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/tvBaseAmountDetail"
+                <include
+                    android:id="@+id/layout_amount"
+                    layout="@layout/layout_amount_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorOnSurfaceVariant"
+                    android:layout_marginBottom="24dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Phạm vi ngân sách"
+                    android:textColor="@color/colorOnSurface"
                     android:textSize="14sp"
-                    android:textStyle="italic"
-                    android:visibility="gone"
-                    tools:text="≈ - 25.000 VND"
-                    tools:visibility="visible" />
+                    android:textStyle="bold" />
 
-                <LinearLayout
+                <RadioGroup
+                    android:id="@+id/rgScope"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:gravity="center_vertical"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
                     android:orientation="horizontal">
-
-                    <TextView
+                    <RadioButton
+                        android:id="@+id/rbScopeTotal"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:text="Tổng"
+                        app:buttonTint="@color/colorPrimary" />
+                    <RadioButton
+                        android:id="@+id/rbScopeGroup"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Nhóm"
+                        app:buttonTint="@color/colorPrimary" />
+                    <RadioButton
+                        android:id="@+id/rbScopeCategory"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.2"
+                        android:checked="true"
                         android:text="Hạng mục"
-                        android:textColor="@color/colorOnSurfaceVariant"
-                        android:textSize="15sp" />
+                        app:buttonTint="@color/colorPrimary" />
+                </RadioGroup>
 
-                    <LinearLayout
+                <LinearLayout
+                    android:id="@+id/layoutGroupSelector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Nhóm hạng mục"
+                        android:textColor="@color/colorOnSurface"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                    <LinearLayout
+                        android:id="@+id/btnSelectGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginBottom="24dp"
+                        android:background="@drawable/bg_input_border"
                         android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <FrameLayout
-                            android:id="@+id/fl_category_icon"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:layout_marginEnd="10dp"
-                            android:background="@drawable/bg_circle">
-
-                            <com.mikepenz.iconics.view.IconicsImageView
-                                android:id="@+id/iv_category_icon"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="center"
-                                app:iiv_color="@color/white"
-                                tools:iiv_icon="gmd-receipt" />
-                        </FrameLayout>
-
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp">
                         <TextView
-                            android:id="@+id/tvDetailCategoryLabel"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tvSelectedGroup"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Chọn nhóm..."
                             android:textColor="@color/colorOnSurface"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            tools:text="Sinh hoạt" />
+                            android:textSize="16sp" />
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            app:iiv_color="@color/colorOnSurfaceVariant"
+                            app:iiv_icon="gmd_keyboard_arrow_down" />
                     </LinearLayout>
                 </LinearLayout>
 
-
                 <LinearLayout
+                    android:id="@+id/layoutCategorySelector"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
                     <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Nguồn tiền"
-                        android:textColor="@color/colorOnSurfaceVariant"
-                        android:textSize="15sp" />
-
-                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Hạng mục"
+                        android:textColor="@color/colorOnSurface"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                    <LinearLayout
+                        android:id="@+id/btnSelectCategory"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginBottom="24dp"
+                        android:background="@drawable/bg_input_border"
                         android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp">
 
-                        <FrameLayout
-                            android:id="@+id/fl_account_icon"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:layout_marginEnd="10dp"
-                            android:background="@drawable/bg_circle">
-
-                            <com.mikepenz.iconics.view.IconicsImageView
-                                android:id="@+id/iv_account_icon"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="center"
-                                app:iiv_color="@color/white"
-                                tools:iiv_icon="gmd-account-balance" />
-                        </FrameLayout>
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:id="@+id/ivCategoryIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="12dp"
+                            app:iiv_color="@color/colorOnSurface"
+                            app:iiv_icon="gmd_category" />
 
                         <TextView
-                            android:id="@+id/tvDetailSource"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tvSelectedCategory"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Chọn hạng mục..."
                             android:textColor="@color/colorOnSurface"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            tools:text="Tiền mặt" />
+                            android:textSize="16sp" />
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            app:iiv_color="@color/colorOnSurfaceVariant"
+                            app:iiv_icon="gmd_keyboard_arrow_down" />
                     </LinearLayout>
                 </LinearLayout>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Chu kỳ"
+                    android:textColor="@color/colorOnSurface"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-                <LinearLayout
+                <RadioGroup
+                    android:id="@+id/rgPeriod"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:gravity="center_vertical"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
                     android:orientation="horizontal">
-
-                    <TextView
+                    <RadioButton
+                        android:id="@+id/rbWeekly"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Ngày"
-                        android:textColor="@color/colorOnSurfaceVariant"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/tvDetailDate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/colorOnSurface"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        tools:text="08/06/2026" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_mood_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:visibility="gone"
-                    tools:visibility="visible">
-
-                    <TextView
+                        android:text="Tuần"
+                        app:buttonTint="@color/colorPrimary" />
+                    <RadioButton
+                        android:id="@+id/rbMonthly"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Tâm trạng"
-                        android:textColor="@color/colorOnSurfaceVariant"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/tvDetailMood"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/colorOnSurface"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        tools:text="😐 Bình thường" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_description_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
+                        android:checked="true"
+                        android:text="Tháng"
+                        app:buttonTint="@color/colorPrimary" />
+                    <RadioButton
+                        android:id="@+id/rbYearly"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Ghi chú"
-                        android:textColor="@color/colorOnSurfaceVariant"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/tvDetailDescription"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:gravity="end"
-                        android:textColor="@color/colorOnSurface"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        tools:text="Cà phê sáng" />
-                </LinearLayout>
+                        android:text="Năm"
+                        app:buttonTint="@color/colorPrimary" />
+                </RadioGroup>
 
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/tvCreatedAt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:textAlignment="center"
-            android:textColor="@color/colorOnSurfaceVariant"
-            android:textSize="12sp"
-            android:textStyle="italic"
-            app:layout_constraintTop_toBottomOf="@+id/card_detail"
-            tools:text="Tạo lúc: 08/06/2026" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
