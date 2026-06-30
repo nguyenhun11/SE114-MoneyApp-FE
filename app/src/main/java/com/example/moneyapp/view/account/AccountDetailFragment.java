@@ -153,6 +153,8 @@ public class AccountDetailFragment extends BaseFragment {
 
         if (currentAccountId != null) {
             tvCreatedAt.setVisibility(View.VISIBLE);
+            setupHeader(view, "", "gmd_arrow_back", v -> Navigation.findNavController(v).navigateUp(),
+                    "gmd_delete_outline", v -> showDeleteConfirmation());
             viewModel.loadAccounts();
 
             if (btnSelectCurrency != null) {
@@ -269,6 +271,13 @@ public class AccountDetailFragment extends BaseFragment {
         vSelectedColor.getBackground().setTint(actualColor);
     }
 
+    private void showDeleteConfirmation() {
+        DialogHelper.showConfirmDialog(requireContext(), "Xóa tài khoản",
+                "Bạn có chắc chắn muốn xóa tài khoản này? Tất cả dữ liệu liên quan sẽ bị mất.",
+                () -> viewModel.deleteAccount(currentAccountId, "delete", null),
+                null);
+    }
+
     private void performSave() {
         String name = etName.getText().toString().trim();
         String balanceStr = etBalance.getText().toString().trim().replaceAll("[.,]", "");
@@ -319,7 +328,9 @@ public class AccountDetailFragment extends BaseFragment {
 
             for (Account acc : accounts) {
                 if (currentAccountId.equals(acc.getAccountId())) {
-                    setupHeader(requireView(), acc.getAccountName(), true);
+                    setupHeader(requireView(), acc.getAccountName(), "gmd_arrow_back", 
+                            v -> Navigation.findNavController(v).navigateUp(),
+                            "gmd_delete_outline", v -> showDeleteConfirmation());
 
                     etName.setText(acc.getAccountName());
                     etBalance.setText(String.format(Locale.US, "%.0f", acc.getTotalBalance()));
