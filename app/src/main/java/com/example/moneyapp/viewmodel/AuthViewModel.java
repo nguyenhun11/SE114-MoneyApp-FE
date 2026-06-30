@@ -110,12 +110,40 @@ public class AuthViewModel extends AndroidViewModel {
             errorMessage.setValue("Họ và tên không được để trống");
             return;
         }
+        if (name.trim().length() < 2){
+            errorMessage.setValue("Họ và tên phải từ 2 ký tự trở lên");
+            return;
+        }
+        if (name.trim().length() > 50){
+            errorMessage.setValue("Họ và tên không được vượt quá 50 ký tự");
+            return;
+        }
+        if (!name.trim().matches("^[\\p{L}\\s'-]+$")){
+            errorMessage.setValue("Họ và tên chỉ được chứa chữ cái và khoảng trắng");
+            return;
+        }
         if (email == null || email.trim().isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             errorMessage.setValue("Email không hợp lệ");
             return;
         }
-        if (password == null || password.length() < 6){
-            errorMessage.setValue("Mật khẩu phải từ 6 ký tự trở lên");
+        if (password == null || password.length() < 8){
+            errorMessage.setValue("Mật khẩu phải từ 8 ký tự trở lên");
+            return;
+        }
+        if (!password.matches(".*[A-Z].*")) {
+            errorMessage.setValue("Mật khẩu phải chứa ít nhất 1 chữ cái in hoa");
+            return;
+        }
+        if (!password.matches(".*[a-z].*")) {
+            errorMessage.setValue("Mật khẩu phải chứa ít nhất 1 chữ cái thường");
+            return;
+        }
+        if (!password.matches(".*\\d.*")) {
+            errorMessage.setValue("Mật khẩu phải chứa ít nhất 1 chữ số");
+            return;
+        }
+        if (!password.matches(".*[^a-zA-Z0-9].*")) {
+            errorMessage.setValue("Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt");
             return;
         }
         if (confirmPassword == null || confirmPassword.trim().isEmpty()){
