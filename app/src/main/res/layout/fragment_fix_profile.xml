@@ -1,0 +1,673 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorBackground"
+            app:contentScrim="@android:color/transparent"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/profile_card_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/card_horizontal_margin"
+
+                android:layout_marginBottom="12dp"
+
+                app:cardBackgroundColor="@color/colorSurface"
+                app:cardCornerRadius="@dimen/card_radius"
+                app:strokeColor="@color/colorBorder"
+                app:strokeWidth="1dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/expanded_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="24dp">
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cv_avatar_container"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_marginBottom="16dp"
+                            app:cardCornerRadius="50dp"
+                            app:cardElevation="2dp">
+
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <com.mikepenz.iconics.view.IconicsImageView
+                                    android:id="@+id/iv_profile_avatar"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    app:iiv_icon="gmd-account-circle" />
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="#40000000" />
+
+                                <com.mikepenz.iconics.view.IconicsImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:layout_gravity="center"
+                                    app:iiv_color="@color/white"
+                                    app:iiv_icon="gmd-camera-alt" />
+                            </FrameLayout>
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:id="@+id/tv_profile_name_expanded"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:text="Đang tải..."
+                            android:textColor="@color/colorOnSurface"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_user_id_expanded"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="ID: ..."
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/collapsed_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:alpha="0"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:visibility="invisible">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tv_profile_name_collapsed"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:maxLines="1"
+                                android:text="Đang tải..."
+                                android:textColor="@color/colorOnSurface"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_marginStart="8dp"
+                                app:iiv_color="@color/colorOnSurfaceVariant"
+                                app:iiv_icon="gmd-edit" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tv_user_id_collapsed"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="ID: ..."
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <FrameLayout
+                android:id="@+id/top_slice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_collapseMode="pin">
+
+                <View
+                    android:id="@+id/bg_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/header_height_small"
+                    android:background="@drawable/bg_header_gradient" />
+
+                <include
+                    android:id="@+id/header_layout"
+                    layout="@layout/layout_header_title" />
+            </FrameLayout>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_profile_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/card_horizontal_margin">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="90dp"
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/bg_skeleton" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="72dp"
+                        android:layout_marginBottom="24dp"
+                        android:background="@drawable/bg_skeleton" />
+
+                    <View
+                        android:layout_width="150dp"
+                        android:layout_height="20dp"
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/bg_skeleton" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_marginBottom="24dp"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:layout_marginEnd="12dp"
+                            android:background="@drawable/bg_skeleton" />
+
+                        <View
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:layout_marginEnd="12dp"
+                            android:background="@drawable/bg_skeleton" />
+
+                        <View
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:background="@drawable/bg_skeleton" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:background="@drawable/bg_skeleton" />
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_profile_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/card_horizontal_margin">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardBackgroundColor="@color/colorSurface"
+                    app:cardCornerRadius="@dimen/button_radius"
+                    app:strokeColor="@color/colorWarning"
+                    app:strokeWidth="1.5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <FrameLayout
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:background="@drawable/bg_circle"
+                                android:backgroundTint="#FFF3E0">
+
+                                <com.mikepenz.iconics.view.IconicsImageView
+                                    android:id="@+id/iv_streak_icon"
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    android:layout_gravity="center"
+                                    app:iiv_color="@color/colorWarning"
+                                    app:iiv_icon="gmd-local-fire-department" />
+                            </FrameLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Chuỗi ngày tích lũy"
+                                    android:textColor="@color/colorOnSurfaceVariant"
+                                    android:textSize="13sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_streak_count"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="0 ngày"
+                                    android:textColor="@color/colorWarning"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_checkin"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Check-in"
+                                android:textAllCaps="false"
+                                app:backgroundTint="@color/colorWarning"
+                                app:cornerRadius="@dimen/button_radius" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tv_restore_streak_hint"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:gravity="center"
+                            android:text="Chia sẻ app để khôi phục chuỗi"
+                            android:textColor="@color/colorWarning"
+                            android:textSize="13sp"
+                            android:textStyle="bold|italic"
+                            android:visibility="visible" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_city_stats"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/colorSurface"
+                    app:cardCornerRadius="@dimen/button_radius"
+                    app:strokeColor="@color/colorInfo"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_city_level_profile"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Cấp -"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Thành phố"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginHorizontal="8dp"
+                            android:background="@color/colorBorder" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_prosperity_profile"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="-"
+                                android:textColor="@color/colorSuccess"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Thịnh vượng"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginHorizontal="8dp"
+                            android:background="@color/colorBorder" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_stability_profile"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="-"
+                                android:textColor="@color/colorInfo"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ổn định"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:id="@+id/btn_city_guide"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginStart="8dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:padding="4dp"
+                            app:iiv_color="@color/colorOnSurfaceVariant"
+                            app:iiv_icon="gmd_help_outline" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    style="@style/InputLabel"
+                    android:layout_marginTop="8dp"
+                    android:text="Huy hiệu &amp; Thành tựu" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvBadges"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="4dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/colorSurface"
+                    app:cardCornerRadius="@dimen/button_radius"
+                    app:strokeColor="@color/colorBorder"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="24dp"
+                        android:paddingVertical="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/profile_email"
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tv_profile_email"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:text="..."
+                            android:textColor="@color/colorOnSurface"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="16dp"
+                            android:background="@color/colorBorder" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/profile_created_date"
+                            android:textColor="@color/colorOnSurfaceVariant"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tv_created_at"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:text="..."
+                            android:textColor="@color/colorOnSurface"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="16dp"
+                            android:background="@color/colorBorder" />
+
+                        <LinearLayout
+                            android:id="@+id/ll_change_password"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/profile_change_password_link"
+                                android:textColor="@color/colorOnSurface"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                app:iiv_color="@color/colorOnSurfaceVariant"
+                                app:iiv_icon="gmd-keyboard-arrow-right" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="16dp"
+                            android:background="@color/colorBorder" />
+
+                        <LinearLayout
+                            android:id="@+id/ll_change_currency"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Đơn vị tiền tệ mặc định"
+                                android:textColor="@color/colorOnSurface"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_default_currency"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:text="VND"
+                                android:textColor="@color/colorInfo"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <com.mikepenz.iconics.view.IconicsImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                app:iiv_color="@color/colorOnSurfaceVariant"
+                                app:iiv_icon="gmd-keyboard-arrow-right" />
+                        </LinearLayout>
+
+                        <!--                    <View-->
+                        <!--                        android:layout_width="match_parent"-->
+                        <!--                        android:layout_height="1dp"-->
+                        <!--                        android:layout_marginBottom="16dp"-->
+                        <!--                        android:background="@color/colorBorder" />-->
+
+                        <!--                    <RelativeLayout-->
+                        <!--                        android:layout_width="match_parent"-->
+                        <!--                        android:layout_height="wrap_content">-->
+
+                        <!--                        <LinearLayout-->
+                        <!--                            android:layout_width="wrap_content"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            android:orientation="vertical">-->
+
+                        <!--                            <TextView-->
+                        <!--                                android:layout_width="wrap_content"-->
+                        <!--                                android:layout_height="wrap_content"-->
+                        <!--                                android:text="@string/profile_sync"-->
+                        <!--                                android:textColor="@color/colorOnSurface"-->
+                        <!--                                android:textSize="16sp"-->
+                        <!--                                android:textStyle="bold" />-->
+
+                        <!--                            <TextView-->
+                        <!--                                android:layout_width="wrap_content"-->
+                        <!--                                android:layout_height="wrap_content"-->
+                        <!--                                android:text="@string/profile_internet_required"-->
+                        <!--                                android:textColor="@color/colorOnSurfaceVariant"-->
+                        <!--                                android:textSize="13sp" />-->
+                        <!--                        </LinearLayout>-->
+
+                        <!--                        <androidx.appcompat.widget.SwitchCompat-->
+                        <!--                            android:id="@+id/sw_sync"-->
+                        <!--                            android:layout_width="wrap_content"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            android:layout_alignParentEnd="true"-->
+                        <!--                            android:layout_centerVertical="true"-->
+                        <!--                            app:thumbTint="@color/switch_colors"-->
+                        <!--                            app:trackTint="@color/colorOnSurfaceVariant" />-->
+                        <!--                    </RelativeLayout>-->
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="48dp"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_delete_account"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:text="@string/profile_delete_account"
+                        android:textColor="@color/colorDanger"
+                        app:icon="@drawable/delete_button_img"
+                        app:iconTint="@color/colorDanger"
+                        app:strokeColor="@color/colorDanger" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_logout"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:text="@string/profile_logout"
+                        android:textColor="@color/colorOnSurface"
+                        app:icon="@drawable/logout_button_img"
+                        app:iconTint="@color/colorOnSurface"
+                        app:strokeColor="@color/colorBorder" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </FrameLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
