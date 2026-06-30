@@ -120,14 +120,101 @@ public class RegisterFragment extends Fragment {
         etConfirmPassword.setOnFocusChangeListener(focusListener);
 
         // 5. XỬ LÝ CLICK ĐĂNG KÝ
+        android.text.TextWatcher clearErrorTextWatcher = new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                View focusedView = view.findFocus();
+                if (focusedView instanceof EditText) {
+                    ((EditText) focusedView).setError(null);
+                }
+            }
+        };
+        etName.addTextChangedListener(clearErrorTextWatcher);
+        etEmail.addTextChangedListener(clearErrorTextWatcher);
+        etPassword.addTextChangedListener(clearErrorTextWatcher);
+        etConfirmPassword.addTextChangedListener(clearErrorTextWatcher);
+
         if (btnRegister != null) {
             btnRegister.setOnClickListener(v -> {
-                authViewModel.register(
-                        etName.getText().toString(),
-                        etEmail.getText().toString(),
-                        etPassword.getText().toString(),
-                        etConfirmPassword.getText().toString()
-                );
+                String name = etName.getText().toString().trim();
+                String email = etEmail.getText().toString().trim();
+                String password = etPassword.getText().toString();
+                String confirmPassword = etConfirmPassword.getText().toString();
+
+                if (name.isEmpty()) {
+                    etName.setError("Họ và tên không được để trống");
+                    etName.requestFocus();
+                    return;
+                }
+                if (name.length() < 2) {
+                    etName.setError("Họ và tên phải từ 2 ký tự trở lên");
+                    etName.requestFocus();
+                    return;
+                }
+                if (name.length() > 50) {
+                    etName.setError("Họ và tên không được vượt quá 50 ký tự");
+                    etName.requestFocus();
+                    return;
+                }
+                if (!name.matches("^[\\p{L}\\s'-]+$")) {
+                    etName.setError("Họ và tên chỉ được chứa chữ cái và khoảng trắng");
+                    etName.requestFocus();
+                    return;
+                }
+
+                if (email.isEmpty()) {
+                    etEmail.setError("Email không được để trống");
+                    etEmail.requestFocus();
+                    return;
+                }
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    etEmail.setError("Email không đúng định dạng");
+                    etEmail.requestFocus();
+                    return;
+                }
+
+                if (password.length() < 8) {
+                    etPassword.setError("Mật khẩu phải từ 8 ký tự trở lên");
+                    etPassword.requestFocus();
+                    return;
+                }
+                if (!password.matches(".*[A-Z].*")) {
+                    etPassword.setError("Mật khẩu phải chứa ít nhất 1 chữ cái in hoa");
+                    etPassword.requestFocus();
+                    return;
+                }
+                if (!password.matches(".*[a-z].*")) {
+                    etPassword.setError("Mật khẩu phải chứa ít nhất 1 chữ cái thường");
+                    etPassword.requestFocus();
+                    return;
+                }
+                if (!password.matches(".*\\d.*")) {
+                    etPassword.setError("Mật khẩu phải chứa ít nhất 1 chữ số");
+                    etPassword.requestFocus();
+                    return;
+                }
+                if (!password.matches(".*[^a-zA-Z0-9].*")) {
+                    etPassword.setError("Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt");
+                    etPassword.requestFocus();
+                    return;
+                }
+
+                if (confirmPassword.isEmpty()) {
+                    etConfirmPassword.setError("Vui lòng xác nhận mật khẩu");
+                    etConfirmPassword.requestFocus();
+                    return;
+                }
+                if (!password.equals(confirmPassword)) {
+                    etConfirmPassword.setError("Mật khẩu xác nhận không khớp");
+                    etConfirmPassword.requestFocus();
+                    return;
+                }
+
+                authViewModel.register(name, email, password, confirmPassword);
             });
         }
 
@@ -171,7 +258,21 @@ public class RegisterFragment extends Fragment {
             }
         });
         authViewModel.errorMessage.observe(getViewLifecycleOwner(), message -> {
-            DialogHelper.showSimpleDialog(requireContext(), "Thông báo", message);
+            if (message != null) {
+                String lowercaseMsg = message.toLowerCase();
+                if (lowercaseMsg.contains("email")) {
+                    etEmail.setError(message);
+                    etEmail.requestFocus();
+                } else if (lowercaseMsg.contains("họ và tên") || lowercaseMsg.contains("tên")) {
+                    etName.setError(message);
+                    etName.requestFocus();
+                } else if (lowercaseMsg.contains("mật khẩu")) {
+                    etPassword.setError(message);
+                    etPassword.requestFocus();
+                } else {
+                    DialogHelper.showSimpleDialog(requireContext(), "Thông báo", message);
+                }
+            }
         });
     }
 

@@ -119,8 +119,13 @@ public class AuthRepository {
                     String errorMessage = "Đăng ký thất bại";
                     try {
                         if (response.errorBody() != null) {
-                            JSONObject jObjError = new JSONObject(response.errorBody().string());
-                            errorMessage = jObjError.getString("message");
+                            String errorStr = response.errorBody().string();
+                            JSONObject jObjError = new JSONObject(errorStr);
+                            if (jObjError.has("message")) {
+                                errorMessage = jObjError.getString("message");
+                            } else if (jObjError.has("Message")) {
+                                errorMessage = jObjError.getString("Message");
+                            }
                         }
                     } catch (Exception e) {
                         errorMessage += ": " + response.code();
