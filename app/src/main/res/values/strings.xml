@@ -35,7 +35,7 @@
     <string name="login_no_account">Chưa có tài khoản? Đăng ký</string>
     <string name="login_continue">Tiếp tục</string>
     <string name="login_google">Đăng nhập bằng Google</string>
-    <string name="default_web_client_id" translatable="false">1081262818643-s835nsdqavtnprdqeorgoehhkri4ha0o.apps.googleusercontent.com</string>
+    <string name="default_web_client_id" translatable="false">1081285408020-ogd4tkssqid3g9n4tfpc71dfa9vhq26j.apps.googleusercontent.com</string>
 
     <string name="register_title">Đăng ký</string>
     <string name="register_name_hint">Họ và tên</string>
