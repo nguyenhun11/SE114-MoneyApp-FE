@@ -51,6 +51,7 @@ public class CityRankAdapter extends RecyclerView.Adapter<CityRankAdapter.RankVi
     class RankViewHolder extends RecyclerView.ViewHolder {
         TextView tvRankNumber, tvUserName, tvUserCityLevel, tvProsperityPoints, tvPointLabel;
         ImageView ivAvatar;
+        com.google.android.material.card.MaterialCardView cardRank;
 
         public RankViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -60,6 +61,7 @@ public class CityRankAdapter extends RecyclerView.Adapter<CityRankAdapter.RankVi
             tvProsperityPoints = itemView.findViewById(R.id.tvProsperityPoints);
             tvPointLabel = itemView.findViewById(R.id.tvPointLabel);
             ivAvatar = itemView.findViewById(R.id.ivAvatar);
+            cardRank = itemView.findViewById(R.id.cardRank);
         }
 
         public void bind(RankItemDto item, int rank) {
@@ -80,12 +82,21 @@ public class CityRankAdapter extends RecyclerView.Adapter<CityRankAdapter.RankVi
             // Highlight top 3
             if (rank == 1) {
                 tvRankNumber.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorWarning));
+                cardRank.setBackgroundResource(R.drawable.bg_rank_1);
+                cardRank.setStrokeWidth(0);
             } else if (rank == 2) {
                 tvRankNumber.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorInfo));
+                cardRank.setBackgroundResource(R.drawable.bg_rank_2);
+                cardRank.setStrokeWidth(0);
             } else if (rank == 3) {
                 tvRankNumber.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorChartOrange));
+                cardRank.setBackgroundResource(R.drawable.bg_rank_3);
+                cardRank.setStrokeWidth(0);
             } else {
                 tvRankNumber.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorOnSurface));
+                cardRank.setBackgroundResource(android.R.color.transparent);
+                cardRank.setStrokeWidth((int) (1 * itemView.getContext().getResources().getDisplayMetrics().density));
+                cardRank.setStrokeColor(ContextCompat.getColor(itemView.getContext(), R.color.colorBorder));
             }
 
             if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
