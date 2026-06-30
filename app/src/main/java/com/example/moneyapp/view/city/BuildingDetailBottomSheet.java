@@ -63,14 +63,25 @@ public class BuildingDetailBottomSheet extends BottomSheetDialogFragment {
         
         tvEffect.setText(getBuildingEffectDescription(building.getBuildingType(), building.getLevel()));
         
-        int upgradeCost = building.getLevel() * 200; // Mock cost formula
-        btnUpgrade.setText("Nâng cấp (" + upgradeCost + " PP)");
-
-        if (currentPP < upgradeCost) {
+        if (building.getLevel() >= 3) {
+            btnUpgrade.setText("Đã đạt cấp tối đa");
             btnUpgrade.setEnabled(false);
             btnUpgrade.setAlpha(0.5f);
-            tvHint.setVisibility(View.VISIBLE);
-            tvHint.setText("Bạn cần thêm " + (upgradeCost - currentPP) + " PP để nâng cấp");
+            tvHint.setVisibility(View.GONE);
+        } else {
+            int upgradeCost = building.getLevel() * 200; // Mock cost formula
+            btnUpgrade.setText("Nâng cấp (" + upgradeCost + " PP)");
+
+            if (currentPP < upgradeCost) {
+                btnUpgrade.setEnabled(false);
+                btnUpgrade.setAlpha(0.5f);
+                tvHint.setVisibility(View.VISIBLE);
+                tvHint.setText("Bạn cần thêm " + (upgradeCost - currentPP) + " PP để nâng cấp");
+            } else {
+                btnUpgrade.setEnabled(true);
+                btnUpgrade.setAlpha(1.0f);
+                tvHint.setVisibility(View.GONE);
+            }
         }
 
         btnUpgrade.setOnClickListener(v -> {

@@ -67,7 +67,7 @@ public class RewardHelper {
             ivIcon.setIcon(new IconicsDrawable(context, iconKey));
             ivIcon.setColorFilter(android.graphics.Color.parseColor("#FFC107"));
             viewGlow.setVisibility(View.VISIBLE);
-            tvStatus.setText("Đã đạt được vào: " + badge.getUnlockedAt());
+            tvStatus.setText("Đã đạt được vào: " + DateConverter.formatToDisplay(badge.getUnlockedAt()));
             tvStatus.setTextColor(ContextCompat.getColor(context, R.color.colorSuccess));
         } else {
             ivIcon.setIcon(new IconicsDrawable(context, "gmd_lock"));

@@ -134,7 +134,7 @@ public class CityFragment extends BaseFragment {
         String type = building.getBuildingType().toLowerCase();
         if (type.equals("road") || type.equals("tree") || type.equals("bench") ||
             type.equals("street_light") || type.equals("flower_bed") ||
-            type.equals("fountain") || type.equals("statue")) {
+            type.equals("fountain") || type.equals("statue") || type.equals("park")) {
             Toast.makeText(getContext(), getBuildingDisplayName(type) + " (Vật phẩm trang trí)", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -156,6 +156,7 @@ public class CityFragment extends BaseFragment {
             case "flower_bed": return "Bồn hoa";
             case "fountain": return "Đài phun nước";
             case "statue": return "Tượng đài";
+            case "park": return "Công viên";
             default: return "Cảnh quan";
         }
     }
